@@ -179,6 +179,10 @@ const FreightTracker = () => {
     ));
   };
 
+  const deleteRecord = (id: string) => {
+    setData(prev => prev.filter(record => record.id !== id));
+  };
+
   const addNewRecord = () => {
     const newRecord: TrackingRecord = {
       id: Date.now().toString(),
@@ -258,7 +262,7 @@ const FreightTracker = () => {
             </TabsList>
 
             <TabsContent value="table" className="flex-1 px-6 pb-6 mt-6">
-              <TrackingTable data={data} updateRecord={updateRecord} />
+              <TrackingTable data={data} updateRecord={updateRecord} deleteRecord={deleteRecord} />
             </TabsContent>
 
             <TabsContent value="calendar" className="flex-1 px-6 pb-6 mt-6">
