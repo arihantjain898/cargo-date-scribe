@@ -4,6 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrackingRecord } from './FreightTracker';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface CalendarViewProps {
   data: TrackingRecord[];
@@ -67,24 +68,24 @@ const CalendarView = ({ data }: CalendarViewProps) => {
   const getEventTypeColor = (type: string) => {
     switch (type) {
       case 'drop':
-        return 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100';
+        return 'bg-blue-50 text-blue-700 border-blue-200';
       case 'return':
-        return 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100';
+        return 'bg-green-50 text-green-700 border-green-200';
       case 'cutoff':
-        return 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100';
+        return 'bg-red-50 text-red-700 border-red-200';
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
   const getEventTypeLabel = (type: string) => {
     switch (type) {
       case 'drop':
-        return '🚚 Drop Date';
+        return 'Drop Date';
       case 'return':
-        return '↩️ Return Date';
+        return 'Return Date';
       case 'cutoff':
-        return '⏰ Doc Cutoff';
+        return 'Doc Cutoff';
       default:
         return type;
     }
@@ -109,132 +110,126 @@ const CalendarView = ({ data }: CalendarViewProps) => {
     hasEvents: {
       backgroundColor: '#3b82f6',
       color: 'white',
-      borderRadius: '50%',
-      fontWeight: 'bold'
+      borderRadius: '6px',
+      fontWeight: '500'
     }
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-      <Card className="h-fit shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-t-lg">
-          <CardTitle className="text-xl font-bold flex items-center gap-2">
-            📅 Calendar Overview
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+      <Card className="lg:col-span-1 shadow-sm border border-gray-200">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-medium text-gray-900">
+            Calendar Overview
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-6 pt-0">
           <Calendar
             mode="single"
             selected={selectedDate}
             onSelect={setSelectedDate}
             modifiers={modifiers}
             modifiersStyles={modifiersStyles}
-            className="rounded-lg border shadow-sm bg-white p-4"
+            className="rounded-md border border-gray-200 bg-white p-3"
           />
           <div className="mt-6 space-y-3">
-            <h4 className="font-semibold text-gray-800 text-base">Legend:</h4>
-            <div className="grid grid-cols-1 gap-2">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 justify-start p-3">
-                🚚 Drop Date
+            <h4 className="font-medium text-gray-800 text-sm">Event Types:</h4>
+            <div className="space-y-2">
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 justify-start text-xs">
+                Drop Date
               </Badge>
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 justify-start p-3">
-                ↩️ Return Date
+              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 justify-start text-xs">
+                Return Date
               </Badge>
-              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 justify-start p-3">
-                ⏰ Doc Cutoff
+              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 justify-start text-xs">
+                Doc Cutoff
               </Badge>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="h-fit shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-        <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-t-lg">
-          <CardTitle className="text-xl font-bold">
-            {selectedDate ? `📋 Events for ${selectedDate.toLocaleDateString()}` : '📋 Select a date'}
+      <Card className="lg:col-span-2 shadow-sm border border-gray-200">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-medium text-gray-900">
+            {selectedDate ? `Events for ${selectedDate.toLocaleDateString()}` : 'Select a date'}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          {selectedEvents.length > 0 ? (
-            <div className="space-y-4">
-              {selectedEvents.map((event, index) => (
-                <div key={index} className="p-4 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge 
-                      variant="outline" 
-                      className={`${getEventTypeColor(event.type)} font-semibold px-3 py-1`}
-                    >
-                      {getEventTypeLabel(event.type)}
-                    </Badge>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-600">Customer:</span>
-                      <span className="font-bold text-gray-900">{event.customer}</span>
+        <CardContent className="p-6 pt-0">
+          <ScrollArea className="h-96">
+            {selectedEvents.length > 0 ? (
+              <div className="space-y-3">
+                {selectedEvents.map((event, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge 
+                        variant="outline" 
+                        className={`${getEventTypeColor(event.type)} text-xs`}
+                      >
+                        {getEventTypeLabel(event.type)}
+                      </Badge>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-600">REF:</span>
-                      <span className="text-gray-800">{event.ref}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-600">File:</span>
-                      <span className="text-gray-800">{event.file}</span>
+                    <div className="space-y-1">
+                      <div className="font-medium text-gray-900">{event.customer}</div>
+                      <div className="text-sm text-gray-600">{event.ref} • {event.file}</div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📅</div>
-              <p className="text-gray-500 text-lg">
-                No events scheduled for this date
-              </p>
-            </div>
-          )}
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-3">📅</div>
+                <p className="text-gray-500">
+                  No events scheduled for this date
+                </p>
+              </div>
+            )}
+          </ScrollArea>
         </CardContent>
       </Card>
 
-      <Card className="lg:col-span-2 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-        <CardHeader className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-t-lg">
-          <CardTitle className="text-xl font-bold flex items-center gap-2">
-            ⏰ Upcoming Events
+      <Card className="lg:col-span-3 shadow-sm border border-gray-200">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-medium text-gray-900">
+            Upcoming Events
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events
-              .filter(event => new Date(event.date) >= new Date())
-              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-              .slice(0, 6)
-              .map((event, index) => (
-                <div key={index} className="p-4 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-all hover:scale-105">
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge 
-                      variant="outline" 
-                      className={`${getEventTypeColor(event.type)} font-semibold px-3 py-1`}
-                    >
-                      {getEventTypeLabel(event.type)}
-                    </Badge>
-                    <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded-md">
-                      {new Date(event.date).toLocaleDateString()}
-                    </span>
+        <CardContent className="p-6 pt-0">
+          <ScrollArea className="h-64">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {events
+                .filter(event => new Date(event.date) >= new Date())
+                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                .slice(0, 9)
+                .map((event, index) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge 
+                        variant="outline" 
+                        className={`${getEventTypeColor(event.type)} text-xs`}
+                      >
+                        {getEventTypeLabel(event.type)}
+                      </Badge>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {new Date(event.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="font-medium text-gray-900 text-sm">{event.customer}</div>
+                      <div className="text-xs text-gray-600">{event.ref} • {event.file}</div>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="font-bold text-gray-900 text-lg">{event.customer}</div>
-                    <div className="text-gray-600 font-medium">{event.ref} • {event.file}</div>
-                  </div>
-                </div>
-              ))}
-          </div>
-          {events.filter(event => new Date(event.date) >= new Date()).length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🎉</div>
-              <p className="text-gray-500 text-lg">
-                No upcoming events
-              </p>
+                ))}
             </div>
-          )}
+            {events.filter(event => new Date(event.date) >= new Date()).length === 0 && (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-3">✅</div>
+                <p className="text-gray-500">
+                  No upcoming events
+                </p>
+              </div>
+            )}
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>

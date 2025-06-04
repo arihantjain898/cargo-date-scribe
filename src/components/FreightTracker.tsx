@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
-import { Calendar, Edit3, Plus, Bell } from 'lucide-react';
+import { Calendar, Edit3, Plus, Bell, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrackingTable from './TrackingTable';
 import CalendarView from './CalendarView';
@@ -173,6 +173,16 @@ const FreightTracker = () => {
     }
   ]);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filteredData = data.filter(record => 
+    record.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    record.ref.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    record.file.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    record.workOrder.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const updateRecord = (id: string, field: keyof TrackingRecord, value: any) => {
     setData(prev => prev.map(record => 
       record.id === id ? { ...record, [field]: value } : record
@@ -215,58 +225,78 @@ const FreightTracker = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 h-full flex flex-col overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
-          <div className="flex items-center justify-between">
+    <div className="w-full min-h-screen bg-gray-50 p-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden">
+        <div className="bg-white border-b border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold mb-2">🚢 Freight Forwarding Tracker</h1>
-              <p className="text-blue-100 text-lg">Comprehensive shipment tracking and management system</p>
+              <h1 className="text-2xl font-semibold text-gray-900 mb-1">Freight Forwarding Tracker</h1>
+              <p className="text-gray-600">Comprehensive shipment tracking and management system</p>
             </div>
             <div className="flex items-center gap-3">
               <Button 
-                variant="secondary" 
-                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm"
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Filters
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
               >
                 <Bell className="w-4 h-4 mr-2" />
                 Notifications
               </Button>
               <Button 
                 onClick={addNewRecord} 
-                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg"
+                size="sm"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add New Record
+                Add Record
               </Button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search by customer, ref, file, or work order..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
             </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-hidden">
           <Tabs defaultValue="table" className="h-full flex flex-col">
-            <TabsList className="mx-6 mt-6 bg-gray-100 p-1 rounded-xl">
+            <TabsList className="mx-6 mt-4 bg-gray-100 p-1 rounded-lg w-fit">
               <TabsTrigger 
                 value="table" 
-                className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-6 py-3 rounded-lg font-semibold"
+                className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-4 py-2 rounded-md"
               >
-                <Edit3 className="w-5 h-5" />
-                Tracking Table
+                <Edit3 className="w-4 h-4" />
+                Table View
               </TabsTrigger>
               <TabsTrigger 
                 value="calendar" 
-                className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-6 py-3 rounded-lg font-semibold"
+                className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-4 py-2 rounded-md"
               >
-                <Calendar className="w-5 h-5" />
+                <Calendar className="w-4 h-4" />
                 Calendar View
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="table" className="flex-1 px-6 pb-6 mt-6">
-              <TrackingTable data={data} updateRecord={updateRecord} deleteRecord={deleteRecord} />
+            <TabsContent value="table" className="flex-1 px-6 pb-6 mt-4">
+              <TrackingTable data={filteredData} updateRecord={updateRecord} deleteRecord={deleteRecord} />
             </TabsContent>
 
-            <TabsContent value="calendar" className="flex-1 px-6 pb-6 mt-6">
-              <CalendarView data={data} />
+            <TabsContent value="calendar" className="flex-1 px-6 pb-6 mt-4">
+              <CalendarView data={filteredData} />
             </TabsContent>
           </Tabs>
         </div>

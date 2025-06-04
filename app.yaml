@@ -1,0 +1,17 @@
+
+runtime: nodejs18
+
+handlers:
+- url: /static
+  static_dir: dist/assets
+  secure: always
+
+- url: /(.*\.(js|css|ico|png|jpg|gif|svg))$
+  static_files: dist/\1
+  upload: dist/.*\.(js|css|ico|png|jpg|gif|svg)$
+  secure: always
+
+- url: /.*
+  static_files: dist/index.html
+  upload: dist/index.html
+  secure: always
