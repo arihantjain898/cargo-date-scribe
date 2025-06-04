@@ -1,11 +1,8 @@
 
 import React, { useState } from 'react';
-import { Calendar, Edit3, Save, X } from 'lucide-react';
+import { Calendar, Edit3, Plus, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import TrackingTable from './TrackingTable';
 import CalendarView from './CalendarView';
 
@@ -214,35 +211,57 @@ const FreightTracker = () => {
   };
 
   return (
-    <div className="w-full h-screen p-6 bg-gray-50">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col">
-        <div className="p-6 border-b border-gray-200">
+    <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 h-full flex flex-col overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Freight Forwarding Tracker</h1>
-            <Button onClick={addNewRecord} className="bg-blue-600 hover:bg-blue-700">
-              Add New Record
-            </Button>
+            <div>
+              <h1 className="text-3xl font-bold mb-2">🚢 Freight Forwarding Tracker</h1>
+              <p className="text-blue-100 text-lg">Comprehensive shipment tracking and management system</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="secondary" 
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm"
+              >
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications
+              </Button>
+              <Button 
+                onClick={addNewRecord} 
+                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Record
+              </Button>
+            </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-hidden">
           <Tabs defaultValue="table" className="h-full flex flex-col">
-            <TabsList className="mx-6 mt-4">
-              <TabsTrigger value="table" className="flex items-center gap-2">
-                <Edit3 className="w-4 h-4" />
+            <TabsList className="mx-6 mt-6 bg-gray-100 p-1 rounded-xl">
+              <TabsTrigger 
+                value="table" 
+                className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-6 py-3 rounded-lg font-semibold"
+              >
+                <Edit3 className="w-5 h-5" />
                 Tracking Table
               </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+              <TabsTrigger 
+                value="calendar" 
+                className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-6 py-3 rounded-lg font-semibold"
+              >
+                <Calendar className="w-5 h-5" />
                 Calendar View
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="table" className="flex-1 px-6 pb-6 mt-4">
+            <TabsContent value="table" className="flex-1 px-6 pb-6 mt-6">
               <TrackingTable data={data} updateRecord={updateRecord} />
             </TabsContent>
 
-            <TabsContent value="calendar" className="flex-1 px-6 pb-6 mt-4">
+            <TabsContent value="calendar" className="flex-1 px-6 pb-6 mt-6">
               <CalendarView data={data} />
             </TabsContent>
           </Tabs>
