@@ -1,9 +1,46 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { Calendar, Edit3, Save, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import TrackingTable from './TrackingTable';
+import CalendarView from './CalendarView';
+
+export interface TrackingRecord {
+  id: string;
+  customer: string;
+  ref: string;
+  file: string;
+  workOrder: string;
+  dropDone: boolean;
+  dropDate: string;
+  returnNeeded: boolean;
+  returnDate: string;
+  docsSent: boolean;
+  docsReceived: boolean;
+  aesMblVgmSent: boolean;
+  docCutoffDate: string;
+  titlesDispatched: boolean;
+  validatedFwd: boolean;
+  titlesReturned: boolean;
+  sslDraftInvRec: boolean;
+  draftInvApproved: boolean;
+  transphereInvSent: boolean;
+  paymentRec: boolean;
+  sslPaid: boolean;
+  insured: boolean;
+  released: boolean;
+  docsSentToCustomer: boolean;
+  notes: string;
+}
 
 const FreightTracker = () => {
-  const data = [
+  const [data, setData] = useState<TrackingRecord[]>([
     {
+      id: "1",
       customer: "ACME Corp",
       ref: "EX91500",
       file: "F-1000",
@@ -30,6 +67,7 @@ const FreightTracker = () => {
       notes: ""
     },
     {
+      id: "2",
       customer: "Globex",
       ref: "EX91501",
       file: "F-1001",
@@ -56,12 +94,13 @@ const FreightTracker = () => {
       notes: ""
     },
     {
+      id: "3",
       customer: "Initech",
       ref: "EX91502",
       file: "F-1002",
       workOrder: "WO-2002",
       dropDone: true,
-      dropDate: "",
+      dropDate: "2025-06-05",
       returnNeeded: false,
       returnDate: "2025-09-03",
       docsSent: true,
@@ -82,6 +121,7 @@ const FreightTracker = () => {
       notes: ""
     },
     {
+      id: "4",
       customer: "Umbrella",
       ref: "EX91503",
       file: "F-1003",
@@ -108,6 +148,7 @@ const FreightTracker = () => {
       notes: ""
     },
     {
+      id: "5",
       customer: "Wayne Ent.",
       ref: "EX91504",
       file: "F-1004",
@@ -132,129 +173,35 @@ const FreightTracker = () => {
       released: false,
       docsSentToCustomer: false,
       notes: ""
-    },
-    {
-      customer: "Stark Ind.",
-      ref: "EX91505",
-      file: "F-1005",
-      workOrder: "WO-2005",
-      dropDone: true,
-      dropDate: "2025-06-08",
-      returnNeeded: false,
-      returnDate: "",
-      docsSent: true,
-      docsReceived: false,
-      aesMblVgmSent: true,
-      docCutoffDate: "2025-06-18",
-      titlesDispatched: true,
-      validatedFwd: false,
-      titlesReturned: false,
-      sslDraftInvRec: true,
-      draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: true,
-      sslPaid: false,
-      insured: false,
-      released: false,
-      docsSentToCustomer: true,
-      notes: ""
-    },
-    {
-      customer: "Wonka",
-      ref: "EX91506",
-      file: "F-1006",
-      workOrder: "WO-2006",
-      dropDone: true,
+    }
+  ]);
+
+  const updateRecord = (id: string, field: keyof TrackingRecord, value: any) => {
+    setData(prev => prev.map(record => 
+      record.id === id ? { ...record, [field]: value } : record
+    ));
+  };
+
+  const addNewRecord = () => {
+    const newRecord: TrackingRecord = {
+      id: Date.now().toString(),
+      customer: "",
+      ref: "",
+      file: "",
+      workOrder: "",
+      dropDone: false,
       dropDate: "",
-      returnNeeded: true,
+      returnNeeded: false,
       returnDate: "",
       docsSent: false,
-      docsReceived: true,
-      aesMblVgmSent: false,
-      docCutoffDate: "2025-06-19",
-      titlesDispatched: false,
-      validatedFwd: false,
-      titlesReturned: true,
-      sslDraftInvRec: false,
-      draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: false,
-      sslPaid: true,
-      insured: true,
-      released: false,
-      docsSentToCustomer: false,
-      notes: ""
-    },
-    {
-      customer: "Hooli",
-      ref: "EX91507",
-      file: "F-1007",
-      workOrder: "WO-2007",
-      dropDone: true,
-      dropDate: "2025-06-10",
-      returnNeeded: false,
-      returnDate: "",
-      docsSent: true,
       docsReceived: false,
-      aesMblVgmSent: true,
-      docCutoffDate: "2025-06-20",
+      aesMblVgmSent: false,
+      docCutoffDate: "",
       titlesDispatched: false,
       validatedFwd: false,
       titlesReturned: false,
       sslDraftInvRec: false,
       draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: false,
-      sslPaid: false,
-      insured: true,
-      released: true,
-      docsSentToCustomer: false,
-      notes: ""
-    },
-    {
-      customer: "Cyberdyne",
-      ref: "EX91508",
-      file: "F-1008",
-      workOrder: "WO-2008",
-      dropDone: true,
-      dropDate: "",
-      returnNeeded: true,
-      returnDate: "2025-09-09",
-      docsSent: true,
-      docsReceived: true,
-      aesMblVgmSent: false,
-      docCutoffDate: "2025-06-21",
-      titlesDispatched: true,
-      validatedFwd: false,
-      titlesReturned: false,
-      sslDraftInvRec: false,
-      draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: false,
-      sslPaid: false,
-      insured: true,
-      released: true,
-      docsSentToCustomer: false,
-      notes: ""
-    },
-    {
-      customer: "Tyrell Corp",
-      ref: "EX91509",
-      file: "F-1009",
-      workOrder: "WO-2009",
-      dropDone: true,
-      dropDate: "2025-06-12",
-      returnNeeded: false,
-      returnDate: "",
-      docsSent: true,
-      docsReceived: true,
-      aesMblVgmSent: false,
-      docCutoffDate: "2025-06-22",
-      titlesDispatched: false,
-      validatedFwd: false,
-      titlesReturned: false,
-      sslDraftInvRec: false,
-      draftInvApproved: true,
       transphereInvSent: false,
       paymentRec: false,
       sslPaid: false,
@@ -262,90 +209,44 @@ const FreightTracker = () => {
       released: false,
       docsSentToCustomer: false,
       notes: ""
-    }
-  ];
-
-  const renderCheckbox = (value: boolean) => (
-    <span className={`text-sm font-medium ${value ? 'text-green-600' : 'text-gray-400'}`}>
-      {value ? '✅' : '❌'}
-    </span>
-  );
+    };
+    setData(prev => [...prev, newRecord]);
+  };
 
   return (
-    <div className="w-full p-4">
-      <h1 className="text-2xl font-bold mb-6 text-center">Freight Forwarding Tracker</h1>
-      
-      <div className="overflow-x-auto border border-gray-300 rounded-lg">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="bg-gray-100 border-b border-gray-300">
-              <th colSpan={4} className="border-r border-gray-300 p-2 text-center font-semibold">INFO</th>
-              <th colSpan={4} className="border-r border-gray-300 p-2 text-center font-semibold">DROP / RETURN</th>
-              <th colSpan={4} className="border-r border-gray-300 p-2 text-center font-semibold">DOCUMENTS</th>
-              <th colSpan={3} className="border-r border-gray-300 p-2 text-center font-semibold">TITLES</th>
-              <th colSpan={3} className="border-r border-gray-300 p-2 text-center font-semibold">INVOICING</th>
-              <th colSpan={2} className="border-r border-gray-300 p-2 text-center font-semibold">PAYMENT</th>
-              <th colSpan={2} className="border-r border-gray-300 p-2 text-center font-semibold">FINAL</th>
-              <th className="p-2 text-center font-semibold">NOTES</th>
-            </tr>
-            <tr className="bg-gray-50 border-b border-gray-300 text-xs">
-              <th className="border-r border-gray-200 p-2 text-left">Customer</th>
-              <th className="border-r border-gray-200 p-2 text-left">REF #</th>
-              <th className="border-r border-gray-200 p-2 text-left">File #</th>
-              <th className="border-r border-gray-300 p-2 text-left">Work Order #</th>
-              <th className="border-r border-gray-200 p-2 text-center">Drop Done ✅</th>
-              <th className="border-r border-gray-200 p-2 text-left">Drop Date</th>
-              <th className="border-r border-gray-200 p-2 text-center">Return Needed ✅</th>
-              <th className="border-r border-gray-300 p-2 text-left">Return Date</th>
-              <th className="border-r border-gray-200 p-2 text-center">Docs Sent ✅</th>
-              <th className="border-r border-gray-200 p-2 text-center">Docs Received ✅</th>
-              <th className="border-r border-gray-200 p-2 text-center">AES/MBL/VGM Sent ✅</th>
-              <th className="border-r border-gray-300 p-2 text-left">Doc Cutoff Date</th>
-              <th className="border-r border-gray-200 p-2 text-center">Titles Dispatched ✅</th>
-              <th className="border-r border-gray-200 p-2 text-center">Validated & FWD'd ✅</th>
-              <th className="border-r border-gray-300 p-2 text-center">Titles Returned ✅</th>
-              <th className="border-r border-gray-200 p-2 text-center">SSL Draft Inv. Rec'd ✅</th>
-              <th className="border-r border-gray-200 p-2 text-center">Draft Inv. Approved ✅</th>
-              <th className="border-r border-gray-300 p-2 text-center">Transphere Inv. Sent ✅</th>
-              <th className="border-r border-gray-200 p-2 text-center">Payment Rec'd ✅</th>
-              <th className="border-r border-gray-300 p-2 text-center">SSL Paid ✅</th>
-              <th className="border-r border-gray-200 p-2 text-center">Insured ✅</th>
-              <th className="border-r border-gray-300 p-2 text-center">Released ✅</th>
-              <th className="border-r border-gray-200 p-2 text-center">Docs Sent to Customer ✅</th>
-              <th className="p-2 text-left">Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, index) => (
-              <tr key={index} className={`border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
-                <td className="border-r border-gray-200 p-2 font-medium">{row.customer}</td>
-                <td className="border-r border-gray-200 p-2">{row.ref}</td>
-                <td className="border-r border-gray-200 p-2">{row.file}</td>
-                <td className="border-r border-gray-300 p-2">{row.workOrder}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.dropDone)}</td>
-                <td className="border-r border-gray-200 p-2">{row.dropDate}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.returnNeeded)}</td>
-                <td className="border-r border-gray-300 p-2">{row.returnDate}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.docsSent)}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.docsReceived)}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.aesMblVgmSent)}</td>
-                <td className="border-r border-gray-300 p-2">{row.docCutoffDate}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.titlesDispatched)}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.validatedFwd)}</td>
-                <td className="border-r border-gray-300 p-2 text-center">{renderCheckbox(row.titlesReturned)}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.sslDraftInvRec)}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.draftInvApproved)}</td>
-                <td className="border-r border-gray-300 p-2 text-center">{renderCheckbox(row.transphereInvSent)}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.paymentRec)}</td>
-                <td className="border-r border-gray-300 p-2 text-center">{renderCheckbox(row.sslPaid)}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.insured)}</td>
-                <td className="border-r border-gray-300 p-2 text-center">{renderCheckbox(row.released)}</td>
-                <td className="border-r border-gray-200 p-2 text-center">{renderCheckbox(row.docsSentToCustomer)}</td>
-                <td className="p-2">{row.notes}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="w-full h-screen p-6 bg-gray-50">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-gray-900">Freight Forwarding Tracker</h1>
+            <Button onClick={addNewRecord} className="bg-blue-600 hover:bg-blue-700">
+              Add New Record
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-hidden">
+          <Tabs defaultValue="table" className="h-full flex flex-col">
+            <TabsList className="mx-6 mt-4">
+              <TabsTrigger value="table" className="flex items-center gap-2">
+                <Edit3 className="w-4 h-4" />
+                Tracking Table
+              </TabsTrigger>
+              <TabsTrigger value="calendar" className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Calendar View
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="table" className="flex-1 px-6 pb-6 mt-4">
+              <TrackingTable data={data} updateRecord={updateRecord} />
+            </TabsContent>
+
+            <TabsContent value="calendar" className="flex-1 px-6 pb-6 mt-4">
+              <CalendarView data={data} />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
