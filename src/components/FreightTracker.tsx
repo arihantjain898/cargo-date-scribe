@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Calendar, Edit3, Plus, Bell, Search, Filter } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Calendar, Edit3, Plus, Bell, Search, Filter, Download, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrackingTable from './TrackingTable';
 import CalendarView from './CalendarView';
+import * as XLSX from 'xlsx';
 
 export interface TrackingRecord {
   id: string;
@@ -176,6 +177,8 @@ const FreightTracker = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const filteredData = data.filter(record => 
     record.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
     record.ref.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -224,6 +227,71 @@ const FreightTracker = () => {
     setData(prev => [...prev, newRecord]);
   };
 
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Tracking Records');
+    
+    const fileName = `freight-tracking-${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
+  const importFromExcel = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        const importedRecords: TrackingRecord[] = jsonData.map((row: any, index: number) => ({
+          id: row.id || Date.now().toString() + index,
+          customer: row.customer || '',
+          ref: row.ref || '',
+          file: row.file || '',
+          workOrder: row.workOrder || '',
+          dropDone: Boolean(row.dropDone),
+          dropDate: row.dropDate || '',
+          returnNeeded: Boolean(row.returnNeeded),
+          returnDate: row.returnDate || '',
+          docsSent: Boolean(row.docsSent),
+          docsReceived: Boolean(row.docsReceived),
+          aesMblVgmSent: Boolean(row.aesMblVgmSent),
+          docCutoffDate: row.docCutoffDate || '',
+          titlesDispatched: Boolean(row.titlesDispatched),
+          validatedFwd: Boolean(row.validatedFwd),
+          titlesReturned: Boolean(row.titlesReturned),
+          sslDraftInvRec: Boolean(row.sslDraftInvRec),
+          draftInvApproved: Boolean(row.draftInvApproved),
+          transphereInvSent: Boolean(row.transphereInvSent),
+          paymentRec: Boolean(row.paymentRec),
+          sslPaid: Boolean(row.sslPaid),
+          insured: Boolean(row.insured),
+          released: Boolean(row.released),
+          docsSentToCustomer: Boolean(row.docsSentToCustomer),
+          notes: row.notes || ''
+        }));
+
+        setData(importedRecords);
+        console.log('Successfully imported', importedRecords.length, 'records');
+      } catch (error) {
+        console.error('Error importing Excel file:', error);
+        alert('Error importing Excel file. Please check the file format.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    
+    // Reset the input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="w-full min-h-screen bg-gray-50 p-4">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden">
@@ -241,6 +309,22 @@ const FreightTracker = () => {
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={exportToExcel}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export Excel
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Import Excel
               </Button>
               <Button 
                 variant="outline" 
@@ -270,6 +354,14 @@ const FreightTracker = () => {
               />
             </div>
           </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={importFromExcel}
+            className="hidden"
+          />
         </div>
 
         <div className="flex-1 overflow-hidden">
