@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrackingTable from './TrackingTable';
 import CalendarView from './CalendarView';
+import NotificationSettings from './NotificationSettings';
+import ExcelExportDialog from './ExcelExportDialog';
 import * as XLSX from 'xlsx';
 
 export interface TrackingRecord {
@@ -227,15 +229,6 @@ const FreightTracker = () => {
     setData(prev => [...prev, newRecord]);
   };
 
-  const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Tracking Records');
-    
-    const fileName = `freight-tracking-${new Date().toISOString().split('T')[0]}.xlsx`;
-    XLSX.writeFile(workbook, fileName);
-  };
-
   const importFromExcel = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -310,14 +303,12 @@ const FreightTracker = () => {
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={exportToExcel}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export Excel
-              </Button>
+              <ExcelExportDialog data={filteredData}>
+                <Button variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Excel
+                </Button>
+              </ExcelExportDialog>
               <Button 
                 variant="outline" 
                 size="sm"
@@ -326,13 +317,12 @@ const FreightTracker = () => {
                 <Upload className="w-4 h-4 mr-2" />
                 Import Excel
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-              >
-                <Bell className="w-4 h-4 mr-2" />
-                Notifications
-              </Button>
+              <NotificationSettings>
+                <Button variant="outline" size="sm">
+                  <Bell className="w-4 h-4 mr-2" />
+                  Notifications
+                </Button>
+              </NotificationSettings>
               <Button 
                 onClick={addNewRecord} 
                 size="sm"
