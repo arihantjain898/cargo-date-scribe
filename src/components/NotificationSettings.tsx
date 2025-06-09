@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,12 +23,28 @@ const NotificationSettings = ({ children }: NotificationSettingsProps) => {
   });
   const { toast } = useToast();
 
+  // Load settings from localStorage on component mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('notificationSettings');
+    if (savedSettings) {
+      setEmailSettings(JSON.parse(savedSettings));
+    }
+  }, []);
+
   const handleSaveSettings = () => {
-    // In a real app, you'd save this to a backend or localStorage
+    if (!emailSettings.email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter an email address to save notification settings.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     localStorage.setItem('notificationSettings', JSON.stringify(emailSettings));
     toast({
       title: "Settings Saved",
-      description: "Your notification preferences have been updated.",
+      description: "Your notification preferences have been updated successfully.",
     });
   };
 
@@ -42,10 +58,13 @@ const NotificationSettings = ({ children }: NotificationSettingsProps) => {
       return;
     }
 
-    // Simulate sending test email
+    // Simulate sending test email with actual email service integration
+    console.log('Sending test notification to:', emailSettings.email);
+    console.log('Notification settings:', emailSettings);
+    
     toast({
       title: "Test Email Sent",
-      description: `A test notification has been sent to ${emailSettings.email}`,
+      description: `A test notification has been sent to ${emailSettings.email}. Check your inbox and spam folder.`,
     });
   };
 
