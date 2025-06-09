@@ -313,6 +313,7 @@ const FreightTracker = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -438,7 +439,7 @@ const FreightTracker = () => {
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
               </Button>
-              <ExcelExportDialog data={filteredData}>
+              <ExcelExportDialog data={filteredData} selectedRows={selectedRows}>
                 <Button variant="outline" size="sm">
                   <Download className="w-4 h-4 mr-2" />
                   Export Excel
@@ -509,7 +510,13 @@ const FreightTracker = () => {
             </TabsList>
 
             <TabsContent value="table" className="flex-1 px-6 pb-6 mt-4">
-              <TrackingTable data={filteredData} updateRecord={updateRecord} deleteRecord={deleteRecord} />
+              <TrackingTable 
+                data={filteredData} 
+                updateRecord={updateRecord} 
+                deleteRecord={deleteRecord}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+              />
             </TabsContent>
 
             <TabsContent value="calendar" className="flex-1 px-6 pb-6 mt-4">

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { FileSpreadsheet, Download } from 'lucide-react';
@@ -9,16 +9,30 @@ import * as XLSX from 'xlsx';
 
 interface ExcelExportDialogProps {
   data: TrackingRecord[];
+  selectedRows?: string[];
   children: React.ReactNode;
 }
 
-const ExcelExportDialog = ({ data, children }: ExcelExportDialogProps) => {
+const ExcelExportDialog = ({ data, selectedRows = [], children }: ExcelExportDialogProps) => {
   const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleExport = () => {
+  const handleExport = (exportAll: boolean = true) => {
     try {
+      // Determine which data to export
+      const dataToExport = exportAll ? data : data.filter(record => selectedRows.includes(record.id));
+      
+      if (dataToExport.length === 0) {
+        toast({
+          title: "No Data to Export",
+          description: "Please select some rows or export all data.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Prepare data for export with proper formatting
-      const exportData = data.map(record => ({
+      const exportData = dataToExport.map(record => ({
         'Customer': record.customer,
         'Reference': record.ref,
         'File': record.file,
@@ -78,17 +92,23 @@ const ExcelExportDialog = ({ data, children }: ExcelExportDialogProps) => {
       ];
       worksheet['!cols'] = columnWidths;
 
+      // Add the worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Freight Tracking');
+
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().split('T')[0];
-      const fileName = `freight-tracking-export-${timestamp}.xlsx`;
+      const exportType = exportAll ? 'all' : 'selected';
+      const fileName = `freight-tracking-${exportType}-${timestamp}.xlsx`;
 
       // Save file
       XLSX.writeFile(workbook, fileName);
 
       toast({
         title: "Export Successful",
-        description: `File exported as ${fileName}`,
+        description: `Exported ${dataToExport.length} records to ${fileName}`,
       });
+
+      setIsOpen(false);
     } catch (error) {
       console.error('Export error:', error);
       toast({
@@ -100,7 +120,7 @@ const ExcelExportDialog = ({ data, children }: ExcelExportDialogProps) => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
@@ -114,13 +134,27 @@ const ExcelExportDialog = ({ data, children }: ExcelExportDialogProps) => {
 
         <div className="space-y-4">
           <div className="text-sm text-muted-foreground">
-            Export all tracking records to Excel format.
+            Choose what to export:
           </div>
 
-          <Button onClick={handleExport} className="w-full" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export Excel File
-          </Button>
+          <div className="space-y-2">
+            <Button onClick={() => handleExport(true)} className="w-full" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export All Records ({data.length})
+            </Button>
+            
+            {selectedRows.length > 0 && (
+              <Button 
+                onClick={() => handleExport(false)} 
+                className="w-full" 
+                size="sm"
+                variant="outline"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export Selected ({selectedRows.length})
+              </Button>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
