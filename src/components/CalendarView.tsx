@@ -1,9 +1,8 @@
-
 import React, { useMemo } from 'react';
-import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { TrackingRecord } from './FreightTracker';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TrackingRecord } from '../types/TrackingRecord';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface CalendarViewProps {

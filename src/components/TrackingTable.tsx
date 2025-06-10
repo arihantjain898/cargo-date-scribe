@@ -138,17 +138,17 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <table className="w-full border-collapse">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
               <tr>
-                <th className="sticky left-0 z-50 border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-gray-50 w-16 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                <th className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-gray-50 w-16">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
                     className="h-4 w-4"
                   />
                 </th>
-                <th className="sticky left-16 z-50 border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-gray-50 w-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                <th className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-gray-50 w-24">
                   Actions
                 </th>
-                <th className="sticky left-36 z-50 border-r border-gray-200 p-3 text-left font-medium text-gray-700 bg-blue-50 min-w-[140px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                <th className="border-r border-gray-200 p-3 text-left font-medium text-gray-700 bg-blue-50 min-w-[140px]">
                   Customer
                 </th>
                 <th className="border-r border-gray-200 p-3 text-left font-medium text-gray-700 bg-blue-50 min-w-[80px]">REF #</th>
@@ -177,9 +177,9 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 </th>
               </tr>
               <tr className="bg-white border-b border-gray-200 sticky top-12 z-30 shadow-sm">
-                <th className="sticky left-0 z-50 border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-gray-25 w-16 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Select</th>
-                <th className="sticky left-16 z-50 border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-gray-25 w-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Delete</th>
-                <th className="sticky left-36 z-50 border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[140px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Customer</th>
+                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-gray-25 w-16">Select</th>
+                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-gray-25 w-24">Delete</th>
+                <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[140px]">Customer</th>
                 <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[80px]">REF #</th>
                 <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[80px]">File #</th>
                 <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[100px]">Work Order #</th>
@@ -210,14 +210,14 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 <tr key={record.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
                   index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                 }`}>
-                  <td className="sticky left-0 z-40 border-r border-gray-200 p-2 text-center bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                  <td className="border-r border-gray-200 p-2 text-center bg-white">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}
                       onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                       className="h-4 w-4"
                     />
                   </td>
-                  <td className="sticky left-16 z-40 border-r border-gray-200 p-2 text-center bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                  <td className="border-r border-gray-200 p-2 text-center bg-white">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:bg-red-50">
@@ -243,7 +243,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       </AlertDialogContent>
                     </AlertDialog>
                   </td>
-                  <td className="sticky left-36 z-40 border-r border-gray-200 p-1 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">{renderCell(record, 'customer')}</td>
+                  <td className="border-r border-gray-200 p-1 bg-white">{renderCell(record, 'customer')}</td>
                   <td className="border-r border-gray-200 p-1">{renderCell(record, 'ref')}</td>
                   <td className="border-r border-gray-200 p-1">{renderCell(record, 'file')}</td>
                   <td className="border-r border-gray-200 p-1">{renderCell(record, 'workOrder')}</td>
