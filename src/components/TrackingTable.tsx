@@ -117,7 +117,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     return (
       <div
-        className="flex items-center justify-between group cursor-pointer hover:bg-gray-50 px-2 py-1 rounded transition-colors min-h-[32px]"
+        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-2 py-1 rounded transition-colors min-h-[32px]"
         onClick={() => startEdit(record.id, field, value)}
       >
         <span className={`text-xs truncate ${
@@ -132,92 +132,92 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm border-2 border-gray-300 overflow-hidden">
       <ScrollArea className="h-[calc(100vh-280px)] w-full">
         <div className="min-w-[2600px]">
           <table className="w-full border-collapse">
-            <thead className="sticky top-0 bg-white z-30 shadow-sm">
+            <thead className="sticky top-0 bg-white z-30 shadow-md border-b-2 border-gray-300">
               <tr>
-                <th className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-gray-50 w-16">
+                <th className="border-r-2 border-gray-300 p-3 text-center font-semibold text-gray-800 bg-gray-100 w-16">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
                     className="h-4 w-4"
                   />
                 </th>
-                <th className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-gray-50 w-20">
+                <th className="border-r-2 border-gray-300 p-3 text-center font-semibold text-gray-800 bg-gray-100 w-20">
                   Actions
                 </th>
-                <th className="border-r border-gray-200 p-3 text-left font-medium text-gray-700 bg-blue-50 min-w-[140px]">
+                <th className="border-r-2 border-gray-300 p-3 text-left font-semibold text-gray-800 bg-blue-100 min-w-[140px]">
                   Customer
                 </th>
-                <th className="border-r border-gray-200 p-3 text-left font-medium text-gray-700 bg-blue-50 min-w-[80px]">REF #</th>
-                <th className="border-r border-gray-200 p-3 text-left font-medium text-gray-700 bg-blue-50 min-w-[80px]">File #</th>
-                <th className="border-r border-gray-200 p-3 text-left font-medium text-gray-700 bg-blue-50 min-w-[100px]">Work Order #</th>
-                <th colSpan={4} className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-green-50">
+                <th className="border-r-2 border-gray-300 p-3 text-left font-semibold text-gray-800 bg-blue-100 min-w-[80px]">REF #</th>
+                <th className="border-r-2 border-gray-300 p-3 text-left font-semibold text-gray-800 bg-blue-100 min-w-[80px]">File #</th>
+                <th className="border-r-2 border-gray-300 p-3 text-left font-semibold text-gray-800 bg-blue-100 min-w-[100px]">Work Order #</th>
+                <th colSpan={4} className="border-r-2 border-gray-300 p-3 text-center font-semibold text-gray-800 bg-green-100">
                   Drop / Return
                 </th>
-                <th colSpan={4} className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-purple-50">
+                <th colSpan={4} className="border-r-2 border-gray-300 p-3 text-center font-semibold text-gray-800 bg-purple-100">
                   Documents
                 </th>
-                <th colSpan={3} className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-orange-50">
+                <th colSpan={3} className="border-r-2 border-gray-300 p-3 text-center font-semibold text-gray-800 bg-orange-100">
                   Titles
                 </th>
-                <th colSpan={3} className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-pink-50">
+                <th colSpan={3} className="border-r-2 border-gray-300 p-3 text-center font-semibold text-gray-800 bg-pink-100">
                   Invoicing
                 </th>
-                <th colSpan={2} className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-yellow-50">
+                <th colSpan={2} className="border-r-2 border-gray-300 p-3 text-center font-semibold text-gray-800 bg-yellow-100">
                   Payment
                 </th>
-                <th colSpan={3} className="border-r border-gray-200 p-3 text-center font-medium text-gray-700 bg-red-50">
+                <th colSpan={3} className="border-r-2 border-gray-300 p-3 text-center font-semibold text-gray-800 bg-red-100">
                   Final Steps
                 </th>
-                <th className="p-3 text-center font-medium text-gray-700 bg-gray-50 min-w-[150px]">
+                <th className="p-3 text-center font-semibold text-gray-800 bg-gray-100 min-w-[150px]">
                   Notes
                 </th>
               </tr>
-              <tr className="bg-white border-b border-gray-200 sticky top-12 z-30 shadow-sm">
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-gray-25 w-16">Select</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-gray-25 w-20">Delete</th>
-                <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[140px]">Customer</th>
-                <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[80px]">REF #</th>
-                <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[80px]">File #</th>
-                <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-blue-25 min-w-[100px]">Work Order #</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-green-25 min-w-[80px]">Drop Done</th>
-                <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-green-25 min-w-[100px]">Drop Date</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-green-25 min-w-[100px]">Return Needed</th>
-                <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-green-25 min-w-[100px]">Return Date</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-purple-25 min-w-[80px]">Docs Sent</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-purple-25 min-w-[100px]">Docs Received</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-purple-25 min-w-[120px]">AES/MBL/VGM</th>
-                <th className="border-r border-gray-200 p-2 text-left text-xs font-medium text-gray-600 bg-purple-25 min-w-[120px]">Doc Cutoff Date</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-orange-25 min-w-[110px]">Titles Dispatched</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-orange-25 min-w-[110px]">Validated & FWD'd</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-orange-25 min-w-[110px]">Titles Returned</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-pink-25 min-w-[120px]">SSL Draft Inv. Rec'd</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-pink-25 min-w-[120px]">Draft Inv. Approved</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-pink-25 min-w-[130px]">Transphere Inv. Sent</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-yellow-25 min-w-[100px]">Payment Rec'd</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-yellow-25 min-w-[80px]">SSL Paid</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-red-25 min-w-[80px]">Insured</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-red-25 min-w-[80px]">Released</th>
-                <th className="border-r border-gray-200 p-2 text-center text-xs font-medium text-gray-600 bg-red-25 min-w-[130px]">Docs Sent to Customer</th>
-                <th className="p-2 text-left text-xs font-medium text-gray-600 bg-gray-25 min-w-[150px]">Notes</th>
+              <tr className="bg-white border-b-2 border-gray-300 sticky top-12 z-30 shadow-sm">
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-gray-50 w-16">Select</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-gray-50 w-20">Delete</th>
+                <th className="border-r-2 border-gray-300 p-2 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[140px]">Customer</th>
+                <th className="border-r-2 border-gray-300 p-2 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">REF #</th>
+                <th className="border-r-2 border-gray-300 p-2 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">File #</th>
+                <th className="border-r-2 border-gray-300 p-2 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">Work Order #</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-green-50 min-w-[80px]">Drop Done</th>
+                <th className="border-r-2 border-gray-300 p-2 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Drop Date</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Return Needed</th>
+                <th className="border-r-2 border-gray-300 p-2 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Return Date</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[80px]">Docs Sent</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[100px]">Docs Received</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">AES/MBL/VGM</th>
+                <th className="border-r-2 border-gray-300 p-2 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Doc Cutoff Date</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Titles Dispatched</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Validated & FWD'd</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Titles Returned</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">SSL Draft Inv. Rec'd</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">Draft Inv. Approved</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[130px]">Transphere Inv. Sent</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Payment Rec'd</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[80px]">SSL Paid</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-red-50 min-w-[80px]">Insured</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-red-50 min-w-[80px]">Released</th>
+                <th className="border-r-2 border-gray-300 p-2 text-center text-xs font-semibold text-gray-700 bg-red-50 min-w-[130px]">Docs Sent to Customer</th>
+                <th className="p-2 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[150px]">Notes</th>
               </tr>
             </thead>
             <tbody>
               {data.map((record, index) => (
-                <tr key={record.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                <tr key={record.id} className={`border-b border-gray-200 hover:bg-blue-50 transition-colors ${
                   index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                 }`}>
-                  <td className="border-r border-gray-200 p-2 text-center">
+                  <td className="border-r-2 border-gray-300 p-2 text-center">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}
                       onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                       className="h-4 w-4"
                     />
                   </td>
-                  <td className="border-r border-gray-200 p-2 text-center">
+                  <td className="border-r-2 border-gray-300 p-2 text-center">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button size="sm" variant="ghost" className="h-7 w-7 p-0 hover:bg-red-50">
@@ -243,29 +243,29 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       </AlertDialogContent>
                     </AlertDialog>
                   </td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'customer')}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'ref')}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'file')}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'workOrder')}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'dropDone', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'dropDate', false, true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'returnNeeded', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'returnDate', false, true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'docsSent', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'docsReceived', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'aesMblVgmSent', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'docCutoffDate', false, true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'titlesDispatched', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'validatedFwd', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'titlesReturned', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'sslDraftInvRec', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'draftInvApproved', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'transphereInvSent', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'paymentRec', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'sslPaid', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'insured', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'released', true)}</td>
-                  <td className="border-r border-gray-200 p-1">{renderCell(record, 'docsSentToCustomer', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'customer')}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'ref')}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'file')}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'workOrder')}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'dropDone', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'dropDate', false, true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'returnNeeded', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'returnDate', false, true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'docsSent', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'docsReceived', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'aesMblVgmSent', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'docCutoffDate', false, true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'titlesDispatched', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'validatedFwd', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'titlesReturned', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'sslDraftInvRec', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'draftInvApproved', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'transphereInvSent', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'paymentRec', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'sslPaid', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'insured', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'released', true)}</td>
+                  <td className="border-r-2 border-gray-300 p-1">{renderCell(record, 'docsSentToCustomer', true)}</td>
                   <td className="p-1">{renderCell(record, 'notes')}</td>
                 </tr>
               ))}
