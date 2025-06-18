@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,12 +63,12 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
 
     // Import events
     importData.forEach(record => {
-      if (record.etaFinalProd) {
+      if (record.etaFinalPod) {
         eventList.push({
-          date: record.etaFinalProd,
+          date: record.etaFinalPod,
           type: 'eta',
-          customer: record.customer,
-          ref: record.ref,
+          customer: record.reference,
+          ref: record.reference,
           file: record.file,
           source: 'import'
         });
@@ -77,8 +78,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
         eventList.push({
           date: record.deliveryDate,
           type: 'delivery',
-          customer: record.customer,
-          ref: record.ref,
+          customer: record.reference,
+          ref: record.reference,
           file: record.file,
           source: 'import'
         });
@@ -96,20 +97,27 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
   const selectedEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
-  const getEventTypeColor = (type: string) => {
-    switch (type) {
-      case 'drop':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'return':
-        return 'bg-green-50 text-green-700 border-green-200';
-      case 'cutoff':
-        return 'bg-red-50 text-red-700 border-red-200';
-      case 'eta':
-        return 'bg-purple-50 text-purple-700 border-purple-200';
-      case 'delivery':
-        return 'bg-orange-50 text-orange-700 border-orange-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
+  const getEventTypeColor = (type: string, source: string) => {
+    if (source === 'export') {
+      switch (type) {
+        case 'drop':
+          return 'bg-blue-100 text-blue-800 border-blue-300';
+        case 'return':
+          return 'bg-green-100 text-green-800 border-green-300';
+        case 'cutoff':
+          return 'bg-red-100 text-red-800 border-red-300';
+        default:
+          return 'bg-gray-100 text-gray-800 border-gray-300';
+      }
+    } else {
+      switch (type) {
+        case 'eta':
+          return 'bg-purple-100 text-purple-800 border-purple-300';
+        case 'delivery':
+          return 'bg-orange-100 text-orange-800 border-orange-300';
+        default:
+          return 'bg-indigo-100 text-indigo-800 border-indigo-300';
+      }
     }
   };
 
@@ -122,7 +130,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
       case 'cutoff':
         return 'Doc Cutoff';
       case 'eta':
-        return 'ETA Final Prod';
+        return 'ETA Final POD';
       case 'delivery':
         return 'Delivery Date';
       default:
@@ -175,22 +183,26 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
             <h4 className="font-medium text-gray-800 text-sm">Event Types:</h4>
             <div className="space-y-2">
               <div className="text-xs font-semibold text-gray-600 mb-1">Export Events:</div>
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 justify-start text-xs">
-                Drop Date
-              </Badge>
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 justify-start text-xs">
-                Return Date
-              </Badge>
-              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 justify-start text-xs">
-                Doc Cutoff
-              </Badge>
+              <div className="space-y-1">
+                <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 justify-start text-xs block w-fit">
+                  Drop Date
+                </Badge>
+                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300 justify-start text-xs block w-fit">
+                  Return Date
+                </Badge>
+                <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 justify-start text-xs block w-fit">
+                  Doc Cutoff
+                </Badge>
+              </div>
               <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Import Events:</div>
-              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 justify-start text-xs">
-                ETA Final Prod
-              </Badge>
-              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 justify-start text-xs">
-                Delivery Date
-              </Badge>
+              <div className="space-y-1">
+                <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 justify-start text-xs block w-fit">
+                  ETA Final POD
+                </Badge>
+                <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 justify-start text-xs block w-fit">
+                  Delivery Date
+                </Badge>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -212,13 +224,13 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                       <div className="flex items-center gap-2">
                         <Badge 
                           variant="outline" 
-                          className={`${getEventTypeColor(event.type)} text-xs`}
+                          className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
                         >
                           {getEventTypeLabel(event.type)}
                         </Badge>
                         <Badge 
                           variant="outline" 
-                          className={`text-xs ${event.source === 'export' ? 'bg-gray-100 text-gray-700' : 'bg-indigo-100 text-indigo-700'}`}
+                          className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
                         >
                           {event.source === 'export' ? 'Export' : 'Import'}
                         </Badge>
@@ -259,16 +271,16 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                 .map((event, index) => (
                   <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 flex-wrap">
                         <Badge 
                           variant="outline" 
-                          className={`${getEventTypeColor(event.type)} text-xs`}
+                          className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
                         >
                           {getEventTypeLabel(event.type)}
                         </Badge>
                         <Badge 
                           variant="outline" 
-                          className={`text-xs ${event.source === 'export' ? 'bg-gray-100 text-gray-700' : 'bg-indigo-100 text-indigo-700'}`}
+                          className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
                         >
                           {event.source === 'export' ? 'EXP' : 'IMP'}
                         </Badge>

@@ -1,22 +1,22 @@
 
 export interface ImportTrackingRecord {
   id: string;
-  customer: string;
-  ref: string;
+  reference: string;
   file: string;
-  workOrder: string;
-  bookingConfirmed: boolean;
-  bookingDate: string;
-  docsReceived: boolean;
-  customsCleared: boolean;
-  containerReleased: boolean;
-  deliveryScheduled: boolean;
-  deliveryDate: string;
-  etaFinalProd: string;
-  cargoInspected: boolean;
+  etaFinalPod: string;
+  bond: string;
+  poa: boolean;
+  isf: boolean;
+  packingListCommercialInvoice: boolean;
+  billOfLading: boolean;
+  arrivalNotice: boolean;
+  isfFiled: boolean;
+  entryFiled: boolean;
+  blRelease: boolean;
+  customsRelease: boolean;
   invoiceSent: boolean;
   paymentReceived: boolean;
-  docsForwarded: boolean;
-  fileComplete: boolean;
+  workOrderSetup: boolean;
+  deliveryDate: string;
   notes: string;
 }
