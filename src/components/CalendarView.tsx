@@ -1,27 +1,30 @@
-
 import React, { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrackingRecord } from '../types/TrackingRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar } from '@/components/ui/calendar';
 
 interface CalendarViewProps {
   data: TrackingRecord[];
+  importData?: ImportTrackingRecord[];
 }
 
 interface CalendarEvent {
   date: string;
-  type: 'drop' | 'return' | 'cutoff';
+  type: 'drop' | 'return' | 'cutoff' | 'eta' | 'delivery';
   customer: string;
   ref: string;
   file: string;
+  source: 'export' | 'import';
 }
 
-const CalendarView = ({ data }: CalendarViewProps) => {
+const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
   const events = useMemo(() => {
     const eventList: CalendarEvent[] = [];
     
+    // Export events
     data.forEach(record => {
       if (record.dropDate) {
         eventList.push({
@@ -29,7 +32,8 @@ const CalendarView = ({ data }: CalendarViewProps) => {
           type: 'drop',
           customer: record.customer,
           ref: record.ref,
-          file: record.file
+          file: record.file,
+          source: 'export'
         });
       }
       
@@ -39,7 +43,8 @@ const CalendarView = ({ data }: CalendarViewProps) => {
           type: 'return',
           customer: record.customer,
           ref: record.ref,
-          file: record.file
+          file: record.file,
+          source: 'export'
         });
       }
       
@@ -49,13 +54,39 @@ const CalendarView = ({ data }: CalendarViewProps) => {
           type: 'cutoff',
           customer: record.customer,
           ref: record.ref,
-          file: record.file
+          file: record.file,
+          source: 'export'
+        });
+      }
+    });
+
+    // Import events
+    importData.forEach(record => {
+      if (record.etaFinalProd) {
+        eventList.push({
+          date: record.etaFinalProd,
+          type: 'eta',
+          customer: record.customer,
+          ref: record.ref,
+          file: record.file,
+          source: 'import'
+        });
+      }
+      
+      if (record.deliveryDate) {
+        eventList.push({
+          date: record.deliveryDate,
+          type: 'delivery',
+          customer: record.customer,
+          ref: record.ref,
+          file: record.file,
+          source: 'import'
         });
       }
     });
     
     return eventList;
-  }, [data]);
+  }, [data, importData]);
 
   const getEventsForDate = (date: Date) => {
     const dateString = date.toISOString().split('T')[0];
@@ -73,6 +104,10 @@ const CalendarView = ({ data }: CalendarViewProps) => {
         return 'bg-green-50 text-green-700 border-green-200';
       case 'cutoff':
         return 'bg-red-50 text-red-700 border-red-200';
+      case 'eta':
+        return 'bg-purple-50 text-purple-700 border-purple-200';
+      case 'delivery':
+        return 'bg-orange-50 text-orange-700 border-orange-200';
       default:
         return 'bg-gray-50 text-gray-700 border-gray-200';
     }
@@ -86,6 +121,10 @@ const CalendarView = ({ data }: CalendarViewProps) => {
         return 'Return Date';
       case 'cutoff':
         return 'Doc Cutoff';
+      case 'eta':
+        return 'ETA Final Prod';
+      case 'delivery':
+        return 'Delivery Date';
       default:
         return type;
     }
@@ -135,6 +174,7 @@ const CalendarView = ({ data }: CalendarViewProps) => {
           <div className="mt-6 space-y-3">
             <h4 className="font-medium text-gray-800 text-sm">Event Types:</h4>
             <div className="space-y-2">
+              <div className="text-xs font-semibold text-gray-600 mb-1">Export Events:</div>
               <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 justify-start text-xs">
                 Drop Date
               </Badge>
@@ -143,6 +183,13 @@ const CalendarView = ({ data }: CalendarViewProps) => {
               </Badge>
               <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 justify-start text-xs">
                 Doc Cutoff
+              </Badge>
+              <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Import Events:</div>
+              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 justify-start text-xs">
+                ETA Final Prod
+              </Badge>
+              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 justify-start text-xs">
+                Delivery Date
               </Badge>
             </div>
           </div>
@@ -162,12 +209,20 @@ const CalendarView = ({ data }: CalendarViewProps) => {
                 {selectedEvents.map((event, index) => (
                   <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                     <div className="flex items-center justify-between mb-2">
-                      <Badge 
-                        variant="outline" 
-                        className={`${getEventTypeColor(event.type)} text-xs`}
-                      >
-                        {getEventTypeLabel(event.type)}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          variant="outline" 
+                          className={`${getEventTypeColor(event.type)} text-xs`}
+                        >
+                          {getEventTypeLabel(event.type)}
+                        </Badge>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${event.source === 'export' ? 'bg-gray-100 text-gray-700' : 'bg-indigo-100 text-indigo-700'}`}
+                        >
+                          {event.source === 'export' ? 'Export' : 'Import'}
+                        </Badge>
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <div className="font-medium text-gray-900">{event.customer}</div>
@@ -204,12 +259,20 @@ const CalendarView = ({ data }: CalendarViewProps) => {
                 .map((event, index) => (
                   <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow">
                     <div className="flex items-center justify-between mb-2">
-                      <Badge 
-                        variant="outline" 
-                        className={`${getEventTypeColor(event.type)} text-xs`}
-                      >
-                        {getEventTypeLabel(event.type)}
-                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Badge 
+                          variant="outline" 
+                          className={`${getEventTypeColor(event.type)} text-xs`}
+                        >
+                          {getEventTypeLabel(event.type)}
+                        </Badge>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${event.source === 'export' ? 'bg-gray-100 text-gray-700' : 'bg-indigo-100 text-indigo-700'}`}
+                        >
+                          {event.source === 'export' ? 'EXP' : 'IMP'}
+                        </Badge>
+                      </div>
                       <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
                         {new Date(event.date).toLocaleDateString()}
                       </span>

@@ -1,21 +1,25 @@
-
 import React, { useState } from 'react';
-import { Calendar, Edit3, Plus, Bell, Search, Download, Upload } from 'lucide-react';
+import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrackingTable from './TrackingTable';
+import ImportTrackingTable from './ImportTrackingTable';
 import CalendarView from './CalendarView';
 import NotificationSettings from './NotificationSettings';
 import ExcelExportDialog from './ExcelExportDialog';
 import { TrackingRecord } from '../types/TrackingRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { sampleTrackingData } from '../data/sampleData';
+import { sampleImportData } from '../data/sampleImportData';
 import { useExcelImport } from '../hooks/useExcelImport';
 import { useSearch } from '../hooks/useSearch';
 
 const FreightTracker = () => {
   const [data, setData] = useState<TrackingRecord[]>(sampleTrackingData);
+  const [importData, setImportData] = useState<ImportTrackingRecord[]>(sampleImportData);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
 
   const { fileInputRef, importFromExcel } = useExcelImport(setData);
   const { searchTerm, setSearchTerm, filteredData } = useSearch(data);
@@ -26,9 +30,20 @@ const FreightTracker = () => {
     ));
   };
 
+  const updateImportRecord = (id: string, field: keyof ImportTrackingRecord, value: any) => {
+    setImportData(prev => prev.map(record => 
+      record.id === id ? { ...record, [field]: value } : record
+    ));
+  };
+
   const deleteRecord = (id: string) => {
     setData(prev => prev.filter(record => record.id !== id));
     setSelectedRows(prev => prev.filter(rowId => rowId !== id));
+  };
+
+  const deleteImportRecord = (id: string) => {
+    setImportData(prev => prev.filter(record => record.id !== id));
+    setSelectedImportRows(prev => prev.filter(rowId => rowId !== id));
   };
 
   const addNewRecord = () => {
@@ -60,6 +75,31 @@ const FreightTracker = () => {
       notes: ""
     };
     setData(prev => [...prev, newRecord]);
+  };
+
+  const addNewImportRecord = () => {
+    const newRecord: ImportTrackingRecord = {
+      id: Date.now().toString(),
+      customer: "",
+      ref: "",
+      file: "",
+      workOrder: "",
+      bookingConfirmed: false,
+      bookingDate: "",
+      docsReceived: false,
+      customsCleared: false,
+      containerReleased: false,
+      deliveryScheduled: false,
+      deliveryDate: "",
+      etaFinalProd: "",
+      cargoInspected: false,
+      invoiceSent: false,
+      paymentReceived: false,
+      docsForwarded: false,
+      fileComplete: false,
+      notes: ""
+    };
+    setImportData(prev => [...prev, newRecord]);
   };
 
   return (
@@ -100,7 +140,16 @@ const FreightTracker = () => {
                   className="text-xs md:text-sm"
                 >
                   <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Add Record
+                  Add Export Record
+                </Button>
+                <Button 
+                  onClick={addNewImportRecord} 
+                  size="sm"
+                  variant="secondary"
+                  className="text-xs md:text-sm"
+                >
+                  <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                  Add Import Record
                 </Button>
               </div>
             </div>
@@ -127,14 +176,21 @@ const FreightTracker = () => {
           </div>
 
           <div className="flex-1 overflow-hidden">
-            <Tabs defaultValue="table" className="h-full flex flex-col">
+            <Tabs defaultValue="export-table" className="h-full flex flex-col">
               <TabsList className="mx-4 md:mx-6 mt-4 bg-gray-100 p-1 rounded-lg w-fit">
                 <TabsTrigger 
-                  value="table" 
+                  value="export-table" 
                   className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
                 >
-                  <Edit3 className="w-3 h-3 md:w-4 md:h-4" />
-                  Table View
+                  <Package className="w-3 h-3 md:w-4 md:h-4" />
+                  Export Checklist
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="import-table" 
+                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
+                >
+                  <Truck className="w-3 h-3 md:w-4 md:h-4" />
+                  Import Checklist
                 </TabsTrigger>
                 <TabsTrigger 
                   value="calendar" 
@@ -145,7 +201,7 @@ const FreightTracker = () => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
+              <TabsContent value="export-table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
                 <TrackingTable 
                   data={filteredData} 
                   updateRecord={updateRecord} 
@@ -155,8 +211,18 @@ const FreightTracker = () => {
                 />
               </TabsContent>
 
+              <TabsContent value="import-table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
+                <ImportTrackingTable 
+                  data={importData} 
+                  updateRecord={updateImportRecord} 
+                  deleteRecord={deleteImportRecord}
+                  selectedRows={selectedImportRows}
+                  setSelectedRows={setSelectedImportRows}
+                />
+              </TabsContent>
+
               <TabsContent value="calendar" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <CalendarView data={filteredData} />
+                <CalendarView data={filteredData} importData={importData} />
               </TabsContent>
             </Tabs>
           </div>

@@ -1,0 +1,68 @@
+
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+
+export const sampleImportData: ImportTrackingRecord[] = [
+  {
+    id: '1',
+    customer: 'Global Imports LLC',
+    ref: 'IMP-2024-001',
+    file: 'GLB001',
+    workOrder: 'WO-IMP-001',
+    bookingConfirmed: true,
+    bookingDate: '2024-06-15',
+    docsReceived: true,
+    customsCleared: false,
+    containerReleased: false,
+    deliveryScheduled: false,
+    deliveryDate: '2024-06-25',
+    etaFinalProd: '2024-06-22',
+    cargoInspected: false,
+    invoiceSent: false,
+    paymentReceived: false,
+    docsForwarded: false,
+    fileComplete: false,
+    notes: 'Awaiting customs clearance'
+  },
+  {
+    id: '2',
+    customer: 'Pacific Trading Co',
+    ref: 'IMP-2024-002',
+    file: 'PAC002',
+    workOrder: 'WO-IMP-002',
+    bookingConfirmed: true,
+    bookingDate: '2024-06-18',
+    docsReceived: true,
+    customsCleared: true,
+    containerReleased: true,
+    deliveryScheduled: true,
+    deliveryDate: '2024-06-28',
+    etaFinalProd: '2024-06-26',
+    cargoInspected: false,
+    invoiceSent: false,
+    paymentReceived: false,
+    docsForwarded: false,
+    fileComplete: false,
+    notes: 'Ready for delivery'
+  },
+  {
+    id: '3',
+    customer: 'Coastal Logistics',
+    ref: 'IMP-2024-003',
+    file: 'COA003',
+    workOrder: 'WO-IMP-003',
+    bookingConfirmed: false,
+    bookingDate: '',
+    docsReceived: false,
+    customsCleared: false,
+    containerReleased: false,
+    deliveryScheduled: false,
+    deliveryDate: '2024-07-05',
+    etaFinalProd: '2024-07-02',
+    cargoInspected: false,
+    invoiceSent: false,
+    paymentReceived: false,
+    docsForwarded: false,
+    fileComplete: false,
+    notes: 'Pending booking confirmation'
+  }
+];
