@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -22,13 +23,14 @@ interface CalendarEvent {
 }
 
 const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
-  const events = useMemo(() => {
-    const eventList: CalendarEvent[] = [];
+  const { exportEvents, importEvents, allEvents } = useMemo(() => {
+    const exportEventList: CalendarEvent[] = [];
+    const importEventList: CalendarEvent[] = [];
     
     // Export events
     data.forEach(record => {
       if (record.dropDate) {
-        eventList.push({
+        exportEventList.push({
           date: record.dropDate,
           type: 'drop',
           customer: record.customer,
@@ -39,7 +41,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
       }
       
       if (record.returnDate) {
-        eventList.push({
+        exportEventList.push({
           date: record.returnDate,
           type: 'return',
           customer: record.customer,
@@ -50,7 +52,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
       }
       
       if (record.docCutoffDate) {
-        eventList.push({
+        exportEventList.push({
           date: record.docCutoffDate,
           type: 'cutoff',
           customer: record.customer,
@@ -64,7 +66,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
     // Import events
     importData.forEach(record => {
       if (record.etaFinalPod) {
-        eventList.push({
+        importEventList.push({
           date: record.etaFinalPod,
           type: 'eta',
           customer: record.reference,
@@ -75,7 +77,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
       }
       
       if (record.deliveryDate) {
-        eventList.push({
+        importEventList.push({
           date: record.deliveryDate,
           type: 'delivery',
           customer: record.reference,
@@ -86,16 +88,21 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
       }
     });
     
-    return eventList;
+    return {
+      exportEvents: exportEventList,
+      importEvents: importEventList,
+      allEvents: [...exportEventList, ...importEventList]
+    };
   }, [data, importData]);
 
-  const getEventsForDate = (date: Date) => {
+  const getEventsForDate = (date: Date, eventSource: 'all' | 'export' | 'import' = 'all') => {
     const dateString = date.toISOString().split('T')[0];
+    const events = eventSource === 'export' ? exportEvents : 
+                  eventSource === 'import' ? importEvents : allEvents;
     return events.filter(event => event.date === dateString);
   };
 
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
-  const selectedEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
   const getEventTypeColor = (type: string, source: string) => {
     if (source === 'export') {
@@ -140,11 +147,11 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
 
   const eventDates = useMemo(() => {
     const dates = new Set<string>();
-    events.forEach(event => {
+    allEvents.forEach(event => {
       dates.add(event.date);
     });
     return dates;
-  }, [events]);
+  }, [allEvents]);
 
   const modifiers = {
     hasEvents: (date: Date) => {
@@ -161,6 +168,44 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
       fontWeight: '500'
     }
   };
+
+  const renderEventsList = (events: CalendarEvent[], title: string) => (
+    <div className="space-y-3">
+      {events.length > 0 ? (
+        events.map((event, index) => (
+          <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Badge 
+                  variant="outline" 
+                  className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                >
+                  {getEventTypeLabel(event.type)}
+                </Badge>
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
+                >
+                  {event.source === 'export' ? 'Export' : 'Import'}
+                </Badge>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="font-medium text-gray-900">{event.customer}</div>
+              <div className="text-sm text-gray-600">{event.ref} • {event.file}</div>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="text-center py-8">
+          <div className="text-4xl mb-3">📅</div>
+          <p className="text-gray-500">
+            No {title.toLowerCase()} scheduled for this date
+          </p>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
@@ -215,43 +260,31 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <ScrollArea className="h-96">
-            {selectedEvents.length > 0 ? (
-              <div className="space-y-3">
-                {selectedEvents.map((event, index) => (
-                  <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          variant="outline" 
-                          className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                        >
-                          {getEventTypeLabel(event.type)}
-                        </Badge>
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
-                        >
-                          {event.source === 'export' ? 'Export' : 'Import'}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="font-medium text-gray-900">{event.customer}</div>
-                      <div className="text-sm text-gray-600">{event.ref} • {event.file}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-3">📅</div>
-                <p className="text-gray-500">
-                  No events scheduled for this date
-                </p>
-              </div>
-            )}
-          </ScrollArea>
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-4">
+              <TabsTrigger value="all">All Events</TabsTrigger>
+              <TabsTrigger value="export">Export Events</TabsTrigger>
+              <TabsTrigger value="import">Import Events</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="all">
+              <ScrollArea className="h-96">
+                {renderEventsList(selectedDate ? getEventsForDate(selectedDate, 'all') : [], 'events')}
+              </ScrollArea>
+            </TabsContent>
+            
+            <TabsContent value="export">
+              <ScrollArea className="h-96">
+                {renderEventsList(selectedDate ? getEventsForDate(selectedDate, 'export') : [], 'export events')}
+              </ScrollArea>
+            </TabsContent>
+            
+            <TabsContent value="import">
+              <ScrollArea className="h-96">
+                {renderEventsList(selectedDate ? getEventsForDate(selectedDate, 'import') : [], 'import events')}
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 
@@ -264,7 +297,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
         <CardContent className="p-6 pt-0">
           <ScrollArea className="h-64">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {events
+              {allEvents
                 .filter(event => new Date(event.date) >= new Date())
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                 .slice(0, 9)
@@ -296,7 +329,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                   </div>
                 ))}
             </div>
-            {events.filter(event => new Date(event.date) >= new Date()).length === 0 && (
+            {allEvents.filter(event => new Date(event.date) >= new Date()).length === 0 && (
               <div className="text-center py-8">
                 <div className="text-4xl mb-3">✅</div>
                 <p className="text-gray-500">

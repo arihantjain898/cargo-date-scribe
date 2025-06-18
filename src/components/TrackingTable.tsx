@@ -320,6 +320,9 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   <td className="p-1">{renderCell(record, 'notes')}</td>
                 </tr>
               ))}
+              <tr>
+                <td colSpan={25} className="h-12"></td>
+              </tr>
             </tbody>
           </table>
         </div>

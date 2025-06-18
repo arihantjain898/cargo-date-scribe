@@ -1,28 +1,54 @@
+
 import React, { useState } from 'react';
-import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck } from 'lucide-react';
+import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrackingTable from './TrackingTable';
 import ImportTrackingTable from './ImportTrackingTable';
+import AllFilesTable from './AllFilesTable';
 import CalendarView from './CalendarView';
 import NotificationSettings from './NotificationSettings';
 import ExcelExportDialog from './ExcelExportDialog';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { AllFilesRecord } from '../types/AllFilesRecord';
 import { sampleTrackingData } from '../data/sampleData';
 import { sampleImportData } from '../data/sampleImportData';
+import { sampleAllFilesData } from '../data/sampleAllFilesData';
 import { useExcelImport } from '../hooks/useExcelImport';
-import { useSearch } from '../hooks/useSearch';
+import { useSearch, useImportSearch } from '../hooks/useSearch';
+import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
 
 const FreightTracker = () => {
   const [data, setData] = useState<TrackingRecord[]>(sampleTrackingData);
   const [importData, setImportData] = useState<ImportTrackingRecord[]>(sampleImportData);
+  const [allFilesData, setAllFilesData] = useState<AllFilesRecord[]>(sampleAllFilesData);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
+  const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState('export-table');
 
   const { fileInputRef, importFromExcel } = useExcelImport(setData);
-  const { searchTerm, setSearchTerm, filteredData } = useSearch(data);
+  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(data);
+  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
+  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
+
+  // Get current search term and setter based on active tab
+  const getCurrentSearchProps = () => {
+    switch (activeTab) {
+      case 'export-table':
+        return { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm };
+      case 'import-table':
+        return { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm };
+      case 'all-files':
+        return { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm };
+      default:
+        return { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm };
+    }
+  };
+
+  const { searchTerm, setSearchTerm } = getCurrentSearchProps();
 
   const updateRecord = (id: string, field: keyof TrackingRecord, value: any) => {
     setData(prev => prev.map(record => 
@@ -36,6 +62,12 @@ const FreightTracker = () => {
     ));
   };
 
+  const updateAllFilesRecord = (id: string, field: keyof AllFilesRecord, value: any) => {
+    setAllFilesData(prev => prev.map(record => 
+      record.id === id ? { ...record, [field]: value } : record
+    ));
+  };
+
   const deleteRecord = (id: string) => {
     setData(prev => prev.filter(record => record.id !== id));
     setSelectedRows(prev => prev.filter(rowId => rowId !== id));
@@ -44,6 +76,11 @@ const FreightTracker = () => {
   const deleteImportRecord = (id: string) => {
     setImportData(prev => prev.filter(record => record.id !== id));
     setSelectedImportRows(prev => prev.filter(rowId => rowId !== id));
+  };
+
+  const deleteAllFilesRecord = (id: string) => {
+    setAllFilesData(prev => prev.filter(record => record.id !== id));
+    setSelectedAllFilesRows(prev => prev.filter(rowId => rowId !== id));
   };
 
   const addNewRecord = () => {
@@ -102,6 +139,43 @@ const FreightTracker = () => {
     setImportData(prev => [...prev, newRecord]);
   };
 
+  const addNewAllFilesRecord = () => {
+    const newRecord: AllFilesRecord = {
+      id: Date.now().toString(),
+      file: "ES",
+      number: "",
+      customer: "",
+      originPort: "",
+      originState: "",
+      destinationPort: "",
+      destinationCountry: "",
+      container20: "",
+      container40: "",
+      roro: "",
+      lcl: "",
+      air: "",
+      truck: "",
+      ssl: "",
+      nvo: "",
+      comments: "",
+      salesContact: ""
+    };
+    setAllFilesData(prev => [...prev, newRecord]);
+  };
+
+  const getSearchPlaceholder = () => {
+    switch (activeTab) {
+      case 'export-table':
+        return 'Search by customer, ref, file, or work order...';
+      case 'import-table':
+        return 'Search by reference, file, bond, or notes...';
+      case 'all-files':
+        return 'Search by customer, file, port, or destination...';
+      default:
+        return 'Search...';
+    }
+  };
+
   return (
     <div className="w-full min-h-screen bg-gray-50 p-2 md:p-6">
       <div className="max-w-[1600px] mx-auto">
@@ -113,7 +187,7 @@ const FreightTracker = () => {
                 <p className="text-sm md:text-base text-gray-600">Comprehensive shipment tracking and management system</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                <ExcelExportDialog data={filteredData} selectedRows={selectedRows}>
+                <ExcelExportDialog data={filteredExportData} selectedRows={selectedRows}>
                   <Button variant="outline" size="sm" className="text-xs md:text-sm">
                     <Download className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                     Export Excel
@@ -151,6 +225,15 @@ const FreightTracker = () => {
                   <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                   Add Import Record
                 </Button>
+                <Button 
+                  onClick={addNewAllFilesRecord} 
+                  size="sm"
+                  variant="outline"
+                  className="text-xs md:text-sm"
+                >
+                  <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                  Add File Record
+                </Button>
               </div>
             </div>
 
@@ -158,7 +241,7 @@ const FreightTracker = () => {
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search by customer, ref, file, or work order..."
+                  placeholder={getSearchPlaceholder()}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 text-sm"
@@ -176,7 +259,7 @@ const FreightTracker = () => {
           </div>
 
           <div className="flex-1 overflow-hidden">
-            <Tabs defaultValue="export-table" className="h-full flex flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
               <TabsList className="mx-4 md:mx-6 mt-4 bg-gray-100 p-1 rounded-lg w-fit">
                 <TabsTrigger 
                   value="export-table" 
@@ -193,6 +276,13 @@ const FreightTracker = () => {
                   Import Checklist
                 </TabsTrigger>
                 <TabsTrigger 
+                  value="all-files" 
+                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
+                >
+                  <FileText className="w-3 h-3 md:w-4 md:h-4" />
+                  All Files
+                </TabsTrigger>
+                <TabsTrigger 
                   value="calendar" 
                   className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
                 >
@@ -203,7 +293,7 @@ const FreightTracker = () => {
 
               <TabsContent value="export-table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
                 <TrackingTable 
-                  data={filteredData} 
+                  data={filteredExportData} 
                   updateRecord={updateRecord} 
                   deleteRecord={deleteRecord}
                   selectedRows={selectedRows}
@@ -213,7 +303,7 @@ const FreightTracker = () => {
 
               <TabsContent value="import-table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
                 <ImportTrackingTable 
-                  data={importData} 
+                  data={filteredImportData} 
                   updateRecord={updateImportRecord} 
                   deleteRecord={deleteImportRecord}
                   selectedRows={selectedImportRows}
@@ -221,8 +311,18 @@ const FreightTracker = () => {
                 />
               </TabsContent>
 
+              <TabsContent value="all-files" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
+                <AllFilesTable 
+                  data={filteredAllFilesData} 
+                  updateRecord={updateAllFilesRecord} 
+                  deleteRecord={deleteAllFilesRecord}
+                  selectedRows={selectedAllFilesRows}
+                  setSelectedRows={setSelectedAllFilesRows}
+                />
+              </TabsContent>
+
               <TabsContent value="calendar" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <CalendarView data={filteredData} importData={importData} />
+                <CalendarView data={filteredExportData} importData={filteredImportData} />
               </TabsContent>
             </Tabs>
           </div>

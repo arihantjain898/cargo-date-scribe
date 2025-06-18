@@ -285,6 +285,9 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                   <td className="p-1">{renderCell(record, 'notes')}</td>
                 </tr>
               ))}
+              <tr>
+                <td colSpan={21} className="h-12"></td>
+              </tr>
             </tbody>
           </table>
         </div>
