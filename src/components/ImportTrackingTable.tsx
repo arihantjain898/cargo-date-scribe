@@ -6,6 +6,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { isDateOverdue, isDateWithinDays } from '../utils/dateUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -92,6 +94,18 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
     }
   };
 
+  const getRowConditionalClasses = (record: ImportTrackingRecord): string => {
+    // ETA overdue - red tint
+    if (isDateOverdue(record.etaFinalPod)) {
+      return 'bg-red-50 border-red-200';
+    }
+    // ETA within 3 days - amber highlight
+    if (isDateWithinDays(record.etaFinalPod, 3)) {
+      return 'bg-amber-50 border-amber-200';
+    }
+    return '';
+  };
+
   const renderCell = (record: ImportTrackingRecord, field: keyof ImportTrackingRecord, isCheckbox = false, isDate = false) => {
     const isEditing = editingCell?.id === record.id && editingCell?.field === field;
     const value = record[field];
@@ -121,12 +135,45 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
     }
 
     if (isCheckbox) {
+      // Replace checkboxes with status badges
+      const getStatusLabels = (field: keyof ImportTrackingRecord) => {
+        switch (field) {
+          case 'poa':
+          case 'isf':
+          case 'packingListCommercialInvoice':
+          case 'billOfLading':
+          case 'arrivalNotice':
+            return { true: '✅ Received', false: '⚠ Missing' };
+          case 'isfFiled':
+          case 'entryFiled':
+            return { true: '✅ Filed', false: '⏳ Pending' };
+          case 'blRelease':
+          case 'customsRelease':
+            return { true: '✅ Released', false: '⏳ Pending' };
+          case 'invoiceSent':
+            return { true: '✅ Sent', false: '⏳ Pending' };
+          case 'paymentReceived':
+            return { true: '✅ Received', false: '⏳ Pending' };
+          case 'workOrderSetup':
+            return { true: '✅ Setup', false: '⏳ Pending' };
+          default:
+            return { true: '✅ Yes', false: '⚠ No' };
+        }
+      };
+
+      const labels = getStatusLabels(field);
+      const variant = Boolean(value) ? 'success' : 'default';
+      
       return (
-        <div className="flex items-center justify-center py-1">
-          <Checkbox
-            checked={Boolean(value)}
-            onCheckedChange={(checked) => updateRecord(record.id, field, checked)}
-            className="h-3 w-3 border data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+        <div 
+          className="flex items-center justify-center py-1 cursor-pointer"
+          onClick={() => updateRecord(record.id, field, !value)}
+        >
+          <StatusBadge
+            status={Boolean(value)}
+            trueLabel={labels.true}
+            falseLabel={labels.false}
+            variant={variant}
           />
         </div>
       );
@@ -139,9 +186,11 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
       >
         <span className={`text-xs truncate ${
           isDate && value ? 'text-blue-700 bg-blue-50 px-1 py-0.5 rounded text-[10px]' :
-          value ? 'text-gray-800' : 'text-gray-400 italic'
+          value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
         }`}>
-          {String(value) || 'Empty'}
+          {String(value) || (
+            <span className="text-gray-400 text-[10px] opacity-60">—</span>
+          )}
         </span>
         <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
       </div>
@@ -164,127 +213,130 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
         <div className="min-w-[2200px]">
           <table className="w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
-              <tr className="border-b-2 border-gray-500 bg-white">
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10">
+              <tr className="border-b-4 border-gray-600 bg-white">
+                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-10">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
                     className="h-3 w-3 border"
                   />
                 </th>
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12">
+                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-12">
                   Actions
                 </th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[100px]">
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[100px]">
                   Reference
                 </th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[80px]">File</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[100px]">ETA (Final POD)</th>
-                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[100px]">Bond</th>
-                <th colSpan={5} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-emerald-100">
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[80px]">File</th>
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[100px]">ETA (Final POD)</th>
+                <th className="border-r-6 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[100px]">Bond</th>
+                <th colSpan={5} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-emerald-200">
                   Documentation
                 </th>
-                <th colSpan={4} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-purple-100">
+                <th colSpan={4} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-purple-200">
                   Processing
                 </th>
-                <th colSpan={3} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-orange-100">
+                <th colSpan={3} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-orange-200">
                   Final Steps
                 </th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-pink-100 min-w-[100px]">Delivery Date</th>
-                <th className="p-1.5 text-center font-bold text-gray-900 bg-gray-100 min-w-[100px]">
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-pink-200 min-w-[100px]">Delivery Date</th>
+                <th className="p-2 text-center font-bold text-gray-900 bg-gray-200 min-w-[100px]">
                   Notes
                 </th>
               </tr>
-              <tr className="bg-white border-b-2 border-gray-400 sticky top-[33px] z-30">
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">Reference</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">File</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">ETA (Final POD)</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">Bond</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">POA</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">ISF</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[120px]">Packing List & CI</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[100px]">Bill of Lading</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[100px]">Arrival Notice</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[80px]">ISF Filed</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">Entry Filed</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">BL Release</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Customs Release</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[90px]">Invoice Sent?</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Payment Rec'd?</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">W/O Set Up</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[100px]">Delivery Date</th>
+              <tr className="bg-white border-b-2 border-gray-500 sticky top-[41px] z-30">
+                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
+                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">Reference</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">File</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">ETA (Final POD)</th>
+                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">Bond</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">POA</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">ISF</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[120px]">Packing List & CI</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[100px]">Bill of Lading</th>
+                <th className="border-r-4 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[100px]">Arrival Notice</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[80px]">ISF Filed</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">Entry Filed</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">BL Release</th>
+                <th className="border-r-4 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Customs Release</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[90px]">Invoice Sent?</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Payment Rec'd?</th>
+                <th className="border-r-4 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">W/O Set Up</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[100px]">Delivery Date</th>
                 <th className="p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Notes</th>
               </tr>
             </thead>
             <tbody>
-              {data.map((record, index) => (
-                <tr
-                  key={record.id}
-                  className={`border-b border-gray-200 transition-all duration-200 ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                  }`}
-                >
-                  <td className="p-1 text-center border-r-2 border-gray-400">
-                    <Checkbox
-                      checked={selectedRows.includes(record.id)}
-                      onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
-                      className="h-3 w-3 border"
-                    />
-                  </td>
-                  <td className="p-1 text-center border-r-2 border-gray-400">
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
-                          <Trash2 className="h-3 w-3 text-red-500" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Record</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete this record for {record.reference}? This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => deleteRecord(record.id)}
-                            className="bg-red-600 hover:bg-red-700"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </td>
-                  
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'reference')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'file')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'etaFinalPod', false, true)}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'bond')}</td>
+              {data.map((record, index) => {
+                const conditionalClasses = getRowConditionalClasses(record);
+                return (
+                  <tr
+                    key={record.id}
+                    className={`border-b-2 border-gray-300 transition-all duration-200 ${
+                      conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
+                    }`}
+                  >
+                    <td className="p-1 text-center border-r-2 border-gray-400">
+                      <Checkbox
+                        checked={selectedRows.includes(record.id)}
+                        onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
+                        className="h-3 w-3 border"
+                      />
+                    </td>
+                    <td className="p-1 text-center border-r-2 border-gray-400">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
+                            <Trash2 className="h-3 w-3 text-red-500" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Record</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete this record for {record.reference}? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteRecord(record.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </td>
+                    
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'reference')}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'file')}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'etaFinalPod', false, true)}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'bond')}</td>
 
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'poa', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'isf', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'packingListCommercialInvoice', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'billOfLading', true)}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'arrivalNotice', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'poa', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'isf', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'packingListCommercialInvoice', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'billOfLading', true)}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'arrivalNotice', true)}</td>
 
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'isfFiled', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'entryFiled', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'blRelease', true)}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'customsRelease', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'isfFiled', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'entryFiled', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'blRelease', true)}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'customsRelease', true)}</td>
 
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'invoiceSent', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'paymentReceived', true)}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'workOrderSetup', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'invoiceSent', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'paymentReceived', true)}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'workOrderSetup', true)}</td>
 
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'deliveryDate', false, true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'deliveryDate', false, true)}</td>
 
-                  <td className="p-1">{renderCell(record, 'notes')}</td>
-                </tr>
-              ))}
+                    <td className="p-1">{renderCell(record, 'notes')}</td>
+                  </tr>
+                );
+              })}
               <tr>
                 <td colSpan={21} className="h-12"></td>
               </tr>

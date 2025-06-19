@@ -22,9 +22,9 @@ export const isDateWithinDays = (dateString: string, days: number): boolean => {
 
 export const getContainerVolumeColor = (count: string): string => {
   const num = parseInt(count) || 0;
-  if (num === 0) return 'bg-gray-50';
-  if (num <= 2) return 'bg-blue-100';
-  if (num <= 5) return 'bg-blue-200';
-  if (num <= 10) return 'bg-blue-300';
-  return 'bg-blue-400';
+  if (num === 0) return 'bg-gray-200';
+  if (num <= 2) return 'bg-blue-300';
+  if (num <= 5) return 'bg-blue-400';
+  if (num <= 10) return 'bg-blue-500';
+  return 'bg-blue-600';
 };

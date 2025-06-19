@@ -21,7 +21,7 @@ import {
 
 interface AllFilesTableProps {
   data: AllFilesRecord[];
-  updateRecord: (id: string, field: keyof AllFilesRecor9d, value: any) => void;
+  updateRecord: (id: string, field: keyof AllFilesRecord, value: any) => void;
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
@@ -112,9 +112,9 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       >
         <span className={`text-xs truncate ${
           value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
-        } ${isVolumeField && value ? 'font-semibold' : ''}`}>
+        } ${isVolumeField && value ? 'font-semibold text-white' : ''}`}>
           {String(value) || (
-            <span className="text-gray-300 text-[10px]">Empty</span>
+            <span className="text-gray-400 text-[10px] opacity-60">—</span>
           )}
         </span>
         <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
@@ -128,46 +128,46 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
         <div className="min-w-[1800px]">
           <table className="w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
-              <tr className="border-b-2 border-gray-500 bg-white">
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10 sticky left-0 z-40">
+              <tr className="border-b-4 border-gray-600 bg-white">
+                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-10 sticky left-0 z-40">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
                     className="h-3 w-3 border"
                   />
                 </th>
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12 sticky left-10 z-40">Actions</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[60px] sticky left-22 z-40">File</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[80px] sticky left-[82px] z-40">Number</th>
-                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[120px] sticky left-[162px] z-40">Customer</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[100px]">Origin Port</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[90px]">Origin State</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[110px]">Destination Port</th>
-                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[120px]">Destination Country</th>
-                <th colSpan={6} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-orange-100">Container & Transport Types</th>
-                <th colSpan={2} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-pink-100">Service Providers</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-yellow-100 min-w-[100px]">Comments</th>
-                <th className="p-1.5 text-left font-bold text-gray-900 bg-gray-100 min-w-[100px]">Sales Contact</th>
+                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-12 sticky left-10 z-40">Actions</th>
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[60px] sticky left-22 z-40">File</th>
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[80px] sticky left-[82px] z-40">Number</th>
+                <th className="border-r-6 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[120px] sticky left-[162px] z-40">Customer</th>
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-green-200 min-w-[100px]">Origin Port</th>
+                <th className="border-r-6 border-gray-600 p-2 text-left font-bold text-gray-900 bg-green-200 min-w-[90px]">Origin State</th>
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-purple-200 min-w-[110px]">Destination Port</th>
+                <th className="border-r-6 border-gray-600 p-2 text-left font-bold text-gray-900 bg-purple-200 min-w-[120px]">Destination Country</th>
+                <th colSpan={6} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-orange-200">Container & Transport Types</th>
+                <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-pink-200">Service Providers</th>
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-yellow-200 min-w-[100px]">Comments</th>
+                <th className="p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Sales Contact</th>
               </tr>
-              <tr className="bg-white border-b-2 border-gray-400 sticky top-[33px] z-30">
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-10 sticky left-0 z-40">Select</th>
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-12 sticky left-10 z-40">Delete</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px] sticky left-22 z-40">File</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px] sticky left-[82px] z-40">Number</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-[162px] z-40">Customer</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
+              <tr className="bg-white border-b-2 border-gray-500 sticky top-[41px] z-30">
+                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-10 sticky left-0 z-40">Select</th>
+                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-12 sticky left-10 z-40">Delete</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px] sticky left-22 z-40">File</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px] sticky left-[82px] z-40">Number</th>
+                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-[162px] z-40">Customer</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
+                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
+                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
+                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
+                <th className="border-r-4 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
+                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
                 <th className="p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
               </tr>
             </thead>
@@ -175,7 +175,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
               {data.map((record, index) => (
                 <tr
                   key={record.id}
-                  className={`border-b border-gray-200 transition-all duration-200 ${
+                  className={`border-b-2 border-gray-300 transition-all duration-200 ${
                     index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                   }`}
                 >
@@ -216,15 +216,15 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   {/* Basic Info - Pinned */}
                   <td className="border-r-2 border-gray-400 p-1 sticky left-22 z-20 bg-inherit">{renderCell(record, 'file')}</td>
                   <td className="border-r-2 border-gray-400 p-1 sticky left-[82px] z-20 bg-inherit">{renderCell(record, 'number')}</td>
-                  <td className="border-r-4 border-gray-300 p-1 sticky left-[162px] z-20 bg-inherit">{renderCell(record, 'customer')}</td>
+                  <td className="border-r-4 border-gray-400 p-1 sticky left-[162px] z-20 bg-inherit">{renderCell(record, 'customer')}</td>
 
                   {/* Origin Info */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
+                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
 
                   {/* Destination Info */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'destinationCountry')}</td>
+                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'destinationCountry')}</td>
 
                   {/* Container & Transport Types with Volume Heatmap */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20', true)}</td>
@@ -232,11 +232,11 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro', true)}</td>
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl', true)}</td>
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air', true)}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'truck', true)}</td>
+                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'truck', true)}</td>
 
                   {/* Service Providers */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ssl')}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'nvo')}</td>
+                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'nvo')}</td>
 
                   {/* Additional Info */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'comments')}</td>
