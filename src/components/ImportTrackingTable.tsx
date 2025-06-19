@@ -1,13 +1,14 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Edit3, Save, X, Trash2 } from 'lucide-react';
+import { Edit3, Save, X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { isDateOverdue, isDateWithinDays } from '../utils/dateUtils';
+import { useTableColumnGroups, ColumnGroup } from '../hooks/useTableColumnGroups';
+import GroupedTableHeader from './GroupedTableHeader';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,10 +29,50 @@ interface ImportTrackingTableProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
+const importColumnGroups: ColumnGroup[] = [
+  {
+    id: 'required',
+    title: 'Required Documents',
+    columns: ['poa', 'isf'],
+    isCollapsed: false,
+    color: 'bg-red-600'
+  },
+  {
+    id: 'documents',
+    title: 'Documents',
+    columns: ['packingListCommercialInvoice', 'billOfLading', 'arrivalNotice'],
+    isCollapsed: false,
+    color: 'bg-blue-600'
+  },
+  {
+    id: 'filing',
+    title: 'Filing',
+    columns: ['isfFiled', 'entryFiled'],
+    isCollapsed: false,
+    color: 'bg-green-600'
+  },
+  {
+    id: 'customs',
+    title: 'Customs',
+    columns: ['blRelease', 'customsRelease'],
+    isCollapsed: false,
+    color: 'bg-purple-600'
+  },
+  {
+    id: 'billing',
+    title: 'Billing',
+    columns: ['invoiceSent', 'paymentReceived'],
+    isCollapsed: false,
+    color: 'bg-orange-600'
+  }
+];
+
 const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: ImportTrackingTableProps) => {
   const [editingCell, setEditingCell] = useState<{ id: string; field: keyof ImportTrackingRecord } | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [showScrollHint, setShowScrollHint] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { groups, toggleGroup, isColumnVisible } = useTableColumnGroups(importColumnGroups);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -96,17 +137,31 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
     return '';
   };
 
+  const pinnedColumns = (
+    <>
+      <th className="p-2 text-left border-r-2 border-gray-400 bg-gray-100 sticky left-0 z-30 w-10">
+        <Checkbox
+          checked={selectedRows.length === data.length && data.length > 0}
+          onCheckedChange={handleSelectAll}
+        />
+      </th>
+      <th className="p-2 text-center border-r-2 border-gray-400 bg-gray-100 sticky left-10 z-30 w-16">Actions</th>
+      <th className="p-2 text-left font-medium border-r-2 border-gray-400 bg-gray-100 sticky left-26 z-30 min-w-24">Reference</th>
+      <th className="p-2 text-left font-medium border-r-4 border-gray-400 bg-gray-100 sticky left-50 z-30 min-w-20">File</th>
+    </>
+  );
+
   const renderCell = (record: ImportTrackingRecord, field: keyof ImportTrackingRecord, isCheckbox = false, isDate = false) => {
     const isEditing = editingCell?.id === record.id && editingCell?.field === field;
     const value = record[field];
 
     if (isEditing) {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-8 text-sm"
+            className="h-6 text-xs"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
@@ -114,11 +169,11 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
             }}
             autoFocus
           />
-          <Button size="sm" variant="ghost" onClick={saveEdit}>
-            <Save className="h-4 w-4" />
+          <Button size="sm" variant="ghost" onClick={saveEdit} className="h-6 w-6 p-0">
+            <Save className="h-3 w-3" />
           </Button>
-          <Button size="sm" variant="ghost" onClick={cancelEdit}>
-            <X className="h-4 w-4" />
+          <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-6 w-6 p-0">
+            <X className="h-3 w-3" />
           </Button>
         </div>
       );
@@ -163,80 +218,89 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
 
     return (
       <div
-        className="group cursor-pointer hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+        className="group cursor-pointer hover:bg-blue-50 px-1 py-1 rounded transition-colors"
         onClick={() => startEdit(record.id, field, value)}
       >
         <div className="flex items-center justify-between">
-          <span className={`text-sm ${
-            isDate && value ? 'text-blue-700 bg-blue-50 px-1 rounded text-xs' :
+          <span className={`text-xs ${
+            isDate && value ? 'text-blue-700 bg-blue-50 px-1 rounded' :
             value ? 'text-gray-800' : 'text-gray-400'
           }`}>
             {String(value) || 'Empty'}
           </span>
-          <Edit3 className="h-4 w-4 opacity-0 group-hover:opacity-100 text-blue-600" />
+          <Edit3 className="h-3 w-3 opacity-0 group-hover:opacity-100 text-blue-600" />
         </div>
       </div>
     );
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-      <div className="p-4 border-b">
+    <div className="bg-white rounded-lg shadow-md border-2 border-gray-300 overflow-hidden">
+      <div className="p-4 border-b-2 border-gray-300 flex items-center justify-between">
         <h3 className="text-lg font-semibold">Import Tracking</h3>
+        {showScrollHint && (
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <ChevronLeft className="h-4 w-4" />
+            <span>Scroll horizontally to see more columns</span>
+            <ChevronRight className="h-4 w-4" />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowScrollHint(false)}
+              className="ml-2"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
       
-      <ScrollArea className="h-[600px]">
-        <table className="w-full text-sm border-collapse">
-          <thead className="bg-gray-50 sticky top-0">
-            <tr className="border-b">
-              <th className="p-3 text-left border-r border-gray-200">
-                <Checkbox
-                  checked={selectedRows.length === data.length && data.length > 0}
-                  onCheckedChange={handleSelectAll}
-                />
-              </th>
-              <th className="p-3 text-center border-r border-gray-200">Actions</th>
-              <th className="p-3 text-left font-medium border-r border-gray-200">Reference</th>
-              <th className="p-3 text-left font-medium border-r border-gray-200">File</th>
-              <th className="p-3 text-left font-medium border-r border-gray-200">ETA (Final POD)</th>
-              <th className="p-3 text-left font-medium border-r border-gray-200">Bond</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">POA</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">ISF</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">Packing List & CI</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">Bill of Lading</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">Arrival Notice</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">ISF Filed</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">Entry Filed</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">BL Release</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">Customs Release</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">Invoice Sent?</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">Payment Rec'd?</th>
-              <th className="p-3 text-center font-medium border-r border-gray-200">W/O Set Up</th>
-              <th className="p-3 text-left font-medium border-r border-gray-200">Delivery Date</th>
-              <th className="p-3 text-left font-medium">Notes</th>
-            </tr>
-          </thead>
+      <ScrollArea className="h-[600px]" ref={scrollAreaRef}>
+        <table className="w-full text-xs border-collapse border-2 border-gray-300">
+          <GroupedTableHeader 
+            groups={groups} 
+            toggleGroup={toggleGroup}
+            pinnedColumns={pinnedColumns}
+          >
+            {pinnedColumns}
+            <th className="p-2 text-left font-medium border-r border-gray-300">ETA (Final POD)</th>
+            <th className="p-2 text-left font-medium border-r-2 border-gray-400">Bond</th>
+            {isColumnVisible('poa') && <th className="p-2 text-center font-medium border-r border-gray-300">POA</th>}
+            {isColumnVisible('isf') && <th className="p-2 text-center font-medium border-r-2 border-gray-400">ISF</th>}
+            {isColumnVisible('packingListCommercialInvoice') && <th className="p-2 text-center font-medium border-r border-gray-300">Packing List & CI</th>}
+            {isColumnVisible('billOfLading') && <th className="p-2 text-center font-medium border-r border-gray-300">Bill of Lading</th>}
+            {isColumnVisible('arrivalNotice') && <th className="p-2 text-center font-medium border-r-2 border-gray-400">Arrival Notice</th>}
+            {isColumnVisible('isfFiled') && <th className="p-2 text-center font-medium border-r border-gray-300">ISF Filed</th>}
+            {isColumnVisible('entryFiled') && <th className="p-2 text-center font-medium border-r-2 border-gray-400">Entry Filed</th>}
+            {isColumnVisible('blRelease') && <th className="p-2 text-center font-medium border-r border-gray-300">BL Release</th>}
+            {isColumnVisible('customsRelease') && <th className="p-2 text-center font-medium border-r-2 border-gray-400">Customs Release</th>}
+            {isColumnVisible('invoiceSent') && <th className="p-2 text-center font-medium border-r border-gray-300">Invoice Sent?</th>}
+            {isColumnVisible('paymentReceived') && <th className="p-2 text-center font-medium border-r border-gray-300">Payment Rec'd?</th>}
+            <th className="p-2 text-center font-medium border-r border-gray-300">W/O Set Up</th>
+            <th className="p-2 text-left font-medium border-r border-gray-300">Delivery Date</th>
+            <th className="p-2 text-left font-medium">Notes</th>
+          </GroupedTableHeader>
           <tbody>
             {data.map((record, index) => {
               const conditionalClasses = getRowConditionalClasses(record);
               return (
                 <tr
                   key={record.id}
-                  className={`border-b hover:bg-gray-100 ${
+                  className={`border-b-2 border-gray-300 hover:bg-gray-100 ${
                     conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                   }`}
                 >
-                  <td className="p-3 border-r border-gray-200">
+                  <td className="p-2 border-r-2 border-gray-400 bg-gray-50 sticky left-0 z-20">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}
                       onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                     />
                   </td>
-                  <td className="p-3 text-center border-r border-gray-200">
+                  <td className="p-2 text-center border-r-2 border-gray-400 bg-gray-50 sticky left-10 z-20">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                          <Trash2 className="h-4 w-4 text-red-500" />
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
+                          <Trash2 className="h-3 w-3 text-red-500" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -258,24 +322,24 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                       </AlertDialogContent>
                     </AlertDialog>
                   </td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'reference')}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'file')}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'etaFinalPod', false, true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'bond')}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'poa', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'isf', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'packingListCommercialInvoice', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'billOfLading', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'arrivalNotice', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'isfFiled', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'entryFiled', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'blRelease', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'customsRelease', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'invoiceSent', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'paymentReceived', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'workOrderSetup', true)}</td>
-                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'deliveryDate', false, true)}</td>
-                  <td className="p-3">{renderCell(record, 'notes')}</td>
+                  <td className="p-2 border-r-2 border-gray-400 bg-gray-50 sticky left-26 z-20">{renderCell(record, 'reference')}</td>
+                  <td className="p-2 border-r-4 border-gray-400 bg-gray-50 sticky left-50 z-20">{renderCell(record, 'file')}</td>
+                  <td className="p-2 border-r border-gray-300">{renderCell(record, 'etaFinalPod', false, true)}</td>
+                  <td className="p-2 border-r-2 border-gray-400">{renderCell(record, 'bond')}</td>
+                  {isColumnVisible('poa') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'poa', true)}</td>}
+                  {isColumnVisible('isf') && <td className="p-2 border-r-2 border-gray-400">{renderCell(record, 'isf', true)}</td>}
+                  {isColumnVisible('packingListCommercialInvoice') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'packingListCommercialInvoice', true)}</td>}
+                  {isColumnVisible('billOfLading') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'billOfLading', true)}</td>}
+                  {isColumnVisible('arrivalNotice') && <td className="p-2 border-r-2 border-gray-400">{renderCell(record, 'arrivalNotice', true)}</td>}
+                  {isColumnVisible('isfFiled') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'isfFiled', true)}</td>}
+                  {isColumnVisible('entryFiled') && <td className="p-2 border-r-2 border-gray-400">{renderCell(record, 'entryFiled', true)}</td>}
+                  {isColumnVisible('blRelease') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'blRelease', true)}</td>}
+                  {isColumnVisible('customsRelease') && <td className="p-2 border-r-2 border-gray-400">{renderCell(record, 'customsRelease', true)}</td>}
+                  {isColumnVisible('invoiceSent') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'invoiceSent', true)}</td>}
+                  {isColumnVisible('paymentReceived') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'paymentReceived', true)}</td>}
+                  <td className="p-2 border-r border-gray-300">{renderCell(record, 'workOrderSetup', true)}</td>
+                  <td className="p-2 border-r border-gray-300">{renderCell(record, 'deliveryDate', false, true)}</td>
+                  <td className="p-2">{renderCell(record, 'notes')}</td>
                 </tr>
               );
             })}
