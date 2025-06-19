@@ -21,7 +21,7 @@ import {
 
 interface AllFilesTableProps {
   data: AllFilesRecord[];
-  updateRecord: (id: string, field: keyof AllFilesRecor9d, value: any) => void;
+  updateRecord: (id: string, field: keyof AllFilesRecord, value: any) => void;
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;

@@ -7,7 +7,7 @@ interface StatusBadgeProps {
   status: boolean
   trueLabel: string
   falseLabel: string
-  variant?: 'default' | 'success' | 'warning' | 'destructive'
+  variant?: 'default' | 'success' | 'destructive' | 'secondary'
 }
 
 export function StatusBadge({ status, trueLabel, falseLabel, variant = 'default' }: StatusBadgeProps) {
@@ -18,7 +18,6 @@ export function StatusBadge({ status, trueLabel, falseLabel, variant = 'default'
         className={cn(
           "text-xs font-medium",
           variant === 'success' && "bg-green-100 text-green-800 border-green-300",
-          variant === 'warning' && "bg-amber-100 text-amber-800 border-amber-300",
           variant === 'destructive' && "bg-red-100 text-red-800 border-red-300"
         )}
       >
