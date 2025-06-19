@@ -1,23 +1,76 @@
 
+# This Cloud Build configuration builds a Docker image for your static frontend
+# and deploys it to Google Cloud Run.
+
 steps:
-  # Build the Docker image from your Dockerfile
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/freight-tracker-app', '.' ]
+# Step 1: Install Node.js dependencies
+# This uses the 'npm' builder to fetch all required packages for the build.
+# This happens before the Docker build for speed if you need to run npm in the builder,
+# but for a static site, the Dockerfile handles all npm steps.
+# In this specific setup (where Dockerfile handles npm install/build), this step might be redundant if
+# your Dockerfile fully prepares the environment. However, keeping it doesn't hurt and can
+# sometimes help with caching or if you have pre-build scripts.
+- name: 'gcr.io/cloud-builders/npm'
+  id: Install Dependencies (Optional if Dockerfile handles all)
+  args: ['install']
 
-  # Push the image to Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'push', 'gcr.io/$PROJECT_ID/freight-tracker-app' ]
+# Step 2: Build the frontend application
+# This assumes your package.json has a 'build' script that compiles
+# your frontend code into the 'dist' directory.
+# Similar to Step 1, this step will be done *inside* the Dockerfile build process too.
+# For Cloud Run, the primary "build" is the Docker image itself.
+# We include these steps for clarity, but the Dockerfile's `RUN npm install` and `RUN npm run build`
+# are the ones that are ultimately used in the container image.
+- name: 'gcr.io/cloud-builders/npm'
+  id: Build Frontend (Optional if Dockerfile handles all)
+  args: ['run', 'build']
 
-  # (Optional) Deploy to Cloud Run -- uncomment if you want automatic deploy
-  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  #   entrypoint: gcloud
-  #   args: [
-  #     'run', 'deploy', 'freight-tracker-app',
-  #     '--image', 'gcr.io/$PROJECT_ID/freight-tracker-app',
-  #     '--region', 'us-central1',      # Change to your region
-  #     '--platform', 'managed',
-  #     '--allow-unauthenticated'
-  #   ]
+# Step 3: Build the Docker image
+# This uses the 'docker' builder to build your Dockerfile located in your repository root.
+# The image is tagged with your project ID and commit SHA for unique versioning.
+- name: 'gcr.io/cloud-builders/docker'
+  id: Build Docker Image
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/freight-file-tracker-v2:$COMMIT_SHA', '.']
 
-images:
-  - 'gcr.io/$PROJECT_ID/freight-tracker-app'
+# Step 4: Push the Docker image to Google Container Registry
+# This makes the built Docker image available for Cloud Run to deploy.
+- name: 'gcr.io/cloud-builders/docker'
+  id: Push Docker Image
+  args: ['push', 'gcr.io/$PROJECT_ID/freight-file-tracker-v2:$COMMIT_SHA']
+
+# Step 5: Deploy the image to Google Cloud Run
+# This step uses the 'gcloud' builder to deploy the container image to Cloud Run.
+# - 'freight-file-tracker-v2' will be the name of your Cloud Run service.
+# - '--image' specifies the image to deploy.
+# - '--region' must match the region you initialized App Engine in (or your preferred Cloud Run region).
+# - '--platform managed' is for the fully managed Cloud Run environment.
+# - '--allow-unauthenticated' makes your service publicly accessible (common for frontends).
+# - '--port 8080' is crucial: your Dockerfile must expose and listen on this port.
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  id: Deploy to Cloud Run
+  entrypoint: gcloud
+  args: [
+      'run', 'deploy', 'freight-file-tracker-v2', # This is the Cloud Run service name
+      '--image', 'gcr.io/$PROJECT_ID/freight-file-tracker-v2:$COMMIT_SHA',
+      '--region', 'us-central1', # IMPORTANT: Match your chosen region (e.g., us-central1)
+      '--platform', 'managed',
+      '--allow-unauthenticated', # Allows public access
+      '--port', '8080',         # Match the EXPOSE/CMD in your Dockerfile
+      '--quiet'
+  ]
+
+# --- Cloud Build Options ---
+
+# Define the service account that Cloud Build will use for this build.
+# This should typically be the default Cloud Build service account.
+# Replace '1234567890' with your actual Project Number.
+# You can find your Project Number in Project Settings in the GCP Console.
+serviceAccount: 'projects/596797154216/serviceAccounts/596797154216@cloudbuild.gserviceaccount.com'
+
+# Ensure logs go directly to Cloud Logging.
+# This helps prevent common logging permission issues.
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+# Increase timeout for potentially longer builds (optional, but good practice)
+timeout: 1200s # 20 minutes
