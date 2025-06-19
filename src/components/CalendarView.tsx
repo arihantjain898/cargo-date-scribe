@@ -288,10 +288,11 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
   const modifiersStyles = {
     hasEvents: {
       position: 'relative' as const,
-      backgroundColor: '#3b82f6',
+      backgroundColor: 'rgba(59, 130, 246, 0.7)',
       color: 'white',
       borderRadius: '6px',
-      fontWeight: '500'
+      fontWeight: '600',
+      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
     }
   };
 
@@ -349,12 +350,12 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
     if (!counts) return null;
     
     return (
-      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-0.5">
+      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-0.5 z-0">
         {counts.export > 0 && (
-          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full opacity-80"></div>
+          <div className="w-1.5 h-1.5 bg-white rounded-full opacity-90 shadow-sm"></div>
         )}
         {counts.import > 0 && (
-          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full opacity-80"></div>
+          <div className="w-1.5 h-1.5 bg-yellow-200 rounded-full opacity-90 shadow-sm"></div>
         )}
       </div>
     );
