@@ -1,360 +1,275 @@
-import React, { useState } from 'react';
-import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import TrackingTable from './TrackingTable';
-import ImportTrackingTable from './ImportTrackingTable';
-import AllFilesTable from './AllFilesTable';
-import CalendarView from './CalendarView';
-import NotificationSettings from './NotificationSettings';
-import ExcelExportDialog from './ExcelExportDialog';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
-import { sampleTrackingData } from '../data/sampleData';
-import { sampleImportData } from '../data/sampleImportData';
-import { sampleAllFilesData } from '../data/sampleAllFilesData';
-import { useExcelImport } from '../hooks/useExcelImport';
-import { useSearch, useImportSearch } from '../hooks/useSearch';
-import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
+import TrackingTable from './TrackingTable';
+import ImportTrackingTable from './ImportTrackingTable';
+import AllFilesTable from './AllFilesTable';
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Download, Upload, ZoomIn, ZoomOut } from 'lucide-react';
+import CalendarView from './CalendarView';
+import ExcelExportDialog from './ExcelExportDialog';
+import ExcelImportDialog from './ExcelImportDialog';
 
 const FreightTracker = () => {
-  const [data, setData] = useState<TrackingRecord[]>(sampleTrackingData);
-  const [importData, setImportData] = useState<ImportTrackingRecord[]>(sampleImportData);
-  const [allFilesData, setAllFilesData] = useState<AllFilesRecord[]>(sampleAllFilesData);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [exportData, setExportData] = useState<TrackingRecord[]>([]);
+  const [importData, setImportData] = useState<ImportTrackingRecord[]>([]);
+  const [allFilesData, setAllFilesData] = useState<AllFilesRecord[]>([]);
+  const [activeTab, setActiveTab] = useState("export");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState('export-table');
-  const [importDataType, setImportDataType] = useState<'export' | 'import' | 'all-files'>('export');
+  const [exportZoom, setExportZoom] = useState(1);
+  const [importZoom, setImportZoom] = useState(1);
+  const [allFilesZoom, setAllFilesZoom] = useState(1);
 
-  const { fileInputRef, importFromExcel } = useExcelImport(setData, setImportData, setAllFilesData);
-  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(data);
-  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
-  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
+  const filterData = useCallback((data: any[], term: string) => {
+    if (!term) return data;
+    const lowerCaseTerm = term.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(value =>
+        typeof value === 'string' && value.toLowerCase().includes(lowerCaseTerm)
+      )
+    );
+  }, []);
 
-  // Get current search term and setter based on active tab
-  const getCurrentSearchProps = () => {
-    switch (activeTab) {
-      case 'export-table':
-        return { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm };
-      case 'import-table':
-        return { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm };
-      case 'all-files':
-        return { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm };
-      default:
-        return { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm };
+  const filteredExportData = React.useMemo(() => filterData(exportData, searchTerm), [exportData, searchTerm, filterData]);
+  const filteredImportData = React.useMemo(() => filterData(importData, searchTerm), [importData, searchTerm, filterData]);
+  const filteredAllFilesData = React.useMemo(() => filterData(allFilesData, searchTerm), [allFilesData, searchTerm, filterData]);
+
+  useEffect(() => {
+    // Load data from local storage on component mount
+    const storedExportData = localStorage.getItem('exportData');
+    if (storedExportData) {
+      setExportData(JSON.parse(storedExportData));
     }
-  };
 
-  const { searchTerm, setSearchTerm } = getCurrentSearchProps();
-
-  const updateRecord = (id: string, field: keyof TrackingRecord, value: any) => {
-    setData(prev => prev.map(record => 
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-  };
-
-  const updateImportRecord = (id: string, field: keyof ImportTrackingRecord, value: any) => {
-    setImportData(prev => prev.map(record => 
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-  };
-
-  const updateAllFilesRecord = (id: string, field: keyof AllFilesRecord, value: any) => {
-    setAllFilesData(prev => prev.map(record => 
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-  };
-
-  const deleteRecord = (id: string) => {
-    setData(prev => prev.filter(record => record.id !== id));
-    setSelectedRows(prev => prev.filter(rowId => rowId !== id));
-  };
-
-  const deleteImportRecord = (id: string) => {
-    setImportData(prev => prev.filter(record => record.id !== id));
-    setSelectedImportRows(prev => prev.filter(rowId => rowId !== id));
-  };
-
-  const deleteAllFilesRecord = (id: string) => {
-    setAllFilesData(prev => prev.filter(record => record.id !== id));
-    setSelectedAllFilesRows(prev => prev.filter(rowId => rowId !== id));
-  };
-
-  const addNewRecord = () => {
-    const newRecord: TrackingRecord = {
-      id: Date.now().toString(),
-      customer: "",
-      ref: "",
-      file: "",
-      workOrder: "",
-      dropDone: false,
-      dropDate: "",
-      returnNeeded: false,
-      returnDate: "",
-      docsSent: false,
-      docsReceived: false,
-      aesMblVgmSent: false,
-      docCutoffDate: "",
-      titlesDispatched: false,
-      validatedFwd: false,
-      titlesReturned: false,
-      sslDraftInvRec: false,
-      draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: false,
-      sslPaid: false,
-      insured: false,
-      released: false,
-      docsSentToCustomer: false,
-      notes: ""
-    };
-    setData(prev => [...prev, newRecord]);
-  };
-
-  const addNewImportRecord = () => {
-    const newRecord: ImportTrackingRecord = {
-      id: Date.now().toString(),
-      reference: "",
-      file: "",
-      etaFinalPod: "",
-      bond: "",
-      poa: false,
-      isf: false,
-      packingListCommercialInvoice: false,
-      billOfLading: false,
-      arrivalNotice: false,
-      isfFiled: false,
-      entryFiled: false,
-      blRelease: false,
-      customsRelease: false,
-      invoiceSent: false,
-      paymentReceived: false,
-      workOrderSetup: false,
-      deliveryDate: "",
-      notes: ""
-    };
-    setImportData(prev => [...prev, newRecord]);
-  };
-
-  const addNewAllFilesRecord = () => {
-    const newRecord: AllFilesRecord = {
-      id: Date.now().toString(),
-      file: "ES",
-      number: "",
-      customer: "",
-      originPort: "",
-      originState: "",
-      destinationPort: "",
-      destinationCountry: "",
-      container20: "",
-      container40: "",
-      roro: "",
-      lcl: "",
-      air: "",
-      truck: "",
-      ssl: "",
-      nvo: "",
-      comments: "",
-      salesContact: ""
-    };
-    setAllFilesData(prev => [...prev, newRecord]);
-  };
-
-  const getSearchPlaceholder = () => {
-    switch (activeTab) {
-      case 'export-table':
-        return 'Search by customer, ref, file, or work order...';
-      case 'import-table':
-        return 'Search by reference, file, bond, or notes...';
-      case 'all-files':
-        return 'Search by customer, file, port, or destination...';
-      default:
-        return 'Search...';
+    const storedImportData = localStorage.getItem('importData');
+    if (storedImportData) {
+      setImportData(JSON.parse(storedImportData));
     }
-  };
 
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
+    const storedAllFilesData = localStorage.getItem('allFilesData');
+    if (storedAllFilesData) {
+      setAllFilesData(JSON.parse(storedAllFilesData));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save data to local storage whenever it changes
+    localStorage.setItem('exportData', JSON.stringify(exportData));
+    localStorage.setItem('importData', JSON.stringify(importData));
+    localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
+  }, [exportData, importData, allFilesData]);
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 p-2 md:p-6">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden">
-          <div className="bg-white border-b border-gray-200 p-4 md:p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 gap-4">
-              <div>
-                <h1 className="text-xl md:text-2xl font-semibold text-gray-900 mb-1">Freight Forwarding Tracker</h1>
-                <p className="text-sm md:text-base text-gray-600">Comprehensive shipment tracking and management system</p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                <ExcelExportDialog 
-                  exportData={filteredExportData} 
-                  importData={filteredImportData}
-                  allFilesData={filteredAllFilesData}
-                  selectedExportRows={selectedRows}
-                  selectedImportRows={selectedImportRows}
-                  selectedAllFilesRows={selectedAllFilesRows}
-                >
-                  <Button variant="outline" size="sm" className="text-xs md:text-sm">
-                    <Download className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                    Export Excel
-                  </Button>
-                </ExcelExportDialog>
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="mb-4 flex justify-between items-center">
+        <div className="w-1/2">
+          <Label htmlFor="search" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Search
+          </Label>
+          <Input
+            type="search"
+            id="search"
+            placeholder="Search files..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="mt-1"
+          />
+        </div>
+        <CalendarView exportData={exportData} importData={importData} />
+      </div>
 
-                <div className="flex items-center gap-2">
-                  <Select value={importDataType} onValueChange={(value: 'export' | 'import' | 'all-files') => setImportDataType(value)}>
-                    <SelectTrigger className="w-[140px] text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="export">Export Data</SelectItem>
-                      <SelectItem value="import">Import Data</SelectItem>
-                      <SelectItem value="all-files">All Files Data</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={handleImportClick}
-                    className="text-xs md:text-sm"
-                  >
-                    <Upload className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                    Import Excel
-                  </Button>
-                </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="export">Export Tracking</TabsTrigger>
+          <TabsTrigger value="import">Import Tracking</TabsTrigger>
+          <TabsTrigger value="all-files">All Files</TabsTrigger>
+        </TabsList>
 
-                <NotificationSettings>
-                  <Button variant="outline" size="sm" className="text-xs md:text-sm">
-                    <Bell className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                    Notifications
-                  </Button>
-                </NotificationSettings>
-                
-                <Button 
-                  onClick={addNewRecord} 
-                  size="sm"
-                  className="text-xs md:text-sm"
-                >
-                  <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Add Export Record
+        <TabsContent value="export" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <ExcelExportDialog
+                exportData={exportData}
+                importData={importData}
+                allFilesData={allFilesData}
+                selectedExportRows={selectedExportRows}
+                selectedImportRows={selectedImportRows}
+                selectedAllFilesRows={selectedAllFilesRows}
+                currentTab="export"
+              >
+                <Button variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
                 </Button>
-                <Button 
-                  onClick={addNewImportRecord} 
-                  size="sm"
-                  variant="secondary"
-                  className="text-xs md:text-sm"
-                >
-                  <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Add Import Record
+              </ExcelExportDialog>
+              <ExcelImportDialog
+                setExportData={setExportData}
+                setImportData={setImportData}
+                setAllFilesData={setAllFilesData}
+                currentTab="export"
+              >
+                <Button variant="outline" size="sm">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import
                 </Button>
-                <Button 
-                  onClick={addNewAllFilesRecord} 
-                  size="sm"
-                  variant="outline"
-                  className="text-xs md:text-sm"
-                >
-                  <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Add File Record
-                </Button>
-              </div>
+              </ExcelImportDialog>
             </div>
-
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder={getSearchPlaceholder()}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 text-sm"
-                />
-              </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setExportZoom(Math.max(0.5, exportZoom - 0.1))}
+              >
+                <ZoomOut className="w-4 h-4" />
+              </Button>
+              <span className="text-sm font-medium min-w-[60px] text-center">
+                {Math.round(exportZoom * 100)}%
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setExportZoom(Math.min(2, exportZoom + 0.1))}
+              >
+                <ZoomIn className="w-4 h-4" />
+              </Button>
             </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={(e) => importFromExcel(e, importDataType)}
-              className="hidden"
+          </div>
+          <div style={{ transform: `scale(${exportZoom})`, transformOrigin: 'top left' }}>
+            <TrackingTable
+              data={filteredExportData}
+              onDataChange={setExportData}
+              selectedRows={selectedExportRows}
+              onSelectionChange={setSelectedExportRows}
             />
           </div>
+        </TabsContent>
 
-          <div className="flex-1 overflow-hidden">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-              <TabsList className="mx-4 md:mx-6 mt-4 bg-gray-100 p-1 rounded-lg w-fit">
-                <TabsTrigger 
-                  value="export-table" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <Package className="w-3 h-3 md:w-4 md:h-4" />
-                  Export Checklist
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="import-table" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <Truck className="w-3 h-3 md:w-4 md:h-4" />
-                  Import Checklist
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="all-files" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <FileText className="w-3 h-3 md:w-4 md:h-4" />
-                  All Files
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="calendar" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <Calendar className="w-3 h-3 md:w-4 md:h-4" />
-                  Calendar View
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="export-table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <TrackingTable 
-                  data={filteredExportData} 
-                  updateRecord={updateRecord} 
-                  deleteRecord={deleteRecord}
-                  selectedRows={selectedRows}
-                  setSelectedRows={setSelectedRows}
-                />
-              </TabsContent>
-
-              <TabsContent value="import-table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <ImportTrackingTable 
-                  data={filteredImportData} 
-                  updateRecord={updateImportRecord} 
-                  deleteRecord={deleteImportRecord}
-                  selectedRows={selectedImportRows}
-                  setSelectedRows={setSelectedImportRows}
-                />
-              </TabsContent>
-
-              <TabsContent value="all-files" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <AllFilesTable 
-                  data={filteredAllFilesData} 
-                  updateRecord={updateAllFilesRecord} 
-                  deleteRecord={deleteAllFilesRecord}
-                  selectedRows={selectedAllFilesRows}
-                  setSelectedRows={setSelectedAllFilesRows}
-                />
-              </TabsContent>
-
-              <TabsContent value="calendar" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <CalendarView data={filteredExportData} importData={filteredImportData} />
-              </TabsContent>
-            </Tabs>
+        <TabsContent value="import" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <ExcelExportDialog
+                exportData={exportData}
+                importData={importData}
+                allFilesData={allFilesData}
+                selectedExportRows={selectedExportRows}
+                selectedImportRows={selectedImportRows}
+                selectedAllFilesRows={selectedAllFilesRows}
+                currentTab="import"
+              >
+                <Button variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </ExcelExportDialog>
+              <ExcelImportDialog
+                setExportData={setExportData}
+                setImportData={setImportData}
+                setAllFilesData={setAllFilesData}
+                currentTab="import"
+              >
+                <Button variant="outline" size="sm">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import
+                </Button>
+              </ExcelImportDialog>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setImportZoom(Math.max(0.5, importZoom - 0.1))}
+              >
+                <ZoomOut className="w-4 h-4" />
+              </Button>
+              <span className="text-sm font-medium min-w-[60px] text-center">
+                {Math.round(importZoom * 100)}%
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setImportZoom(Math.min(2, importZoom + 0.1))}
+              >
+                <ZoomIn className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
-        </div>
-      </div>
+          <div style={{ transform: `scale(${importZoom})`, transformOrigin: 'top left' }}>
+            <ImportTrackingTable
+              data={filteredImportData}
+              onDataChange={setImportData}
+              selectedRows={selectedImportRows}
+              onSelectionChange={setSelectedImportRows}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="all-files" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <ExcelExportDialog
+                exportData={exportData}
+                importData={importData}
+                allFilesData={allFilesData}
+                selectedExportRows={selectedExportRows}
+                selectedImportRows={selectedImportRows}
+                selectedAllFilesRows={selectedAllFilesRows}
+                currentTab="all-files"
+              >
+                <Button variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </ExcelExportDialog>
+              <ExcelImportDialog
+                setExportData={setExportData}
+                setImportData={setImportData}
+                setAllFilesData={setAllFilesData}
+                currentTab="all-files"
+              >
+                <Button variant="outline" size="sm">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import
+                </Button>
+              </ExcelImportDialog>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setAllFilesZoom(Math.max(0.5, allFilesZoom - 0.1))}
+              >
+                <ZoomOut className="w-4 h-4" />
+              </Button>
+              <span className="text-sm font-medium min-w-[60px] text-center">
+                {Math.round(allFilesZoom * 100)}%
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setAllFilesZoom(Math.min(2, allFilesZoom + 0.1))}
+              >
+                <ZoomIn className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div style={{ transform: `scale(${allFilesZoom})`, transformOrigin: 'top left' }}>
+            <AllFilesTable
+              data={filteredAllFilesData}
+              onDataChange={setAllFilesData}
+              selectedRows={selectedAllFilesRows}
+              onSelectionChange={setSelectedAllFilesRows}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
+
     </div>
   );
 };
