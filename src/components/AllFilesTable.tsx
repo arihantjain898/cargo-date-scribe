@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
+import { getContainerVolumeColor } from '../utils/dateUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,7 +21,7 @@ import {
 
 interface AllFilesTableProps {
   data: AllFilesRecord[];
-  updateRecord: (id: string, field: keyof AllFilesRecord, value: any) => void;
+  updateRecord: (id: string, field: keyof AllFilesRecor9d, value: any) => void;
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
@@ -75,7 +76,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     }
   };
 
-  const renderCell = (record: AllFilesRecord, field: keyof AllFilesRecord) => {
+  const renderCell = (record: AllFilesRecord, field: keyof AllFilesRecord, isVolumeField = false) => {
     const isEditing = editingCell?.id === record.id && editingCell?.field === field;
     const value = record[field];
 
@@ -102,13 +103,19 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       );
     }
 
+    const containerClasses = isVolumeField ? getContainerVolumeColor(String(value)) : '';
+
     return (
       <div
-        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200"
+        className={`flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200 ${containerClasses}`}
         onClick={() => startEdit(record.id, field, value)}
       >
-        <span className={`text-xs truncate ${value ? 'text-gray-800' : 'text-gray-400 italic'}`}>
-          {String(value) || 'Empty'}
+        <span className={`text-xs truncate ${
+          value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
+        } ${isVolumeField && value ? 'font-semibold' : ''}`}>
+          {String(value) || (
+            <span className="text-gray-300 text-[10px]">Empty</span>
+          )}
         </span>
         <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
       </div>
@@ -116,37 +123,52 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden relative">
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
-        <div className="min-w-[2000px]">
+        <div className="min-w-[1800px]">
           <table className="w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
               <tr className="border-b-2 border-gray-500 bg-white">
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10">
+                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10 sticky left-0 z-40">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
                     className="h-3 w-3 border"
                   />
                 </th>
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12">Actions</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[60px]">FILE</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[60px]">#</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[120px]">CUSTOMER</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[100px]">ORIGIN PORT</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[100px]">ORIGIN STATE</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-orange-100 min-w-[100px]">DESTINATION PORT</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-orange-100 min-w-[120px]">DESTINATION COUNTRY</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-yellow-100 min-w-[50px]">20'</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-yellow-100 min-w-[50px]">40'</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-yellow-100 min-w-[50px]">RoRo</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-yellow-100 min-w-[50px]">LCL</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-yellow-100 min-w-[50px]">AIR</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-yellow-100 min-w-[60px]">TRUCK</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-pink-100 min-w-[80px]">SSL</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-pink-100 min-w-[80px]">NVO</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-gray-100 min-w-[120px]">COMMENTS</th>
-                <th className="p-1.5 text-left font-bold text-gray-900 bg-red-100 min-w-[100px]">SALES CTC</th>
+                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12 sticky left-10 z-40">Actions</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[60px] sticky left-22 z-40">File</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[80px] sticky left-[82px] z-40">Number</th>
+                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[120px] sticky left-[162px] z-40">Customer</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[100px]">Origin Port</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[90px]">Origin State</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[110px]">Destination Port</th>
+                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[120px]">Destination Country</th>
+                <th colSpan={6} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-orange-100">Container & Transport Types</th>
+                <th colSpan={2} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-pink-100">Service Providers</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-yellow-100 min-w-[100px]">Comments</th>
+                <th className="p-1.5 text-left font-bold text-gray-900 bg-gray-100 min-w-[100px]">Sales Contact</th>
+              </tr>
+              <tr className="bg-white border-b-2 border-gray-400 sticky top-[33px] z-30">
+                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-10 sticky left-0 z-40">Select</th>
+                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-12 sticky left-10 z-40">Delete</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px] sticky left-22 z-40">File</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px] sticky left-[82px] z-40">Number</th>
+                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-[162px] z-40">Customer</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
+                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
+                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
+                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
+                <th className="p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
               </tr>
             </thead>
             <tbody>
@@ -157,14 +179,14 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                   }`}
                 >
-                  <td className="p-1 text-center border-r-2 border-gray-400">
+                  <td className="p-1 text-center border-r-2 border-gray-400 sticky left-0 z-20 bg-inherit">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}
                       onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                       className="h-3 w-3 border"
                     />
                   </td>
-                  <td className="p-1 text-center border-r-2 border-gray-400">
+                  <td className="p-1 text-center border-r-2 border-gray-400 sticky left-10 z-20 bg-inherit">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
@@ -191,27 +213,38 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     </AlertDialog>
                   </td>
                   
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'file')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'number')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'customer')}</td>
+                  {/* Basic Info - Pinned */}
+                  <td className="border-r-2 border-gray-400 p-1 sticky left-22 z-20 bg-inherit">{renderCell(record, 'file')}</td>
+                  <td className="border-r-2 border-gray-400 p-1 sticky left-[82px] z-20 bg-inherit">{renderCell(record, 'number')}</td>
+                  <td className="border-r-4 border-gray-300 p-1 sticky left-[162px] z-20 bg-inherit">{renderCell(record, 'customer')}</td>
+
+                  {/* Origin Info */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
+
+                  {/* Destination Info */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationCountry')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container40')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'truck')}</td>
+                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'destinationCountry')}</td>
+
+                  {/* Container & Transport Types with Volume Heatmap */}
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20', true)}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container40', true)}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro', true)}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl', true)}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air', true)}</td>
+                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'truck', true)}</td>
+
+                  {/* Service Providers */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ssl')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'nvo')}</td>
+                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'nvo')}</td>
+
+                  {/* Additional Info */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'comments')}</td>
                   <td className="p-1">{renderCell(record, 'salesContact')}</td>
                 </tr>
               ))}
               <tr>
-                <td colSpan={19} className="h-8"></td>
+                <td colSpan={20} className="h-16"></td>
               </tr>
             </tbody>
           </table>
