@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -288,11 +287,9 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
   const modifiersStyles = {
     hasEvents: {
       position: 'relative' as const,
-      backgroundColor: 'rgba(59, 130, 246, 0.7)',
-      color: 'white',
-      borderRadius: '6px',
-      fontWeight: '600',
-      textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+      backgroundColor: 'rgba(59, 130, 246, 0.15)',
+      borderBottom: '3px solid rgba(59, 130, 246, 0.8)',
+      fontWeight: '600'
     }
   };
 
@@ -435,12 +432,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
               </div>
               <div className="text-xs text-gray-500 mt-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <span>Export events</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                  <span>Import events</span>
+                  <div className="w-full h-1 bg-blue-400 rounded"></div>
+                  <span>Days with events</span>
                 </div>
               </div>
             </div>
