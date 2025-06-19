@@ -129,32 +129,28 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <table className="w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
               <tr className="border-b-4 border-gray-600 bg-white">
-                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-10 sticky left-0 z-40">
+                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-10">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
                     className="h-3 w-3 border"
                   />
                 </th>
-                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-12 sticky left-10 z-40">Actions</th>
-                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[60px] sticky left-22 z-40">File</th>
-                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[80px] sticky left-[82px] z-40">Number</th>
-                <th className="border-r-6 border-gray-600 p-2 text-left font-bold text-gray-900 bg-blue-200 min-w-[120px] sticky left-[162px] z-40">Customer</th>
-                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-green-200 min-w-[100px]">Origin Port</th>
-                <th className="border-r-6 border-gray-600 p-2 text-left font-bold text-gray-900 bg-green-200 min-w-[90px]">Origin State</th>
-                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-purple-200 min-w-[110px]">Destination Port</th>
-                <th className="border-r-6 border-gray-600 p-2 text-left font-bold text-gray-900 bg-purple-200 min-w-[120px]">Destination Country</th>
+                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
+                <th colSpan={3} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-blue-200">File Information</th>
+                <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-green-200">Route Information</th>
+                <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-purple-200">Destination</th>
                 <th colSpan={6} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-orange-200">Container & Transport Types</th>
                 <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-pink-200">Service Providers</th>
                 <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-yellow-200 min-w-[100px]">Comments</th>
                 <th className="p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Sales Contact</th>
               </tr>
               <tr className="bg-white border-b-2 border-gray-500 sticky top-[41px] z-30">
-                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-10 sticky left-0 z-40">Select</th>
-                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-12 sticky left-10 z-40">Delete</th>
-                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px] sticky left-22 z-40">File</th>
-                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px] sticky left-[82px] z-40">Number</th>
-                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-[162px] z-40">Customer</th>
+                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
+                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px]">File</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">Number</th>
+                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px]">Customer</th>
                 <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
                 <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
                 <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
@@ -179,14 +175,14 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                   }`}
                 >
-                  <td className="p-1 text-center border-r-2 border-gray-400 sticky left-0 z-20 bg-inherit">
+                  <td className="p-1 text-center border-r-2 border-gray-400">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}
                       onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                       className="h-3 w-3 border"
                     />
                   </td>
-                  <td className="p-1 text-center border-r-2 border-gray-400 sticky left-10 z-20 bg-inherit">
+                  <td className="p-1 text-center border-r-2 border-gray-400">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
@@ -213,16 +209,16 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     </AlertDialog>
                   </td>
                   
-                  {/* Basic Info - Pinned */}
-                  <td className="border-r-2 border-gray-400 p-1 sticky left-22 z-20 bg-inherit">{renderCell(record, 'file')}</td>
-                  <td className="border-r-2 border-gray-400 p-1 sticky left-[82px] z-20 bg-inherit">{renderCell(record, 'number')}</td>
-                  <td className="border-r-4 border-gray-400 p-1 sticky left-[162px] z-20 bg-inherit">{renderCell(record, 'customer')}</td>
+                  {/* File Information */}
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'file')}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'number')}</td>
+                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'customer')}</td>
 
-                  {/* Origin Info */}
+                  {/* Route Information */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
                   <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
 
-                  {/* Destination Info */}
+                  {/* Destination */}
                   <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
                   <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'destinationCountry')}</td>
 
