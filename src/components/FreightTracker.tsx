@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import TrackingTable from './TrackingTable';
 import ImportTrackingTable from './ImportTrackingTable';
 import AllFilesTable from './AllFilesTable';
@@ -28,8 +28,9 @@ const FreightTracker = () => {
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('export-table');
+  const [importDataType, setImportDataType] = useState<'export' | 'import' | 'all-files'>('export');
 
-  const { fileInputRef, importFromExcel } = useExcelImport(setData);
+  const { fileInputRef, importFromExcel } = useExcelImport(setData, setImportData, setAllFilesData);
   const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(data);
   const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
   const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
@@ -176,6 +177,10 @@ const FreightTracker = () => {
     }
   };
 
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="w-full min-h-screen bg-gray-50 p-2 md:p-6">
       <div className="max-w-[1600px] mx-auto">
@@ -187,27 +192,49 @@ const FreightTracker = () => {
                 <p className="text-sm md:text-base text-gray-600">Comprehensive shipment tracking and management system</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                <ExcelExportDialog data={filteredExportData} selectedRows={selectedRows}>
+                <ExcelExportDialog 
+                  exportData={filteredExportData} 
+                  importData={filteredImportData}
+                  allFilesData={filteredAllFilesData}
+                  selectedExportRows={selectedRows}
+                  selectedImportRows={selectedImportRows}
+                  selectedAllFilesRows={selectedAllFilesRows}
+                >
                   <Button variant="outline" size="sm" className="text-xs md:text-sm">
                     <Download className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                     Export Excel
                   </Button>
                 </ExcelExportDialog>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-xs md:text-sm"
-                >
-                  <Upload className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Import Excel
-                </Button>
+
+                <div className="flex items-center gap-2">
+                  <Select value={importDataType} onValueChange={(value: 'export' | 'import' | 'all-files') => setImportDataType(value)}>
+                    <SelectTrigger className="w-[140px] text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="export">Export Data</SelectItem>
+                      <SelectItem value="import">Import Data</SelectItem>
+                      <SelectItem value="all-files">All Files Data</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleImportClick}
+                    className="text-xs md:text-sm"
+                  >
+                    <Upload className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                    Import Excel
+                  </Button>
+                </div>
+
                 <NotificationSettings>
                   <Button variant="outline" size="sm" className="text-xs md:text-sm">
                     <Bell className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
                     Notifications
                   </Button>
                 </NotificationSettings>
+                
                 <Button 
                   onClick={addNewRecord} 
                   size="sm"
@@ -253,7 +280,7 @@ const FreightTracker = () => {
               ref={fileInputRef}
               type="file"
               accept=".xlsx,.xls"
-              onChange={importFromExcel}
+              onChange={(e) => importFromExcel(e, importDataType)}
               className="hidden"
             />
           </div>
