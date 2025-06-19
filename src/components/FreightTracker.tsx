@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TrackingRecord } from '../types/TrackingRecord';
@@ -42,39 +41,6 @@ const FreightTracker = () => {
   const filteredImportData = React.useMemo(() => filterData(importData, searchTerm), [importData, searchTerm, filterData]);
   const filteredAllFilesData = React.useMemo(() => filterData(allFilesData, searchTerm), [allFilesData, searchTerm, filterData]);
 
-  const updateExportRecord = (id: string, field: keyof TrackingRecord, value: any) => {
-    setExportData(prev => prev.map(record => 
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-  };
-
-  const updateImportRecord = (id: string, field: keyof ImportTrackingRecord, value: any) => {
-    setImportData(prev => prev.map(record => 
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-  };
-
-  const updateAllFilesRecord = (id: string, field: keyof AllFilesRecord, value: any) => {
-    setAllFilesData(prev => prev.map(record => 
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-  };
-
-  const deleteExportRecord = (id: string) => {
-    setExportData(prev => prev.filter(record => record.id !== id));
-    setSelectedExportRows(prev => prev.filter(rowId => rowId !== id));
-  };
-
-  const deleteImportRecord = (id: string) => {
-    setImportData(prev => prev.filter(record => record.id !== id));
-    setSelectedImportRows(prev => prev.filter(rowId => rowId !== id));
-  };
-
-  const deleteAllFilesRecord = (id: string) => {
-    setAllFilesData(prev => prev.filter(record => record.id !== id));
-    setSelectedAllFilesRows(prev => prev.filter(rowId => rowId !== id));
-  };
-
   useEffect(() => {
     // Load data from local storage on component mount
     const storedExportData = localStorage.getItem('exportData');
@@ -116,7 +82,7 @@ const FreightTracker = () => {
             className="mt-1"
           />
         </div>
-        <CalendarView data={exportData} importData={importData} />
+        <CalendarView exportData={exportData} importData={importData} />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -130,9 +96,9 @@ const FreightTracker = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <ExcelExportDialog
-                exportData={filteredExportData}
-                importData={filteredImportData}
-                allFilesData={filteredAllFilesData}
+                exportData={exportData}
+                importData={importData}
+                allFilesData={allFilesData}
                 selectedExportRows={selectedExportRows}
                 selectedImportRows={selectedImportRows}
                 selectedAllFilesRows={selectedAllFilesRows}
@@ -140,7 +106,7 @@ const FreightTracker = () => {
               >
                 <Button variant="outline" size="sm">
                   <Download className="w-4 h-4 mr-2" />
-                  Export Excel
+                  Export
                 </Button>
               </ExcelExportDialog>
               <ExcelImportDialog
@@ -151,7 +117,7 @@ const FreightTracker = () => {
               >
                 <Button variant="outline" size="sm">
                   <Upload className="w-4 h-4 mr-2" />
-                  Import Excel
+                  Import
                 </Button>
               </ExcelImportDialog>
             </div>
@@ -175,13 +141,12 @@ const FreightTracker = () => {
               </Button>
             </div>
           </div>
-          <div style={{ transform: `scale(${exportZoom})`, transformOrigin: 'top left', width: `${100 / exportZoom}%` }}>
+          <div style={{ transform: `scale(${exportZoom})`, transformOrigin: 'top left' }}>
             <TrackingTable
               data={filteredExportData}
-              updateRecord={updateExportRecord}
-              deleteRecord={deleteExportRecord}
+              onDataChange={setExportData}
               selectedRows={selectedExportRows}
-              setSelectedRows={setSelectedExportRows}
+              onSelectionChange={setSelectedExportRows}
             />
           </div>
         </TabsContent>
@@ -190,9 +155,9 @@ const FreightTracker = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <ExcelExportDialog
-                exportData={filteredExportData}
-                importData={filteredImportData}
-                allFilesData={filteredAllFilesData}
+                exportData={exportData}
+                importData={importData}
+                allFilesData={allFilesData}
                 selectedExportRows={selectedExportRows}
                 selectedImportRows={selectedImportRows}
                 selectedAllFilesRows={selectedAllFilesRows}
@@ -200,7 +165,7 @@ const FreightTracker = () => {
               >
                 <Button variant="outline" size="sm">
                   <Download className="w-4 h-4 mr-2" />
-                  Export Excel
+                  Export
                 </Button>
               </ExcelExportDialog>
               <ExcelImportDialog
@@ -211,7 +176,7 @@ const FreightTracker = () => {
               >
                 <Button variant="outline" size="sm">
                   <Upload className="w-4 h-4 mr-2" />
-                  Import Excel
+                  Import
                 </Button>
               </ExcelImportDialog>
             </div>
@@ -235,13 +200,12 @@ const FreightTracker = () => {
               </Button>
             </div>
           </div>
-          <div style={{ transform: `scale(${importZoom})`, transformOrigin: 'top left', width: `${100 / importZoom}%` }}>
+          <div style={{ transform: `scale(${importZoom})`, transformOrigin: 'top left' }}>
             <ImportTrackingTable
               data={filteredImportData}
-              updateRecord={updateImportRecord}
-              deleteRecord={deleteImportRecord}
+              onDataChange={setImportData}
               selectedRows={selectedImportRows}
-              setSelectedRows={setSelectedImportRows}
+              onSelectionChange={setSelectedImportRows}
             />
           </div>
         </TabsContent>
@@ -250,9 +214,9 @@ const FreightTracker = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <ExcelExportDialog
-                exportData={filteredExportData}
-                importData={filteredImportData}
-                allFilesData={filteredAllFilesData}
+                exportData={exportData}
+                importData={importData}
+                allFilesData={allFilesData}
                 selectedExportRows={selectedExportRows}
                 selectedImportRows={selectedImportRows}
                 selectedAllFilesRows={selectedAllFilesRows}
@@ -260,7 +224,7 @@ const FreightTracker = () => {
               >
                 <Button variant="outline" size="sm">
                   <Download className="w-4 h-4 mr-2" />
-                  Export Excel
+                  Export
                 </Button>
               </ExcelExportDialog>
               <ExcelImportDialog
@@ -271,7 +235,7 @@ const FreightTracker = () => {
               >
                 <Button variant="outline" size="sm">
                   <Upload className="w-4 h-4 mr-2" />
-                  Import Excel
+                  Import
                 </Button>
               </ExcelImportDialog>
             </div>
@@ -295,13 +259,12 @@ const FreightTracker = () => {
               </Button>
             </div>
           </div>
-          <div style={{ transform: `scale(${allFilesZoom})`, transformOrigin: 'top left', width: `${100 / allFilesZoom}%` }}>
+          <div style={{ transform: `scale(${allFilesZoom})`, transformOrigin: 'top left' }}>
             <AllFilesTable
               data={filteredAllFilesData}
-              updateRecord={updateAllFilesRecord}
-              deleteRecord={deleteAllFilesRecord}
+              onDataChange={setAllFilesData}
               selectedRows={selectedAllFilesRows}
-              setSelectedRows={setSelectedAllFilesRows}
+              onSelectionChange={setSelectedAllFilesRows}
             />
           </div>
         </TabsContent>
