@@ -399,9 +399,6 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
             modifiers={modifiers}
             modifiersStyles={modifiersStyles}
             className="rounded-md border border-gray-200 bg-white p-3"
-            components={{
-              DayContent: DayContent
-            }}
           />
           
           {/* Legend */}
