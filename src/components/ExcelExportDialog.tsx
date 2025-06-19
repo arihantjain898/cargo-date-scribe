@@ -4,12 +4,12 @@ import { Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 
 interface ExcelExportDialogProps {
+  activeTab: string;
   exportData: TrackingRecord[];
   importData: ImportTrackingRecord[];
   allFilesData: AllFilesRecord[];
@@ -20,6 +20,7 @@ interface ExcelExportDialogProps {
 }
 
 const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({ 
+  activeTab,
   exportData, 
   importData, 
   allFilesData,
@@ -28,22 +29,20 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
   selectedAllFilesRows,
   children 
 }) => {
-  const [selectedTab, setSelectedTab] = React.useState<string>('export');
-
   const handleExport = () => {
     let dataToExport: any[] = [];
     let filename = '';
     let selectedRows: string[] = [];
 
-    switch (selectedTab) {
-      case 'export':
+    switch (activeTab) {
+      case 'export-table':
         selectedRows = selectedExportRows;
         dataToExport = selectedRows.length > 0
           ? exportData.filter(item => selectedRows.includes(item.id))
           : exportData;
         filename = 'export_tracking_data.xlsx';
         break;
-      case 'import':
+      case 'import-table':
         selectedRows = selectedImportRows;
         dataToExport = selectedRows.length > 0
           ? importData.filter(item => selectedRows.includes(item.id))
@@ -57,10 +56,16 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
           : allFilesData;
         filename = 'all_files_data.xlsx';
         break;
+      default:
+        selectedRows = selectedExportRows;
+        dataToExport = selectedRows.length > 0
+          ? exportData.filter(item => selectedRows.includes(item.id))
+          : exportData;
+        filename = 'export_tracking_data.xlsx';
     }
 
     if (dataToExport.length === 0) {
-      alert('No records selected or available to export.');
+      alert('No records available to export.');
       return;
     }
 
@@ -71,28 +76,28 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
   };
 
   const getRecordCount = () => {
-    switch (selectedTab) {
-      case 'export':
+    switch (activeTab) {
+      case 'export-table':
         return selectedExportRows.length > 0 ? selectedExportRows.length : exportData.length;
-      case 'import':
+      case 'import-table':
         return selectedImportRows.length > 0 ? selectedImportRows.length : importData.length;
       case 'all-files':
         return selectedAllFilesRows.length > 0 ? selectedAllFilesRows.length : allFilesData.length;
       default:
-        return 0;
+        return selectedExportRows.length > 0 ? selectedExportRows.length : exportData.length;
     }
   };
 
   const getTabLabel = () => {
-    switch (selectedTab) {
-      case 'export':
+    switch (activeTab) {
+      case 'export-table':
         return 'Export Tracking';
-      case 'import':
+      case 'import-table':
         return 'Import Tracking';
       case 'all-files':
         return 'All Files';
       default:
-        return '';
+        return 'Export Tracking';
     }
   };
 
@@ -106,19 +111,6 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
           <DialogTitle>Export to Excel</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Select Data Type:</label>
-            <Select value={selectedTab} onValueChange={setSelectedTab}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose data type to export" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="export">Export Tracking Data</SelectItem>
-                <SelectItem value="import">Import Tracking Data</SelectItem>
-                <SelectItem value="all-files">All Files Data</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
           <p className="text-sm text-gray-600">
             Exporting {getRecordCount()} records from {getTabLabel()}.
           </p>
