@@ -129,32 +129,32 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       </div>
       
       <ScrollArea className="h-[600px]">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm border-collapse">
           <thead className="bg-gray-50 sticky top-0">
             <tr className="border-b">
-              <th className="p-3 text-left">
+              <th className="p-3 text-left border-r border-gray-200">
                 <Checkbox
                   checked={selectedRows.length === data.length && data.length > 0}
                   onCheckedChange={handleSelectAll}
                 />
               </th>
-              <th className="p-3 text-center">Actions</th>
-              <th className="p-3 text-left font-medium">File</th>
-              <th className="p-3 text-left font-medium">Number</th>
-              <th className="p-3 text-left font-medium">Customer</th>
-              <th className="p-3 text-left font-medium">Origin Port</th>
-              <th className="p-3 text-left font-medium">Origin State</th>
-              <th className="p-3 text-left font-medium">Destination Port</th>
-              <th className="p-3 text-left font-medium">Destination Country</th>
-              <th className="p-3 text-center font-medium">20'</th>
-              <th className="p-3 text-center font-medium">40'</th>
-              <th className="p-3 text-center font-medium">RoRo</th>
-              <th className="p-3 text-center font-medium">LCL</th>
-              <th className="p-3 text-center font-medium">Air</th>
-              <th className="p-3 text-center font-medium">Truck</th>
-              <th className="p-3 text-left font-medium">SSL</th>
-              <th className="p-3 text-left font-medium">NVO</th>
-              <th className="p-3 text-left font-medium">Comments</th>
+              <th className="p-3 text-center border-r border-gray-200">Actions</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">File</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Number</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Customer</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Origin Port</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Origin State</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Destination Port</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Destination Country</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">20'</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">40'</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">RoRo</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">LCL</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Air</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Truck</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">SSL</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">NVO</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Comments</th>
               <th className="p-3 text-left font-medium">Sales Contact</th>
             </tr>
           </thead>
@@ -162,17 +162,17 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
             {data.map((record, index) => (
               <tr
                 key={record.id}
-                className={`border-b hover:bg-gray-25 ${
-                  index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
+                className={`border-b hover:bg-gray-100 ${
+                  index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                 }`}
               >
-                <td className="p-3">
+                <td className="p-3 border-r border-gray-200">
                   <Checkbox
                     checked={selectedRows.includes(record.id)}
                     onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                   />
                 </td>
-                <td className="p-3 text-center">
+                <td className="p-3 text-center border-r border-gray-200">
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
@@ -198,22 +198,22 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     </AlertDialogContent>
                   </AlertDialog>
                 </td>
-                <td className="p-3">{renderCell(record, 'file')}</td>
-                <td className="p-3">{renderCell(record, 'number')}</td>
-                <td className="p-3">{renderCell(record, 'customer')}</td>
-                <td className="p-3">{renderCell(record, 'originPort')}</td>
-                <td className="p-3">{renderCell(record, 'originState')}</td>
-                <td className="p-3">{renderCell(record, 'destinationPort')}</td>
-                <td className="p-3">{renderCell(record, 'destinationCountry')}</td>
-                <td className="p-3">{renderCell(record, 'container20', true)}</td>
-                <td className="p-3">{renderCell(record, 'container40', true)}</td>
-                <td className="p-3">{renderCell(record, 'roro', true)}</td>
-                <td className="p-3">{renderCell(record, 'lcl', true)}</td>
-                <td className="p-3">{renderCell(record, 'air', true)}</td>
-                <td className="p-3">{renderCell(record, 'truck', true)}</td>
-                <td className="p-3">{renderCell(record, 'ssl')}</td>
-                <td className="p-3">{renderCell(record, 'nvo')}</td>
-                <td className="p-3">{renderCell(record, 'comments')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'file')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'number')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'customer')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'originPort')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'originState')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'destinationPort')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'destinationCountry')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'container20', true)}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'container40', true)}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'roro', true)}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'lcl', true)}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'air', true)}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'truck', true)}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'ssl')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'nvo')}</td>
+                <td className="p-3 border-r border-gray-200">{renderCell(record, 'comments')}</td>
                 <td className="p-3">{renderCell(record, 'salesContact')}</td>
               </tr>
             ))}

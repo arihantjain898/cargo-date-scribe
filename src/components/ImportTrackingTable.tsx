@@ -186,33 +186,33 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
       </div>
       
       <ScrollArea className="h-[600px]">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm border-collapse">
           <thead className="bg-gray-50 sticky top-0">
             <tr className="border-b">
-              <th className="p-3 text-left">
+              <th className="p-3 text-left border-r border-gray-200">
                 <Checkbox
                   checked={selectedRows.length === data.length && data.length > 0}
                   onCheckedChange={handleSelectAll}
                 />
               </th>
-              <th className="p-3 text-center">Actions</th>
-              <th className="p-3 text-left font-medium">Reference</th>
-              <th className="p-3 text-left font-medium">File</th>
-              <th className="p-3 text-left font-medium">ETA (Final POD)</th>
-              <th className="p-3 text-left font-medium">Bond</th>
-              <th className="p-3 text-center font-medium">POA</th>
-              <th className="p-3 text-center font-medium">ISF</th>
-              <th className="p-3 text-center font-medium">Packing List & CI</th>
-              <th className="p-3 text-center font-medium">Bill of Lading</th>
-              <th className="p-3 text-center font-medium">Arrival Notice</th>
-              <th className="p-3 text-center font-medium">ISF Filed</th>
-              <th className="p-3 text-center font-medium">Entry Filed</th>
-              <th className="p-3 text-center font-medium">BL Release</th>
-              <th className="p-3 text-center font-medium">Customs Release</th>
-              <th className="p-3 text-center font-medium">Invoice Sent?</th>
-              <th className="p-3 text-center font-medium">Payment Rec'd?</th>
-              <th className="p-3 text-center font-medium">W/O Set Up</th>
-              <th className="p-3 text-left font-medium">Delivery Date</th>
+              <th className="p-3 text-center border-r border-gray-200">Actions</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Reference</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">File</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">ETA (Final POD)</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Bond</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">POA</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">ISF</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Packing List & CI</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Bill of Lading</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Arrival Notice</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">ISF Filed</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Entry Filed</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">BL Release</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Customs Release</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Invoice Sent?</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Payment Rec'd?</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">W/O Set Up</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Delivery Date</th>
               <th className="p-3 text-left font-medium">Notes</th>
             </tr>
           </thead>
@@ -222,17 +222,17 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
               return (
                 <tr
                   key={record.id}
-                  className={`border-b hover:bg-gray-25 ${
-                    conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-25')
+                  className={`border-b hover:bg-gray-100 ${
+                    conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                   }`}
                 >
-                  <td className="p-3">
+                  <td className="p-3 border-r border-gray-200">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}
                       onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                     />
                   </td>
-                  <td className="p-3 text-center">
+                  <td className="p-3 text-center border-r border-gray-200">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
@@ -258,23 +258,23 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                       </AlertDialogContent>
                     </AlertDialog>
                   </td>
-                  <td className="p-3">{renderCell(record, 'reference')}</td>
-                  <td className="p-3">{renderCell(record, 'file')}</td>
-                  <td className="p-3">{renderCell(record, 'etaFinalPod', false, true)}</td>
-                  <td className="p-3">{renderCell(record, 'bond')}</td>
-                  <td className="p-3">{renderCell(record, 'poa', true)}</td>
-                  <td className="p-3">{renderCell(record, 'isf', true)}</td>
-                  <td className="p-3">{renderCell(record, 'packingListCommercialInvoice', true)}</td>
-                  <td className="p-3">{renderCell(record, 'billOfLading', true)}</td>
-                  <td className="p-3">{renderCell(record, 'arrivalNotice', true)}</td>
-                  <td className="p-3">{renderCell(record, 'isfFiled', true)}</td>
-                  <td className="p-3">{renderCell(record, 'entryFiled', true)}</td>
-                  <td className="p-3">{renderCell(record, 'blRelease', true)}</td>
-                  <td className="p-3">{renderCell(record, 'customsRelease', true)}</td>
-                  <td className="p-3">{renderCell(record, 'invoiceSent', true)}</td>
-                  <td className="p-3">{renderCell(record, 'paymentReceived', true)}</td>
-                  <td className="p-3">{renderCell(record, 'workOrderSetup', true)}</td>
-                  <td className="p-3">{renderCell(record, 'deliveryDate', false, true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'reference')}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'file')}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'etaFinalPod', false, true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'bond')}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'poa', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'isf', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'packingListCommercialInvoice', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'billOfLading', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'arrivalNotice', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'isfFiled', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'entryFiled', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'blRelease', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'customsRelease', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'invoiceSent', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'paymentReceived', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'workOrderSetup', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'deliveryDate', false, true)}</td>
                   <td className="p-3">{renderCell(record, 'notes')}</td>
                 </tr>
               );

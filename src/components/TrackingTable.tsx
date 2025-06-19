@@ -191,39 +191,39 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       </div>
       
       <ScrollArea className="h-[calc(100vh-220px)]">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm border-collapse">
           <thead className="bg-gray-50 sticky top-0">
             <tr className="border-b">
-              <th className="p-3 text-left">
+              <th className="p-3 text-left border-r border-gray-200">
                 <Checkbox
                   checked={selectedRows.length === data.length && data.length > 0}
                   onCheckedChange={handleSelectAll}
                 />
               </th>
-              <th className="p-3 text-center">Actions</th>
-              <th className="p-3 text-left font-medium">Customer</th>
-              <th className="p-3 text-left font-medium">REF #</th>
-              <th className="p-3 text-left font-medium">File #</th>
-              <th className="p-3 text-left font-medium">Work Order #</th>
-              <th className="p-3 text-center font-medium">Drop Done</th>
-              <th className="p-3 text-left font-medium">Drop Date</th>
-              <th className="p-3 text-center font-medium">Return Needed</th>
-              <th className="p-3 text-left font-medium">Return Date</th>
-              <th className="p-3 text-center font-medium">Docs Sent</th>
-              <th className="p-3 text-center font-medium">Docs Received</th>
-              <th className="p-3 text-center font-medium">AES/MBL/VGM</th>
-              <th className="p-3 text-left font-medium">Doc Cutoff Date</th>
-              <th className="p-3 text-center font-medium">Titles Dispatched</th>
-              <th className="p-3 text-center font-medium">Validated & FWD'd</th>
-              <th className="p-3 text-center font-medium">Titles Returned</th>
-              <th className="p-3 text-center font-medium">SSL Draft Inv. Rec'd</th>
-              <th className="p-3 text-center font-medium">Draft Inv. Approved</th>
-              <th className="p-3 text-center font-medium">Transphere Inv. Sent</th>
-              <th className="p-3 text-center font-medium">Payment Rec'd</th>
-              <th className="p-3 text-center font-medium">SSL Paid</th>
-              <th className="p-3 text-center font-medium">Insured</th>
-              <th className="p-3 text-center font-medium">Released</th>
-              <th className="p-3 text-center font-medium">Docs Sent to Customer</th>
+              <th className="p-3 text-center border-r border-gray-200">Actions</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Customer</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">REF #</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">File #</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Work Order #</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Drop Done</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Drop Date</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Return Needed</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Return Date</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Docs Sent</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Docs Received</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">AES/MBL/VGM</th>
+              <th className="p-3 text-left font-medium border-r border-gray-200">Doc Cutoff Date</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Titles Dispatched</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Validated & FWD'd</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Titles Returned</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">SSL Draft Inv. Rec'd</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Draft Inv. Approved</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Transphere Inv. Sent</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Payment Rec'd</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">SSL Paid</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Insured</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Released</th>
+              <th className="p-3 text-center font-medium border-r border-gray-200">Docs Sent to Customer</th>
               <th className="p-3 text-left font-medium">Notes</th>
             </tr>
           </thead>
@@ -233,17 +233,17 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
               return (
                 <tr
                   key={record.id}
-                  className={`border-b hover:bg-gray-25 ${
-                    conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-25')
+                  className={`border-b hover:bg-gray-100 ${
+                    conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                   }`}
                 >
-                  <td className="p-3">
+                  <td className="p-3 border-r border-gray-200">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}
                       onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                     />
                   </td>
-                  <td className="p-3 text-center">
+                  <td className="p-3 text-center border-r border-gray-200">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
@@ -269,29 +269,29 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       </AlertDialogContent>
                     </AlertDialog>
                   </td>
-                  <td className="p-3">{renderCell(record, 'customer')}</td>
-                  <td className="p-3">{renderCell(record, 'ref')}</td>
-                  <td className="p-3">{renderCell(record, 'file')}</td>
-                  <td className="p-3">{renderCell(record, 'workOrder')}</td>
-                  <td className="p-3">{renderCell(record, 'dropDone', true)}</td>
-                  <td className="p-3">{renderCell(record, 'dropDate', false, true)}</td>
-                  <td className="p-3">{renderCell(record, 'returnNeeded', true)}</td>
-                  <td className="p-3">{renderCell(record, 'returnDate', false, true)}</td>
-                  <td className="p-3">{renderCell(record, 'docsSent', true)}</td>
-                  <td className="p-3">{renderCell(record, 'docsReceived', true)}</td>
-                  <td className="p-3">{renderCell(record, 'aesMblVgmSent', true)}</td>
-                  <td className="p-3">{renderCell(record, 'docCutoffDate', false, true)}</td>
-                  <td className="p-3">{renderCell(record, 'titlesDispatched', true)}</td>
-                  <td className="p-3">{renderCell(record, 'validatedFwd', true)}</td>
-                  <td className="p-3">{renderCell(record, 'titlesReturned', true)}</td>
-                  <td className="p-3">{renderCell(record, 'sslDraftInvRec', true)}</td>
-                  <td className="p-3">{renderCell(record, 'draftInvApproved', true)}</td>
-                  <td className="p-3">{renderCell(record, 'transphereInvSent', true)}</td>
-                  <td className="p-3">{renderCell(record, 'paymentRec', true)}</td>
-                  <td className="p-3">{renderCell(record, 'sslPaid', true)}</td>
-                  <td className="p-3">{renderCell(record, 'insured', true)}</td>
-                  <td className="p-3">{renderCell(record, 'released', true)}</td>
-                  <td className="p-3">{renderCell(record, 'docsSentToCustomer', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'customer')}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'ref')}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'file')}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'workOrder')}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'dropDone', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'dropDate', false, true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'returnNeeded', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'returnDate', false, true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'docsSent', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'docsReceived', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'aesMblVgmSent', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'docCutoffDate', false, true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'titlesDispatched', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'validatedFwd', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'titlesReturned', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'sslDraftInvRec', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'draftInvApproved', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'transphereInvSent', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'paymentRec', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'sslPaid', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'insured', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'released', true)}</td>
+                  <td className="p-3 border-r border-gray-200">{renderCell(record, 'docsSentToCustomer', true)}</td>
                   <td className="p-3">{renderCell(record, 'notes')}</td>
                 </tr>
               );
