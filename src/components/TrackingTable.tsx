@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -30,8 +31,6 @@ interface TrackingTableProps {
 const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: TrackingTableProps) => {
   const [editingCell, setEditingCell] = useState<{ id: string; field: keyof TrackingRecord } | null>(null);
   const [editValue, setEditValue] = useState('');
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [showCustomerIndicator, setShowCustomerIndicator] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,12 +41,6 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       }
     }
   }, [data.length]);
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const scrollLeft = event.currentTarget.scrollLeft;
-    setScrollLeft(scrollLeft);
-    setShowCustomerIndicator(scrollLeft > 200);
-  };
 
   const startEdit = (id: string, field: keyof TrackingRecord, currentValue: any) => {
     setEditingCell({ id, field });
@@ -196,39 +189,31 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden relative">
-      {showCustomerIndicator && (
-        <div className="absolute top-20 left-4 z-50 bg-blue-600 text-white px-3 py-1 rounded-lg shadow-lg text-xs font-medium">
-          Viewing columns for multiple customers
-        </div>
-      )}
-      
       <ScrollArea 
         className="h-[calc(100vh-220px)] w-full" 
         ref={scrollAreaRef}
-        onScroll={handleScroll}
       >
         <div className="min-w-[2400px]">
           <table className="w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
               {/* Header Row 1 (Main Categories) */}
               <tr className="border-b-2 border-gray-500 bg-white">
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10 sticky left-0 z-40">
+                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
                     className="h-3 w-3 border"
                   />
                 </th>
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12 sticky left-10 z-40">
+                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12">
                   Actions
                 </th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[120px] sticky left-22 z-40">
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[120px]">
                   Customer
                 </th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[70px] sticky left-[142px] z-40">REF #</th>
-                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[70px] sticky left-[212px] z-40">File #</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[70px]">REF #</th>
+                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[70px]">File #</th>
                 <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[90px]">Work Order #</th>
-                {/* ... keep existing code (rest of headers) */}
                 <th colSpan={4} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-emerald-100">
                   Drop / Return
                 </th>
@@ -253,13 +238,12 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
               </tr>
               {/* Header Row 2 (Sub-categories) */}
               <tr className="bg-white border-b-2 border-gray-400 sticky top-[33px] z-30">
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-10 sticky left-0 z-40">Select</th>
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-12 sticky left-10 z-40">Delete</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-22 z-40">Customer</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[70px] sticky left-[142px] z-40">REF #</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[70px] sticky left-[212px] z-40">File #</th>
+                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
+                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px]">Customer</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[70px]">REF #</th>
+                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[70px]">File #</th>
                 <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[90px]">Work Order #</th>
-                {/* ... keep existing code (rest of sub-headers) */}
                 <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">Drop Done</th>
                 <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[90px]">Drop Date</th>
                 <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[90px]">Return Needed</th>
@@ -292,14 +276,14 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                     }`}
                   >
-                    <td className="p-1 text-center border-r-2 border-gray-400 sticky left-0 z-20 bg-inherit">
+                    <td className="p-1 text-center border-r-2 border-gray-400">
                       <Checkbox
                         checked={selectedRows.includes(record.id)}
                         onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
                         className="h-3 w-3 border"
                       />
                     </td>
-                    <td className="p-1 text-center border-r-2 border-gray-400 sticky left-10 z-20 bg-inherit">
+                    <td className="p-1 text-center border-r-2 border-gray-400">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
@@ -326,10 +310,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       </AlertDialog>
                     </td>
                     
-                    {/* Customer Info Section - Pinned */}
-                    <td className="border-r-2 border-gray-400 p-1 sticky left-22 z-20 bg-inherit">{renderCell(record, 'customer')}</td>
-                    <td className="border-r-2 border-gray-400 p-1 sticky left-[142px] z-20 bg-inherit">{renderCell(record, 'ref')}</td>
-                    <td className="border-r-4 border-gray-300 p-1 sticky left-[212px] z-20 bg-inherit">{renderCell(record, 'file')}</td>
+                    {/* Customer Info Section */}
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'customer')}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ref')}</td>
+                    <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'file')}</td>
                     <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'workOrder')}</td>
 
                     {/* Drop / Return Section */}

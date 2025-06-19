@@ -1,12 +1,15 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar } from '@/components/ui/calendar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Filter, X } from 'lucide-react';
 
 interface CalendarViewProps {
   data: TrackingRecord[];
@@ -20,9 +23,155 @@ interface CalendarEvent {
   ref: string;
   file: string;
   source: 'export' | 'import';
+  workOrder?: string;
+  originPort?: string;
+  destinationPort?: string;
+  ssl?: string;
+  nvo?: string;
+  bond?: string;
 }
 
+interface EventDetailModalProps {
+  event: CalendarEvent | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const EventDetailModal = ({ event, isOpen, onClose }: EventDetailModalProps) => {
+  if (!event) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            Event Details
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant="outline" 
+              className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+            >
+              {getEventTypeLabel(event.type)}
+            </Badge>
+            <Badge 
+              variant="outline" 
+              className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
+            >
+              {event.source === 'export' ? 'Export' : 'Import'}
+            </Badge>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <div className="font-medium text-gray-600">Customer</div>
+              <div className="text-gray-900">{event.customer}</div>
+            </div>
+            <div>
+              <div className="font-medium text-gray-600">File #</div>
+              <div className="text-gray-900">{event.file}</div>
+            </div>
+            <div>
+              <div className="font-medium text-gray-600">Reference</div>
+              <div className="text-gray-900">{event.ref}</div>
+            </div>
+            <div>
+              <div className="font-medium text-gray-600">Date</div>
+              <div className="text-gray-900">{new Date(event.date).toLocaleDateString()}</div>
+            </div>
+            
+            {event.originPort && (
+              <div>
+                <div className="font-medium text-gray-600">Origin</div>
+                <div className="text-gray-900">{event.originPort}</div>
+              </div>
+            )}
+            
+            {event.destinationPort && (
+              <div>
+                <div className="font-medium text-gray-600">Destination</div>
+                <div className="text-gray-900">{event.destinationPort}</div>
+              </div>
+            )}
+            
+            {event.ssl && (
+              <div>
+                <div className="font-medium text-gray-600">SSL</div>
+                <div className="text-gray-900">{event.ssl}</div>
+              </div>
+            )}
+            
+            {event.nvo && (
+              <div>
+                <div className="font-medium text-gray-600">NVO</div>
+                <div className="text-gray-900">{event.nvo}</div>
+              </div>
+            )}
+            
+            {event.bond && (
+              <div>
+                <div className="font-medium text-gray-600">Bond</div>
+                <div className="text-gray-900">{event.bond}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const getEventTypeColor = (type: string, source: string) => {
+  if (source === 'export') {
+    switch (type) {
+      case 'drop':
+        return 'bg-blue-100 text-blue-800 border-blue-300';
+      case 'return':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case 'cutoff':
+        return 'bg-red-100 text-red-800 border-red-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  } else {
+    switch (type) {
+      case 'eta':
+        return 'bg-purple-100 text-purple-800 border-purple-300';
+      case 'delivery':
+        return 'bg-orange-100 text-orange-800 border-orange-300';
+      default:
+        return 'bg-indigo-100 text-indigo-800 border-indigo-300';
+    }
+  }
+};
+
+const getEventTypeLabel = (type: string) => {
+  switch (type) {
+    case 'drop':
+      return 'Drop Date';
+    case 'return':
+      return 'Return Date';
+    case 'cutoff':
+      return 'Doc Cutoff';
+    case 'eta':
+      return 'ETA Final POD';
+    case 'delivery':
+      return 'Delivery Date';
+    default:
+      return type;
+  }
+};
+
 const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [calendarFilter, setCalendarFilter] = useState<'all' | 'export' | 'import'>('all');
+
   const { exportEvents, importEvents, allEvents } = useMemo(() => {
     const exportEventList: CalendarEvent[] = [];
     const importEventList: CalendarEvent[] = [];
@@ -36,7 +185,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           customer: record.customer,
           ref: record.ref,
           file: record.file,
-          source: 'export'
+          source: 'export',
+          workOrder: record.workOrder
         });
       }
       
@@ -47,7 +197,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           customer: record.customer,
           ref: record.ref,
           file: record.file,
-          source: 'export'
+          source: 'export',
+          workOrder: record.workOrder
         });
       }
       
@@ -58,7 +209,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           customer: record.customer,
           ref: record.ref,
           file: record.file,
-          source: 'export'
+          source: 'export',
+          workOrder: record.workOrder
         });
       }
     });
@@ -72,7 +224,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           customer: record.reference,
           ref: record.reference,
           file: record.file,
-          source: 'import'
+          source: 'import',
+          bond: record.bond
         });
       }
       
@@ -83,7 +236,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           customer: record.reference,
           ref: record.reference,
           file: record.file,
-          source: 'import'
+          source: 'import',
+          bond: record.bond
         });
       }
     });
@@ -104,54 +258,25 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
 
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
 
-  const getEventTypeColor = (type: string, source: string) => {
-    if (source === 'export') {
-      switch (type) {
-        case 'drop':
-          return 'bg-blue-100 text-blue-800 border-blue-300';
-        case 'return':
-          return 'bg-green-100 text-green-800 border-green-300';
-        case 'cutoff':
-          return 'bg-red-100 text-red-800 border-red-300';
-        default:
-          return 'bg-gray-100 text-gray-800 border-gray-300';
-      }
-    } else {
-      switch (type) {
-        case 'eta':
-          return 'bg-purple-100 text-purple-800 border-purple-300';
-        case 'delivery':
-          return 'bg-orange-100 text-orange-800 border-orange-300';
-        default:
-          return 'bg-indigo-100 text-indigo-800 border-indigo-300';
-      }
-    }
-  };
-
-  const getEventTypeLabel = (type: string) => {
-    switch (type) {
-      case 'drop':
-        return 'Drop Date';
-      case 'return':
-        return 'Return Date';
-      case 'cutoff':
-        return 'Doc Cutoff';
-      case 'eta':
-        return 'ETA Final POD';
-      case 'delivery':
-        return 'Delivery Date';
-      default:
-        return type;
-    }
-  };
-
   const eventDates = useMemo(() => {
-    const dates = new Set<string>();
-    allEvents.forEach(event => {
-      dates.add(event.date);
+    const dates = new Map<string, { export: number; import: number }>();
+    const eventsToProcess = calendarFilter === 'all' ? allEvents :
+                           calendarFilter === 'export' ? exportEvents : importEvents;
+                           
+    eventsToProcess.forEach(event => {
+      const date = event.date;
+      if (!dates.has(date)) {
+        dates.set(date, { export: 0, import: 0 });
+      }
+      const counts = dates.get(date)!;
+      if (event.source === 'export') {
+        counts.export++;
+      } else {
+        counts.import++;
+      }
     });
     return dates;
-  }, [allEvents]);
+  }, [allEvents, exportEvents, importEvents, calendarFilter]);
 
   const modifiers = {
     hasEvents: (date: Date) => {
@@ -162,6 +287,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
 
   const modifiersStyles = {
     hasEvents: {
+      position: 'relative' as const,
       backgroundColor: '#3b82f6',
       color: 'white',
       borderRadius: '6px',
@@ -169,11 +295,20 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
     }
   };
 
+  const handleEventClick = (event: CalendarEvent) => {
+    setSelectedEvent(event);
+    setIsEventModalOpen(true);
+  };
+
   const renderEventsList = (events: CalendarEvent[], title: string) => (
     <div className="space-y-3">
       {events.length > 0 ? (
         events.map((event, index) => (
-          <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+          <div 
+            key={index} 
+            className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+            onClick={() => handleEventClick(event)}
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Badge 
@@ -207,12 +342,56 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
     </div>
   );
 
+  const DayContent = ({ date }: { date: Date }) => {
+    const dateString = date.toISOString().split('T')[0];
+    const counts = eventDates.get(dateString);
+    
+    if (!counts) return null;
+    
+    return (
+      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-0.5 pb-0.5">
+        {counts.export > 0 && (
+          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full opacity-80"></div>
+        )}
+        {counts.import > 0 && (
+          <div className="w-1.5 h-1.5 bg-purple-400 rounded-full opacity-80"></div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
       <Card className="lg:col-span-1 shadow-sm border border-gray-200">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-medium text-gray-900">
+          <CardTitle className="text-lg font-medium text-gray-900 flex items-center justify-between">
             Calendar Overview
+            <div className="flex items-center gap-1">
+              <Button
+                variant={calendarFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCalendarFilter('all')}
+                className="text-xs px-2 py-1"
+              >
+                All
+              </Button>
+              <Button
+                variant={calendarFilter === 'export' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCalendarFilter('export')}
+                className="text-xs px-2 py-1"
+              >
+                Export
+              </Button>
+              <Button
+                variant={calendarFilter === 'import' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCalendarFilter('import')}
+                className="text-xs px-2 py-1"
+              >
+                Import
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 pt-0">
@@ -223,7 +402,12 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
             modifiers={modifiers}
             modifiersStyles={modifiersStyles}
             className="rounded-md border border-gray-200 bg-white p-3"
+            components={{
+              DayContent: DayContent
+            }}
           />
+          
+          {/* Legend */}
           <div className="mt-6 space-y-3">
             <h4 className="font-medium text-gray-800 text-sm">Event Types:</h4>
             <div className="space-y-2">
@@ -247,6 +431,16 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                 <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 justify-start text-xs block w-fit">
                   Delivery Date
                 </Badge>
+              </div>
+              <div className="text-xs text-gray-500 mt-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span>Export events</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <span>Import events</span>
+                </div>
               </div>
             </div>
           </div>
@@ -302,7 +496,11 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
                 .slice(0, 9)
                 .map((event, index) => (
-                  <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow">
+                  <div 
+                    key={index} 
+                    className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                    onClick={() => handleEventClick(event)}
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1 flex-wrap">
                         <Badge 
@@ -340,6 +538,12 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           </ScrollArea>
         </CardContent>
       </Card>
+
+      <EventDetailModal
+        event={selectedEvent}
+        isOpen={isEventModalOpen}
+        onClose={() => setIsEventModalOpen(false)}
+      />
     </div>
   );
 };
