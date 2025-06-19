@@ -4,6 +4,7 @@ import { Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
@@ -15,7 +16,6 @@ interface ExcelExportDialogProps {
   selectedExportRows: string[];
   selectedImportRows: string[];
   selectedAllFilesRows: string[];
-  currentTab: string;
   children: React.ReactNode;
 }
 
@@ -26,15 +26,16 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
   selectedExportRows, 
   selectedImportRows,
   selectedAllFilesRows,
-  currentTab,
   children 
 }) => {
+  const [selectedTab, setSelectedTab] = React.useState<string>('export');
+
   const handleExport = () => {
     let dataToExport: any[] = [];
     let filename = '';
     let selectedRows: string[] = [];
 
-    switch (currentTab) {
+    switch (selectedTab) {
       case 'export':
         selectedRows = selectedExportRows;
         dataToExport = selectedRows.length > 0
@@ -70,7 +71,7 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
   };
 
   const getRecordCount = () => {
-    switch (currentTab) {
+    switch (selectedTab) {
       case 'export':
         return selectedExportRows.length > 0 ? selectedExportRows.length : exportData.length;
       case 'import':
@@ -83,7 +84,7 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
   };
 
   const getTabLabel = () => {
-    switch (currentTab) {
+    switch (selectedTab) {
       case 'export':
         return 'Export Tracking';
       case 'import':
@@ -102,14 +103,24 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Export {getTabLabel()} to Excel</DialogTitle>
+          <DialogTitle>Export to Excel</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Select Data Type:</label>
+            <Select value={selectedTab} onValueChange={setSelectedTab}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose data type to export" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="export">Export Tracking Data</SelectItem>
+                <SelectItem value="import">Import Tracking Data</SelectItem>
+                <SelectItem value="all-files">All Files Data</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <p className="text-sm text-gray-600">
             Exporting {getRecordCount()} records from {getTabLabel()}.
-            {getRecordCount() < (currentTab === 'export' ? exportData.length : currentTab === 'import' ? importData.length : allFilesData.length) && 
-              ' (Selected rows only)'
-            }
           </p>
         </div>
         <Button onClick={handleExport}>
