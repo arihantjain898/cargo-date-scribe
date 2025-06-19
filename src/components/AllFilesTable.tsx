@@ -1,13 +1,12 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Edit3, Save, X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
-import { useTableColumnGroups, ColumnGroup } from '../hooks/useTableColumnGroups';
-import GroupedTableHeader from './GroupedTableHeader';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,42 +21,16 @@ import {
 
 interface AllFilesTableProps {
   data: AllFilesRecord[];
-  updateRecord: (id: string, field: keyof AllFilesRecord, value: any) => void;
+  updateRecord: (id: string, field: keyof AllFilesRecor9d, value: any) => void;
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const allFilesColumnGroups: ColumnGroup[] = [
-  {
-    id: 'location',
-    title: 'Location',
-    columns: ['originPort', 'originState', 'destinationPort', 'destinationCountry'],
-    isCollapsed: false,
-    color: 'bg-blue-600'
-  },
-  {
-    id: 'containers',
-    title: 'Container Types',
-    columns: ['container20', 'container40', 'roro', 'lcl', 'air', 'truck'],
-    isCollapsed: false,
-    color: 'bg-green-600'
-  },
-  {
-    id: 'contacts',
-    title: 'Contacts & Notes',
-    columns: ['ssl', 'nvo', 'comments', 'salesContact'],
-    isCollapsed: false,
-    color: 'bg-purple-600'
-  }
-];
-
 const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: AllFilesTableProps) => {
   const [editingCell, setEditingCell] = useState<{ id: string; field: keyof AllFilesRecord } | null>(null);
   const [editValue, setEditValue] = useState('');
-  const [showScrollHint, setShowScrollHint] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { groups, toggleGroup, isColumnVisible } = useTableColumnGroups(allFilesColumnGroups);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -109,22 +82,22 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     if (isEditing) {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 min-w-0 p-1">
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-6 text-xs"
+            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500"
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
               if (e.key === 'Escape') cancelEdit();
             }}
             autoFocus
           />
-          <Button size="sm" variant="ghost" onClick={saveEdit} className="h-6 w-6 p-0">
-            <Save className="h-3 w-3" />
+          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
+            <Save className="h-2 w-2 text-green-600" />
           </Button>
-          <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-6 w-6 p-0">
-            <X className="h-3 w-3" />
+          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-red-100" onClick={cancelEdit}>
+            <X className="h-2 w-2 text-red-600" />
           </Button>
         </div>
       );
@@ -134,141 +107,148 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     return (
       <div
-        className={`group cursor-pointer hover:bg-blue-50 px-1 py-1 rounded transition-colors ${containerClasses}`}
+        className={`flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200 ${containerClasses}`}
         onClick={() => startEdit(record.id, field, value)}
       >
-        <div className="flex items-center justify-between">
-          <span className={`text-xs ${
-            value ? 'text-gray-800' : 'text-gray-400'
-          } ${isVolumeField && value ? 'font-semibold' : ''}`}>
-            {String(value) || 'Empty'}
-          </span>
-          <Edit3 className="h-3 w-3 opacity-0 group-hover:opacity-100 text-blue-600" />
-        </div>
+        <span className={`text-xs truncate ${
+          value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
+        } ${isVolumeField && value ? 'font-semibold' : ''}`}>
+          {String(value) || (
+            <span className="text-gray-300 text-[10px]">Empty</span>
+          )}
+        </span>
+        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
       </div>
     );
   };
 
-  const pinnedColumns = (
-    <>
-      <th className="p-2 text-left border-r-2 border-gray-400 bg-gray-100 sticky left-0 z-30 w-10">
-        <Checkbox
-          checked={selectedRows.length === data.length && data.length > 0}
-          onCheckedChange={handleSelectAll}
-        />
-      </th>
-      <th className="p-2 text-center border-r-2 border-gray-400 bg-gray-100 sticky left-10 z-30 w-16">Actions</th>
-      <th className="p-2 text-left font-medium border-r-2 border-gray-400 bg-gray-100 sticky left-26 z-30 min-w-20">File</th>
-      <th className="p-2 text-left font-medium border-r-2 border-gray-400 bg-gray-100 sticky left-46 z-30 min-w-20">Number</th>
-      <th className="p-2 text-left font-medium border-r-2 border-gray-400 bg-gray-100 sticky left-66 z-30 min-w-24">Customer</th>
-      <th className="p-2 text-left font-medium border-r-4 border-gray-400 bg-gray-100 sticky left-90 z-30 min-w-24">Origin Port</th>
-    </>
-  );
-
   return (
-    <div className="bg-white rounded-lg shadow-md border-2 border-gray-300 overflow-hidden">
-      <div className="p-4 border-b-2 border-gray-300 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">All Files</h3>
-        {showScrollHint && (
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <ChevronLeft className="h-4 w-4" />
-            <span>Scroll horizontally to see more columns</span>
-            <ChevronRight className="h-4 w-4" />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowScrollHint(false)}
-              className="ml-2"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </div>
-      
-      <ScrollArea className="h-[600px]" ref={scrollAreaRef}>
-        <table className="w-full text-xs border-collapse border-2 border-gray-300">
-          <GroupedTableHeader 
-            groups={groups} 
-            toggleGroup={toggleGroup}
-            pinnedColumns={pinnedColumns}
-          >
-            {pinnedColumns}
-            {isColumnVisible('originState') && <th className="p-2 text-left font-medium border-r border-gray-300">Origin State</th>}
-            {isColumnVisible('destinationPort') && <th className="p-2 text-left font-medium border-r border-gray-300">Destination Port</th>}
-            {isColumnVisible('destinationCountry') && <th className="p-2 text-left font-medium border-r-2 border-gray-400">Destination Country</th>}
-            {isColumnVisible('container20') && <th className="p-2 text-center font-medium border-r border-gray-300">20'</th>}
-            {isColumnVisible('container40') && <th className="p-2 text-center font-medium border-r border-gray-300">40'</th>}
-            {isColumnVisible('roro') && <th className="p-2 text-center font-medium border-r border-gray-300">RoRo</th>}
-            {isColumnVisible('lcl') && <th className="p-2 text-center font-medium border-r border-gray-300">LCL</th>}
-            {isColumnVisible('air') && <th className="p-2 text-center font-medium border-r border-gray-300">Air</th>}
-            {isColumnVisible('truck') && <th className="p-2 text-center font-medium border-r-2 border-gray-400">Truck</th>}
-            {isColumnVisible('ssl') && <th className="p-2 text-left font-medium border-r border-gray-300">SSL</th>}
-            {isColumnVisible('nvo') && <th className="p-2 text-left font-medium border-r border-gray-300">NVO</th>}
-            {isColumnVisible('comments') && <th className="p-2 text-left font-medium border-r border-gray-300">Comments</th>}
-            {isColumnVisible('salesContact') && <th className="p-2 text-left font-medium">Sales Contact</th>}
-          </GroupedTableHeader>
-          <tbody>
-            {data.map((record, index) => (
-              <tr
-                key={record.id}
-                className={`border-b-2 border-gray-300 hover:bg-gray-100 ${
-                  index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                }`}
-              >
-                <td className="p-2 border-r-2 border-gray-400 bg-gray-50 sticky left-0 z-20">
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+      <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
+        <div className="min-w-[1800px]">
+          <table className="w-full border-collapse text-xs">
+            <thead className="sticky top-0 bg-white z-30 shadow-sm">
+              <tr className="border-b-2 border-gray-500 bg-white">
+                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10 sticky left-0 z-40">
                   <Checkbox
-                    checked={selectedRows.includes(record.id)}
-                    onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
+                    checked={selectedRows.length === data.length && data.length > 0}
+                    onCheckedChange={handleSelectAll}
+                    className="h-3 w-3 border"
                   />
-                </td>
-                <td className="p-2 text-center border-r-2 border-gray-400 bg-gray-50 sticky left-10 z-20">
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
-                        <Trash2 className="h-3 w-3 text-red-500" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Record</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => deleteRecord(record.id)}
-                          className="bg-red-600 hover:bg-red-700"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </td>
-                <td className="p-2 border-r-2 border-gray-400 bg-gray-50 sticky left-26 z-20">{renderCell(record, 'file')}</td>
-                <td className="p-2 border-r-2 border-gray-400 bg-gray-50 sticky left-46 z-20">{renderCell(record, 'number')}</td>
-                <td className="p-2 border-r-2 border-gray-400 bg-gray-50 sticky left-66 z-20">{renderCell(record, 'customer')}</td>
-                <td className="p-2 border-r-4 border-gray-400 bg-gray-50 sticky left-90 z-20">{renderCell(record, 'originPort')}</td>
-                {isColumnVisible('originState') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'originState')}</td>}
-                {isColumnVisible('destinationPort') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'destinationPort')}</td>}
-                {isColumnVisible('destinationCountry') && <td className="p-2 border-r-2 border-gray-400">{renderCell(record, 'destinationCountry')}</td>}
-                {isColumnVisible('container20') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'container20', true)}</td>}
-                {isColumnVisible('container40') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'container40', true)}</td>}
-                {isColumnVisible('roro') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'roro', true)}</td>}
-                {isColumnVisible('lcl') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'lcl', true)}</td>}
-                {isColumnVisible('air') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'air', true)}</td>}
-                {isColumnVisible('truck') && <td className="p-2 border-r-2 border-gray-400">{renderCell(record, 'truck', true)}</td>}
-                {isColumnVisible('ssl') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'ssl')}</td>}
-                {isColumnVisible('nvo') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'nvo')}</td>}
-                {isColumnVisible('comments') && <td className="p-2 border-r border-gray-300">{renderCell(record, 'comments')}</td>}
-                {isColumnVisible('salesContact') && <td className="p-2">{renderCell(record, 'salesContact')}</td>}
+                </th>
+                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12 sticky left-10 z-40">Actions</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[60px] sticky left-22 z-40">File</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[80px] sticky left-[82px] z-40">Number</th>
+                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[120px] sticky left-[162px] z-40">Customer</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[100px]">Origin Port</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[90px]">Origin State</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[110px]">Destination Port</th>
+                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[120px]">Destination Country</th>
+                <th colSpan={6} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-orange-100">Container & Transport Types</th>
+                <th colSpan={2} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-pink-100">Service Providers</th>
+                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-yellow-100 min-w-[100px]">Comments</th>
+                <th className="p-1.5 text-left font-bold text-gray-900 bg-gray-100 min-w-[100px]">Sales Contact</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+              <tr className="bg-white border-b-2 border-gray-400 sticky top-[33px] z-30">
+                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-10 sticky left-0 z-40">Select</th>
+                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-12 sticky left-10 z-40">Delete</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px] sticky left-22 z-40">File</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px] sticky left-[82px] z-40">Number</th>
+                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-[162px] z-40">Customer</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
+                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
+                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
+                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
+                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
+                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
+                <th className="p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((record, index) => (
+                <tr
+                  key={record.id}
+                  className={`border-b border-gray-200 transition-all duration-200 ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                  }`}
+                >
+                  <td className="p-1 text-center border-r-2 border-gray-400 sticky left-0 z-20 bg-inherit">
+                    <Checkbox
+                      checked={selectedRows.includes(record.id)}
+                      onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
+                      className="h-3 w-3 border"
+                    />
+                  </td>
+                  <td className="p-1 text-center border-r-2 border-gray-400 sticky left-10 z-20 bg-inherit">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
+                          <Trash2 className="h-3 w-3 text-red-500" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Record</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteRecord(record.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </td>
+                  
+                  {/* Basic Info - Pinned */}
+                  <td className="border-r-2 border-gray-400 p-1 sticky left-22 z-20 bg-inherit">{renderCell(record, 'file')}</td>
+                  <td className="border-r-2 border-gray-400 p-1 sticky left-[82px] z-20 bg-inherit">{renderCell(record, 'number')}</td>
+                  <td className="border-r-4 border-gray-300 p-1 sticky left-[162px] z-20 bg-inherit">{renderCell(record, 'customer')}</td>
+
+                  {/* Origin Info */}
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
+
+                  {/* Destination Info */}
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
+                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'destinationCountry')}</td>
+
+                  {/* Container & Transport Types with Volume Heatmap */}
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20', true)}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container40', true)}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro', true)}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl', true)}</td>
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air', true)}</td>
+                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'truck', true)}</td>
+
+                  {/* Service Providers */}
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ssl')}</td>
+                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'nvo')}</td>
+
+                  {/* Additional Info */}
+                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'comments')}</td>
+                  <td className="p-1">{renderCell(record, 'salesContact')}</td>
+                </tr>
+              ))}
+              <tr>
+                <td colSpan={20} className="h-16"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
