@@ -7,6 +7,9 @@ import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { isDateOverdue, isDateWithinDays } from '../utils/dateUtils';
+import { useTableColumns, ColumnConfig } from '../hooks/useTableColumns';
+import TableColumnManager from './TableColumnManager';
+import ResizableTableHeader from './ResizableTableHeader';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,9 +33,45 @@ interface TrackingTableProps {
 const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: TrackingTableProps) => {
   const [editingCell, setEditingCell] = useState<{ id: string; field: keyof TrackingRecord } | null>(null);
   const [editValue, setEditValue] = useState('');
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [showCustomerIndicator, setShowCustomerIndicator] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const initialColumns: ColumnConfig[] = [
+    { id: 'customer', label: 'Customer', visible: true, width: 100, minWidth: 80 },
+    { id: 'ref', label: 'REF #', visible: true, width: 60, minWidth: 50 },
+    { id: 'file', label: 'File #', visible: true, width: 60, minWidth: 50 },
+    { id: 'workOrder', label: 'Work Order #', visible: true, width: 80, minWidth: 70 },
+    { id: 'dropDone', label: 'Drop Done', visible: true, width: 60, minWidth: 50, group: 'Drop / Return' },
+    { id: 'dropDate', label: 'Drop Date', visible: true, width: 80, minWidth: 70, group: 'Drop / Return' },
+    { id: 'returnNeeded', label: 'Return Needed', visible: true, width: 80, minWidth: 70, group: 'Drop / Return' },
+    { id: 'returnDate', label: 'Return Date', visible: true, width: 80, minWidth: 70, group: 'Drop / Return' },
+    { id: 'docsSent', label: 'Docs Sent', visible: true, width: 60, minWidth: 50, group: 'Documents' },
+    { id: 'docsReceived', label: 'Docs Received', visible: true, width: 80, minWidth: 70, group: 'Documents' },
+    { id: 'aesMblVgmSent', label: 'AES/MBL/VGM', visible: true, width: 90, minWidth: 80, group: 'Documents' },
+    { id: 'docCutoffDate', label: 'Doc Cutoff Date', visible: true, width: 90, minWidth: 80, group: 'Documents' },
+    { id: 'titlesDispatched', label: 'Titles Dispatched', visible: true, width: 80, minWidth: 70, group: 'Titles' },
+    { id: 'validatedFwd', label: 'Validated & FWD\'d', visible: true, width: 80, minWidth: 70, group: 'Titles' },
+    { id: 'titlesReturned', label: 'Titles Returned', visible: true, width: 80, minWidth: 70, group: 'Titles' },
+    { id: 'sslDraftInvRec', label: 'SSL Draft Inv. Rec\'d', visible: true, width: 90, minWidth: 80, group: 'Invoicing' },
+    { id: 'draftInvApproved', label: 'Draft Inv. Approved', visible: true, width: 90, minWidth: 80, group: 'Invoicing' },
+    { id: 'transphereInvSent', label: 'Transphere Inv. Sent', visible: true, width: 100, minWidth: 90, group: 'Invoicing' },
+    { id: 'paymentRec', label: 'Payment Rec\'d', visible: true, width: 80, minWidth: 70, group: 'Payment' },
+    { id: 'sslPaid', label: 'SSL Paid', visible: true, width: 60, minWidth: 50, group: 'Payment' },
+    { id: 'insured', label: 'Insured', visible: true, width: 60, minWidth: 50, group: 'Final Steps' },
+    { id: 'released', label: 'Released', visible: true, width: 60, minWidth: 50, group: 'Final Steps' },
+    { id: 'docsSentToCustomer', label: 'Docs Sent to Customer', visible: true, width: 100, minWidth: 90, group: 'Final Steps' },
+    { id: 'notes', label: 'Notes', visible: true, width: 80, minWidth: 70 },
+  ];
+
+  const {
+    columns,
+    collapsedGroups,
+    toggleColumnVisibility,
+    updateColumnWidth,
+    toggleGroup,
+    getVisibleColumns
+  } = useTableColumns(initialColumns);
+
+  const visibleColumns = getVisibleColumns();
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -42,12 +81,6 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       }
     }
   }, [data.length]);
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const scrollLeft = event.currentTarget.scrollLeft;
-    setScrollLeft(scrollLeft);
-    setShowCustomerIndicator(scrollLeft > 200);
-  };
 
   const startEdit = (id: string, field: keyof TrackingRecord, currentValue: any) => {
     setEditingCell({ id, field });
@@ -95,11 +128,9 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   };
 
   const getRowConditionalClasses = (record: TrackingRecord): string => {
-    // Drop date overdue - red tint
     if (isDateOverdue(record.dropDate)) {
       return 'bg-red-50 border-red-200';
     }
-    // Return date within 3 days - amber highlight
     if (isDateWithinDays(record.returnDate, 3)) {
       return 'bg-amber-50 border-amber-200';
     }
@@ -112,11 +143,11 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     if (isEditing) {
       return (
-        <div className="flex items-center gap-1 min-w-0 p-1">
+        <div className="flex items-center gap-1 min-w-0 px-1">
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500"
+            className="h-4 text-[10px] min-w-0 flex-1 border-blue-300 focus:border-blue-500"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
@@ -124,10 +155,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
             }}
             autoFocus
           />
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
+          <Button size="sm" variant="ghost" className="h-3 w-3 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
             <Save className="h-2 w-2 text-green-600" />
           </Button>
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-red-100" onClick={cancelEdit}>
+          <Button size="sm" variant="ghost" className="h-3 w-3 p-0 shrink-0 hover:bg-red-100" onClick={cancelEdit}>
             <X className="h-2 w-2 text-red-600" />
           </Button>
         </div>
@@ -135,7 +166,6 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     }
 
     if (isCheckbox) {
-      // Replace checkboxes with status badges
       const getStatusLabels = (field: keyof TrackingRecord) => {
         switch (field) {
           case 'dropDone': return { true: 'Dropped', false: 'Pending' };
@@ -163,7 +193,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       
       return (
         <div 
-          className="flex items-center justify-center py-1 cursor-pointer"
+          className="flex items-center justify-center cursor-pointer"
           onClick={() => updateRecord(record.id, field, !value)}
         >
           <StatusBadge
@@ -178,108 +208,83 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     return (
       <div
-        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200"
+        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1 rounded transition-all duration-200 min-h-[20px] border border-transparent hover:border-blue-200"
         onClick={() => startEdit(record.id, field, value)}
       >
-        <span className={`text-xs truncate ${
-          isDate && value ? 'text-blue-700 bg-blue-50 px-1 py-0.5 rounded text-[10px]' :
-          value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
+        <span className={`text-[10px] truncate ${
+          isDate && value ? 'text-blue-700 bg-blue-50 px-1 rounded text-[9px]' :
+          value ? 'text-gray-800' : 'text-gray-300 opacity-50'
         }`}>
-          {String(value) || (
-            <span className="text-gray-300 text-[10px]">Empty</span>
-          )}
+          {String(value) || ''}
         </span>
-        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
+        <Edit3 className="h-2 w-2 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
       </div>
     );
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden relative">
-      {showCustomerIndicator && (
-        <div className="absolute top-20 left-4 z-50 bg-blue-600 text-white px-3 py-1 rounded-lg shadow-lg text-xs font-medium">
-          Viewing columns for multiple customers
-        </div>
-      )}
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+      <div className="p-2 border-b flex justify-between items-center">
+        <h3 className="text-sm font-medium">Export Tracking</h3>
+        <TableColumnManager
+          columns={columns}
+          collapsedGroups={collapsedGroups}
+          onToggleColumn={toggleColumnVisibility}
+          onToggleGroup={toggleGroup}
+        />
+      </div>
       
-      <ScrollArea 
-        className="h-[calc(100vh-220px)] w-full" 
-        ref={scrollAreaRef}
-        onScroll={handleScroll}
-      >
-        <div className="min-w-[2400px]">
-          <table className="w-full border-collapse text-xs">
+      <ScrollArea className="h-[calc(100vh-220px)] w-full" ref={scrollAreaRef}>
+        <div style={{ minWidth: `${visibleColumns.reduce((sum, col) => sum + col.width, 100)}px` }}>
+          <table className="w-full border-collapse text-[10px]">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
-              {/* Header Row 1 (Main Categories) */}
-              <tr className="border-b-2 border-gray-500 bg-white">
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10 sticky left-0 z-40">
+              <tr className="border-b border-gray-300 bg-white">
+                <th className="bg-gray-100 border-r border-gray-300 p-1 text-center font-bold text-gray-900 w-8 sticky left-0 z-40">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
-                    className="h-3 w-3 border"
+                    className="h-3 w-3"
                   />
                 </th>
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12 sticky left-10 z-40">
-                  Actions
+                <th className="bg-gray-100 border-r border-gray-300 p-1 text-center font-bold text-gray-900 w-10 sticky left-8 z-40">
+                  Del
                 </th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[120px] sticky left-22 z-40">
+                <ResizableTableHeader
+                  width={100}
+                  minWidth={80}
+                  onResize={() => {}}
+                  className="bg-blue-100 border-r border-gray-300 p-1 text-left font-bold text-gray-900 sticky left-18 z-40"
+                >
                   Customer
-                </th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[70px] sticky left-[142px] z-40">REF #</th>
-                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[70px] sticky left-[212px] z-40">File #</th>
-                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[90px]">Work Order #</th>
-                {/* ... keep existing code (rest of headers) */}
-                <th colSpan={4} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-emerald-100">
-                  Drop / Return
-                </th>
-                <th colSpan={4} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-purple-100">
-                  Documents
-                </th>
-                <th colSpan={3} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-orange-100">
-                  Titles
-                </th>
-                <th colSpan={3} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-pink-100">
-                  Invoicing
-                </th>
-                <th colSpan={2} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-yellow-100">
-                  Payment
-                </th>
-                <th colSpan={3} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-red-100">
-                  Final Steps
-                </th>
-                <th className="p-1.5 text-center font-bold text-gray-900 bg-gray-100 min-w-[100px]">
-                  Notes
-                </th>
-              </tr>
-              {/* Header Row 2 (Sub-categories) */}
-              <tr className="bg-white border-b-2 border-gray-400 sticky top-[33px] z-30">
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-10 sticky left-0 z-40">Select</th>
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-12 sticky left-10 z-40">Delete</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-22 z-40">Customer</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[70px] sticky left-[142px] z-40">REF #</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[70px] sticky left-[212px] z-40">File #</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[90px]">Work Order #</th>
-                {/* ... keep existing code (rest of sub-headers) */}
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">Drop Done</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[90px]">Drop Date</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[90px]">Return Needed</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[90px]">Return Date</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[70px]">Docs Sent</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">Docs Received</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">AES/MBL/VGM</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Doc Cutoff Date</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">Titles Dispatched</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">Validated & FWD'd</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">Titles Returned</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[110px]">SSL Draft Inv. Rec'd</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[110px]">Draft Inv. Approved</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">Transphere Inv. Sent</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[90px]">Payment Rec'd</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[70px]">SSL Paid</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-red-50 min-w-[70px]">Insured</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-red-50 min-w-[70px]">Released</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-red-50 min-w-[120px]">Docs Sent to Customer</th>
-                <th className="p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Notes</th>
+                </ResizableTableHeader>
+                <ResizableTableHeader
+                  width={60}
+                  minWidth={50}
+                  onResize={() => {}}
+                  className="bg-blue-100 border-r border-gray-300 p-1 text-left font-bold text-gray-900 sticky left-[118px] z-40"
+                >
+                  REF #
+                </ResizableTableHeader>
+                <ResizableTableHeader
+                  width={60}
+                  minWidth={50}
+                  onResize={() => {}}
+                  className="bg-blue-100 border-r-2 border-gray-500 p-1 text-left font-bold text-gray-900 sticky left-[178px] z-40"
+                >
+                  File #
+                </ResizableTableHeader>
+                
+                {visibleColumns.filter(col => !['customer', 'ref', 'file'].includes(col.id)).map((column) => (
+                  <ResizableTableHeader
+                    key={column.id}
+                    width={column.width}
+                    minWidth={column.minWidth}
+                    onResize={(width) => updateColumnWidth(column.id, width)}
+                    className="border-r border-gray-300 p-1 text-center font-bold text-gray-900 bg-gray-50"
+                  >
+                    {column.label}
+                  </ResizableTableHeader>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -288,22 +293,22 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 return (
                   <tr
                     key={record.id}
-                    className={`border-b border-gray-200 transition-all duration-200 ${
-                      conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
+                    className={`border-b border-gray-100 transition-all duration-200 ${
+                      conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-25')
                     }`}
                   >
-                    <td className="p-1 text-center border-r-2 border-gray-400 sticky left-0 z-20 bg-inherit">
+                    <td className="p-1 text-center border-r border-gray-200 sticky left-0 z-20 bg-inherit">
                       <Checkbox
                         checked={selectedRows.includes(record.id)}
                         onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
-                        className="h-3 w-3 border"
+                        className="h-3 w-3"
                       />
                     </td>
-                    <td className="p-1 text-center border-r-2 border-gray-400 sticky left-10 z-20 bg-inherit">
+                    <td className="p-1 text-center border-r border-gray-200 sticky left-8 z-20 bg-inherit">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
-                            <Trash2 className="h-3 w-3 text-red-500" />
+                          <Button size="sm" variant="ghost" className="h-5 w-5 p-0 hover:bg-red-50 rounded-full">
+                            <Trash2 className="h-2 w-2 text-red-500" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
@@ -326,51 +331,36 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       </AlertDialog>
                     </td>
                     
-                    {/* Customer Info Section - Pinned */}
-                    <td className="border-r-2 border-gray-400 p-1 sticky left-22 z-20 bg-inherit">{renderCell(record, 'customer')}</td>
-                    <td className="border-r-2 border-gray-400 p-1 sticky left-[142px] z-20 bg-inherit">{renderCell(record, 'ref')}</td>
-                    <td className="border-r-4 border-gray-300 p-1 sticky left-[212px] z-20 bg-inherit">{renderCell(record, 'file')}</td>
-                    <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'workOrder')}</td>
+                    <td className="border-r border-gray-200 p-1 sticky left-18 z-20 bg-inherit" style={{ width: '100px' }}>
+                      {renderCell(record, 'customer')}
+                    </td>
+                    <td className="border-r border-gray-200 p-1 sticky left-[118px] z-20 bg-inherit" style={{ width: '60px' }}>
+                      {renderCell(record, 'ref')}
+                    </td>
+                    <td className="border-r-2 border-gray-500 p-1 sticky left-[178px] z-20 bg-inherit" style={{ width: '60px' }}>
+                      {renderCell(record, 'file')}
+                    </td>
 
-                    {/* Drop / Return Section */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'dropDone', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'dropDate', false, true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'returnNeeded', true)}</td>
-                    <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'returnDate', false, true)}</td>
-
-                    {/* Documents Section */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'docsSent', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'docsReceived', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'aesMblVgmSent', true)}</td>
-                    <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'docCutoffDate', false, true)}</td>
-
-                    {/* Titles Section */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'titlesDispatched', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'validatedFwd', true)}</td>
-                    <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'titlesReturned', true)}</td>
-
-                    {/* Invoicing Section */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'sslDraftInvRec', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'draftInvApproved', true)}</td>
-                    <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'transphereInvSent', true)}</td>
-
-                    {/* Payment Section */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'paymentRec', true)}</td>
-                    <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'sslPaid', true)}</td>
-
-                    {/* Final Steps Section */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'insured', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'released', true)}</td>
-                    <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'docsSentToCustomer', true)}</td>
-
-                    {/* Notes */}
-                    <td className="p-1">{renderCell(record, 'notes')}</td>
+                    {visibleColumns.filter(col => !['customer', 'ref', 'file'].includes(col.id)).map((column) => {
+                      const field = column.id as keyof TrackingRecord;
+                      const isCheckbox = ['dropDone', 'returnNeeded', 'docsSent', 'docsReceived', 'aesMblVgmSent', 
+                        'titlesDispatched', 'validatedFwd', 'titlesReturned', 'sslDraftInvRec', 'draftInvApproved', 
+                        'transphereInvSent', 'paymentRec', 'sslPaid', 'insured', 'released', 'docsSentToCustomer'].includes(field);
+                      const isDate = ['dropDate', 'returnDate', 'docCutoffDate'].includes(field);
+                      
+                      return (
+                        <td 
+                          key={column.id} 
+                          className="border-r border-gray-200 p-1" 
+                          style={{ width: `${column.width}px` }}
+                        >
+                          {renderCell(record, field, isCheckbox, isDate)}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}
-              <tr>
-                <td colSpan={25} className="h-16"></td>
-              </tr>
             </tbody>
           </table>
         </div>

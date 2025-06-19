@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -7,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
+import { useTableColumns, ColumnConfig } from '../hooks/useTableColumns';
+import TableColumnManager from './TableColumnManager';
+import ResizableTableHeader from './ResizableTableHeader';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +33,37 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   const [editingCell, setEditingCell] = useState<{ id: string; field: keyof AllFilesRecord } | null>(null);
   const [editValue, setEditValue] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const initialColumns: ColumnConfig[] = [
+    { id: 'file', label: 'File', visible: true, width: 60, minWidth: 50 },
+    { id: 'number', label: 'Number', visible: true, width: 70, minWidth: 60 },
+    { id: 'customer', label: 'Customer', visible: true, width: 100, minWidth: 90 },
+    { id: 'originPort', label: 'Origin Port', visible: true, width: 90, minWidth: 80, group: 'Origin' },
+    { id: 'originState', label: 'Origin State', visible: true, width: 80, minWidth: 70, group: 'Origin' },
+    { id: 'destinationPort', label: 'Destination Port', visible: true, width: 100, minWidth: 90, group: 'Destination' },
+    { id: 'destinationCountry', label: 'Destination Country', visible: true, width: 100, minWidth: 90, group: 'Destination' },
+    { id: 'container20', label: '20\'', visible: true, width: 50, minWidth: 40, group: 'Transport Types' },
+    { id: 'container40', label: '40\'', visible: true, width: 50, minWidth: 40, group: 'Transport Types' },
+    { id: 'roro', label: 'RoRo', visible: true, width: 50, minWidth: 40, group: 'Transport Types' },
+    { id: 'lcl', label: 'LCL', visible: true, width: 50, minWidth: 40, group: 'Transport Types' },
+    { id: 'air', label: 'Air', visible: true, width: 50, minWidth: 40, group: 'Transport Types' },
+    { id: 'truck', label: 'Truck', visible: true, width: 50, minWidth: 40, group: 'Transport Types' },
+    { id: 'ssl', label: 'SSL', visible: true, width: 70, minWidth: 60, group: 'Service Providers' },
+    { id: 'nvo', label: 'NVO', visible: true, width: 70, minWidth: 60, group: 'Service Providers' },
+    { id: 'comments', label: 'Comments', visible: true, width: 80, minWidth: 70 },
+    { id: 'salesContact', label: 'Sales Contact', visible: true, width: 90, minWidth: 80 },
+  ];
+
+  const {
+    columns,
+    collapsedGroups,
+    toggleColumnVisibility,
+    updateColumnWidth,
+    toggleGroup,
+    getVisibleColumns
+  } = useTableColumns(initialColumns);
+
+  const visibleColumns = getVisibleColumns();
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -82,21 +115,21 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     if (isEditing) {
       return (
-        <div className="flex items-center gap-1 min-w-0 p-1">
+        <div className="flex items-center gap-1 min-w-0 px-1">
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500"
+            className="h-4 text-[10px] min-w-0 flex-1 border-blue-300 focus:border-blue-500"
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
               if (e.key === 'Escape') cancelEdit();
             }}
             autoFocus
           />
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
+          <Button size="sm" variant="ghost" className="h-3 w-3 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
             <Save className="h-2 w-2 text-green-600" />
           </Button>
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-red-100" onClick={cancelEdit}>
+          <Button size="sm" variant="ghost" className="h-3 w-3 p-0 shrink-0 hover:bg-red-100" onClick={cancelEdit}>
             <X className="h-2 w-2 text-red-600" />
           </Button>
         </div>
@@ -107,90 +140,104 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     return (
       <div
-        className={`flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200 ${containerClasses}`}
+        className={`flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1 rounded transition-all duration-200 min-h-[20px] border border-transparent hover:border-blue-200 ${containerClasses}`}
         onClick={() => startEdit(record.id, field, value)}
       >
-        <span className={`text-xs truncate ${
-          value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
+        <span className={`text-[10px] truncate ${
+          value ? 'text-gray-800' : 'text-gray-300 opacity-50'
         } ${isVolumeField && value ? 'font-semibold' : ''}`}>
-          {String(value) || (
-            <span className="text-gray-300 text-[10px]">Empty</span>
-          )}
+          {String(value) || ''}
         </span>
-        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
+        <Edit3 className="h-2 w-2 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
       </div>
     );
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+      <div className="p-2 border-b flex justify-between items-center">
+        <h3 className="text-sm font-medium">All Files</h3>
+        <TableColumnManager
+          columns={columns}
+          collapsedGroups={collapsedGroups}
+          onToggleColumn={toggleColumnVisibility}
+          onToggleGroup={toggleGroup}
+        />
+      </div>
+      
       <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
-        <div className="min-w-[1800px]">
-          <table className="w-full border-collapse text-xs">
+        <div style={{ minWidth: `${visibleColumns.reduce((sum, col) => sum + col.width, 100)}px` }}>
+          <table className="w-full border-collapse text-[10px]">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
-              <tr className="border-b-2 border-gray-500 bg-white">
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-10 sticky left-0 z-40">
+              <tr className="border-b border-gray-300 bg-white">
+                <th className="bg-gray-100 border-r border-gray-300 p-1 text-center font-bold text-gray-900 w-8 sticky left-0 z-40">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
-                    className="h-3 w-3 border"
+                    className="h-3 w-3"
                   />
                 </th>
-                <th className="bg-gray-100 border-r-2 border-gray-500 p-1.5 text-center font-bold text-gray-900 w-12 sticky left-10 z-40">Actions</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[60px] sticky left-22 z-40">File</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[80px] sticky left-[82px] z-40">Number</th>
-                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-blue-100 min-w-[120px] sticky left-[162px] z-40">Customer</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[100px]">Origin Port</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-green-100 min-w-[90px]">Origin State</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[110px]">Destination Port</th>
-                <th className="border-r-4 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-purple-100 min-w-[120px]">Destination Country</th>
-                <th colSpan={6} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-orange-100">Container & Transport Types</th>
-                <th colSpan={2} className="border-r-4 border-gray-500 p-1.5 text-center font-bold text-gray-900 bg-pink-100">Service Providers</th>
-                <th className="border-r-2 border-gray-500 p-1.5 text-left font-bold text-gray-900 bg-yellow-100 min-w-[100px]">Comments</th>
-                <th className="p-1.5 text-left font-bold text-gray-900 bg-gray-100 min-w-[100px]">Sales Contact</th>
-              </tr>
-              <tr className="bg-white border-b-2 border-gray-400 sticky top-[33px] z-30">
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-10 sticky left-0 z-40">Select</th>
-                <th className="bg-gray-50 border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 w-12 sticky left-10 z-40">Delete</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px] sticky left-22 z-40">File</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px] sticky left-[82px] z-40">Number</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-[162px] z-40">Customer</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
-                <th className="border-r-2 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
-                <th className="border-r-4 border-gray-400 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
-                <th className="border-r-4 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
-                <th className="border-r-2 border-gray-400 p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
-                <th className="p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
+                <th className="bg-gray-100 border-r border-gray-300 p-1 text-center font-bold text-gray-900 w-10 sticky left-8 z-40">
+                  Del
+                </th>
+                <ResizableTableHeader
+                  width={60}
+                  minWidth={50}
+                  onResize={() => {}}
+                  className="bg-blue-100 border-r border-gray-300 p-1 text-left font-bold text-gray-900 sticky left-18 z-40"
+                >
+                  File
+                </ResizableTableHeader>
+                <ResizableTableHeader
+                  width={70}
+                  minWidth={60}
+                  onResize={() => {}}
+                  className="bg-blue-100 border-r border-gray-300 p-1 text-left font-bold text-gray-900 sticky left-[78px] z-40"
+                >
+                  Number
+                </ResizableTableHeader>
+                <ResizableTableHeader
+                  width={100}
+                  minWidth={90}
+                  onResize={() => {}}
+                  className="bg-blue-100 border-r-2 border-gray-500 p-1 text-left font-bold text-gray-900 sticky left-[148px] z-40"
+                >
+                  Customer
+                </ResizableTableHeader>
+                
+                {visibleColumns.filter(col => !['file', 'number', 'customer'].includes(col.id)).map((column) => (
+                  <ResizableTableHeader
+                    key={column.id}
+                    width={column.width}
+                    minWidth={column.minWidth}
+                    onResize={(width) => updateColumnWidth(column.id, width)}
+                    className="border-r border-gray-300 p-1 text-center font-bold text-gray-900 bg-gray-50"
+                  >
+                    {column.label}
+                  </ResizableTableHeader>
+                ))}
               </tr>
             </thead>
             <tbody>
               {data.map((record, index) => (
                 <tr
                   key={record.id}
-                  className={`border-b border-gray-200 transition-all duration-200 ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                  className={`border-b border-gray-100 transition-all duration-200 ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                   }`}
                 >
-                  <td className="p-1 text-center border-r-2 border-gray-400 sticky left-0 z-20 bg-inherit">
+                  <td className="p-1 text-center border-r border-gray-200 sticky left-0 z-20 bg-inherit">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}
                       onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
-                      className="h-3 w-3 border"
+                      className="h-3 w-3"
                     />
                   </td>
-                  <td className="p-1 text-center border-r-2 border-gray-400 sticky left-10 z-20 bg-inherit">
+                  <td className="p-1 text-center border-r border-gray-200 sticky left-8 z-20 bg-inherit">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
-                          <Trash2 className="h-3 w-3 text-red-500" />
+                        <Button size="sm" variant="ghost" className="h-5 w-5 p-0 hover:bg-red-50 rounded-full">
+                          <Trash2 className="h-2 w-2 text-red-500" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -213,39 +260,32 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     </AlertDialog>
                   </td>
                   
-                  {/* Basic Info - Pinned */}
-                  <td className="border-r-2 border-gray-400 p-1 sticky left-22 z-20 bg-inherit">{renderCell(record, 'file')}</td>
-                  <td className="border-r-2 border-gray-400 p-1 sticky left-[82px] z-20 bg-inherit">{renderCell(record, 'number')}</td>
-                  <td className="border-r-4 border-gray-300 p-1 sticky left-[162px] z-20 bg-inherit">{renderCell(record, 'customer')}</td>
+                  <td className="border-r border-gray-200 p-1 sticky left-18 z-20 bg-inherit" style={{ width: '60px' }}>
+                    {renderCell(record, 'file')}
+                  </td>
+                  <td className="border-r border-gray-200 p-1 sticky left-[78px] z-20 bg-inherit" style={{ width: '70px' }}>
+                    {renderCell(record, 'number')}
+                  </td>
+                  <td className="border-r-2 border-gray-500 p-1 sticky left-[148px] z-20 bg-inherit" style={{ width: '100px' }}>
+                    {renderCell(record, 'customer')}
+                  </td>
 
-                  {/* Origin Info */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
-
-                  {/* Destination Info */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'destinationCountry')}</td>
-
-                  {/* Container & Transport Types with Volume Heatmap */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container40', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air', true)}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'truck', true)}</td>
-
-                  {/* Service Providers */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ssl')}</td>
-                  <td className="border-r-4 border-gray-300 p-1">{renderCell(record, 'nvo')}</td>
-
-                  {/* Additional Info */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'comments')}</td>
-                  <td className="p-1">{renderCell(record, 'salesContact')}</td>
+                  {visibleColumns.filter(col => !['file', 'number', 'customer'].includes(col.id)).map((column) => {
+                    const field = column.id as keyof AllFilesRecord;
+                    const isVolumeField = ['container20', 'container40', 'roro', 'lcl', 'air', 'truck'].includes(field);
+                    
+                    return (
+                      <td 
+                        key={column.id} 
+                        className="border-r border-gray-200 p-1" 
+                        style={{ width: `${column.width}px` }}
+                      >
+                        {renderCell(record, field, isVolumeField)}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
-              <tr>
-                <td colSpan={20} className="h-16"></td>
-              </tr>
             </tbody>
           </table>
         </div>
