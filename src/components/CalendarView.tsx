@@ -286,8 +286,9 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
 
   const modifiersStyles = {
     hasEvents: {
-      position: 'relative' as const,
-      borderBottom: '2px solid #3b82f6'
+      backgroundColor: '#3b82f6',
+      color: 'white',
+      fontWeight: '500'
     }
   };
 
@@ -430,7 +431,7 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
               </div>
               <div className="text-xs text-gray-500 mt-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-full h-1 bg-blue-600 rounded"></div>
+                  <div className="w-4 h-4 bg-blue-600 rounded"></div>
                   <span>Days with events</span>
                 </div>
               </div>
