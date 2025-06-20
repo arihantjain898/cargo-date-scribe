@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -172,7 +171,6 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
             trueLabel={labels.true}
             falseLabel={labels.false}
             variant={variant}
-            size="sm"
           />
         </div>
       );
