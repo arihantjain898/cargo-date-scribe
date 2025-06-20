@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -335,64 +334,64 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 </th>
                 <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
               </tr>
-              <tr className="bg-white border-b-4 border-black sticky top-[41px] z-30">
-                <th className="bg-gray-50 border-r-4 border-black border-b-4 p-1 text-left text-xs font-semibold text-gray-700 min-w-[120px] sticky left-0 z-40">Customer</th>
+              <tr className="bg-gray-100 border-b-2 border-gray-400 sticky top-[41px] z-30">
+                <th className="bg-gray-200 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[120px] sticky left-0 z-40">Customer</th>
                 
                 {!collapsedGroups['basic'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">Ref</th>
-                    <th className="border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">File</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">Work Order</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[80px]">Ref</th>
+                    <th className="border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[80px]">File</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Work Order</th>
                   </>
                 )}
 
                 {!collapsedGroups['dropReturn'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-green-50 min-w-[80px]">Drop Done?</th>
-                    <th className="border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Drop Date</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Return Needed?</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Return Date</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[80px]">Drop Done?</th>
+                    <th className="border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Drop Date</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Return Needed?</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Return Date</th>
                   </>
                 )}
 
                 {!collapsedGroups['documentation'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[80px]">Docs Sent?</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">Docs Rec'd?</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[100px]">AES/MBL/VGM Sent?</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Doc Cutoff Date</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[80px]">Docs Sent?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[90px]">Docs Rec'd?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">AES/MBL/VGM Sent?</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[110px]">Doc Cutoff Date</th>
                   </>
                 )}
 
                 {!collapsedGroups['titles'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Titles Dispatched?</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">Validated Fwd?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Titles Returned?</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[110px]">Titles Dispatched?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Validated Fwd?</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[110px]">Titles Returned?</th>
                   </>
                 )}
 
                 {!collapsedGroups['invoicing'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">SSL Draft Inv Rec'd?</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">Draft Inv Approved?</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">Transphere Inv Sent?</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[100px]">Payment Rec'd?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL Paid?</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[120px]">SSL Draft Inv Rec'd?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[120px]">Draft Inv Approved?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[120px]">Transphere Inv Sent?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Payment Rec'd?</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[80px]">SSL Paid?</th>
                   </>
                 )}
 
                 {!collapsedGroups['finalSteps'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[80px]">Insured?</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[80px]">Released?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[120px]">Docs Sent to Customer?</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[80px]">Insured?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[80px]">Released?</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-100 min-w-[120px]">Docs Sent to Customer?</th>
                   </>
                 )}
 
-                <th className="border-l-4 border-black border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Notes</th>
-                <th className="bg-gray-50 border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
-                <th className="bg-gray-50 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
+                <th className="border-l-4 border-black border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Notes</th>
+                <th className="bg-gray-200 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
+                <th className="bg-gray-200 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
               </tr>
             </thead>
             <tbody>
