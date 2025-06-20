@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
-import { isAllFilesRecordComplete } from '../utils/completionUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -77,10 +76,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   };
 
   const getRowConditionalClasses = (record: AllFilesRecord): string => {
-    // Completion check - solid green border
-    if (isAllFilesRecordComplete(record)) {
-      return 'bg-green-50 border-4 border-green-500 shadow-sm';
-    }
+    // No completion check for All Files - just return normal styling
     return '';
   };
 
