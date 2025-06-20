@@ -246,52 +246,52 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 </th>
                 <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
               </tr>
-              <tr className="bg-white border-b-4 border-black sticky top-[41px] z-30">
-                <th className="bg-gray-50 border-r-4 border-black border-b-4 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-0 z-40">Customer</th>
+              <tr className="bg-gray-100 border-b-2 border-gray-400 sticky top-[41px] z-30">
+                <th className="bg-gray-200 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[120px] sticky left-0 z-40">Customer</th>
                 
                 {!collapsedGroups['fileInfo'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px]">File</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">Number</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-blue-100 min-w-[60px]">File</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-blue-100 min-w-[80px]">Number</th>
                   </>
                 )}
 
                 {!collapsedGroups['route'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-green-100 min-w-[100px]">Origin Port</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-green-100 min-w-[90px]">Origin State</th>
                   </>
                 )}
 
                 {!collapsedGroups['destination'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-purple-100 min-w-[110px]">Destination Port</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-purple-100 min-w-[120px]">Destination Country</th>
                   </>
                 )}
 
                 {!collapsedGroups['container'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">20'</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">40'</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">RoRo</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">LCL</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">Air</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">Truck</th>
                   </>
                 )}
 
                 {!collapsedGroups['providers'] && (
                   <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-pink-100 min-w-[80px]">SSL</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-pink-100 min-w-[80px]">NVO</th>
                   </>
                 )}
 
-                <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
-                <th className="border-l-4 border-black border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
-                <th className="bg-gray-50 border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
-                <th className="bg-gray-50 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
+                <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-yellow-100 min-w-[100px]">Comments</th>
+                <th className="border-l-4 border-black border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Sales Contact</th>
+                <th className="bg-gray-100 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
+                <th className="bg-gray-100 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
               </tr>
             </thead>
             <tbody>
