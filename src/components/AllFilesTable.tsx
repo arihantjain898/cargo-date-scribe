@@ -4,7 +4,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Edit3, Save, X, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import {
@@ -18,7 +18,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface AllFilesTableProps {
   data: AllFilesRecord[];
@@ -31,7 +30,6 @@ interface AllFilesTableProps {
 const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: AllFilesTableProps) => {
   const [editingCell, setEditingCell] = useState<{ id: string; field: keyof AllFilesRecord } | null>(null);
   const [editValue, setEditValue] = useState('');
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,13 +79,6 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   const getRowConditionalClasses = (record: AllFilesRecord): string => {
     // No completion check for All Files - just return normal styling
     return '';
-  };
-
-  const toggleGroup = (groupName: string) => {
-    setCollapsedGroups(prev => ({
-      ...prev,
-      [groupName]: !prev[groupName]
-    }));
   };
 
   const renderCell = (record: AllFilesRecord, field: keyof AllFilesRecord, isVolumeField = false) => {
@@ -144,97 +135,11 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
               <tr className="border-b-4 border-black bg-white">
                 <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-32 sticky left-0 z-40">Customer</th>
-                
-                {!collapsedGroups['fileInfo'] && (
-                  <th colSpan={2} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('fileInfo')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        File Information
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['fileInfo'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('fileInfo')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
-                {!collapsedGroups['route'] && (
-                  <th colSpan={2} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('route')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        Route Information
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['route'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('route')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
-                {!collapsedGroups['destination'] && (
-                  <th colSpan={2} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('destination')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        Destination
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['destination'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('destination')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
-                {!collapsedGroups['container'] && (
-                  <th colSpan={6} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('container')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        Container & Transport Types
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['container'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('container')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
-                {!collapsedGroups['providers'] && (
-                  <th colSpan={2} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('providers')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        Service Providers
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['providers'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('providers')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
+                <th colSpan={2} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">File Information</th>
+                <th colSpan={2} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">Route Information</th>
+                <th colSpan={2} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Destination</th>
+                <th colSpan={6} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Container & Transport Types</th>
+                <th colSpan={2} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">Service Providers</th>
                 <th className="border-l-4 border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-yellow-200 min-w-[100px]">Comments</th>
                 <th className="border-l-4 border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Sales Contact</th>
                 <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-10">
@@ -246,52 +151,26 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 </th>
                 <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
               </tr>
-              <tr className="bg-gray-100 border-b-2 border-gray-400 sticky top-[41px] z-30">
-                <th className="bg-gray-200 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[120px] sticky left-0 z-40">Customer</th>
-                
-                {!collapsedGroups['fileInfo'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-blue-100 min-w-[60px]">File</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-blue-100 min-w-[80px]">Number</th>
-                  </>
-                )}
-
-                {!collapsedGroups['route'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-green-100 min-w-[100px]">Origin Port</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-green-100 min-w-[90px]">Origin State</th>
-                  </>
-                )}
-
-                {!collapsedGroups['destination'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-purple-100 min-w-[110px]">Destination Port</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-purple-100 min-w-[120px]">Destination Country</th>
-                  </>
-                )}
-
-                {!collapsedGroups['container'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">20'</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">40'</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">RoRo</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">LCL</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">Air</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[60px]">Truck</th>
-                  </>
-                )}
-
-                {!collapsedGroups['providers'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-pink-100 min-w-[80px]">SSL</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-pink-100 min-w-[80px]">NVO</th>
-                  </>
-                )}
-
-                <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-yellow-100 min-w-[100px]">Comments</th>
-                <th className="border-l-4 border-black border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Sales Contact</th>
-                <th className="bg-gray-100 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
-                <th className="bg-gray-100 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
+              <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
+                <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[120px] sticky left-0 z-40">Customer</th>
+                <th className="border-l-4 border-black border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">File</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[80px]">Number</th>
+                <th className="border-l-4 border-black border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[100px]">Origin Port</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[90px]">Origin State</th>
+                <th className="border-l-4 border-black border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[110px]">Destination Port</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[120px]">Destination Country</th>
+                <th className="border-l-4 border-black border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">20'</th>
+                <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">40'</th>
+                <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">RoRo</th>
+                <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">LCL</th>
+                <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">Air</th>
+                <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">Truck</th>
+                <th className="border-l-4 border-black border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[80px]">SSL</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[80px]">NVO</th>
+                <th className="border-l-4 border-black border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[100px]">Comments</th>
+                <th className="border-l-4 border-black border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[100px]">Sales Contact</th>
+                <th className="bg-gray-300 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
+                <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -300,52 +179,26 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 return (
                   <tr
                     key={record.id}
-                    className={`border-b-2 border-gray-300 transition-all duration-200 ${
+                    className={`border-b-2 border-gray-400 transition-all duration-200 ${
                       conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                     }`}
                   >
                     <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">{renderCell(record, 'customer')}</td>
-                    
-                    {!collapsedGroups['fileInfo'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'file')}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'number')}</td>
-                      </>
-                    )}
-
-                    {!collapsedGroups['route'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'originPort')}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'originState')}</td>
-                      </>
-                    )}
-
-                    {!collapsedGroups['destination'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'destinationPort')}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'destinationCountry')}</td>
-                      </>
-                    )}
-
-                    {!collapsedGroups['container'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'container20', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'container40', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'roro', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'lcl', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'air', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'truck', true)}</td>
-                      </>
-                    )}
-
-                    {!collapsedGroups['providers'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'ssl')}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'nvo')}</td>
-                      </>
-                    )}
-
-                    <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'comments')}</td>
+                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'file')}</td>
+                    <td className="border-r-4 border-black p-1">{renderCell(record, 'number')}</td>
+                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'originPort')}</td>
+                    <td className="border-r-4 border-black p-1">{renderCell(record, 'originState')}</td>
+                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'destinationPort')}</td>
+                    <td className="border-r-4 border-black p-1">{renderCell(record, 'destinationCountry')}</td>
+                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'container20', true)}</td>
+                    <td className="border-r border-gray-500 p-1">{renderCell(record, 'container40', true)}</td>
+                    <td className="border-r border-gray-500 p-1">{renderCell(record, 'roro', true)}</td>
+                    <td className="border-r border-gray-500 p-1">{renderCell(record, 'lcl', true)}</td>
+                    <td className="border-r border-gray-500 p-1">{renderCell(record, 'air', true)}</td>
+                    <td className="border-r-4 border-black p-1">{renderCell(record, 'truck', true)}</td>
+                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'ssl')}</td>
+                    <td className="border-r-4 border-black p-1">{renderCell(record, 'nvo')}</td>
+                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'comments')}</td>
                     <td className="border-l-4 border-black border-r-4 border-black p-1">{renderCell(record, 'salesContact')}</td>
                     <td className="p-1 text-center border-r-4 border-black">
                       <Checkbox
