@@ -3,7 +3,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Edit3, Save, X, Trash2 } from 'lucide-react';
+import { Edit3, Save, X, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import {
@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface AllFilesTableProps {
   data: AllFilesRecord[];
@@ -29,6 +30,7 @@ interface AllFilesTableProps {
 const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: AllFilesTableProps) => {
   const [editingCell, setEditingCell] = useState<{ id: string; field: keyof AllFilesRecord } | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,6 +80,13 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   const getRowConditionalClasses = (record: AllFilesRecord): string => {
     // No completion check for All Files - just return normal styling
     return '';
+  };
+
+  const toggleGroup = (groupName: string) => {
+    setCollapsedGroups(prev => ({
+      ...prev,
+      [groupName]: !prev[groupName]
+    }));
   };
 
   const renderCell = (record: AllFilesRecord, field: keyof AllFilesRecord, isVolumeField = false) => {
@@ -133,6 +142,100 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <table className="w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
               <tr className="border-b-4 border-gray-600 bg-white">
+                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-32 sticky left-0 z-40">Customer</th>
+                
+                {!collapsedGroups['fileInfo'] && (
+                  <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-blue-200">
+                    <Collapsible>
+                      <CollapsibleTrigger onClick={() => toggleGroup('fileInfo')} className="flex items-center justify-center gap-1 w-full">
+                        <ChevronDown className="h-3 w-3" />
+                        File Information
+                      </CollapsibleTrigger>
+                    </Collapsible>
+                  </th>
+                )}
+                {collapsedGroups['fileInfo'] && (
+                  <th className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-blue-200 min-w-[60px]">
+                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('fileInfo')} className="p-0 h-auto">
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </th>
+                )}
+
+                {!collapsedGroups['route'] && (
+                  <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-green-200">
+                    <Collapsible>
+                      <CollapsibleTrigger onClick={() => toggleGroup('route')} className="flex items-center justify-center gap-1 w-full">
+                        <ChevronDown className="h-3 w-3" />
+                        Route Information
+                      </CollapsibleTrigger>
+                    </Collapsible>
+                  </th>
+                )}
+                {collapsedGroups['route'] && (
+                  <th className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-green-200 min-w-[60px]">
+                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('route')} className="p-0 h-auto">
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </th>
+                )}
+
+                {!collapsedGroups['destination'] && (
+                  <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-purple-200">
+                    <Collapsible>
+                      <CollapsibleTrigger onClick={() => toggleGroup('destination')} className="flex items-center justify-center gap-1 w-full">
+                        <ChevronDown className="h-3 w-3" />
+                        Destination
+                      </CollapsibleTrigger>
+                    </Collapsible>
+                  </th>
+                )}
+                {collapsedGroups['destination'] && (
+                  <th className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[60px]">
+                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('destination')} className="p-0 h-auto">
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </th>
+                )}
+
+                {!collapsedGroups['container'] && (
+                  <th colSpan={6} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-orange-200">
+                    <Collapsible>
+                      <CollapsibleTrigger onClick={() => toggleGroup('container')} className="flex items-center justify-center gap-1 w-full">
+                        <ChevronDown className="h-3 w-3" />
+                        Container & Transport Types
+                      </CollapsibleTrigger>
+                    </Collapsible>
+                  </th>
+                )}
+                {collapsedGroups['container'] && (
+                  <th className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-orange-200 min-w-[60px]">
+                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('container')} className="p-0 h-auto">
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </th>
+                )}
+
+                {!collapsedGroups['providers'] && (
+                  <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-pink-200">
+                    <Collapsible>
+                      <CollapsibleTrigger onClick={() => toggleGroup('providers')} className="flex items-center justify-center gap-1 w-full">
+                        <ChevronDown className="h-3 w-3" />
+                        Service Providers
+                      </CollapsibleTrigger>
+                    </Collapsible>
+                  </th>
+                )}
+                {collapsedGroups['providers'] && (
+                  <th className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-pink-200 min-w-[60px]">
+                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('providers')} className="p-0 h-auto">
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </th>
+                )}
+
+                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-yellow-200 min-w-[100px]">Comments</th>
+                <th className="border-r-4 border-gray-600 p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Sales Contact</th>
                 <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-10">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
@@ -140,35 +243,54 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     className="h-3 w-3 border"
                   />
                 </th>
-                <th className="bg-gray-100 border-r-4 border-gray-600 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
-                <th colSpan={3} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-blue-200">File Information</th>
-                <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-green-200">Route Information</th>
-                <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-purple-200">Destination</th>
-                <th colSpan={6} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-orange-200">Container & Transport Types</th>
-                <th colSpan={2} className="border-r-6 border-gray-600 p-2 text-center font-bold text-gray-900 bg-pink-200">Service Providers</th>
-                <th className="border-r-2 border-gray-600 p-2 text-left font-bold text-gray-900 bg-yellow-200 min-w-[100px]">Comments</th>
-                <th className="p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Sales Contact</th>
+                <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
               </tr>
               <tr className="bg-white border-b-2 border-gray-500 sticky top-[41px] z-30">
-                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
-                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
-                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px]">File</th>
-                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">Number</th>
-                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px]">Customer</th>
-                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
-                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
-                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
-                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
-                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
-                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
-                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
-                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
-                <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
-                <th className="border-r-4 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
-                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
-                <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
+                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-0 z-40">Customer</th>
+                
+                {!collapsedGroups['fileInfo'] && (
+                  <>
+                    <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px]">File</th>
+                    <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">Number</th>
+                  </>
+                )}
+
+                {!collapsedGroups['route'] && (
+                  <>
+                    <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
+                    <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
+                  </>
+                )}
+
+                {!collapsedGroups['destination'] && (
+                  <>
+                    <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
+                    <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
+                  </>
+                )}
+
+                {!collapsedGroups['container'] && (
+                  <>
+                    <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
+                    <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
+                    <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
+                    <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
+                    <th className="border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
+                    <th className="border-r-4 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
+                  </>
+                )}
+
+                {!collapsedGroups['providers'] && (
+                  <>
+                    <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
+                    <th className="border-r-4 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
+                  </>
+                )}
+
                 <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
-                <th className="p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
+                <th className="border-r-2 border-gray-500 p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
+                <th className="bg-gray-50 border-r-2 border-gray-500 p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
+                <th className="bg-gray-50 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -181,6 +303,49 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                     }`}
                   >
+                    <td className="border-r-2 border-gray-400 p-1 sticky left-0 z-20 bg-inherit">{renderCell(record, 'customer')}</td>
+                    
+                    {!collapsedGroups['fileInfo'] && (
+                      <>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'file')}</td>
+                        <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'number')}</td>
+                      </>
+                    )}
+
+                    {!collapsedGroups['route'] && (
+                      <>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
+                        <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
+                      </>
+                    )}
+
+                    {!collapsedGroups['destination'] && (
+                      <>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
+                        <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'destinationCountry')}</td>
+                      </>
+                    )}
+
+                    {!collapsedGroups['container'] && (
+                      <>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20', true)}</td>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container40', true)}</td>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro', true)}</td>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl', true)}</td>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air', true)}</td>
+                        <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'truck', true)}</td>
+                      </>
+                    )}
+
+                    {!collapsedGroups['providers'] && (
+                      <>
+                        <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ssl')}</td>
+                        <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'nvo')}</td>
+                      </>
+                    )}
+
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'comments')}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'salesContact')}</td>
                     <td className="p-1 text-center border-r-2 border-gray-400">
                       <Checkbox
                         checked={selectedRows.includes(record.id)}
@@ -188,7 +353,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                         className="h-3 w-3 border"
                       />
                     </td>
-                    <td className="p-1 text-center border-r-2 border-gray-400">
+                    <td className="p-1 text-center">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
@@ -214,35 +379,6 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                         </AlertDialogContent>
                       </AlertDialog>
                     </td>
-                    
-                    {/* File Information */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'file')}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'number')}</td>
-                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'customer')}</td>
-
-                    {/* Route Information */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
-                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
-
-                    {/* Destination */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
-                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'destinationCountry')}</td>
-
-                    {/* Container & Transport Types with Volume Heatmap */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container40', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl', true)}</td>
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air', true)}</td>
-                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'truck', true)}</td>
-
-                    {/* Service Providers */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ssl')}</td>
-                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'nvo')}</td>
-
-                    {/* Additional Info */}
-                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'comments')}</td>
-                    <td className="p-1">{renderCell(record, 'salesContact')}</td>
                   </tr>
                 );
               })}
