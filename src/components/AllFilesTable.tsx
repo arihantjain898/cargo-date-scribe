@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -246,50 +247,50 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
               </tr>
               <tr className="bg-white border-b-4 border-black sticky top-[41px] z-30">
-                <th className="bg-gray-50 border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-0 z-40">Customer</th>
+                <th className="bg-gray-50 border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[120px] sticky left-0 z-40">Customer</th>
                 
                 {!collapsedGroups['fileInfo'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px]">File</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[60px]">File</th>
                     <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">Number</th>
                   </>
                 )}
 
                 {!collapsedGroups['route'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Origin Port</th>
                     <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[90px]">Origin State</th>
                   </>
                 )}
 
                 {!collapsedGroups['destination'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Destination Port</th>
                     <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[120px]">Destination Country</th>
                   </>
                 )}
 
                 {!collapsedGroups['container'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">20'</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">40'</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">RoRo</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">LCL</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Air</th>
                     <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[60px]">Truck</th>
                   </>
                 )}
 
                 {!collapsedGroups['providers'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL</th>
                     <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">NVO</th>
                   </>
                 )}
 
-                <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
-                <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
-                <th className="bg-gray-50 border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[100px]">Comments</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Sales Contact</th>
+                <th className="bg-gray-50 border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
                 <th className="bg-gray-50 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
               </tr>
             </thead>
@@ -395,3 +396,4 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 };
 
 export default AllFilesTable;
+

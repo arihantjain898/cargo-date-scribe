@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -296,46 +297,46 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                 <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
               </tr>
               <tr className="bg-white border-b-4 border-black sticky top-[41px] z-30">
-                <th className="bg-gray-50 border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 min-w-[100px] sticky left-0 z-40">Reference</th>
+                <th className="bg-gray-50 border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 min-w-[100px] sticky left-0 z-40">Reference</th>
                 
                 {!collapsedGroups['basic'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">File</th>
-                    <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">ETA (Final POD)</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">File</th>
+                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">ETA (Final POD)</th>
                     <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">Bond</th>
                   </>
                 )}
 
                 {!collapsedGroups['documentation'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">POA</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">ISF</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[120px]">Packing List & CI</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[100px]">Bill of Lading</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">POA</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[70px]">ISF</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[120px]">Packing List & CI</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[100px]">Bill of Lading</th>
                     <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-emerald-50 min-w-[100px]">Arrival Notice</th>
                   </>
                 )}
 
                 {!collapsedGroups['processing'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[80px]">ISF Filed</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">Entry Filed</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">BL Release</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[80px]">ISF Filed</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">Entry Filed</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">BL Release</th>
                     <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Customs Release</th>
                   </>
                 )}
 
                 {!collapsedGroups['finalSteps'] && (
                   <>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[90px]">Invoice Sent?</th>
-                    <th className="border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Payment Rec'd?</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[90px]">Invoice Sent?</th>
+                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Payment Rec'd?</th>
                     <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">W/O Set Up</th>
                   </>
                 )}
 
-                <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[100px]">Delivery Date</th>
-                <th className="border-r-2 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Notes</th>
-                <th className="bg-gray-50 border-r-2 border-black p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-pink-50 min-w-[100px]">Delivery Date</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Notes</th>
+                <th className="bg-gray-50 border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
                 <th className="bg-gray-50 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
               </tr>
             </thead>
@@ -437,3 +438,4 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
 };
 
 export default ImportTrackingTable;
+
