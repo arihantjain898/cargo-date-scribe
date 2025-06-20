@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { Edit3, Save, X, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 import { TrackingRecord } from '../types/TrackingRecord';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { isDateOverdue, isDateWithinDays } from '../utils/dateUtils';
-import { isTrackingRecordComplete } from '../utils/completionUtils';
+import { isExportRecordComplete } from '../utils/completionUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -98,7 +99,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
   const getRowConditionalClasses = (record: TrackingRecord): string => {
     // Completion check - solid green border
-    if (isTrackingRecordComplete(record)) {
+    if (isExportRecordComplete(record)) {
       return 'bg-green-50 border-4 border-green-500 shadow-sm';
     }
     
