@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -217,7 +218,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-32 sticky left-0 z-40">Customer</th>
                 
                 {!collapsedGroups['basic'] && (
-                  <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">
+                  <th colSpan={3} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">
                     <Collapsible>
                       <CollapsibleTrigger onClick={() => toggleGroup('basic')} className="flex items-center justify-center gap-1 w-full">
                         <ChevronDown className="h-3 w-3" />
@@ -227,7 +228,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   </th>
                 )}
                 {collapsedGroups['basic'] && (
-                  <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200 min-w-[60px]">
+                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200 min-w-[60px]">
                     <Button variant="ghost" size="sm" onClick={() => toggleGroup('basic')} className="p-0 h-auto">
                       <ChevronRight className="h-3 w-3" />
                     </Button>
@@ -235,7 +236,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 )}
 
                 {!collapsedGroups['dropReturn'] && (
-                  <th colSpan={4} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">
+                  <th colSpan={4} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">
                     <Collapsible>
                       <CollapsibleTrigger onClick={() => toggleGroup('dropReturn')} className="flex items-center justify-center gap-1 w-full">
                         <ChevronDown className="h-3 w-3" />
@@ -245,7 +246,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   </th>
                 )}
                 {collapsedGroups['dropReturn'] && (
-                  <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200 min-w-[60px]">
+                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200 min-w-[60px]">
                     <Button variant="ghost" size="sm" onClick={() => toggleGroup('dropReturn')} className="p-0 h-auto">
                       <ChevronRight className="h-3 w-3" />
                     </Button>
@@ -253,7 +254,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 )}
 
                 {!collapsedGroups['documentation'] && (
-                  <th colSpan={4} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">
+                  <th colSpan={4} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">
                     <Collapsible>
                       <CollapsibleTrigger onClick={() => toggleGroup('documentation')} className="flex items-center justify-center gap-1 w-full">
                         <ChevronDown className="h-3 w-3" />
@@ -263,7 +264,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   </th>
                 )}
                 {collapsedGroups['documentation'] && (
-                  <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[60px]">
+                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[60px]">
                     <Button variant="ghost" size="sm" onClick={() => toggleGroup('documentation')} className="p-0 h-auto">
                       <ChevronRight className="h-3 w-3" />
                     </Button>
@@ -271,7 +272,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 )}
 
                 {!collapsedGroups['titles'] && (
-                  <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">
+                  <th colSpan={3} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">
                     <Collapsible>
                       <CollapsibleTrigger onClick={() => toggleGroup('titles')} className="flex items-center justify-center gap-1 w-full">
                         <ChevronDown className="h-3 w-3" />
@@ -281,7 +282,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   </th>
                 )}
                 {collapsedGroups['titles'] && (
-                  <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200 min-w-[60px]">
+                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200 min-w-[60px]">
                     <Button variant="ghost" size="sm" onClick={() => toggleGroup('titles')} className="p-0 h-auto">
                       <ChevronRight className="h-3 w-3" />
                     </Button>
@@ -289,7 +290,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 )}
 
                 {!collapsedGroups['invoicing'] && (
-                  <th colSpan={5} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">
+                  <th colSpan={5} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">
                     <Collapsible>
                       <CollapsibleTrigger onClick={() => toggleGroup('invoicing')} className="flex items-center justify-center gap-1 w-full">
                         <ChevronDown className="h-3 w-3" />
@@ -299,7 +300,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   </th>
                 )}
                 {collapsedGroups['invoicing'] && (
-                  <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200 min-w-[60px]">
+                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200 min-w-[60px]">
                     <Button variant="ghost" size="sm" onClick={() => toggleGroup('invoicing')} className="p-0 h-auto">
                       <ChevronRight className="h-3 w-3" />
                     </Button>
@@ -307,7 +308,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 )}
 
                 {!collapsedGroups['finalSteps'] && (
-                  <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200">
+                  <th colSpan={3} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200">
                     <Collapsible>
                       <CollapsibleTrigger onClick={() => toggleGroup('finalSteps')} className="flex items-center justify-center gap-1 w-full">
                         <ChevronDown className="h-3 w-3" />
@@ -317,14 +318,14 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   </th>
                 )}
                 {collapsedGroups['finalSteps'] && (
-                  <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200 min-w-[60px]">
+                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200 min-w-[60px]">
                     <Button variant="ghost" size="sm" onClick={() => toggleGroup('finalSteps')} className="p-0 h-auto">
                       <ChevronRight className="h-3 w-3" />
                     </Button>
                   </th>
                 )}
 
-                <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Notes</th>
+                <th className="border-l-4 border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Notes</th>
                 <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-10">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
@@ -339,57 +340,57 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 
                 {!collapsedGroups['basic'] && (
                   <>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">Ref</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">File</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">Ref</th>
+                    <th className="border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[80px]">File</th>
                     <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-blue-50 min-w-[100px]">Work Order</th>
                   </>
                 )}
 
                 {!collapsedGroups['dropReturn'] && (
                   <>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-green-50 min-w-[80px]">Drop Done?</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Drop Date</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Return Needed?</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-green-50 min-w-[80px]">Drop Done?</th>
+                    <th className="border-r border-gray-300 p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Drop Date</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Return Needed?</th>
                     <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-green-50 min-w-[100px]">Return Date</th>
                   </>
                 )}
 
                 {!collapsedGroups['documentation'] && (
                   <>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[80px]">Docs Sent?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">Docs Rec'd?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[100px]">AES/MBL/VGM Sent?</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[80px]">Docs Sent?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[90px]">Docs Rec'd?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-purple-50 min-w-[100px]">AES/MBL/VGM Sent?</th>
                     <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-purple-50 min-w-[110px]">Doc Cutoff Date</th>
                   </>
                 )}
 
                 {!collapsedGroups['titles'] && (
                   <>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Titles Dispatched?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">Validated Fwd?</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Titles Dispatched?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[100px]">Validated Fwd?</th>
                     <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-orange-50 min-w-[110px]">Titles Returned?</th>
                   </>
                 )}
 
                 {!collapsedGroups['invoicing'] && (
                   <>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">SSL Draft Inv Rec'd?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">Draft Inv Approved?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">Transphere Inv Sent?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[100px]">Payment Rec'd?</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">SSL Draft Inv Rec'd?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">Draft Inv Approved?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[120px]">Transphere Inv Sent?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[100px]">Payment Rec'd?</th>
                     <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-pink-50 min-w-[80px]">SSL Paid?</th>
                   </>
                 )}
 
                 {!collapsedGroups['finalSteps'] && (
                   <>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[80px]">Insured?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[80px]">Released?</th>
+                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[80px]">Insured?</th>
+                    <th className="border-r border-gray-300 p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[80px]">Released?</th>
                     <th className="border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 bg-yellow-50 min-w-[120px]">Docs Sent to Customer?</th>
                   </>
                 )}
 
-                <th className="border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Notes</th>
+                <th className="border-l-4 border-black border-r-4 border-black p-1 text-left text-xs font-semibold text-gray-700 bg-gray-50 min-w-[100px]">Notes</th>
                 <th className="bg-gray-50 border-r-4 border-black p-1 text-center text-xs font-semibold text-gray-700 w-10">Select</th>
                 <th className="bg-gray-50 p-1 text-center text-xs font-semibold text-gray-700 w-12">Delete</th>
               </tr>
@@ -408,57 +409,57 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     
                     {!collapsedGroups['basic'] && (
                       <>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'ref')}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'file')}</td>
+                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'ref')}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'file')}</td>
                         <td className="border-r-4 border-black p-1">{renderCell(record, 'workOrder')}</td>
                       </>
                     )}
 
                     {!collapsedGroups['dropReturn'] && (
                       <>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'dropDone', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'dropDate', false, true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'returnNeeded', true)}</td>
+                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'dropDone', true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'dropDate', false, true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'returnNeeded', true)}</td>
                         <td className="border-r-4 border-black p-1">{renderCell(record, 'returnDate', false, true)}</td>
                       </>
                     )}
 
                     {!collapsedGroups['documentation'] && (
                       <>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'docsSent', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'docsReceived', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'aesMblVgmSent', true)}</td>
+                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'docsSent', true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'docsReceived', true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'aesMblVgmSent', true)}</td>
                         <td className="border-r-4 border-black p-1">{renderCell(record, 'docCutoffDate', false, true)}</td>
                       </>
                     )}
 
                     {!collapsedGroups['titles'] && (
                       <>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'titlesDispatched', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'validatedFwd', true)}</td>
+                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'titlesDispatched', true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'validatedFwd', true)}</td>
                         <td className="border-r-4 border-black p-1">{renderCell(record, 'titlesReturned', true)}</td>
                       </>
                     )}
 
                     {!collapsedGroups['invoicing'] && (
                       <>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'sslDraftInvRec', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'draftInvApproved', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'transphereInvSent', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'paymentRec', true)}</td>
+                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'sslDraftInvRec', true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'draftInvApproved', true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'transphereInvSent', true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'paymentRec', true)}</td>
                         <td className="border-r-4 border-black p-1">{renderCell(record, 'sslPaid', true)}</td>
                       </>
                     )}
 
                     {!collapsedGroups['finalSteps'] && (
                       <>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'insured', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'released', true)}</td>
+                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'insured', true)}</td>
+                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'released', true)}</td>
                         <td className="border-r-4 border-black p-1">{renderCell(record, 'docsSentToCustomer', true)}</td>
                       </>
                     )}
 
-                    <td className="border-r-4 border-black p-1">{renderCell(record, 'notes')}</td>
+                    <td className="border-l-4 border-black border-r-4 border-black p-1">{renderCell(record, 'notes')}</td>
                     <td className="p-1 text-center border-r-4 border-black">
                       <Checkbox
                         checked={selectedRows.includes(record.id)}
