@@ -4,7 +4,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Edit3, Save, X, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { isDateOverdue, isDateWithinDays } from '../utils/dateUtils';
@@ -20,7 +20,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ImportTrackingTableProps {
   data: ImportTrackingRecord[];
@@ -33,7 +32,6 @@ interface ImportTrackingTableProps {
 const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: ImportTrackingTableProps) => {
   const [editingCell, setEditingCell] = useState<{ id: string; field: keyof ImportTrackingRecord } | null>(null);
   const [editValue, setEditValue] = useState('');
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -87,13 +85,6 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
     } else {
       setSelectedRows([]);
     }
-  };
-
-  const toggleGroup = (groupName: string) => {
-    setCollapsedGroups(prev => ({
-      ...prev,
-      [groupName]: !prev[groupName]
-    }));
   };
 
   const getRowConditionalClasses = (record: ImportTrackingRecord): string => {
@@ -150,38 +141,36 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
           case 'packingListCommercialInvoice':
           case 'billOfLading':
           case 'arrivalNotice':
-            return { true: '✅ Received', false: '⚠ Missing' };
+            return { true: '✓ Received', false: '○ Missing' };
           case 'isfFiled':
           case 'entryFiled':
-            return { true: '✅ Filed', false: '⏳ Pending' };
+            return { true: '✓ Filed', false: '○ Pending' };
           case 'blRelease':
           case 'customsRelease':
-            return { true: '✅ Released', false: '⏳ Pending' };
+            return { true: '✓ Released', false: '○ Pending' };
           case 'invoiceSent':
-            return { true: '✅ Sent', false: '⏳ Pending' };
+            return { true: '✓ Sent', false: '○ Pending' };
           case 'paymentReceived':
-            return { true: '✅ Received', false: '⏳ Pending' };
+            return { true: '✓ Received', false: '○ Pending' };
           case 'workOrderSetup':
-            return { true: '✅ Setup', false: '⏳ Pending' };
+            return { true: '✓ Setup', false: '○ Pending' };
           default:
-            return { true: '✅ Yes', false: '⚠ No' };
+            return { true: '✓ Yes', false: '○ No' };
         }
       };
 
       const labels = getStatusLabels(field);
-      const variant = Boolean(value) ? 'success' : 'default';
       
       return (
         <div 
           className="flex items-center justify-center py-1 cursor-pointer"
           onClick={() => updateRecord(record.id, field, !value)}
         >
-          <StatusBadge
-            status={Boolean(value)}
-            trueLabel={labels.true}
-            falseLabel={labels.false}
-            variant={variant}
-          />
+          <span className={`text-xs inline-flex items-center gap-1 ${
+            Boolean(value) ? 'text-green-600' : 'text-gray-400'
+          }`}>
+            {Boolean(value) ? labels.true : labels.false}
+          </span>
         </div>
       );
     }
@@ -212,81 +201,23 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
               <tr className="border-b-4 border-black bg-white">
                 <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-32 sticky left-0 z-40">Reference</th>
-                
-                {!collapsedGroups['basic'] && (
-                  <th colSpan={3} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('basic')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        Basic Information
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['basic'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('basic')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
-                {!collapsedGroups['documentation'] && (
-                  <th colSpan={5} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-emerald-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('documentation')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        Documentation
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['documentation'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-emerald-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('documentation')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
-                {!collapsedGroups['processing'] && (
-                  <th colSpan={4} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('processing')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        Processing
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['processing'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('processing')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
-                {!collapsedGroups['finalSteps'] && (
-                  <th colSpan={3} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">
-                    <Collapsible>
-                      <CollapsibleTrigger onClick={() => toggleGroup('finalSteps')} className="flex items-center justify-center gap-1 w-full">
-                        <ChevronDown className="h-3 w-3" />
-                        Final Steps
-                      </CollapsibleTrigger>
-                    </Collapsible>
-                  </th>
-                )}
-                {collapsedGroups['finalSteps'] && (
-                  <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200 min-w-[60px]">
-                    <Button variant="ghost" size="sm" onClick={() => toggleGroup('finalSteps')} className="p-0 h-auto">
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </th>
-                )}
-
-                <th className="border-l-4 border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-pink-200 min-w-[100px]">Delivery Date</th>
-                <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-gray-200 min-w-[100px]">Notes</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-blue-200 min-w-[80px]">File</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-blue-200 min-w-[100px]">ETA (Final POD)</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-blue-200 min-w-[100px]">Bond</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-emerald-200 min-w-[70px]">POA</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-emerald-200 min-w-[70px]">ISF</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-emerald-200 min-w-[120px]">Packing List & CI</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-emerald-200 min-w-[100px]">Bill of Lading</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-emerald-200 min-w-[100px]">Arrival Notice</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[80px]">ISF Filed</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[90px]">Entry Filed</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[90px]">BL Release</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-purple-200 min-w-[110px]">Customs Release</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-orange-200 min-w-[90px]">Invoice Sent?</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-orange-200 min-w-[110px]">Payment Rec'd?</th>
+                <th className="border-r border-gray-300 p-2 text-center font-bold text-gray-900 bg-orange-200 min-w-[100px]">W/O Set Up</th>
+                <th className="border-r border-gray-300 p-2 text-left font-bold text-gray-900 bg-pink-200 min-w-[100px]">Delivery Date</th>
+                <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-gray-200 min-w-[100px]">Notes</th>
                 <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-10">
                   <Checkbox
                     checked={selectedRows.length === data.length && data.length > 0}
@@ -296,48 +227,27 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                 </th>
                 <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
               </tr>
-              <tr className="bg-gray-100 border-b-2 border-gray-400 sticky top-[41px] z-30">
-                <th className="bg-gray-200 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[100px] sticky left-0 z-40">Reference</th>
-                
-                {!collapsedGroups['basic'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-blue-100 min-w-[80px]">File</th>
-                    <th className="border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-blue-100 min-w-[100px]">ETA (Final POD)</th>
-                    <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-blue-100 min-w-[100px]">Bond</th>
-                  </>
-                )}
-
-                {!collapsedGroups['documentation'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-emerald-100 min-w-[70px]">POA</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-emerald-100 min-w-[70px]">ISF</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-emerald-100 min-w-[120px]">Packing List & CI</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-emerald-100 min-w-[100px]">Bill of Lading</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-emerald-100 min-w-[100px]">Arrival Notice</th>
-                  </>
-                )}
-
-                {!collapsedGroups['processing'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-purple-100 min-w-[80px]">ISF Filed</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-purple-100 min-w-[90px]">Entry Filed</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-purple-100 min-w-[90px]">BL Release</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-purple-100 min-w-[110px]">Customs Release</th>
-                  </>
-                )}
-
-                {!collapsedGroups['finalSteps'] && (
-                  <>
-                    <th className="border-l-4 border-black border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[90px]">Invoice Sent?</th>
-                    <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[110px]">Payment Rec'd?</th>
-                    <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-orange-100 min-w-[100px]">W/O Set Up</th>
-                  </>
-                )}
-
-                <th className="border-l-4 border-black border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 bg-pink-100 min-w-[100px]">Delivery Date</th>
-                <th className="border-l-4 border-black border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-100 min-w-[100px]">Notes</th>
-                <th className="bg-gray-100 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
-                <th className="bg-gray-100 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
+              <tr className="bg-gray-200 border-b-4 border-gray-400 sticky top-[41px] z-30">
+                <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[100px] sticky left-0 z-40">Reference</th>
+                <th className="border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 min-w-[80px]">File</th>
+                <th className="border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 min-w-[100px]">ETA (Final POD)</th>
+                <th className="border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 min-w-[100px]">Bond</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[70px]">POA</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[70px]">ISF</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[120px]">Packing List & CI</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[100px]">Bill of Lading</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[100px]">Arrival Notice</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[80px]">ISF Filed</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[90px]">Entry Filed</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[90px]">BL Release</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[110px]">Customs Release</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[90px]">Invoice Sent?</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[110px]">Payment Rec'd?</th>
+                <th className="border-r border-gray-300 p-1 text-center text-xs font-bold text-gray-800 min-w-[100px]">W/O Set Up</th>
+                <th className="border-r border-gray-300 p-1 text-left text-xs font-bold text-gray-800 min-w-[100px]">Delivery Date</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[100px]">Notes</th>
+                <th className="bg-gray-300 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
+                <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -351,44 +261,23 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                     }`}
                   >
                     <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">{renderCell(record, 'reference')}</td>
-                    
-                    {!collapsedGroups['basic'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'file')}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'etaFinalPod', false, true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'bond')}</td>
-                      </>
-                    )}
-
-                    {!collapsedGroups['documentation'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'poa', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'isf', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'packingListCommercialInvoice', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'billOfLading', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'arrivalNotice', true)}</td>
-                      </>
-                    )}
-
-                    {!collapsedGroups['processing'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'isfFiled', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'entryFiled', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'blRelease', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'customsRelease', true)}</td>
-                      </>
-                    )}
-
-                    {!collapsedGroups['finalSteps'] && (
-                      <>
-                        <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'invoiceSent', true)}</td>
-                        <td className="border-r border-gray-300 p-1">{renderCell(record, 'paymentReceived', true)}</td>
-                        <td className="border-r-4 border-black p-1">{renderCell(record, 'workOrderSetup', true)}</td>
-                      </>
-                    )}
-
-                    <td className="border-l-4 border-black border-r border-gray-300 p-1">{renderCell(record, 'deliveryDate', false, true)}</td>
-                    <td className="border-l-4 border-black border-r-4 border-black p-1">{renderCell(record, 'notes')}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'file')}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'etaFinalPod', false, true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'bond')}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'poa', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'isf', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'packingListCommercialInvoice', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'billOfLading', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'arrivalNotice', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'isfFiled', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'entryFiled', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'blRelease', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'customsRelease', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'invoiceSent', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'paymentReceived', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'workOrderSetup', true)}</td>
+                    <td className="border-r border-gray-300 p-1">{renderCell(record, 'deliveryDate', false, true)}</td>
+                    <td className="border-r-4 border-black p-1">{renderCell(record, 'notes')}</td>
                     <td className="p-1 text-center border-r-4 border-black">
                       <Checkbox
                         checked={selectedRows.includes(record.id)}
@@ -426,7 +315,7 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                 );
               })}
               <tr>
-                <td colSpan={21} className="h-12"></td>
+                <td colSpan={20} className="h-12"></td>
               </tr>
             </tbody>
           </table>
