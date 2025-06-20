@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,20 +19,98 @@ import { sampleAllFilesData } from '../data/sampleAllFilesData';
 import { useExcelImport } from '../hooks/useExcelImport';
 import { useSearch, useImportSearch } from '../hooks/useSearch';
 import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
+import { useNotifications } from '../hooks/useNotifications';
 
 const FreightTracker = () => {
-  const [data, setData] = useState<TrackingRecord[]>(sampleTrackingData);
-  const [importData, setImportData] = useState<ImportTrackingRecord[]>(sampleImportData);
-  const [allFilesData, setAllFilesData] = useState<AllFilesRecord[]>(sampleAllFilesData);
+  // Create completed sample data by modifying the first few records
+  const getCompletedExportData = (): TrackingRecord[] => {
+    const data = [...sampleTrackingData];
+    // Make first 2 records completed
+    data.slice(0, 2).forEach(record => {
+      record.dropDone = true;
+      record.docsSent = true;
+      record.docsReceived = true;
+      record.aesMblVgmSent = true;
+      record.titlesDispatched = true;
+      record.validatedFwd = true;
+      record.titlesReturned = true;
+      record.sslDraftInvRec = true;
+      record.draftInvApproved = true;
+      record.transphereInvSent = true;
+      record.paymentRec = true;
+      record.sslPaid = true;
+      record.insured = true;
+      record.released = true;
+      record.docsSentToCustomer = true;
+      record.customer = record.customer || 'Completed Customer';
+      record.ref = record.ref || 'COMP001';
+      record.file = record.file || 'ES123';
+      record.workOrder = record.workOrder || 'WO001';
+    });
+    return data;
+  };
+
+  const getCompletedImportData = (): ImportTrackingRecord[] => {
+    const data = [...sampleImportData];
+    // Make first 2 records completed
+    data.slice(0, 2).forEach(record => {
+      record.poa = true;
+      record.isf = true;
+      record.packingListCommercialInvoice = true;
+      record.billOfLading = true;
+      record.arrivalNotice = true;
+      record.isfFiled = true;
+      record.entryFiled = true;
+      record.blRelease = true;
+      record.customsRelease = true;
+      record.invoiceSent = true;
+      record.paymentReceived = true;
+      record.workOrderSetup = true;
+      record.reference = record.reference || 'IMP001';
+      record.file = record.file || 'IS123';
+      record.etaFinalPod = record.etaFinalPod || '2024-01-15';
+      record.bond = record.bond || 'BOND123';
+    });
+    return data;
+  };
+
+  const getCompletedAllFilesData = (): AllFilesRecord[] => {
+    const data = [...sampleAllFilesData];
+    // Make first 2 records completed
+    data.slice(0, 2).forEach(record => {
+      record.file = 'ES';
+      record.number = '123456';
+      record.customer = 'Completed Customer Inc.';
+      record.originPort = 'Los Angeles';
+      record.destinationPort = 'Hamburg';
+      record.destinationCountry = 'Germany';
+      record.container20 = '2';
+    });
+    return data;
+  };
+
+  const [data, setData] = useState<TrackingRecord[]>(getCompletedExportData());
+  const [importData, setImportData] = useState<ImportTrackingRecord[]>(getCompletedImportData());
+  const [allFilesData, setAllFilesData] = useState<AllFilesRecord[]>(getCompletedAllFilesData());
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('export-table');
 
+  const { notifications, addNotification } = useNotifications();
   const { fileInputRef, importFromExcel } = useExcelImport(setData, setImportData, setAllFilesData);
   const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(data);
   const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
   const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
+
+  // Demo notification on mount
+  useEffect(() => {
+    addNotification(
+      'Welcome to Freight Tracker',
+      'In-app notifications are now enabled. Completed rows are highlighted with green borders.',
+      'success'
+    );
+  }, [addNotification]);
 
   // Get current search term and setter based on active tab
   const getCurrentSearchProps = () => {

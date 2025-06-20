@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -7,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
+import { isAllFilesRecordComplete } from '../utils/completionUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -74,6 +74,14 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     } else {
       setSelectedRows([]);
     }
+  };
+
+  const getRowConditionalClasses = (record: AllFilesRecord): string => {
+    // Completion check - solid green border
+    if (isAllFilesRecordComplete(record)) {
+      return 'bg-green-50 border-4 border-green-500 shadow-sm';
+    }
+    return '';
   };
 
   const renderCell = (record: AllFilesRecord, field: keyof AllFilesRecord, isVolumeField = false) => {
@@ -168,77 +176,80 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
               </tr>
             </thead>
             <tbody>
-              {data.map((record, index) => (
-                <tr
-                  key={record.id}
-                  className={`border-b-2 border-gray-300 transition-all duration-200 ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                  }`}
-                >
-                  <td className="p-1 text-center border-r-2 border-gray-400">
-                    <Checkbox
-                      checked={selectedRows.includes(record.id)}
-                      onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
-                      className="h-3 w-3 border"
-                    />
-                  </td>
-                  <td className="p-1 text-center border-r-2 border-gray-400">
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
-                          <Trash2 className="h-3 w-3 text-red-500" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Record</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => deleteRecord(record.id)}
-                            className="bg-red-600 hover:bg-red-700"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </td>
-                  
-                  {/* File Information */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'file')}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'number')}</td>
-                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'customer')}</td>
+              {data.map((record, index) => {
+                const conditionalClasses = getRowConditionalClasses(record);
+                return (
+                  <tr
+                    key={record.id}
+                    className={`border-b-2 border-gray-300 transition-all duration-200 ${
+                      conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
+                    }`}
+                  >
+                    <td className="p-1 text-center border-r-2 border-gray-400">
+                      <Checkbox
+                        checked={selectedRows.includes(record.id)}
+                        onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
+                        className="h-3 w-3 border"
+                      />
+                    </td>
+                    <td className="p-1 text-center border-r-2 border-gray-400">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
+                            <Trash2 className="h-3 w-3 text-red-500" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Record</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => deleteRecord(record.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </td>
+                    
+                    {/* File Information */}
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'file')}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'number')}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'customer')}</td>
 
-                  {/* Route Information */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
-                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
+                    {/* Route Information */}
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'originPort')}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'originState')}</td>
 
-                  {/* Destination */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
-                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'destinationCountry')}</td>
+                    {/* Destination */}
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'destinationPort')}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'destinationCountry')}</td>
 
-                  {/* Container & Transport Types with Volume Heatmap */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container40', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl', true)}</td>
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air', true)}</td>
-                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'truck', true)}</td>
+                    {/* Container & Transport Types with Volume Heatmap */}
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container20', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'container40', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'roro', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'lcl', true)}</td>
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'air', true)}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'truck', true)}</td>
 
-                  {/* Service Providers */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ssl')}</td>
-                  <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'nvo')}</td>
+                    {/* Service Providers */}
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'ssl')}</td>
+                    <td className="border-r-4 border-gray-400 p-1">{renderCell(record, 'nvo')}</td>
 
-                  {/* Additional Info */}
-                  <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'comments')}</td>
-                  <td className="p-1">{renderCell(record, 'salesContact')}</td>
-                </tr>
-              ))}
+                    {/* Additional Info */}
+                    <td className="border-r-2 border-gray-400 p-1">{renderCell(record, 'comments')}</td>
+                    <td className="p-1">{renderCell(record, 'salesContact')}</td>
+                  </tr>
+                );
+              })}
               <tr>
                 <td colSpan={20} className="h-16"></td>
               </tr>

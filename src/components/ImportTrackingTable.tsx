@@ -8,6 +8,7 @@ import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { isDateOverdue, isDateWithinDays } from '../utils/dateUtils';
+import { isImportRecordComplete } from '../utils/completionUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -87,6 +88,11 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
   };
 
   const getRowConditionalClasses = (record: ImportTrackingRecord): string => {
+    // Completion check - solid green border
+    if (isImportRecordComplete(record)) {
+      return 'bg-green-50 border-4 border-green-500 shadow-sm';
+    }
+    
     // ETA overdue - red tint
     if (isDateOverdue(record.etaFinalPod)) {
       return 'bg-red-50 border-red-200';

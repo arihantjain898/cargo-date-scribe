@@ -8,6 +8,7 @@ import { Edit3, Save, X, Trash2 } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { isDateOverdue, isDateWithinDays } from '../utils/dateUtils';
+import { isExportRecordComplete } from '../utils/completionUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,7 +53,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       const { id, field } = editingCell;
       let value: any = editValue;
 
-      if (field === 'dropDone' || field === 'returnNeeded' || field === 'docsSent' ||
+      if (field === 'dropDone' || field === 'returnNeeded' || field === 'docsSent' || 
           field === 'docsReceived' || field === 'aesMblVgmSent' || field === 'titlesDispatched' ||
           field === 'validatedFwd' || field === 'titlesReturned' || field === 'sslDraftInvRec' ||
           field === 'draftInvApproved' || field === 'transphereInvSent' || field === 'paymentRec' ||
@@ -88,12 +89,17 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   };
 
   const getRowConditionalClasses = (record: TrackingRecord): string => {
-    // Drop date overdue - red tint
-    if (isDateOverdue(record.dropDate)) {
+    // Completion check - solid green border
+    if (isExportRecordComplete(record)) {
+      return 'bg-green-50 border-4 border-green-500 shadow-sm';
+    }
+    
+    // Doc cutoff overdue - red tint
+    if (isDateOverdue(record.docCutoffDate)) {
       return 'bg-red-50 border-red-200';
     }
-    // Return date within 3 days - amber highlight
-    if (isDateWithinDays(record.returnDate, 3)) {
+    // Drop date within 2 days - amber highlight
+    if (isDateWithinDays(record.dropDate, 2)) {
       return 'bg-amber-50 border-amber-200';
     }
     return '';
@@ -188,11 +194,8 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden relative">
-      <ScrollArea 
-        className="h-[calc(100vh-220px)] w-full" 
-        ref={scrollAreaRef}
-      >
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+      <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
         <div className="min-w-[2400px]">
           <table className="w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
@@ -272,7 +275,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 return (
                   <tr
                     key={record.id}
-                    className={`border-b border-gray-200 transition-all duration-200 ${
+                    className={`border-b-2 border-gray-300 transition-all duration-200 ${
                       conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                     }`}
                   >
@@ -353,7 +356,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 );
               })}
               <tr>
-                <td colSpan={25} className="h-16"></td>
+                <td colSpan={26} className="h-16"></td>
               </tr>
             </tbody>
           </table>
