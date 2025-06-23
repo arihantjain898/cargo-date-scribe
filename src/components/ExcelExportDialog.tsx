@@ -30,7 +30,9 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
   children 
 }) => {
   const handleExport = () => {
-    let dataToExport: any[] = [];
+    let dataToExport: Array<
+      TrackingRecord | ImportTrackingRecord | AllFilesRecord
+    > = [];
     let filename = '';
     let selectedRows: string[] = [];
 

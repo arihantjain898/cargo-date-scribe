@@ -21,7 +21,11 @@ import {
 
 interface AllFilesTableProps {
   data: AllFilesRecord[];
-  updateRecord: (id: string, field: keyof AllFilesRecord, value: any) => void;
+  updateRecord: (
+    id: string,
+    field: keyof AllFilesRecord,
+    value: string
+  ) => void;
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
@@ -41,7 +45,11 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     }
   }, [data.length]);
 
-  const startEdit = (id: string, field: keyof AllFilesRecord, currentValue: any) => {
+  const startEdit = (
+    id: string,
+    field: keyof AllFilesRecord,
+    currentValue: string
+  ) => {
     setEditingCell({ id, field });
     setEditValue(String(currentValue));
   };

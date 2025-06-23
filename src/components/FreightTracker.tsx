@@ -141,20 +141,32 @@ const FreightTracker = () => {
     }
   };
 
-  const updateRecord = (id: string, field: keyof TrackingRecord, value: any) => {
-    setData(prev => prev.map(record => 
+  const updateRecord = (
+    id: string,
+    field: keyof TrackingRecord,
+    value: string | boolean
+  ) => {
+    setData(prev => prev.map(record =>
       record.id === id ? { ...record, [field]: value } : record
     ));
   };
 
-  const updateImportRecord = (id: string, field: keyof ImportTrackingRecord, value: any) => {
-    setImportData(prev => prev.map(record => 
+  const updateImportRecord = (
+    id: string,
+    field: keyof ImportTrackingRecord,
+    value: string | boolean
+  ) => {
+    setImportData(prev => prev.map(record =>
       record.id === id ? { ...record, [field]: value } : record
     ));
   };
 
-  const updateAllFilesRecord = (id: string, field: keyof AllFilesRecord, value: any) => {
-    setAllFilesData(prev => prev.map(record => 
+  const updateAllFilesRecord = (
+    id: string,
+    field: keyof AllFilesRecord,
+    value: string
+  ) => {
+    setAllFilesData(prev => prev.map(record =>
       record.id === id ? { ...record, [field]: value } : record
     ));
   };

@@ -23,7 +23,11 @@ import {
 
 interface TrackingTableProps {
   data: TrackingRecord[];
-  updateRecord: (id: string, field: keyof TrackingRecord, value: any) => void;
+  updateRecord: (
+    id: string,
+    field: keyof TrackingRecord,
+    value: string | boolean
+  ) => void;
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
@@ -43,7 +47,11 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     }
   }, [data.length]);
 
-  const startEdit = (id: string, field: keyof TrackingRecord, currentValue: any) => {
+  const startEdit = (
+    id: string,
+    field: keyof TrackingRecord,
+    currentValue: string | boolean
+  ) => {
     setEditingCell({ id, field });
     setEditValue(String(currentValue));
   };
@@ -51,7 +59,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
   const saveEdit = () => {
     if (editingCell) {
       const { id, field } = editingCell;
-      let value: any = editValue;
+      let value: string | boolean = editValue;
 
       if (field === 'dropDone' || field === 'returnNeeded' || field === 'docsSent' ||
           field === 'docsReceived' || field === 'aesMblVgmSent' || field === 'titlesDispatched' ||
@@ -164,7 +172,8 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       };
 
       const labels = getStatusLabels(field);
-      const variant = Boolean(value) ? 'success' : 'default';
+      const boolValue = value as boolean;
+      const variant = boolValue ? 'success' : 'default';
       
       return (
         <div 
@@ -172,7 +181,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           onClick={() => updateRecord(record.id, field, !value)}
         >
           <StatusBadge
-            status={Boolean(value)}
+            status={boolValue}
             trueLabel={labels.true}
             falseLabel={labels.false}
             variant={variant}
