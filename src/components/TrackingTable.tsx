@@ -122,13 +122,14 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-8 text-sm min-w-0 flex-1 border-blue-300 focus:border-blue-500 bg-white"
+            className="h-8 text-sm min-w-0 flex-1 border-2 border-blue-500 focus:border-blue-600 bg-white text-gray-900 focus:ring-2 focus:ring-blue-200"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
               if (e.key === 'Escape') cancelEdit();
             }}
             autoFocus
+            style={{ fontSize: '14px', color: '#1f2937' }}
           />
           <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
             <Save className="h-3 w-3 text-green-600" />

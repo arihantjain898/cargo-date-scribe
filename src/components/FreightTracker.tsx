@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,9 +14,6 @@ import ExcelImportDialog from './ExcelImportDialog';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
-import { sampleTrackingData } from '../data/sampleData';
-import { sampleImportData } from '../data/sampleImportData';
-import { sampleAllFilesData } from '../data/sampleAllFilesData';
 import { useExcelImport } from '../hooks/useExcelImport';
 import { useSearch, useImportSearch } from '../hooks/useSearch';
 import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
@@ -33,10 +31,10 @@ const FreightTracker = () => {
     localStorage.setItem('freight-tracker-active-tab', activeTab);
   }, [activeTab]);
 
-  // Use Firebase for data persistence - assuming user is logged in for now
-  const currentUserId = 'demo-user'; // In production, get this from Firebase Auth
+  // Use Firebase for data persistence
+  const currentUserId = 'demo-user';
   const {
-    data: firebaseExportData,
+    data: exportData,
     loading: exportLoading,
     addItem: addExportItem,
     updateItem: updateExportItem,
@@ -44,7 +42,7 @@ const FreightTracker = () => {
   } = useFirestore<TrackingRecord>('export_tracking', currentUserId);
 
   const {
-    data: firebaseImportData,
+    data: importData,
     loading: importLoading,
     addItem: addImportItem,
     updateItem: updateImportItem,
@@ -52,143 +50,33 @@ const FreightTracker = () => {
   } = useFirestore<ImportTrackingRecord>('import_tracking', currentUserId);
 
   const {
-    data: firebaseAllFilesData,
+    data: allFilesData,
     loading: allFilesLoading,
     addItem: addAllFilesItem,
     updateItem: updateAllFilesItem,
     deleteItem: deleteAllFilesItem
   } = useFirestore<AllFilesRecord>('all_files', currentUserId);
 
-  // Create completed sample data by modifying the first few records
-  const getCompletedExportData = (): TrackingRecord[] => {
-    const data = [...sampleTrackingData];
-    // Make first 2 records completed
-    data.slice(0, 2).forEach(record => {
-      record.dropDone = true;
-      record.docsSent = true;
-      record.docsReceived = true;
-      record.aesMblVgmSent = true;
-      record.titlesDispatched = true;
-      record.validatedFwd = true;
-      record.titlesReturned = true;
-      record.sslDraftInvRec = true;
-      record.draftInvApproved = true;
-      record.transphereInvSent = true;
-      record.paymentRec = true;
-      record.sslPaid = true;
-      record.insured = true;
-      record.released = true;
-      record.docsSentToCustomer = true;
-      record.customer = record.customer || 'Completed Customer';
-      record.ref = record.ref || 'COMP001';
-      record.file = record.file || 'ES123';
-      record.workOrder = record.workOrder || 'WO001';
-    });
-    return data;
-  };
-
-  const getCompletedImportData = (): ImportTrackingRecord[] => {
-    const data = [...sampleImportData];
-    // Make first 2 records completed
-    data.slice(0, 2).forEach(record => {
-      record.poa = true;
-      record.isf = true;
-      record.packingListCommercialInvoice = true;
-      record.billOfLading = true;
-      record.arrivalNotice = true;
-      record.isfFiled = true;
-      record.entryFiled = true;
-      record.blRelease = true;
-      record.customsRelease = true;
-      record.invoiceSent = true;
-      record.paymentReceived = true;
-      record.workOrderSetup = true;
-      record.reference = record.reference || 'IMP001';
-      record.file = record.file || 'IS123';
-      record.etaFinalPod = record.etaFinalPod || '2024-01-15';
-      record.bond = record.bond || 'BOND123';
-    });
-    return data;
-  };
-
-  const getCompletedAllFilesData = (): AllFilesRecord[] => {
-    const data = [...sampleAllFilesData];
-    // Make first 2 records completed
-    data.slice(0, 2).forEach(record => {
-      record.file = 'ES';
-      record.number = '123456';
-      record.customer = 'Completed Customer Inc.';
-      record.originPort = 'Los Angeles';
-      record.destinationPort = 'Hamburg';
-      record.destinationCountry = 'Germany';
-      record.container20 = '2';
-    });
-    return data;
-  };
-
-  // Initialize with sample data only if Firebase is empty AND not loading
-  const [hasInitialized, setHasInitialized] = useState(false);
-  const [localExportData, setLocalExportData] = useState<TrackingRecord[]>([]);
-  const [localImportData, setLocalImportData] = useState<ImportTrackingRecord[]>([]);
-  const [localAllFilesData, setLocalAllFilesData] = useState<AllFilesRecord[]>([]);
-
-  // Initialize data - use Firebase data, only use sample data if Firebase is completely empty
-  useEffect(() => {
-    if (!exportLoading && !hasInitialized) {
-      if (firebaseExportData.length > 0) {
-        console.log('Loading Firebase export data:', firebaseExportData.length, 'records');
-        setLocalExportData(firebaseExportData);
-      } else {
-        console.log('No Firebase export data, using sample data');
-        setLocalExportData(getCompletedExportData());
-      }
-      setHasInitialized(true);
-    } else if (!exportLoading && firebaseExportData.length > 0) {
-      console.log('Updating from Firebase export data:', firebaseExportData.length, 'records');
-      setLocalExportData(firebaseExportData);
-    }
-  }, [firebaseExportData, exportLoading, hasInitialized]);
-
-  useEffect(() => {
-    if (!importLoading) {
-      if (firebaseImportData.length > 0) {
-        setLocalImportData(firebaseImportData);
-      } else if (localImportData.length === 0) {
-        setLocalImportData(getCompletedImportData());
-      }
-    }
-  }, [firebaseImportData, importLoading]);
-
-  useEffect(() => {
-    if (!allFilesLoading) {
-      if (firebaseAllFilesData.length > 0) {
-        setLocalAllFilesData(firebaseAllFilesData);
-      } else if (localAllFilesData.length === 0) {
-        setLocalAllFilesData(getCompletedAllFilesData());
-      }
-    }
-  }, [firebaseAllFilesData, allFilesLoading]);
-
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
 
   const { notifications, addNotification } = useNotifications();
-  const { fileInputRef, importFromExcel } = useExcelImport(setLocalExportData, setLocalImportData, setLocalAllFilesData);
-  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(localExportData);
-  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(localImportData);
-  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(localAllFilesData);
+  const { fileInputRef, importFromExcel } = useExcelImport(() => {}, () => {}, () => {});
+  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
+  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
+  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
 
-  // Demo notification on mount
+  // Welcome notification on mount
   useEffect(() => {
-    if (hasInitialized) {
+    if (!exportLoading) {
       addNotification(
         'Welcome to Freight Tracker',
-        'Your data is now synced with Firebase. Changes will persist across sessions.',
+        'Your data is synced with Firebase. All changes will persist.',
         'success'
       );
     }
-  }, [addNotification, hasInitialized]);
+  }, [addNotification, exportLoading]);
 
   // Get current search term and setter based on active tab
   const getCurrentSearchProps = () => {
@@ -226,22 +114,12 @@ const FreightTracker = () => {
   ) => {
     console.log('Updating export record:', id, field, value);
     
-    // Update local state immediately for responsiveness
-    setLocalExportData(prev => prev.map(record =>
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-
-    // Update Firebase
     try {
       await updateExportItem(id, { [field]: value } as Partial<TrackingRecord>);
       console.log('Successfully updated export record in Firebase');
     } catch (error) {
       console.error('Error updating export record:', error);
       addNotification('Error', 'Failed to save changes', 'error');
-      // Revert local changes on error
-      setLocalExportData(prev => prev.map(record =>
-        record.id === id ? { ...record, [field]: record[field] } : record
-      ));
     }
   };
 
@@ -250,12 +128,6 @@ const FreightTracker = () => {
     field: keyof ImportTrackingRecord,
     value: string | boolean
   ) => {
-    // Update local state immediately for responsiveness
-    setLocalImportData(prev => prev.map(record =>
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-
-    // Update Firebase
     try {
       await updateImportItem(id, { [field]: value } as Partial<ImportTrackingRecord>);
     } catch (error) {
@@ -269,12 +141,6 @@ const FreightTracker = () => {
     field: keyof AllFilesRecord,
     value: string
   ) => {
-    // Update local state immediately for responsiveness
-    setLocalAllFilesData(prev => prev.map(record =>
-      record.id === id ? { ...record, [field]: value } : record
-    ));
-
-    // Update Firebase
     try {
       await updateAllFilesItem(id, { [field]: value } as Partial<AllFilesRecord>);
     } catch (error) {
@@ -284,11 +150,8 @@ const FreightTracker = () => {
   };
 
   const deleteRecord = async (id: string) => {
-    // Update local state immediately
-    setLocalExportData(prev => prev.filter(record => record.id !== id));
     setSelectedRows(prev => prev.filter(rowId => rowId !== id));
 
-    // Delete from Firebase
     try {
       await deleteExportItem(id);
       addNotification('Success', 'Record deleted successfully', 'success');
@@ -299,11 +162,8 @@ const FreightTracker = () => {
   };
 
   const deleteImportRecord = async (id: string) => {
-    // Update local state immediately
-    setLocalImportData(prev => prev.filter(record => record.id !== id));
     setSelectedImportRows(prev => prev.filter(rowId => rowId !== id));
 
-    // Delete from Firebase
     try {
       await deleteImportItem(id);
       addNotification('Success', 'Record deleted successfully', 'success');
@@ -314,11 +174,8 @@ const FreightTracker = () => {
   };
 
   const deleteAllFilesRecord = async (id: string) => {
-    // Update local state immediately
-    setLocalAllFilesData(prev => prev.filter(record => record.id !== id));
     setSelectedAllFilesRows(prev => prev.filter(rowId => rowId !== id));
 
-    // Delete from Firebase
     try {
       await deleteAllFilesItem(id);
       addNotification('Success', 'Record deleted successfully', 'success');
@@ -461,6 +318,14 @@ const FreightTracker = () => {
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
+
+  if (exportLoading || importLoading || allFilesLoading) {
+    return (
+      <div className="w-full min-h-screen bg-gray-50 p-2 md:p-6 flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-gray-50 p-2 md:p-6">
