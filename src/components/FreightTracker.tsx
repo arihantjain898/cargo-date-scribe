@@ -186,7 +186,7 @@ const FreightTracker = () => {
   };
 
   const addNewRecord = async () => {
-    console.log('Starting to add new export record...');
+    console.log('=== STARTING TO ADD NEW EXPORT RECORD ===');
     
     const newRecord: Omit<TrackingRecord, 'id'> = {
       customer: "",
@@ -215,19 +215,22 @@ const FreightTracker = () => {
       notes: ""
     };
 
+    console.log('New record to add:', newRecord);
+    console.log('Current user ID:', currentUserId);
+    console.log('addExportItem function:', addExportItem);
+
     try {
-      console.log('Calling addExportItem with:', newRecord);
       const id = await addExportItem(newRecord);
-      console.log('Successfully added export record with ID:', id);
-      addNotification('Success', 'New export record added', 'success');
+      console.log('=== SUCCESSFULLY ADDED EXPORT RECORD ===', id);
+      addNotification('Success', 'New export record added successfully', 'success');
     } catch (error) {
-      console.error('Error adding export record:', error);
+      console.error('=== ERROR ADDING EXPORT RECORD ===', error);
       addNotification('Error', `Failed to add record: ${error}`, 'error');
     }
   };
 
   const addNewImportRecord = async () => {
-    console.log('Starting to add new import record...');
+    console.log('=== STARTING TO ADD NEW IMPORT RECORD ===');
     
     const newRecord: Omit<ImportTrackingRecord, 'id'> = {
       reference: "",
@@ -250,19 +253,21 @@ const FreightTracker = () => {
       notes: ""
     };
 
+    console.log('New import record to add:', newRecord);
+    console.log('Current user ID:', currentUserId);
+
     try {
-      console.log('Calling addImportItem with:', newRecord);
       const id = await addImportItem(newRecord);
-      console.log('Successfully added import record with ID:', id);
-      addNotification('Success', 'New import record added', 'success');
+      console.log('=== SUCCESSFULLY ADDED IMPORT RECORD ===', id);
+      addNotification('Success', 'New import record added successfully', 'success');
     } catch (error) {
-      console.error('Error adding import record:', error);
+      console.error('=== ERROR ADDING IMPORT RECORD ===', error);
       addNotification('Error', `Failed to add record: ${error}`, 'error');
     }
   };
 
   const addNewAllFilesRecord = async () => {
-    console.log('Starting to add new all files record...');
+    console.log('=== STARTING TO ADD NEW ALL FILES RECORD ===');
     
     const newRecord: Omit<AllFilesRecord, 'id'> = {
       file: "ES",
@@ -284,20 +289,27 @@ const FreightTracker = () => {
       salesContact: ""
     };
 
+    console.log('New all files record to add:', newRecord);
+    console.log('Current user ID:', currentUserId);
+
     try {
-      console.log('Calling addAllFilesItem with:', newRecord);
       const id = await addAllFilesItem(newRecord);
-      console.log('Successfully added all files record with ID:', id);
-      addNotification('Success', 'New all files record added', 'success');
+      console.log('=== SUCCESSFULLY ADDED ALL FILES RECORD ===', id);
+      addNotification('Success', 'New all files record added successfully', 'success');
     } catch (error) {
-      console.error('Error adding all files record:', error);
+      console.error('=== ERROR ADDING ALL FILES RECORD ===', error);
       addNotification('Error', `Failed to add record: ${error}`, 'error');
     }
   };
 
   // Universal add record function based on active tab
   const handleAddRecord = () => {
-    console.log('Add record clicked for tab:', activeTab);
+    console.log('=== ADD RECORD BUTTON CLICKED ===');
+    console.log('Active tab:', activeTab);
+    console.log('Export data length:', exportData.length);
+    console.log('Import data length:', importData.length);
+    console.log('All files data length:', allFilesData.length);
+    
     switch (activeTab) {
       case 'export-table':
         addNewRecord();
@@ -309,6 +321,7 @@ const FreightTracker = () => {
         addNewAllFilesRecord();
         break;
       default:
+        console.log('Unknown tab, defaulting to export');
         addNewRecord();
     }
   };
