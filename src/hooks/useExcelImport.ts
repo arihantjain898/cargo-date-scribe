@@ -1,4 +1,3 @@
-
 import { useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { TrackingRecord } from '../types/TrackingRecord';
@@ -62,6 +61,7 @@ export const useExcelImport = (
           const importedRecords: ImportTrackingRecord[] = jsonData.map(
             (row: Record<string, unknown>, index: number) => ({
             id: String(row.id || Date.now().toString() + index),
+            customer: String(row.customer || ''),
             reference: String(row.reference || ''),
             file: String(row.file || ''),
             etaFinalPod: String(row.etaFinalPod || ''),
