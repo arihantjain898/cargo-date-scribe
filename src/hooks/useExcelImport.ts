@@ -30,19 +30,19 @@ export const useExcelImport = (
         if (dataType === 'export') {
           const importedRecords: TrackingRecord[] = jsonData.map(
             (row: Record<string, unknown>, index: number) => ({
-            id: row.id || Date.now().toString() + index,
-            customer: row.customer || '',
-            ref: row.ref || '',
-            file: row.file || '',
-            workOrder: row.workOrder || '',
+            id: String(row.id || Date.now().toString() + index),
+            customer: String(row.customer || ''),
+            ref: String(row.ref || ''),
+            file: String(row.file || ''),
+            workOrder: String(row.workOrder || ''),
             dropDone: Boolean(row.dropDone),
-            dropDate: row.dropDate || '',
+            dropDate: String(row.dropDate || ''),
             returnNeeded: Boolean(row.returnNeeded),
-            returnDate: row.returnDate || '',
+            returnDate: String(row.returnDate || ''),
             docsSent: Boolean(row.docsSent),
             docsReceived: Boolean(row.docsReceived),
             aesMblVgmSent: Boolean(row.aesMblVgmSent),
-            docCutoffDate: row.docCutoffDate || '',
+            docCutoffDate: String(row.docCutoffDate || ''),
             titlesDispatched: Boolean(row.titlesDispatched),
             validatedFwd: Boolean(row.validatedFwd),
             titlesReturned: Boolean(row.titlesReturned),
@@ -54,18 +54,18 @@ export const useExcelImport = (
             insured: Boolean(row.insured),
             released: Boolean(row.released),
             docsSentToCustomer: Boolean(row.docsSentToCustomer),
-            notes: row.notes || ''
+            notes: String(row.notes || '')
           }));
           setExportData(importedRecords);
           console.log('Successfully imported', importedRecords.length, 'export tracking records');
         } else if (dataType === 'import') {
           const importedRecords: ImportTrackingRecord[] = jsonData.map(
             (row: Record<string, unknown>, index: number) => ({
-            id: row.id || Date.now().toString() + index,
-            reference: row.reference || '',
-            file: row.file || '',
-            etaFinalPod: row.etaFinalPod || '',
-            bond: row.bond || '',
+            id: String(row.id || Date.now().toString() + index),
+            reference: String(row.reference || ''),
+            file: String(row.file || ''),
+            etaFinalPod: String(row.etaFinalPod || ''),
+            bond: String(row.bond || ''),
             poa: Boolean(row.poa),
             isf: Boolean(row.isf),
             packingListCommercialInvoice: Boolean(row.packingListCommercialInvoice),
@@ -78,32 +78,32 @@ export const useExcelImport = (
             invoiceSent: Boolean(row.invoiceSent),
             paymentReceived: Boolean(row.paymentReceived),
             workOrderSetup: Boolean(row.workOrderSetup),
-            deliveryDate: row.deliveryDate || '',
-            notes: row.notes || ''
+            deliveryDate: String(row.deliveryDate || ''),
+            notes: String(row.notes || '')
           }));
           setImportData(importedRecords);
           console.log('Successfully imported', importedRecords.length, 'import tracking records');
         } else if (dataType === 'all-files') {
           const importedRecords: AllFilesRecord[] = jsonData.map(
             (row: Record<string, unknown>, index: number) => ({
-            id: row.id || Date.now().toString() + index,
-            file: row.file || 'ES',
-            number: row.number || '',
-            customer: row.customer || '',
-            originPort: row.originPort || '',
-            originState: row.originState || '',
-            destinationPort: row.destinationPort || '',
-            destinationCountry: row.destinationCountry || '',
-            container20: row.container20 || '',
-            container40: row.container40 || '',
-            roro: row.roro || '',
-            lcl: row.lcl || '',
-            air: row.air || '',
-            truck: row.truck || '',
-            ssl: row.ssl || '',
-            nvo: row.nvo || '',
-            comments: row.comments || '',
-            salesContact: row.salesContact || ''
+            id: String(row.id || Date.now().toString() + index),
+            file: String(row.file || 'ES'),
+            number: String(row.number || ''),
+            customer: String(row.customer || ''),
+            originPort: String(row.originPort || ''),
+            originState: String(row.originState || ''),
+            destinationPort: String(row.destinationPort || ''),
+            destinationCountry: String(row.destinationCountry || ''),
+            container20: String(row.container20 || ''),
+            container40: String(row.container40 || ''),
+            roro: String(row.roro || ''),
+            lcl: String(row.lcl || ''),
+            air: String(row.air || ''),
+            truck: String(row.truck || ''),
+            ssl: String(row.ssl || ''),
+            nvo: String(row.nvo || ''),
+            comments: String(row.comments || ''),
+            salesContact: String(row.salesContact || '')
           }));
           setAllFilesData(importedRecords);
           console.log('Successfully imported', importedRecords.length, 'all files records');

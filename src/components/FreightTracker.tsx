@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -217,7 +216,7 @@ const FreightTracker = () => {
       await updateExportItem(id, { [field]: value } as Partial<TrackingRecord>);
     } catch (error) {
       console.error('Error updating export record:', error);
-      addNotification('Error', 'Failed to save changes', 'destructive');
+      addNotification('Error', 'Failed to save changes', 'error');
     }
   };
 
@@ -236,7 +235,7 @@ const FreightTracker = () => {
       await updateImportItem(id, { [field]: value } as Partial<ImportTrackingRecord>);
     } catch (error) {
       console.error('Error updating import record:', error);
-      addNotification('Error', 'Failed to save changes', 'destructive');
+      addNotification('Error', 'Failed to save changes', 'error');
     }
   };
 
@@ -255,7 +254,7 @@ const FreightTracker = () => {
       await updateAllFilesItem(id, { [field]: value } as Partial<AllFilesRecord>);
     } catch (error) {
       console.error('Error updating all files record:', error);
-      addNotification('Error', 'Failed to save changes', 'destructive');
+      addNotification('Error', 'Failed to save changes', 'error');
     }
   };
 
@@ -267,10 +266,10 @@ const FreightTracker = () => {
     // Delete from Firebase
     try {
       await deleteExportItem(id);
-      addNotification('Success', 'Record deleted successfully', 'default');
+      addNotification('Success', 'Record deleted successfully', 'success');
     } catch (error) {
       console.error('Error deleting export record:', error);
-      addNotification('Error', 'Failed to delete record', 'destructive');
+      addNotification('Error', 'Failed to delete record', 'error');
     }
   };
 
@@ -282,10 +281,10 @@ const FreightTracker = () => {
     // Delete from Firebase
     try {
       await deleteImportItem(id);
-      addNotification('Success', 'Record deleted successfully', 'default');
+      addNotification('Success', 'Record deleted successfully', 'success');
     } catch (error) {
       console.error('Error deleting import record:', error);
-      addNotification('Error', 'Failed to delete record', 'destructive');
+      addNotification('Error', 'Failed to delete record', 'error');
     }
   };
 
@@ -297,10 +296,10 @@ const FreightTracker = () => {
     // Delete from Firebase
     try {
       await deleteAllFilesItem(id);
-      addNotification('Success', 'Record deleted successfully', 'default');
+      addNotification('Success', 'Record deleted successfully', 'success');
     } catch (error) {
       console.error('Error deleting all files record:', error);
-      addNotification('Error', 'Failed to delete record', 'destructive');
+      addNotification('Error', 'Failed to delete record', 'error');
     }
   };
 
@@ -337,10 +336,10 @@ const FreightTracker = () => {
       // Add to local state with the Firebase-generated ID
       const recordWithId = { ...newRecord, id };
       setLocalExportData(prev => [...prev, recordWithId]);
-      addNotification('Success', 'New export record added', 'default');
+      addNotification('Success', 'New export record added', 'success');
     } catch (error) {
       console.error('Error adding export record:', error);
-      addNotification('Error', 'Failed to add record', 'destructive');
+      addNotification('Error', 'Failed to add record', 'error');
     }
   };
 
@@ -370,10 +369,10 @@ const FreightTracker = () => {
       const id = await addImportItem(newRecord);
       const recordWithId = { ...newRecord, id };
       setLocalImportData(prev => [...prev, recordWithId]);
-      addNotification('Success', 'New import record added', 'default');
+      addNotification('Success', 'New import record added', 'success');
     } catch (error) {
       console.error('Error adding import record:', error);
-      addNotification('Error', 'Failed to add record', 'destructive');
+      addNotification('Error', 'Failed to add record', 'error');
     }
   };
 
@@ -402,10 +401,10 @@ const FreightTracker = () => {
       const id = await addAllFilesItem(newRecord);
       const recordWithId = { ...newRecord, id };
       setLocalAllFilesData(prev => [...prev, recordWithId]);
-      addNotification('Success', 'New all files record added', 'default');
+      addNotification('Success', 'New all files record added', 'success');
     } catch (error) {
       console.error('Error adding all files record:', error);
-      addNotification('Error', 'Failed to add record', 'destructive');
+      addNotification('Error', 'Failed to add record', 'error');
     }
   };
 
