@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,8 +21,19 @@ import { useExcelImport } from '../hooks/useExcelImport';
 import { useSearch, useImportSearch } from '../hooks/useSearch';
 import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
 import { useNotifications } from '../hooks/useNotifications';
+import { useFirestore } from '../hooks/useFirestore';
 
 const FreightTracker = () => {
+  // Get active tab from localStorage or default to 'export-table'
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('freight-tracker-active-tab') || 'export-table';
+  });
+
+  // Persist active tab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('freight-tracker-active-tab', activeTab);
+  }, [activeTab]);
+
   // Create completed sample data by modifying the first few records
   const getCompletedExportData = (): TrackingRecord[] => {
     const data = [...sampleTrackingData];
@@ -89,19 +101,68 @@ const FreightTracker = () => {
     return data;
   };
 
-  const [data, setData] = useState<TrackingRecord[]>(getCompletedExportData());
-  const [importData, setImportData] = useState<ImportTrackingRecord[]>(getCompletedImportData());
-  const [allFilesData, setAllFilesData] = useState<AllFilesRecord[]>(getCompletedAllFilesData());
+  // Use Firebase for data persistence - assuming user is logged in for now
+  const currentUserId = 'demo-user'; // In production, get this from Firebase Auth
+  const {
+    data: firebaseExportData,
+    addItem: addExportItem,
+    updateItem: updateExportItem,
+    deleteItem: deleteExportItem
+  } = useFirestore<TrackingRecord>('export_tracking', currentUserId);
+
+  const {
+    data: firebaseImportData,
+    addItem: addImportItem,
+    updateItem: updateImportItem,
+    deleteItem: deleteImportItem
+  } = useFirestore<ImportTrackingRecord>('import_tracking', currentUserId);
+
+  const {
+    data: firebaseAllFilesData,
+    addItem: addAllFilesItem,
+    updateItem: updateAllFilesItem,
+    deleteItem: deleteAllFilesItem
+  } = useFirestore<AllFilesRecord>('all_files', currentUserId);
+
+  // Use Firebase data if available, otherwise fall back to sample data
+  const [localExportData, setLocalExportData] = useState<TrackingRecord[]>([]);
+  const [localImportData, setLocalImportData] = useState<ImportTrackingRecord[]>([]);
+  const [localAllFilesData, setLocalAllFilesData] = useState<AllFilesRecord[]>([]);
+
+  // Initialize data - use Firebase if available, otherwise use sample data
+  useEffect(() => {
+    if (firebaseExportData.length > 0) {
+      setLocalExportData(firebaseExportData);
+    } else if (localExportData.length === 0) {
+      setLocalExportData(getCompletedExportData());
+    }
+  }, [firebaseExportData]);
+
+  useEffect(() => {
+    if (firebaseImportData.length > 0) {
+      setLocalImportData(firebaseImportData);
+    } else if (localImportData.length === 0) {
+      setLocalImportData(getCompletedImportData());
+    }
+  }, [firebaseImportData]);
+
+  useEffect(() => {
+    if (firebaseAllFilesData.length > 0) {
+      setLocalAllFilesData(firebaseAllFilesData);
+    } else if (localAllFilesData.length === 0) {
+      setLocalAllFilesData(getCompletedAllFilesData());
+    }
+  }, [firebaseAllFilesData]);
+
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState('export-table');
 
   const { notifications, addNotification } = useNotifications();
-  const { fileInputRef, importFromExcel } = useExcelImport(setData, setImportData, setAllFilesData);
-  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(data);
-  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
-  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
+  const { fileInputRef, importFromExcel } = useExcelImport(setLocalExportData, setLocalImportData, setLocalAllFilesData);
+  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(localExportData);
+  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(localImportData);
+  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(localAllFilesData);
 
   // Demo notification on mount
   useEffect(() => {
@@ -141,54 +202,110 @@ const FreightTracker = () => {
     }
   };
 
-  const updateRecord = (
+  const updateRecord = async (
     id: string,
     field: keyof TrackingRecord,
     value: string | boolean
   ) => {
-    setData(prev => prev.map(record =>
+    // Update local state immediately for responsiveness
+    setLocalExportData(prev => prev.map(record =>
       record.id === id ? { ...record, [field]: value } : record
     ));
+
+    // Update Firebase
+    try {
+      await updateExportItem(id, { [field]: value } as Partial<TrackingRecord>);
+    } catch (error) {
+      console.error('Error updating export record:', error);
+      addNotification('Error', 'Failed to save changes', 'destructive');
+    }
   };
 
-  const updateImportRecord = (
+  const updateImportRecord = async (
     id: string,
     field: keyof ImportTrackingRecord,
     value: string | boolean
   ) => {
-    setImportData(prev => prev.map(record =>
+    // Update local state immediately for responsiveness
+    setLocalImportData(prev => prev.map(record =>
       record.id === id ? { ...record, [field]: value } : record
     ));
+
+    // Update Firebase
+    try {
+      await updateImportItem(id, { [field]: value } as Partial<ImportTrackingRecord>);
+    } catch (error) {
+      console.error('Error updating import record:', error);
+      addNotification('Error', 'Failed to save changes', 'destructive');
+    }
   };
 
-  const updateAllFilesRecord = (
+  const updateAllFilesRecord = async (
     id: string,
     field: keyof AllFilesRecord,
     value: string
   ) => {
-    setAllFilesData(prev => prev.map(record =>
+    // Update local state immediately for responsiveness
+    setLocalAllFilesData(prev => prev.map(record =>
       record.id === id ? { ...record, [field]: value } : record
     ));
+
+    // Update Firebase
+    try {
+      await updateAllFilesItem(id, { [field]: value } as Partial<AllFilesRecord>);
+    } catch (error) {
+      console.error('Error updating all files record:', error);
+      addNotification('Error', 'Failed to save changes', 'destructive');
+    }
   };
 
-  const deleteRecord = (id: string) => {
-    setData(prev => prev.filter(record => record.id !== id));
+  const deleteRecord = async (id: string) => {
+    // Update local state immediately
+    setLocalExportData(prev => prev.filter(record => record.id !== id));
     setSelectedRows(prev => prev.filter(rowId => rowId !== id));
+
+    // Delete from Firebase
+    try {
+      await deleteExportItem(id);
+      addNotification('Success', 'Record deleted successfully', 'default');
+    } catch (error) {
+      console.error('Error deleting export record:', error);
+      addNotification('Error', 'Failed to delete record', 'destructive');
+    }
   };
 
-  const deleteImportRecord = (id: string) => {
-    setImportData(prev => prev.filter(record => record.id !== id));
+  const deleteImportRecord = async (id: string) => {
+    // Update local state immediately
+    setLocalImportData(prev => prev.filter(record => record.id !== id));
     setSelectedImportRows(prev => prev.filter(rowId => rowId !== id));
+
+    // Delete from Firebase
+    try {
+      await deleteImportItem(id);
+      addNotification('Success', 'Record deleted successfully', 'default');
+    } catch (error) {
+      console.error('Error deleting import record:', error);
+      addNotification('Error', 'Failed to delete record', 'destructive');
+    }
   };
 
-  const deleteAllFilesRecord = (id: string) => {
-    setAllFilesData(prev => prev.filter(record => record.id !== id));
+  const deleteAllFilesRecord = async (id: string) => {
+    // Update local state immediately
+    setLocalAllFilesData(prev => prev.filter(record => record.id !== id));
     setSelectedAllFilesRows(prev => prev.filter(rowId => rowId !== id));
+
+    // Delete from Firebase
+    try {
+      await deleteAllFilesItem(id);
+      addNotification('Success', 'Record deleted successfully', 'default');
+    } catch (error) {
+      console.error('Error deleting all files record:', error);
+      addNotification('Error', 'Failed to delete record', 'destructive');
+    }
   };
 
-  const addNewRecord = () => {
-    const newRecord: TrackingRecord = {
-      id: Date.now().toString(),
+  const addNewRecord = async () => {
+    const newRecord: Omit<TrackingRecord, 'id'> = {
       customer: "",
       ref: "",
       file: "",
@@ -214,12 +331,21 @@ const FreightTracker = () => {
       docsSentToCustomer: false,
       notes: ""
     };
-    setData(prev => [...prev, newRecord]);
+
+    try {
+      const id = await addExportItem(newRecord);
+      // Add to local state with the Firebase-generated ID
+      const recordWithId = { ...newRecord, id };
+      setLocalExportData(prev => [...prev, recordWithId]);
+      addNotification('Success', 'New export record added', 'default');
+    } catch (error) {
+      console.error('Error adding export record:', error);
+      addNotification('Error', 'Failed to add record', 'destructive');
+    }
   };
 
-  const addNewImportRecord = () => {
-    const newRecord: ImportTrackingRecord = {
-      id: Date.now().toString(),
+  const addNewImportRecord = async () => {
+    const newRecord: Omit<ImportTrackingRecord, 'id'> = {
       reference: "",
       file: "",
       etaFinalPod: "",
@@ -239,12 +365,20 @@ const FreightTracker = () => {
       deliveryDate: "",
       notes: ""
     };
-    setImportData(prev => [...prev, newRecord]);
+
+    try {
+      const id = await addImportItem(newRecord);
+      const recordWithId = { ...newRecord, id };
+      setLocalImportData(prev => [...prev, recordWithId]);
+      addNotification('Success', 'New import record added', 'default');
+    } catch (error) {
+      console.error('Error adding import record:', error);
+      addNotification('Error', 'Failed to add record', 'destructive');
+    }
   };
 
-  const addNewAllFilesRecord = () => {
-    const newRecord: AllFilesRecord = {
-      id: Date.now().toString(),
+  const addNewAllFilesRecord = async () => {
+    const newRecord: Omit<AllFilesRecord, 'id'> = {
       file: "ES",
       number: "",
       customer: "",
@@ -263,7 +397,16 @@ const FreightTracker = () => {
       comments: "",
       salesContact: ""
     };
-    setAllFilesData(prev => [...prev, newRecord]);
+
+    try {
+      const id = await addAllFilesItem(newRecord);
+      const recordWithId = { ...newRecord, id };
+      setLocalAllFilesData(prev => [...prev, recordWithId]);
+      addNotification('Success', 'New all files record added', 'default');
+    } catch (error) {
+      console.error('Error adding all files record:', error);
+      addNotification('Error', 'Failed to add record', 'destructive');
+    }
   };
 
   // Universal add record function based on active tab
