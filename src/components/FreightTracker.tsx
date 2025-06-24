@@ -33,6 +33,32 @@ const FreightTracker = () => {
     localStorage.setItem('freight-tracker-active-tab', activeTab);
   }, [activeTab]);
 
+  // Use Firebase for data persistence - assuming user is logged in for now
+  const currentUserId = 'demo-user'; // In production, get this from Firebase Auth
+  const {
+    data: firebaseExportData,
+    loading: exportLoading,
+    addItem: addExportItem,
+    updateItem: updateExportItem,
+    deleteItem: deleteExportItem
+  } = useFirestore<TrackingRecord>('export_tracking', currentUserId);
+
+  const {
+    data: firebaseImportData,
+    loading: importLoading,
+    addItem: addImportItem,
+    updateItem: updateImportItem,
+    deleteItem: deleteImportItem
+  } = useFirestore<ImportTrackingRecord>('import_tracking', currentUserId);
+
+  const {
+    data: firebaseAllFilesData,
+    loading: allFilesLoading,
+    addItem: addAllFilesItem,
+    updateItem: updateAllFilesItem,
+    deleteItem: deleteAllFilesItem
+  } = useFirestore<AllFilesRecord>('all_files', currentUserId);
+
   // Create completed sample data by modifying the first few records
   const getCompletedExportData = (): TrackingRecord[] => {
     const data = [...sampleTrackingData];
@@ -100,58 +126,48 @@ const FreightTracker = () => {
     return data;
   };
 
-  // Use Firebase for data persistence - assuming user is logged in for now
-  const currentUserId = 'demo-user'; // In production, get this from Firebase Auth
-  const {
-    data: firebaseExportData,
-    addItem: addExportItem,
-    updateItem: updateExportItem,
-    deleteItem: deleteExportItem
-  } = useFirestore<TrackingRecord>('export_tracking', currentUserId);
-
-  const {
-    data: firebaseImportData,
-    addItem: addImportItem,
-    updateItem: updateImportItem,
-    deleteItem: deleteImportItem
-  } = useFirestore<ImportTrackingRecord>('import_tracking', currentUserId);
-
-  const {
-    data: firebaseAllFilesData,
-    addItem: addAllFilesItem,
-    updateItem: updateAllFilesItem,
-    deleteItem: deleteAllFilesItem
-  } = useFirestore<AllFilesRecord>('all_files', currentUserId);
-
-  // Use Firebase data if available, otherwise fall back to sample data
+  // Initialize with sample data only if Firebase is empty AND not loading
+  const [hasInitialized, setHasInitialized] = useState(false);
   const [localExportData, setLocalExportData] = useState<TrackingRecord[]>([]);
   const [localImportData, setLocalImportData] = useState<ImportTrackingRecord[]>([]);
   const [localAllFilesData, setLocalAllFilesData] = useState<AllFilesRecord[]>([]);
 
-  // Initialize data - use Firebase if available, otherwise use sample data
+  // Initialize data - use Firebase data, only use sample data if Firebase is completely empty
   useEffect(() => {
-    if (firebaseExportData.length > 0) {
+    if (!exportLoading && !hasInitialized) {
+      if (firebaseExportData.length > 0) {
+        console.log('Loading Firebase export data:', firebaseExportData.length, 'records');
+        setLocalExportData(firebaseExportData);
+      } else {
+        console.log('No Firebase export data, using sample data');
+        setLocalExportData(getCompletedExportData());
+      }
+      setHasInitialized(true);
+    } else if (!exportLoading && firebaseExportData.length > 0) {
+      console.log('Updating from Firebase export data:', firebaseExportData.length, 'records');
       setLocalExportData(firebaseExportData);
-    } else if (localExportData.length === 0) {
-      setLocalExportData(getCompletedExportData());
     }
-  }, [firebaseExportData]);
+  }, [firebaseExportData, exportLoading, hasInitialized]);
 
   useEffect(() => {
-    if (firebaseImportData.length > 0) {
-      setLocalImportData(firebaseImportData);
-    } else if (localImportData.length === 0) {
-      setLocalImportData(getCompletedImportData());
+    if (!importLoading) {
+      if (firebaseImportData.length > 0) {
+        setLocalImportData(firebaseImportData);
+      } else if (localImportData.length === 0) {
+        setLocalImportData(getCompletedImportData());
+      }
     }
-  }, [firebaseImportData]);
+  }, [firebaseImportData, importLoading]);
 
   useEffect(() => {
-    if (firebaseAllFilesData.length > 0) {
-      setLocalAllFilesData(firebaseAllFilesData);
-    } else if (localAllFilesData.length === 0) {
-      setLocalAllFilesData(getCompletedAllFilesData());
+    if (!allFilesLoading) {
+      if (firebaseAllFilesData.length > 0) {
+        setLocalAllFilesData(firebaseAllFilesData);
+      } else if (localAllFilesData.length === 0) {
+        setLocalAllFilesData(getCompletedAllFilesData());
+      }
     }
-  }, [firebaseAllFilesData]);
+  }, [firebaseAllFilesData, allFilesLoading]);
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
@@ -165,12 +181,14 @@ const FreightTracker = () => {
 
   // Demo notification on mount
   useEffect(() => {
-    addNotification(
-      'Welcome to Freight Tracker',
-      'In-app notifications are now enabled. Completed rows are highlighted with green borders.',
-      'success'
-    );
-  }, [addNotification]);
+    if (hasInitialized) {
+      addNotification(
+        'Welcome to Freight Tracker',
+        'Your data is now synced with Firebase. Changes will persist across sessions.',
+        'success'
+      );
+    }
+  }, [addNotification, hasInitialized]);
 
   // Get current search term and setter based on active tab
   const getCurrentSearchProps = () => {
@@ -206,6 +224,8 @@ const FreightTracker = () => {
     field: keyof TrackingRecord,
     value: string | boolean
   ) => {
+    console.log('Updating export record:', id, field, value);
+    
     // Update local state immediately for responsiveness
     setLocalExportData(prev => prev.map(record =>
       record.id === id ? { ...record, [field]: value } : record
@@ -214,9 +234,14 @@ const FreightTracker = () => {
     // Update Firebase
     try {
       await updateExportItem(id, { [field]: value } as Partial<TrackingRecord>);
+      console.log('Successfully updated export record in Firebase');
     } catch (error) {
       console.error('Error updating export record:', error);
       addNotification('Error', 'Failed to save changes', 'error');
+      // Revert local changes on error
+      setLocalExportData(prev => prev.map(record =>
+        record.id === id ? { ...record, [field]: record[field] } : record
+      ));
     }
   };
 
@@ -332,10 +357,9 @@ const FreightTracker = () => {
     };
 
     try {
+      console.log('Adding new export record...');
       const id = await addExportItem(newRecord);
-      // Add to local state with the Firebase-generated ID
-      const recordWithId = { ...newRecord, id };
-      setLocalExportData(prev => [...prev, recordWithId]);
+      console.log('Successfully added export record with ID:', id);
       addNotification('Success', 'New export record added', 'success');
     } catch (error) {
       console.error('Error adding export record:', error);
@@ -367,8 +391,6 @@ const FreightTracker = () => {
 
     try {
       const id = await addImportItem(newRecord);
-      const recordWithId = { ...newRecord, id };
-      setLocalImportData(prev => [...prev, recordWithId]);
       addNotification('Success', 'New import record added', 'success');
     } catch (error) {
       console.error('Error adding import record:', error);
@@ -399,8 +421,6 @@ const FreightTracker = () => {
 
     try {
       const id = await addAllFilesItem(newRecord);
-      const recordWithId = { ...newRecord, id };
-      setLocalAllFilesData(prev => [...prev, recordWithId]);
       addNotification('Success', 'New all files record added', 'success');
     } catch (error) {
       console.error('Error adding all files record:', error);

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -123,7 +122,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500"
+            className="h-8 text-sm min-w-0 flex-1 border-blue-300 focus:border-blue-500 bg-white"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
@@ -131,11 +130,11 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
             }}
             autoFocus
           />
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
-            <Save className="h-2 w-2 text-green-600" />
+          <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
+            <Save className="h-3 w-3 text-green-600" />
           </Button>
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-red-100" onClick={cancelEdit}>
-            <X className="h-2 w-2 text-red-600" />
+          <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0 hover:bg-red-100" onClick={cancelEdit}>
+            <X className="h-3 w-3 text-red-600" />
           </Button>
         </div>
       );
@@ -192,18 +191,18 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     return (
       <div
-        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200"
+        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[28px] border border-transparent hover:border-blue-200"
         onClick={() => startEdit(record.id, field, value)}
       >
-        <span className={`text-xs truncate ${
-          isDate && value ? 'text-blue-700 bg-blue-50 px-1 py-0.5 rounded text-[10px]' :
+        <span className={`text-sm truncate ${
+          isDate && value ? 'text-blue-700 bg-blue-50 px-1 py-0.5 rounded text-xs' :
           value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
         }`}>
           {String(value) || (
-            <span className="text-gray-400 text-[10px] opacity-60">—</span>
+            <span className="text-gray-400 text-xs opacity-60">—</span>
           )}
         </span>
-        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
+        <Edit3 className="h-3 w-3 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
       </div>
     );
   };
