@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -123,17 +122,13 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-8 text-sm min-w-0 flex-1 border-2 border-blue-500 focus:border-blue-600 bg-white !text-gray-900 focus:ring-2 focus:ring-blue-200"
+            className="h-8 text-sm min-w-0 flex-1 border-2 border-blue-500 focus:border-blue-600 bg-white text-gray-900 focus:ring-2 focus:ring-blue-200 focus-visible:text-gray-900"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
               if (e.key === 'Escape') cancelEdit();
             }}
             autoFocus
-            style={{ 
-              color: '#1f2937 !important',
-              backgroundColor: '#ffffff !important'
-            }}
           />
           <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
             <Save className="h-3 w-3 text-green-600" />
