@@ -129,7 +129,11 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
               if (e.key === 'Escape') cancelEdit();
             }}
             autoFocus
-            style={{ fontSize: '14px', color: '#1f2937' }}
+            style={{ 
+              fontSize: '14px', 
+              color: '#1f2937 !important',
+              backgroundColor: '#ffffff !important'
+            }}
           />
           <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
             <Save className="h-3 w-3 text-green-600" />
@@ -194,11 +198,17 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       <div
         className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[28px] border border-transparent hover:border-blue-200"
         onClick={() => startEdit(record.id, field, value)}
+        style={{ minWidth: '80px' }}
       >
-        <span className={`text-sm truncate ${
+        <span className={`text-sm truncate font-medium ${
           isDate && value ? 'text-blue-700 bg-blue-50 px-1 py-0.5 rounded text-xs' :
-          value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
-        }`}>
+          value ? 'text-gray-900 font-medium' : 'text-gray-400 italic opacity-50'
+        }`}
+        style={{ 
+          color: value ? '#111827 !important' : '#9ca3af !important',
+          fontSize: '13px',
+          fontWeight: value ? '500' : '400'
+        }}>
           {String(value) || (
             <span className="text-gray-400 text-xs opacity-60">—</span>
           )}

@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText } from 'lucide-react';
+import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -182,6 +181,45 @@ const FreightTracker = () => {
     } catch (error) {
       console.error('Error deleting all files record:', error);
       addNotification('Error', 'Failed to delete record', 'error');
+    }
+  };
+
+  const deleteBulkExportRecords = async () => {
+    if (selectedRows.length === 0) return;
+    
+    try {
+      await Promise.all(selectedRows.map(id => deleteExportItem(id)));
+      setSelectedRows([]);
+      addNotification('Success', `Deleted ${selectedRows.length} export records`, 'success');
+    } catch (error) {
+      console.error('Error deleting export records:', error);
+      addNotification('Error', 'Failed to delete some records', 'error');
+    }
+  };
+
+  const deleteBulkImportRecords = async () => {
+    if (selectedImportRows.length === 0) return;
+    
+    try {
+      await Promise.all(selectedImportRows.map(id => deleteImportItem(id)));
+      setSelectedImportRows([]);
+      addNotification('Success', `Deleted ${selectedImportRows.length} import records`, 'success');
+    } catch (error) {
+      console.error('Error deleting import records:', error);
+      addNotification('Error', 'Failed to delete some records', 'error');
+    }
+  };
+
+  const deleteBulkAllFilesRecords = async () => {
+    if (selectedAllFilesRows.length === 0) return;
+    
+    try {
+      await Promise.all(selectedAllFilesRows.map(id => deleteAllFilesItem(id)));
+      setSelectedAllFilesRows([]);
+      addNotification('Success', `Deleted ${selectedAllFilesRows.length} all files records`, 'success');
+    } catch (error) {
+      console.error('Error deleting all files records:', error);
+      addNotification('Error', 'Failed to delete some records', 'error');
     }
   };
 
@@ -390,6 +428,29 @@ const FreightTracker = () => {
                     Import Excel
                   </Button>
                 </ExcelImportDialog>
+
+                {/* Conditional bulk delete button */}
+                {((activeTab === 'export-table' && selectedRows.length > 0) ||
+                  (activeTab === 'import-table' && selectedImportRows.length > 0) ||
+                  (activeTab === 'all-files' && selectedAllFilesRows.length > 0)) && (
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    className="text-xs md:text-sm"
+                    onClick={() => {
+                      if (activeTab === 'export-table') deleteBulkExportRecords();
+                      else if (activeTab === 'import-table') deleteBulkImportRecords();
+                      else if (activeTab === 'all-files') deleteBulkAllFilesRecords();
+                    }}
+                  >
+                    <Trash2 className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                    Delete Selected ({
+                      activeTab === 'export-table' ? selectedRows.length :
+                      activeTab === 'import-table' ? selectedImportRows.length :
+                      selectedAllFilesRows.length
+                    })
+                  </Button>
+                )}
 
                 <NotificationSettings>
                   <Button variant="outline" size="sm" className="text-xs md:text-sm">
