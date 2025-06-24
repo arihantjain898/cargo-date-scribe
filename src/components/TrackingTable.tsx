@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -122,7 +123,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-8 text-sm min-w-0 flex-1 border-2 border-blue-500 focus:border-blue-600 bg-white text-gray-900 focus:ring-2 focus:ring-blue-200"
+            className="h-8 text-sm min-w-0 flex-1 border-2 border-blue-500 focus:border-blue-600 bg-white !text-gray-900 focus:ring-2 focus:ring-blue-200"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
@@ -130,7 +131,6 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
             }}
             autoFocus
             style={{ 
-              fontSize: '14px', 
               color: '#1f2937 !important',
               backgroundColor: '#ffffff !important'
             }}
@@ -203,12 +203,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
         <span className={`text-sm truncate font-medium ${
           isDate && value ? 'text-blue-700 bg-blue-50 px-1 py-0.5 rounded text-xs' :
           value ? 'text-gray-900 font-medium' : 'text-gray-400 italic opacity-50'
-        }`}
-        style={{ 
-          color: value ? '#111827 !important' : '#9ca3af !important',
-          fontSize: '13px',
-          fontWeight: value ? '500' : '400'
-        }}>
+        }`}>
           {String(value) || (
             <span className="text-gray-400 text-xs opacity-60">—</span>
           )}
