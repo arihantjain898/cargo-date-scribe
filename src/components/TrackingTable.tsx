@@ -119,10 +119,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     if (isEditing) {
       return (
         <div className="flex items-center gap-1 min-w-0 p-1">
-          <Input
+          <input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-8 text-sm min-w-0 flex-1 border-2 border-blue-500 focus:border-blue-600 bg-white focus:ring-2 focus:ring-blue-200 !text-black focus:!text-black focus-visible:!text-black"
+            className="h-8 text-sm min-w-0 flex-1 border-2 border-blue-500 focus:border-blue-600 bg-white px-2 py-1 rounded text-black focus:outline-none focus:ring-2 focus:ring-blue-200"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
