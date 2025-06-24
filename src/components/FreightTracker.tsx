@@ -961,27 +961,25 @@ const FreightTracker = () => {
   };
 
   return (
-    
-      
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay',
-          }}
-          events={events}
-          eventColor="lightblue"
-          eventClick={(info) => {
-            console.log('Event clicked:', info.event);
-          }}
-        />
-        <Button onClick={addSampleData} disabled={isLoading}>
-          {isLoading ? "Loading..." : "Add Sample Data"}
-        </Button>
-      
-    
+    <div className="space-y-4">
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay',
+        }}
+        events={events}
+        eventColor="lightblue"
+        eventClick={(info) => {
+          console.log('Event clicked:', info.event);
+        }}
+      />
+      <Button onClick={addSampleData} disabled={isLoading}>
+        {isLoading ? "Loading..." : "Add Sample Data"}
+      </Button>
+    </div>
   );
 };
 
