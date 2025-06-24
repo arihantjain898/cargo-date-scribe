@@ -462,6 +462,7 @@ const FreightTracker = () => {
         // Add import tracking sample data
         const importSampleData = [
           {
+            customer: 'ABC IMPORT',
             reference: 'ABC IMPORT',
             file: 'ES00525',
             etaFinalPod: '2025-07-02',
@@ -482,6 +483,7 @@ const FreightTracker = () => {
             notes: 'Complete shipment'
           },
           {
+            customer: 'DEF LOGISTICS',
             reference: 'DEF LOGISTICS',
             file: 'ES00526',
             etaFinalPod: '2025-07-15',
@@ -502,6 +504,7 @@ const FreightTracker = () => {
             notes: 'Pending ISF filing'
           },
           {
+            customer: 'GHI TRADING',
             reference: 'GHI TRADING',
             file: 'ES00527',
             etaFinalPod: '2025-06-28',
@@ -522,6 +525,7 @@ const FreightTracker = () => {
             notes: 'Awaiting documents'
           },
           {
+            customer: 'Pacific Imports',
             reference: 'Pacific Imports',
             file: 'ES00528',
             etaFinalPod: '2025-06-10',
@@ -542,6 +546,7 @@ const FreightTracker = () => {
             notes: 'New shipment - just received'
           },
           {
+            customer: 'MNO CARGO',
             reference: 'MNO CARGO',
             file: 'ES00529',
             etaFinalPod: '2025-07-05',
@@ -562,6 +567,7 @@ const FreightTracker = () => {
             notes: 'Customs examination required'
           },
           {
+            customer: 'Global Connect',
             reference: 'Global Connect',
             file: 'ES00530',
             etaFinalPod: '2025-06-20',
@@ -582,6 +588,7 @@ const FreightTracker = () => {
             notes: 'Waiting for BL release'
           },
           {
+            customer: 'Euro Trade',
             reference: 'Euro Trade',
             file: 'ES00531',
             etaFinalPod: '2025-07-01',
@@ -602,6 +609,7 @@ const FreightTracker = () => {
             notes: 'Documents in transit'
           },
           {
+            customer: 'ASIA CONNECT',
             reference: 'ASIA CONNECT',
             file: 'ES00532',
             etaFinalPod: '2025-06-25',
@@ -622,6 +630,7 @@ const FreightTracker = () => {
             notes: 'Payment pending'
           },
           {
+            customer: 'Atlantic Freight',
             reference: 'Atlantic Freight',
             file: 'ES00533',
             etaFinalPod: '2025-06-30',
@@ -642,6 +651,7 @@ const FreightTracker = () => {
             notes: 'Ready for delivery'
           },
           {
+            customer: 'Northern Express',
             reference: 'Northern Express',
             file: 'ES00534',
             etaFinalPod: '2025-06-22',
@@ -662,6 +672,7 @@ const FreightTracker = () => {
             notes: 'Urgent - missing documents'
           },
           {
+            customer: 'Southern Logistics',
             reference: 'Southern Logistics',
             file: 'ES00535',
             etaFinalPod: '2025-07-08',
@@ -682,6 +693,7 @@ const FreightTracker = () => {
             notes: 'Processing customs'
           },
           {
+            customer: 'Central Trade',
             reference: 'Central Trade',
             file: 'ES00536',
             etaFinalPod: '2025-07-12',
