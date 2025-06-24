@@ -1,8 +1,10 @@
+
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 
 export const sampleImportData: ImportTrackingRecord[] = [
   {
     id: '1',
+    customer: 'ABC IMPORT',
     reference: 'ABC IMPORT',
     file: 'ES00525',
     etaFinalPod: '2025-07-02',
@@ -24,6 +26,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '2',
+    customer: 'DEF LOGISTICS',
     reference: 'DEF LOGISTICS',
     file: 'ES00526',
     etaFinalPod: '2025-07-15',
@@ -45,6 +48,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '3',
+    customer: 'GHI TRADING',
     reference: 'GHI TRADING',
     file: 'ES00527',
     etaFinalPod: '2025-06-28',
@@ -66,6 +70,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '4',
+    customer: 'JKL IMPORTS',
     reference: 'JKL IMPORTS',
     file: 'ES00528',
     etaFinalPod: '2025-08-10',
@@ -87,6 +92,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '5',
+    customer: 'MNO CARGO',
     reference: 'MNO CARGO',
     file: 'ES00529',
     etaFinalPod: '2025-07-05',
@@ -108,6 +114,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '6',
+    customer: 'PACIFIC GOODS',
     reference: 'PACIFIC GOODS',
     file: 'ES00530',
     etaFinalPod: '2025-07-20',
@@ -129,6 +136,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '7',
+    customer: 'EURO IMPORTS',
     reference: 'EURO IMPORTS',
     file: 'ES00531',
     etaFinalPod: '2025-08-01',
@@ -150,6 +158,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '8',
+    customer: 'ASIA CONNECT',
     reference: 'ASIA CONNECT',
     file: 'ES00532',
     etaFinalPod: '2025-06-25',
@@ -171,6 +180,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '9',
+    customer: 'BRAZILIAN IMPORTS',
     reference: 'BRAZILIAN IMPORTS',
     file: 'ES00533',
     etaFinalPod: '2025-06-30',
@@ -192,6 +202,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '10',
+    customer: 'NORDIC SHIPPING',
     reference: 'NORDIC SHIPPING',
     file: 'ES00534',
     etaFinalPod: '2025-06-22',
@@ -213,6 +224,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '11',
+    customer: 'AFRICAN LOGISTICS',
     reference: 'AFRICAN LOGISTICS',
     file: 'ES00535',
     etaFinalPod: '2025-07-08',
@@ -234,6 +246,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '12',
+    customer: 'MEDITERRANEAN TRADE',
     reference: 'MEDITERRANEAN TRADE',
     file: 'ES00536',
     etaFinalPod: '2025-07-12',
@@ -255,6 +268,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '13',
+    customer: 'CANADIAN IMPORTS',
     reference: 'CANADIAN IMPORTS',
     file: 'ES00537',
     etaFinalPod: '2025-06-26',
@@ -276,6 +290,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '14',
+    customer: 'INDIAN OCEAN CARGO',
     reference: 'INDIAN OCEAN CARGO',
     file: 'ES00538',
     etaFinalPod: '2025-07-18',
@@ -297,6 +312,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '15',
+    customer: 'RUSSIAN FREIGHT',
     reference: 'RUSSIAN FREIGHT',
     file: 'ES00539',
     etaFinalPod: '2025-07-25',
@@ -318,6 +334,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '16',
+    customer: 'SOUTHEAST ASIA TRADE',
     reference: 'SOUTHEAST ASIA TRADE',
     file: 'ES00540',
     etaFinalPod: '2025-06-21',
@@ -339,6 +356,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '17',
+    customer: 'MIDDLE EAST LOGISTICS',
     reference: 'MIDDLE EAST LOGISTICS',
     file: 'ES00541',
     etaFinalPod: '2025-08-05',
@@ -360,6 +378,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '18',
+    customer: 'CENTRAL AMERICA CARGO',
     reference: 'CENTRAL AMERICA CARGO',
     file: 'ES00542',
     etaFinalPod: '2025-07-30',
@@ -381,6 +400,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '19',
+    customer: 'GLOBAL FREIGHT',
     reference: 'GLOBAL FREIGHT',
     file: 'ES00543',
     etaFinalPod: '2025-07-22',
@@ -402,6 +422,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '20',
+    customer: 'PACIFIC TRADE CO',
     reference: 'PACIFIC TRADE CO',
     file: 'ES00544',
     etaFinalPod: '2025-06-24',
@@ -423,6 +444,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '21',
+    customer: 'ATLAS SHIPPING',
     reference: 'ATLAS SHIPPING',
     file: 'ES00545',
     etaFinalPod: '2025-07-28',
@@ -444,6 +466,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '22',
+    customer: 'MERIDIAN LOGISTICS',
     reference: 'MERIDIAN LOGISTICS',
     file: 'ES00546',
     etaFinalPod: '2025-08-15',
@@ -465,6 +488,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '23',
+    customer: 'OCEANIC IMPORTS',
     reference: 'OCEANIC IMPORTS',
     file: 'ES00547',
     etaFinalPod: '2025-07-06',
@@ -486,6 +510,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '24',
+    customer: 'CONTINENTAL CARGO',
     reference: 'CONTINENTAL CARGO',
     file: 'ES00548',
     etaFinalPod: '2025-08-12',
@@ -507,6 +532,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '25',
+    customer: 'TRANS-GLOBAL',
     reference: 'TRANS-GLOBAL',
     file: 'ES00549',
     etaFinalPod: '2025-07-03',
@@ -528,6 +554,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '26',
+    customer: 'APEX LOGISTICS',
     reference: 'APEX LOGISTICS',
     file: 'ES00550',
     etaFinalPod: '2025-08-20',
@@ -549,6 +576,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '27',
+    customer: 'MARITIME SOLUTIONS',
     reference: 'MARITIME SOLUTIONS',
     file: 'ES00551',
     etaFinalPod: '2025-07-11',
@@ -570,6 +598,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '28',
+    customer: 'ZENITH TRADING',
     reference: 'ZENITH TRADING',
     file: 'ES00552',
     etaFinalPod: '2025-08-08',
@@ -591,6 +620,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '29',
+    customer: 'HORIZON FREIGHT',
     reference: 'HORIZON FREIGHT',
     file: 'ES00553',
     etaFinalPod: '2025-07-16',
@@ -612,6 +642,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '30',
+    customer: 'VELOCITY CARGO',
     reference: 'VELOCITY CARGO',
     file: 'ES00554',
     etaFinalPod: '2025-08-25',
@@ -633,6 +664,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '31',
+    customer: 'SUMMIT LOGISTICS',
     reference: 'SUMMIT LOGISTICS',
     file: 'ES00555',
     etaFinalPod: '2025-07-09',
@@ -654,6 +686,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '32',
+    customer: 'PRIME SHIPPING',
     reference: 'PRIME SHIPPING',
     file: 'ES00556',
     etaFinalPod: '2025-08-18',
@@ -675,6 +708,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '33',
+    customer: 'NEXUS TRADE',
     reference: 'NEXUS TRADE',
     file: 'ES00557',
     etaFinalPod: '2025-07-14',
@@ -696,6 +730,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '34',
+    customer: 'ECLIPSE CARGO',
     reference: 'ECLIPSE CARGO',
     file: 'ES00558',
     etaFinalPod: '2025-08-02',
@@ -717,6 +752,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '35',
+    customer: 'STERLING IMPORTS',
     reference: 'STERLING IMPORTS',
     file: 'ES00559',
     etaFinalPod: '2025-07-27',
@@ -738,6 +774,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '36',
+    customer: 'QUANTUM LOGISTICS',
     reference: 'QUANTUM LOGISTICS',
     file: 'ES00560',
     etaFinalPod: '2025-08-30',
@@ -759,6 +796,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '37',
+    customer: 'TITAN FREIGHT',
     reference: 'TITAN FREIGHT',
     file: 'ES00561',
     etaFinalPod: '2025-07-21',
@@ -780,6 +818,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '38',
+    customer: 'PHOENIX CARGO',
     reference: 'PHOENIX CARGO',
     file: 'ES00562',
     etaFinalPod: '2025-08-06',
@@ -801,6 +840,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '39',
+    customer: 'ALPHA IMPORTS',
     reference: 'ALPHA IMPORTS',
     file: 'ES00563',
     etaFinalPod: '2025-07-04',
@@ -822,6 +862,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
   },
   {
     id: '40',
+    customer: 'OMEGA TRADING',
     reference: 'OMEGA TRADING',
     file: 'ES00564',
     etaFinalPod: '2025-08-22',
