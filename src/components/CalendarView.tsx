@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -297,6 +298,17 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
     setIsEventModalOpen(true);
   };
 
+  // Get filtered events based on calendar filter
+  const getFilteredEventsForUpcoming = () => {
+    const events = calendarFilter === 'all' ? allEvents :
+                  calendarFilter === 'export' ? exportEvents : importEvents;
+    
+    return events
+      .filter(event => new Date(event.date) >= new Date())
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 9);
+  };
+
   const renderEventsList = (events: CalendarEvent[], title: string) => (
     <div className="space-y-3">
       {events.length > 0 ? (
@@ -444,31 +456,9 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-4">
-              <TabsTrigger value="all">All Events</TabsTrigger>
-              <TabsTrigger value="export">Export Events</TabsTrigger>
-              <TabsTrigger value="import">Import Events</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="all">
-              <ScrollArea className="h-96">
-                {renderEventsList(selectedDate ? getEventsForDate(selectedDate, 'all') : [], 'events')}
-              </ScrollArea>
-            </TabsContent>
-            
-            <TabsContent value="export">
-              <ScrollArea className="h-96">
-                {renderEventsList(selectedDate ? getEventsForDate(selectedDate, 'export') : [], 'export events')}
-              </ScrollArea>
-            </TabsContent>
-            
-            <TabsContent value="import">
-              <ScrollArea className="h-96">
-                {renderEventsList(selectedDate ? getEventsForDate(selectedDate, 'import') : [], 'import events')}
-              </ScrollArea>
-            </TabsContent>
-          </Tabs>
+          <ScrollArea className="h-96">
+            {renderEventsList(selectedDate ? getEventsForDate(selectedDate, calendarFilter) : [], 'events')}
+          </ScrollArea>
         </CardContent>
       </Card>
 
@@ -481,43 +471,39 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
         <CardContent className="p-6 pt-0">
           <ScrollArea className="h-64">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {allEvents
-                .filter(event => new Date(event.date) >= new Date())
-                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                .slice(0, 9)
-                .map((event, index) => (
-                  <div 
-                    key={index} 
-                    className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow cursor-pointer"
-                    onClick={() => handleEventClick(event)}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1 flex-wrap">
-                        <Badge 
-                          variant="outline" 
-                          className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                        >
-                          {getEventTypeLabel(event.type)}
-                        </Badge>
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
-                        >
-                          {event.source === 'export' ? 'EXP' : 'IMP'}
-                        </Badge>
-                      </div>
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                        {new Date(event.date).toLocaleDateString()}
-                      </span>
+              {getFilteredEventsForUpcoming().map((event, index) => (
+                <div 
+                  key={index} 
+                  className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1 flex-wrap">
+                      <Badge 
+                        variant="outline" 
+                        className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                      >
+                        {getEventTypeLabel(event.type)}
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
+                      >
+                        {event.source === 'export' ? 'EXP' : 'IMP'}
+                      </Badge>
                     </div>
-                    <div className="space-y-1">
-                      <div className="font-medium text-gray-900 text-sm">{event.customer}</div>
-                      <div className="text-xs text-gray-600">{event.ref} • {event.file}</div>
-                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      {new Date(event.date).toLocaleDateString()}
+                    </span>
                   </div>
-                ))}
+                  <div className="space-y-1">
+                    <div className="font-medium text-gray-900 text-sm">{event.customer}</div>
+                    <div className="text-xs text-gray-600">{event.ref} • {event.file}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-            {allEvents.filter(event => new Date(event.date) >= new Date()).length === 0 && (
+            {getFilteredEventsForUpcoming().length === 0 && (
               <div className="text-center py-8">
                 <div className="text-4xl mb-3">✅</div>
                 <p className="text-gray-500">
