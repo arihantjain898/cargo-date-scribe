@@ -205,14 +205,14 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden relative">
+    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
         <div className="min-w-[2200px]">
           <table className="w-full border-collapse text-xs">
             <thead className="sticky top-0 bg-white z-30 shadow-sm">
               <tr className="border-b-4 border-black bg-white">
-                <th colSpan={1} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200">Customer</th>
-                <th colSpan={3} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">Basic Information</th>
+                <th className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200">Customer</th>
+                <th colSpan={4} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">Basic Information</th>
                 <th colSpan={5} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-emerald-200">Documentation</th>
                 <th colSpan={4} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Processing</th>
                 <th colSpan={3} className="border-l-4 border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Final Steps</th>
@@ -261,7 +261,19 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                       conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                     }`}
                   >
-                    <td className="border-l-4 border-black border-r-4 border-black p-1">{renderCell(record, 'customer')}</td>
+                    <td className="border-l-4 border-black border-r-4 border-black p-1">
+                      <div
+                        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200"
+                        onClick={() => startEdit(record.id, 'customer', record.customer)}
+                      >
+                        <span className="text-xs truncate font-bold text-gray-800">
+                          {record.customer || (
+                            <span className="text-gray-400 text-[10px] opacity-60">—</span>
+                          )}
+                        </span>
+                        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
+                      </div>
+                    </td>
                     <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'reference')}</td>
                     <td className="border-r border-gray-500 p-1">{renderCell(record, 'file')}</td>
                     <td className="border-r border-gray-500 p-1">{renderCell(record, 'etaFinalPod', false, true)}</td>
