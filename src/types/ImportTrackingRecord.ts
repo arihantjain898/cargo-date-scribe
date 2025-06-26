@@ -1,6 +1,7 @@
 
 export interface ImportTrackingRecord {
   id: string;
+  customer: string;
   reference: string;
   file: string;
   etaFinalPod: string;
