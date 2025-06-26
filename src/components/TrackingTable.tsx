@@ -123,7 +123,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500"
+            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500 bg-white"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
@@ -142,7 +142,6 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     }
 
     if (isCheckbox) {
-      // Replace checkboxes with toned down status badges
       const getStatusLabels = (field: keyof TrackingRecord) => {
         switch (field) {
           case 'dropDone':

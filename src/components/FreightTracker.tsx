@@ -224,6 +224,7 @@ const FreightTracker = () => {
     }
   };
 
+  // Modified to add records at the bottom by removing scrollTop behavior
   const addNewRecord = async () => {
     console.log('=== STARTING TO ADD NEW EXPORT RECORD ===');
     

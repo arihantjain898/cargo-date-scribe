@@ -99,7 +99,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500"
+            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500 bg-white"
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
               if (e.key === 'Escape') cancelEdit();
@@ -191,7 +191,19 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
                     }`}
                   >
-                    <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">{renderCell(record, 'customer')}</td>
+                    <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
+                      <div
+                        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200"
+                        onClick={() => startEdit(record.id, 'customer', record.customer)}
+                      >
+                        <span className="text-xs truncate font-bold text-gray-800">
+                          {record.customer || (
+                            <span className="text-gray-400 text-[10px] opacity-60">—</span>
+                          )}
+                        </span>
+                        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
+                      </div>
+                    </td>
                     <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'file')}</td>
                     <td className="border-r-4 border-black p-1">{renderCell(record, 'number')}</td>
                     <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'originPort')}</td>
