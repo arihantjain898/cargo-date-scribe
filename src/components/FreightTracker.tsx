@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText, Trash2, Home } from 'lucide-react';
+import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText, Trash2, Home, Undo, Redo, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,6 +21,13 @@ import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
 import { useDomesticTruckingSearch } from '../hooks/useDomesticTruckingSearch';
 import { useNotifications } from '../hooks/useNotifications';
 import { useFirestore } from '../hooks/useFirestore';
+import { useUndoRedo } from '../hooks/useUndoRedo';
+import { 
+  generateSampleExportData, 
+  generateSampleImportData, 
+  generateSampleAllFilesData, 
+  generateSampleDomesticTruckingData 
+} from '../data/generateSampleData';
 
 const FreightTracker = () => {
   // Get active tab from localStorage or default to 'all-files' (now first tab)
@@ -73,6 +80,14 @@ const FreightTracker = () => {
   const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
   const [sampleDataAdded, setSampleDataAdded] = useState(false);
 
+  // Undo/Redo functionality
+  const undoRedoState = useUndoRedo({
+    exportData,
+    importData,
+    allFilesData,
+    domesticTruckingData
+  });
+
   const { notifications, addNotification } = useNotifications();
   const { fileInputRef, importFromExcel } = useExcelImport(() => {}, () => {}, () => {}, () => {});
   
@@ -91,6 +106,18 @@ const FreightTracker = () => {
       );
     }
   }, [addNotification, exportLoading, importLoading, allFilesLoading, domesticTruckingLoading]);
+
+  // Update undo/redo state when data changes
+  useEffect(() => {
+    if (!exportLoading && !importLoading && !allFilesLoading && !domesticTruckingLoading) {
+      undoRedoState.set({
+        exportData,
+        importData,
+        allFilesData,
+        domesticTruckingData
+      });
+    }
+  }, [exportData, importData, allFilesData, domesticTruckingData, exportLoading, importLoading, allFilesLoading, domesticTruckingLoading]);
 
   // Get current search term and setter based on active tab
   const getCurrentSearchProps = () => {
@@ -122,6 +149,36 @@ const FreightTracker = () => {
         return 'domestic-trucking';
       default:
         return 'all-files';
+    }
+  };
+
+  const addSampleData = async () => {
+    try {
+      // Add sample export data
+      const sampleExportData = generateSampleExportData();
+      await Promise.all(sampleExportData.map(record => addExportItem(record)));
+
+      // Add sample import data
+      const sampleImportData = generateSampleImportData();
+      await Promise.all(sampleImportData.map(record => addImportItem(record)));
+
+      // Add sample all files data
+      const sampleAllFilesData = generateSampleAllFilesData();
+      await Promise.all(sampleAllFilesData.map(record => addAllFilesItem(record)));
+
+      // Add sample domestic trucking data
+      const sampleDomesticData = generateSampleDomesticTruckingData();
+      await Promise.all(sampleDomesticData.map(record => addDomesticTruckingItem(record)));
+
+      setSampleDataAdded(true);
+      addNotification(
+        'Sample Data Added',
+        'Added sample data across all tabs for this month and next month',
+        'success'
+      );
+    } catch (error) {
+      console.error('Error adding sample data:', error);
+      addNotification('Error', 'Failed to add sample data', 'error');
     }
   };
 
@@ -493,6 +550,42 @@ const FreightTracker = () => {
                 <p className="text-sm md:text-base text-gray-600">Comprehensive shipment tracking and management system</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                {/* Undo/Redo buttons */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs md:text-sm"
+                  onClick={undoRedoState.undo}
+                  disabled={!undoRedoState.canUndo}
+                >
+                  <Undo className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                  Undo
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs md:text-sm"
+                  onClick={undoRedoState.redo}
+                  disabled={!undoRedoState.canRedo}
+                >
+                  <Redo className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                  Redo
+                </Button>
+
+                {/* Sample data button */}
+                {!sampleDataAdded && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs md:text-sm"
+                    onClick={addSampleData}
+                  >
+                    <Database className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                    Add Sample Data
+                  </Button>
+                )}
+
                 <ExcelExportDialog 
                   activeTab={activeTab}
                   exportData={filteredExportData} 
