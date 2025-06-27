@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -96,11 +95,11 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
 
     if (isEditing) {
       return (
-        <div className="flex items-center gap-1 min-w-0 p-1 relative z-50">
+        <div className="flex items-center gap-1 min-w-0 p-1 relative z-[9999] bg-white border-2 border-blue-500 rounded shadow-lg">
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500 bg-white relative z-50"
+            className="h-6 text-xs min-w-0 flex-1 border-0 focus:ring-0 focus:outline-none bg-white text-black relative z-[9999]"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
@@ -108,11 +107,11 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
             }}
             autoFocus
           />
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-green-100 relative z-50" onClick={saveEdit}>
-            <Save className="h-2 w-2 text-green-600" />
+          <Button size="sm" variant="ghost" className="h-5 w-5 p-0 shrink-0 hover:bg-green-100 relative z-[9999]" onClick={saveEdit}>
+            <Save className="h-3 w-3 text-green-600" />
           </Button>
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-red-100 relative z-50" onClick={cancelEdit}>
-            <X className="h-2 w-2 text-red-600" />
+          <Button size="sm" variant="ghost" className="h-5 w-5 p-0 shrink-0 hover:bg-red-100 relative z-[9999]" onClick={cancelEdit}>
+            <X className="h-3 w-3 text-red-600" />
           </Button>
         </div>
       );
