@@ -2,22 +2,11 @@
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Archive, ArchiveRestore } from 'lucide-react';
+import { Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import AllFilesTableHeader from './AllFilesTableHeader';
 import AllFilesTableRow from './AllFilesTableRow';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 
 interface AllFilesTableProps {
   data: AllFilesRecord[];
@@ -29,9 +18,17 @@ interface AllFilesTableProps {
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
-const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: AllFilesTableProps) => {
+const AllFilesTable = ({ 
+  data, 
+  updateRecord, 
+  deleteRecord, 
+  selectedRows, 
+  setSelectedRows, 
+  onFileClick 
+}: AllFilesTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -88,6 +85,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
+                  onFileClick={onFileClick}
                 />
               ))}
               <tr>

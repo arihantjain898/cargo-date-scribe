@@ -48,7 +48,7 @@ export const generateSampleExportData = (): Omit<TrackingRecord, 'id'>[] => {
   return Array.from({ length: 25 }, (_, i) => ({
     customer: getRandomElement(customers),
     ref: `REF${String(i + 1).padStart(4, '0')}`,
-    file: `EX${String(i + 1).padStart(4, '0')}`,
+    file: `ES${String(i + 1).padStart(4, '0')}`, // ES prefix for export files
     workOrder: `WO${String(i + 1).padStart(5, '0')}`,
     dropDone: getRandomElement(['Yes', 'No', 'Pending']),
     dropDate: getRandomDate(startOfMonth, endOfNextMonth),
@@ -81,7 +81,7 @@ export const generateSampleImportData = (): Omit<ImportTrackingRecord, 'id'>[] =
   return Array.from({ length: 20 }, (_, i) => ({
     customer: getRandomElement(customers),
     booking: `BKG${String(i + 1).padStart(6, '0')}`,
-    file: `IM${String(i + 1).padStart(4, '0')}`,
+    file: `IS${String(i + 1).padStart(4, '0')}`, // IS prefix for import files
     etaFinalPod: getRandomDate(startOfMonth, endOfNextMonth),
     bond: `BD${String(i + 1).padStart(5, '0')}`,
     poa: getRandomBoolean(),
@@ -104,25 +104,32 @@ export const generateSampleImportData = (): Omit<ImportTrackingRecord, 'id'>[] =
 };
 
 export const generateSampleAllFilesData = (): Omit<AllFilesRecord, 'id'>[] => {
-  return Array.from({ length: 30 }, (_, i) => ({
-    file: getRandomElement(['ES', 'IS', 'DT', 'LC']),
-    number: String(i + 1).padStart(4, '0'),
-    customer: getRandomElement(customers),
-    originPort: getRandomElement(ports),
-    originState: getRandomElement(states),
-    destinationPort: getRandomElement(ports),
-    destinationCountry: getRandomElement(countries),
-    container20: getRandomNumber(0, 5),
-    container40: getRandomNumber(0, 8),
-    roro: getRandomNumber(0, 3),
-    lcl: getRandomNumber(0, 2),
-    air: getRandomNumber(0, 1),
-    truck: getRandomNumber(0, 4),
-    ssl: getRandomElement(['SSL1', 'SSL2', 'SSL3', '']),
-    nvo: getRandomElement(['NVO-A', 'NVO-B', 'NVO-C', '']),
-    comments: `Sample comment for file ${i + 1}`,
-    salesContact: getRandomElement(['John Smith', 'Jane Doe', 'Mike Johnson', 'Sarah Wilson'])
-  }));
+  const fileTypes = ['ES', 'IS', 'DT', 'LC'];
+  
+  return Array.from({ length: 30 }, (_, i) => {
+    const fileType = getRandomElement(fileTypes);
+    const fileNumber = String(i + 1).padStart(4, '0');
+    
+    return {
+      file: fileType,
+      number: fileNumber,
+      customer: getRandomElement(customers),
+      originPort: getRandomElement(ports),
+      originState: getRandomElement(states),
+      destinationPort: getRandomElement(ports),
+      destinationCountry: getRandomElement(countries),
+      container20: getRandomNumber(0, 5),
+      container40: getRandomNumber(0, 8),
+      roro: getRandomNumber(0, 3),
+      lcl: getRandomNumber(0, 2),
+      air: getRandomNumber(0, 1),
+      truck: getRandomNumber(0, 4),
+      ssl: getRandomElement(['SSL1', 'SSL2', 'SSL3', '']),
+      nvo: getRandomElement(['NVO-A', 'NVO-B', 'NVO-C', '']),
+      comments: `Sample comment for file ${fileType}${fileNumber} - Click to open linked checklist`,
+      salesContact: getRandomElement(['John Smith', 'Jane Doe', 'Mike Johnson', 'Sarah Wilson'])
+    };
+  });
 };
 
 export const generateSampleDomesticTruckingData = (): Omit<DomesticTruckingRecord, 'id'>[] => {
@@ -132,7 +139,7 @@ export const generateSampleDomesticTruckingData = (): Omit<DomesticTruckingRecor
 
   return Array.from({ length: 15 }, (_, i) => ({
     customer: getRandomElement(customers),
-    file: `DT${String(i + 1).padStart(4, '0')}`,
+    file: `DT${String(i + 1).padStart(4, '0')}`, // DT prefix for domestic trucking files
     woSent: getRandomBoolean(),
     insurance: getRandomBoolean(),
     pickDate: getRandomDate(startOfMonth, endOfNextMonth),
