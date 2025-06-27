@@ -6,6 +6,17 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import DomesticTruckingTableHeader from './DomesticTruckingTableHeader';
 import DomesticTruckingTableRow from './DomesticTruckingTableRow';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface DomesticTruckingTableProps {
   data: DomesticTruckingRecord[];
@@ -45,7 +56,7 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <div className="p-4 border-b flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Domestic Trucking</h2>
+        <h2 className="text-lg font-semibold">Domestic Trucking Checklist</h2>
         <div className="flex gap-2">
           <Button
             variant={showArchived ? "default" : "outline"}
@@ -74,12 +85,10 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
                   onArchive={handleArchiveRecord}
                   onUnarchive={handleUnarchiveRecord}
                   showArchived={showArchived}
-                  selectedRows={selectedRows}
-                  setSelectedRows={setSelectedRows}
                 />
               ))}
               <tr>
-                <td colSpan={12} className="h-12"></td>
+                <td colSpan={11} className="h-12"></td>
               </tr>
             </tbody>
           </table>

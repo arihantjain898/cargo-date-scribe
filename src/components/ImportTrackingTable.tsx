@@ -6,6 +6,17 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import ImportTrackingTableHeader from './ImportTrackingTableHeader';
 import ImportTrackingTableRow from './ImportTrackingTableRow';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface ImportTrackingTableProps {
   data: ImportTrackingRecord[];
@@ -74,8 +85,6 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                   onArchive={handleArchiveRecord}
                   onUnarchive={handleUnarchiveRecord}
                   showArchived={showArchived}
-                  selectedRows={selectedRows}
-                  setSelectedRows={setSelectedRows}
                 />
               ))}
               <tr>
