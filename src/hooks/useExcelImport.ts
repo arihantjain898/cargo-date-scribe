@@ -14,6 +14,16 @@ export const useExcelImport = (
 ) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const convertToDropdownValue = (value: unknown): string => {
+    if (typeof value === 'boolean') {
+      return value ? 'Yes' : 'No';
+    }
+    const str = String(value || '');
+    if (str.toLowerCase() === 'true' || str === '1') return 'Yes';
+    if (str.toLowerCase() === 'false' || str === '0') return 'No';
+    return str || 'No';
+  };
+
   const importFromExcel = (event: React.ChangeEvent<HTMLInputElement>, dataType: 'export' | 'import' | 'all-files' | 'domestic-trucking') => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -37,17 +47,17 @@ export const useExcelImport = (
             ref: String(row.ref || ''),
             file: String(row.file || ''),
             workOrder: String(row.workOrder || ''),
-            dropDone: Boolean(row.dropDone),
+            dropDone: convertToDropdownValue(row.dropDone),
             dropDate: String(row.dropDate || ''),
-            returnNeeded: Boolean(row.returnNeeded),
+            returnNeeded: convertToDropdownValue(row.returnNeeded),
             returnDate: String(row.returnDate || ''),
             docsSent: Boolean(row.docsSent),
             docsReceived: Boolean(row.docsReceived),
             aesMblVgmSent: Boolean(row.aesMblVgmSent),
             docCutoffDate: String(row.docCutoffDate || ''),
-            titlesDispatched: Boolean(row.titlesDispatched),
+            titlesDispatched: convertToDropdownValue(row.titlesDispatched),
             validatedFwd: Boolean(row.validatedFwd),
-            titlesReturned: Boolean(row.titlesReturned),
+            titlesReturned: convertToDropdownValue(row.titlesReturned),
             sslDraftInvRec: Boolean(row.sslDraftInvRec),
             draftInvApproved: Boolean(row.draftInvApproved),
             transphereInvSent: Boolean(row.transphereInvSent),
@@ -65,7 +75,7 @@ export const useExcelImport = (
             (row: Record<string, unknown>, index: number) => ({
             id: String(row.id || Date.now().toString() + index),
             customer: String(row.customer || ''),
-            reference: String(row.reference || ''),
+            booking: String(row.booking || row.reference || ''), // Handle both old and new field names
             file: String(row.file || ''),
             etaFinalPod: String(row.etaFinalPod || ''),
             bond: String(row.bond || ''),
@@ -81,6 +91,8 @@ export const useExcelImport = (
             invoiceSent: Boolean(row.invoiceSent),
             paymentReceived: Boolean(row.paymentReceived),
             workOrderSetup: Boolean(row.workOrderSetup),
+            delivered: convertToDropdownValue(row.delivered),
+            returned: convertToDropdownValue(row.returned),
             deliveryDate: String(row.deliveryDate || ''),
             notes: String(row.notes || '')
           }));

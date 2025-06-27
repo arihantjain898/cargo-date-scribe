@@ -23,7 +23,7 @@ export const useImportSearch = (data: ImportTrackingRecord[]) => {
 
   const filteredData = useMemo(() => 
     data.filter(record => 
-      record.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.booking.toLowerCase().includes(searchTerm.toLowerCase()) ||
       record.file.toLowerCase().includes(searchTerm.toLowerCase()) ||
       record.bond.toLowerCase().includes(searchTerm.toLowerCase()) ||
       record.notes.toLowerCase().includes(searchTerm.toLowerCase())
