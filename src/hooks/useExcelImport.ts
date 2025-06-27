@@ -4,15 +4,17 @@ import * as XLSX from 'xlsx';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 export const useExcelImport = (
   setExportData: React.Dispatch<React.SetStateAction<TrackingRecord[]>>,
   setImportData: React.Dispatch<React.SetStateAction<ImportTrackingRecord[]>>,
-  setAllFilesData: React.Dispatch<React.SetStateAction<AllFilesRecord[]>>
+  setAllFilesData: React.Dispatch<React.SetStateAction<AllFilesRecord[]>>,
+  setDomesticTruckingData: React.Dispatch<React.SetStateAction<DomesticTruckingRecord[]>>
 ) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const importFromExcel = (event: React.ChangeEvent<HTMLInputElement>, dataType: 'export' | 'import' | 'all-files') => {
+  const importFromExcel = (event: React.ChangeEvent<HTMLInputElement>, dataType: 'export' | 'import' | 'all-files' | 'domestic-trucking') => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -108,6 +110,22 @@ export const useExcelImport = (
           }));
           setAllFilesData(importedRecords);
           console.log('Successfully imported', importedRecords.length, 'all files records');
+        } else if (dataType === 'domestic-trucking') {
+          const importedRecords: DomesticTruckingRecord[] = jsonData.map(
+            (row: Record<string, unknown>, index: number) => ({
+            id: String(row.id || Date.now().toString() + index),
+            customer: String(row.customer || ''),
+            file: String(row.file || ''),
+            woSent: Boolean(row.woSent),
+            insurance: Boolean(row.insurance),
+            pickDate: String(row.pickDate || ''),
+            delivered: String(row.delivered || ''),
+            paymentReceived: Boolean(row.paymentReceived),
+            paymentMade: Boolean(row.paymentMade),
+            notes: String(row.notes || '')
+          }));
+          setDomesticTruckingData(importedRecords);
+          console.log('Successfully imported', importedRecords.length, 'domestic trucking records');
         }
 
       } catch (error) {

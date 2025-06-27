@@ -7,15 +7,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 interface ExcelExportDialogProps {
   activeTab: string;
   exportData: TrackingRecord[];
   importData: ImportTrackingRecord[];
   allFilesData: AllFilesRecord[];
+  domesticTruckingData: DomesticTruckingRecord[];
   selectedExportRows: string[];
   selectedImportRows: string[];
   selectedAllFilesRows: string[];
+  selectedDomesticTruckingRows: string[];
   children: React.ReactNode;
 }
 
@@ -24,14 +27,16 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
   exportData, 
   importData, 
   allFilesData,
+  domesticTruckingData,
   selectedExportRows, 
   selectedImportRows,
   selectedAllFilesRows,
+  selectedDomesticTruckingRows,
   children 
 }) => {
   const handleExport = () => {
     let dataToExport: Array<
-      TrackingRecord | ImportTrackingRecord | AllFilesRecord
+      TrackingRecord | ImportTrackingRecord | AllFilesRecord | DomesticTruckingRecord
     > = [];
     let filename = '';
     let selectedRows: string[] = [];
@@ -57,6 +62,13 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
           ? allFilesData.filter(item => selectedRows.includes(item.id))
           : allFilesData;
         filename = 'all_files_data.xlsx';
+        break;
+      case 'domestic-trucking':
+        selectedRows = selectedDomesticTruckingRows;
+        dataToExport = selectedRows.length > 0
+          ? domesticTruckingData.filter(item => selectedRows.includes(item.id))
+          : domesticTruckingData;
+        filename = 'domestic_trucking_data.xlsx';
         break;
       default:
         selectedRows = selectedExportRows;
@@ -85,6 +97,8 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
         return selectedImportRows.length > 0 ? selectedImportRows.length : importData.length;
       case 'all-files':
         return selectedAllFilesRows.length > 0 ? selectedAllFilesRows.length : allFilesData.length;
+      case 'domestic-trucking':
+        return selectedDomesticTruckingRows.length > 0 ? selectedDomesticTruckingRows.length : domesticTruckingData.length;
       default:
         return selectedExportRows.length > 0 ? selectedExportRows.length : exportData.length;
     }
@@ -98,6 +112,8 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
         return 'Import Tracking';
       case 'all-files':
         return 'All Files';
+      case 'domestic-trucking':
+        return 'Domestic Trucking';
       default:
         return 'Export Tracking';
     }

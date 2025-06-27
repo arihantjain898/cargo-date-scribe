@@ -23,6 +23,8 @@ const ExcelImportDialog: React.FC<ExcelImportDialogProps> = ({
         return 'Import Tracking';
       case 'all-files':
         return 'All Files';
+      case 'domestic-trucking':
+        return 'Domestic Trucking';
       default:
         return 'Export Tracking';
     }
