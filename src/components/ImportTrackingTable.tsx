@@ -70,15 +70,9 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                 <th colSpan={5} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">Documentation</th>
                 <th colSpan={4} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200">Processing</th>
                 <th colSpan={4} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Final Steps</th>
-                <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Notes</th>
-                <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-10">
-                  <Checkbox
-                    checked={selectedRows.length === data.length && data.length > 0}
-                    onCheckedChange={handleSelectAll}
-                    className="h-3 w-3 border"
-                  />
-                </th>
-                <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Actions</th>
+                <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[200px]">Notes</th>
+                <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-10">Actions</th>
+                <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Delete</th>
               </tr>
               <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
                 <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[120px] sticky left-0 z-40">Customer</th>
@@ -99,7 +93,7 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                 <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[120px]">Payment Rec'd?</th>
                 <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[120px]">Work Order Setup?</th>
                 <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[100px]">Delivery Date</th>
-                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[100px]">Notes</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[200px]">Notes</th>
                 <th className="bg-gray-300 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
                 <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
               </tr>
