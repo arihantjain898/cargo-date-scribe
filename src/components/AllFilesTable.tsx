@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -95,29 +94,50 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     if (isEditing) {
       return (
-        <div className="flex items-center gap-1 min-w-0 p-1 relative z-[99999] bg-white border-2 border-blue-500 rounded shadow-xl">
-          <Input
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            className="h-8 text-sm min-w-0 flex-1 border-0 focus:ring-0 focus:outline-none bg-white text-black relative z-[99999] shadow-none p-2"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') saveEdit();
-              if (e.key === 'Escape') cancelEdit();
-            }}
-            autoFocus
-            style={{ 
-              backgroundColor: 'white',
-              color: 'black',
-              zIndex: 99999,
-              position: 'relative'
-            }}
-          />
-          <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0 hover:bg-green-100 relative z-[99999]" onClick={saveEdit}>
-            <Save className="h-3 w-3 text-green-600" />
-          </Button>
-          <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0 hover:bg-red-100 relative z-[99999]" onClick={cancelEdit}>
-            <X className="h-3 w-3 text-red-600" />
-          </Button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-[9999]" onClick={cancelEdit}>
+          <div className="bg-white border-2 border-blue-500 rounded-lg shadow-2xl p-4 min-w-[300px] max-w-[500px] w-full mx-4 z-[10000]" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Editing: {field}
+              </label>
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="w-full text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                  }
+                  if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cancelEdit();
+                  }
+                }}
+                autoFocus
+                placeholder={`Enter ${field}...`}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={cancelEdit}
+                className="px-4"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Cancel
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={saveEdit}
+                className="px-4 bg-blue-600 hover:bg-blue-700"
+              >
+                <Save className="h-4 w-4 mr-1" />
+                Save
+              </Button>
+            </div>
+          </div>
         </div>
       );
     }
@@ -133,7 +153,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
           value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
         } ${isVolumeField && value ? 'font-semibold text-white' : ''}`}>
           {String(value) || (
-            <span className="text-gray-400 text-[10px] opacity-60">—</span>
+            <span className="text-gray-400 text-[10px] opacity-60">Click to edit</span>
           )}
         </span>
         <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
@@ -204,7 +224,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       >
                         <span className="text-xs truncate font-bold text-gray-800">
                           {record.customer || (
-                            <span className="text-gray-400 text-[10px] opacity-60">—</span>
+                            <span className="text-gray-400 text-[10px] opacity-60">Click to edit</span>
                           )}
                         </span>
                         <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
