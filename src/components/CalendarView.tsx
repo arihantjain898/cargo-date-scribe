@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -14,21 +14,23 @@ import { Filter, X } from 'lucide-react';
 interface CalendarViewProps {
   data: TrackingRecord[];
   importData?: ImportTrackingRecord[];
+  domesticData?: DomesticTruckingRecord[];
 }
 
 interface CalendarEvent {
   date: string;
-  type: 'drop' | 'return' | 'cutoff' | 'eta' | 'delivery';
+  type: 'drop' | 'return' | 'cutoff' | 'eta' | 'delivery' | 'pickup' | 'delivered';
   customer: string;
   ref: string;
   file: string;
-  source: 'export' | 'import';
+  source: 'export' | 'import' | 'domestic';
   workOrder?: string;
   originPort?: string;
   destinationPort?: string;
   ssl?: string;
   nvo?: string;
   bond?: string;
+  notes?: string;
 }
 
 interface EventDetailModalProps {
@@ -61,9 +63,9 @@ const EventDetailModal = ({ event, isOpen, onClose }: EventDetailModalProps) => 
             </Badge>
             <Badge 
               variant="outline" 
-              className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
+              className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
             >
-              {event.source === 'export' ? 'Export' : 'Import'}
+              {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic'}
             </Badge>
           </div>
           
@@ -138,7 +140,7 @@ const getEventTypeColor = (type: string, source: string) => {
       default:
         return 'bg-gray-100 text-gray-800 border-gray-300';
     }
-  } else {
+  } else if (source === 'import') {
     switch (type) {
       case 'eta':
         return 'bg-purple-100 text-purple-800 border-purple-300';
@@ -146,6 +148,16 @@ const getEventTypeColor = (type: string, source: string) => {
         return 'bg-orange-100 text-orange-800 border-orange-300';
       default:
         return 'bg-indigo-100 text-indigo-800 border-indigo-300';
+    }
+  } else {
+    // domestic
+    switch (type) {
+      case 'pickup':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'delivered':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-300';
     }
   }
 };
@@ -162,19 +174,24 @@ const getEventTypeLabel = (type: string) => {
       return 'ETA Final POD';
     case 'delivery':
       return 'Delivery Date';
+    case 'pickup':
+      return 'Pick Date';
+    case 'delivered':
+      return 'Delivered';
     default:
       return type;
   }
 };
 
-const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
+const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarViewProps) => {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
-  const [calendarFilter, setCalendarFilter] = useState<'all' | 'export' | 'import'>('all');
+  const [calendarFilter, setCalendarFilter] = useState<'all' | 'export' | 'import' | 'domestic'>('all');
 
-  const { exportEvents, importEvents, allEvents } = useMemo(() => {
+  const { exportEvents, importEvents, domesticEvents, allEvents } = useMemo(() => {
     const exportEventList: CalendarEvent[] = [];
     const importEventList: CalendarEvent[] = [];
+    const domesticEventList: CalendarEvent[] = [];
     
     // Export events
     data.forEach(record => {
@@ -186,7 +203,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           ref: record.ref,
           file: record.file,
           source: 'export',
-          workOrder: record.workOrder
+          workOrder: record.workOrder,
+          notes: record.notes
         });
       }
       
@@ -198,7 +216,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           ref: record.ref,
           file: record.file,
           source: 'export',
-          workOrder: record.workOrder
+          workOrder: record.workOrder,
+          notes: record.notes
         });
       }
       
@@ -210,7 +229,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           ref: record.ref,
           file: record.file,
           source: 'export',
-          workOrder: record.workOrder
+          workOrder: record.workOrder,
+          notes: record.notes
         });
       }
     });
@@ -225,7 +245,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           ref: record.reference,
           file: record.file,
           source: 'import',
-          bond: record.bond
+          bond: record.bond,
+          notes: record.notes
         });
       }
       
@@ -237,7 +258,35 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
           ref: record.reference,
           file: record.file,
           source: 'import',
-          bond: record.bond
+          bond: record.bond,
+          notes: record.notes
+        });
+      }
+    });
+
+    // Domestic events
+    domesticData.forEach(record => {
+      if (record.pickDate) {
+        domesticEventList.push({
+          date: record.pickDate,
+          type: 'pickup',
+          customer: record.customer,
+          ref: record.customer,
+          file: record.file,
+          source: 'domestic',
+          notes: record.notes
+        });
+      }
+      
+      if (record.delivered) {
+        domesticEventList.push({
+          date: record.delivered,
+          type: 'delivered',
+          customer: record.customer,
+          ref: record.customer,
+          file: record.file,
+          source: 'domestic',
+          notes: record.notes
         });
       }
     });
@@ -245,38 +294,43 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
     return {
       exportEvents: exportEventList,
       importEvents: importEventList,
-      allEvents: [...exportEventList, ...importEventList]
+      domesticEvents: domesticEventList,
+      allEvents: [...exportEventList, ...importEventList, ...domesticEventList]
     };
-  }, [data, importData]);
+  }, [data, importData, domesticData]);
 
-  const getEventsForDate = (date: Date, eventSource: 'all' | 'export' | 'import' = 'all') => {
+  const getEventsForDate = (date: Date, eventSource: 'all' | 'export' | 'import' | 'domestic' = 'all') => {
     const dateString = date.toISOString().split('T')[0];
     const events = eventSource === 'export' ? exportEvents : 
-                  eventSource === 'import' ? importEvents : allEvents;
+                  eventSource === 'import' ? importEvents :
+                  eventSource === 'domestic' ? domesticEvents : allEvents;
     return events.filter(event => event.date === dateString);
   };
 
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
 
   const eventDates = useMemo(() => {
-    const dates = new Map<string, { export: number; import: number }>();
+    const dates = new Map<string, { export: number; import: number; domestic: number }>();
     const eventsToProcess = calendarFilter === 'all' ? allEvents :
-                           calendarFilter === 'export' ? exportEvents : importEvents;
+                           calendarFilter === 'export' ? exportEvents : 
+                           calendarFilter === 'import' ? importEvents : domesticEvents;
                            
     eventsToProcess.forEach(event => {
       const date = event.date;
       if (!dates.has(date)) {
-        dates.set(date, { export: 0, import: 0 });
+        dates.set(date, { export: 0, import: 0, domestic: 0 });
       }
       const counts = dates.get(date)!;
       if (event.source === 'export') {
         counts.export++;
-      } else {
+      } else if (event.source === 'import') {
         counts.import++;
+      } else {
+        counts.domestic++;
       }
     });
     return dates;
-  }, [allEvents, exportEvents, importEvents, calendarFilter]);
+  }, [allEvents, exportEvents, importEvents, domesticEvents, calendarFilter]);
 
   const modifiers = {
     hasEvents: (date: Date) => {
@@ -301,7 +355,8 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
   // Get filtered events based on calendar filter
   const getFilteredEventsForUpcoming = () => {
     const events = calendarFilter === 'all' ? allEvents :
-                  calendarFilter === 'export' ? exportEvents : importEvents;
+                  calendarFilter === 'export' ? exportEvents : 
+                  calendarFilter === 'import' ? importEvents : domesticEvents;
     
     return events
       .filter(event => new Date(event.date) >= new Date())
@@ -328,9 +383,9 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                 </Badge>
                 <Badge 
                   variant="outline" 
-                  className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
+                  className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
                 >
-                  {event.source === 'export' ? 'Export' : 'Import'}
+                  {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic'}
                 </Badge>
               </div>
             </div>
@@ -364,6 +419,9 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
         )}
         {counts.import > 0 && (
           <div className="w-1.5 h-1.5 bg-yellow-200 rounded-full opacity-90 shadow-sm"></div>
+        )}
+        {counts.domestic > 0 && (
+          <div className="w-1.5 h-1.5 bg-green-200 rounded-full opacity-90 shadow-sm"></div>
         )}
       </div>
     );
@@ -399,6 +457,14 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                 className="text-xs px-2 py-1"
               >
                 Import
+              </Button>
+              <Button
+                variant={calendarFilter === 'domestic' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCalendarFilter('domestic')}
+                className="text-xs px-2 py-1"
+              >
+                Domestic
               </Button>
             </div>
           </CardTitle>
@@ -436,6 +502,15 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                 </Badge>
                 <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 justify-start text-xs block w-fit">
                   Delivery Date
+                </Badge>
+              </div>
+              <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Domestic Events:</div>
+              <div className="space-y-1">
+                <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300 justify-start text-xs block w-fit">
+                  Pick Date
+                </Badge>
+                <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 justify-start text-xs block w-fit">
+                  Delivered
                 </Badge>
               </div>
               <div className="text-xs text-gray-500 mt-3">
@@ -487,9 +562,13 @@ const CalendarView = ({ data, importData = [] }: CalendarViewProps) => {
                       </Badge>
                       <Badge 
                         variant="outline" 
-                        className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-indigo-100 text-indigo-700 border-indigo-300'}`}
+                        className={`text-xs font-medium ${
+                          event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 
+                          event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' :
+                          'bg-yellow-100 text-yellow-700 border-yellow-300'
+                        }`}
                       >
-                        {event.source === 'export' ? 'EXP' : 'IMP'}
+                        {event.source === 'export' ? 'EXP' : event.source === 'import' ? 'IMP' : 'DOM'}
                       </Badge>
                     </div>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">

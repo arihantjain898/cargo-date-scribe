@@ -74,7 +74,8 @@ const FreightTracker = () => {
   const [sampleDataAdded, setSampleDataAdded] = useState(false);
 
   const { notifications, addNotification } = useNotifications();
-  const { fileInputRef, importFromExcel } = useExcelImport(() => {}, () => {}, () => {});
+  const { fileInputRef, importFromExcel } = useExcelImport(() => {}, () => {}, () => {}, () => {});
+  
   const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
   const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
   const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
@@ -665,7 +666,11 @@ const FreightTracker = () => {
               </TabsContent>
 
               <TabsContent value="calendar" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <CalendarView data={filteredExportData} importData={filteredImportData} />
+                <CalendarView 
+                  data={filteredExportData} 
+                  importData={filteredImportData}
+                  domesticData={filteredDomesticTruckingData}
+                />
               </TabsContent>
             </Tabs>
           </div>
