@@ -84,11 +84,13 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
                   deleteRecord={deleteRecord}
                   onArchive={handleArchiveRecord}
                   onUnarchive={handleUnarchiveRecord}
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                 />
               ))}
               <tr>
-                <td colSpan={11} className="h-12"></td>
+                <td colSpan={12} className="h-12"></td>
               </tr>
             </tbody>
           </table>
