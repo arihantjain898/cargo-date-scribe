@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Edit3, Save, X, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
+import InlineEditCell from './InlineEditCell';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,8 +32,6 @@ interface AllFilesTableProps {
 }
 
 const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: AllFilesTableProps) => {
-  const [editingCell, setEditingCell] = useState<{ id: string; field: keyof AllFilesRecord } | null>(null);
-  const [editValue, setEditValue] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,29 +42,6 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
       }
     }
   }, [data.length]);
-
-  const startEdit = (
-    id: string,
-    field: keyof AllFilesRecord,
-    currentValue: string
-  ) => {
-    setEditingCell({ id, field });
-    setEditValue(String(currentValue));
-  };
-
-  const saveEdit = () => {
-    if (editingCell) {
-      const { id, field } = editingCell;
-      updateRecord(id, field, editValue);
-    }
-    setEditingCell(null);
-    setEditValue('');
-  };
-
-  const cancelEdit = () => {
-    setEditingCell(null);
-    setEditValue('');
-  };
 
   const handleSelectRow = (id: string, checked: boolean) => {
     if (checked) {
@@ -83,82 +59,9 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     }
   };
 
-  const getRowConditionalClasses = (record: AllFilesRecord): string => {
-    // No completion check for All Files - just return normal styling
-    return '';
-  };
-
-  const renderCell = (record: AllFilesRecord, field: keyof AllFilesRecord, isVolumeField = false) => {
-    const isEditing = editingCell?.id === record.id && editingCell?.field === field;
-    const value = record[field];
-
-    if (isEditing) {
-      return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-[9999]" onClick={cancelEdit}>
-          <div className="bg-white border-2 border-blue-500 rounded-lg shadow-2xl p-4 min-w-[300px] max-w-[500px] w-full mx-4 z-[10000]" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Editing: {field}
-              </label>
-              <Input
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="w-full text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    saveEdit();
-                  }
-                  if (e.key === 'Escape') {
-                    e.preventDefault();
-                    cancelEdit();
-                  }
-                }}
-                autoFocus
-                placeholder={`Enter ${field}...`}
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={cancelEdit}
-                className="px-4"
-              >
-                <X className="h-4 w-4 mr-1" />
-                Cancel
-              </Button>
-              <Button 
-                size="sm" 
-                onClick={saveEdit}
-                className="px-4 bg-blue-600 hover:bg-blue-700"
-              >
-                <Save className="h-4 w-4 mr-1" />
-                Save
-              </Button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    const containerClasses = isVolumeField ? getContainerVolumeColor(String(value)) : '';
-
-    return (
-      <div
-        className={`flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200 ${containerClasses}`}
-        onClick={() => startEdit(record.id, field, value)}
-      >
-        <span className={`text-xs truncate ${
-          value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
-        } ${isVolumeField && value ? 'font-semibold text-white' : ''}`}>
-          {String(value) || (
-            <span className="text-gray-400 text-[10px] opacity-60">Click to edit</span>
-          )}
-        </span>
-        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
-      </div>
-    );
+  const getVolumeFieldStyles = (value: string): string => {
+    const containerClasses = getContainerVolumeColor(value);
+    return containerClasses;
   };
 
   return (
@@ -208,80 +111,174 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
               </tr>
             </thead>
             <tbody>
-              {data.map((record, index) => {
-                const conditionalClasses = getRowConditionalClasses(record);
-                return (
-                  <tr
-                    key={record.id}
-                    className={`border-b-2 border-gray-400 transition-all duration-200 ${
-                      conditionalClasses || (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
-                    }`}
-                  >
-                    <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-                      <div
-                        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200"
-                        onClick={() => startEdit(record.id, 'customer', record.customer)}
-                      >
-                        <span className="text-xs truncate font-bold text-gray-800">
-                          {record.customer || (
-                            <span className="text-gray-400 text-[10px] opacity-60">Click to edit</span>
-                          )}
-                        </span>
-                        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
-                      </div>
-                    </td>
-                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'file')}</td>
-                    <td className="border-r-4 border-black p-1">{renderCell(record, 'number')}</td>
-                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'originPort')}</td>
-                    <td className="border-r-4 border-black p-1">{renderCell(record, 'originState')}</td>
-                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'destinationPort')}</td>
-                    <td className="border-r-4 border-black p-1">{renderCell(record, 'destinationCountry')}</td>
-                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'container20', true)}</td>
-                    <td className="border-r border-gray-500 p-1">{renderCell(record, 'container40', true)}</td>
-                    <td className="border-r border-gray-500 p-1">{renderCell(record, 'roro', true)}</td>
-                    <td className="border-r border-gray-500 p-1">{renderCell(record, 'lcl', true)}</td>
-                    <td className="border-r border-gray-500 p-1">{renderCell(record, 'air', true)}</td>
-                    <td className="border-r-4 border-black p-1">{renderCell(record, 'truck', true)}</td>
-                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'ssl')}</td>
-                    <td className="border-r-4 border-black p-1">{renderCell(record, 'nvo')}</td>
-                    <td className="border-l-4 border-black border-r border-gray-500 p-1">{renderCell(record, 'comments')}</td>
-                    <td className="border-l-4 border-black border-r-4 border-black p-1">{renderCell(record, 'salesContact')}</td>
-                    <td className="p-1 text-center border-r-4 border-black">
-                      <Checkbox
-                        checked={selectedRows.includes(record.id)}
-                        onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
-                        className="h-3 w-3 border"
-                      />
-                    </td>
-                    <td className="p-1 text-center">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
-                            <Trash2 className="h-3 w-3 text-red-500" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Record</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => deleteRecord(record.id)}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </td>
-                  </tr>
-                );
-              })}
+              {data.map((record, index) => (
+                <tr
+                  key={record.id}
+                  className={`border-b-2 border-gray-400 transition-all duration-200 ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                  }`}
+                >
+                  <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
+                    <InlineEditCell
+                      value={record.customer}
+                      onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+                      placeholder="Enter customer name"
+                      className="font-bold"
+                    />
+                  </td>
+                  <td className="border-l-4 border-black border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.file}
+                      onSave={(value) => updateRecord(record.id, 'file', value as string)}
+                      placeholder="Enter file"
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.number}
+                      onSave={(value) => updateRecord(record.id, 'number', value as string)}
+                      placeholder="Enter number"
+                    />
+                  </td>
+                  <td className="border-l-4 border-black border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.originPort}
+                      onSave={(value) => updateRecord(record.id, 'originPort', value as string)}
+                      placeholder="Enter origin port"
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.originState}
+                      onSave={(value) => updateRecord(record.id, 'originState', value as string)}
+                      placeholder="Enter origin state"
+                    />
+                  </td>
+                  <td className="border-l-4 border-black border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.destinationPort}
+                      onSave={(value) => updateRecord(record.id, 'destinationPort', value as string)}
+                      placeholder="Enter destination port"
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.destinationCountry}
+                      onSave={(value) => updateRecord(record.id, 'destinationCountry', value as string)}
+                      placeholder="Enter destination country"
+                    />
+                  </td>
+                  <td className="border-l-4 border-black border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.container20}
+                      onSave={(value) => updateRecord(record.id, 'container20', value as string)}
+                      placeholder="20'"
+                      className={getVolumeFieldStyles(record.container20)}
+                    />
+                  </td>
+                  <td className="border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.container40}
+                      onSave={(value) => updateRecord(record.id, 'container40', value as string)}
+                      placeholder="40'"
+                      className={getVolumeFieldStyles(record.container40)}
+                    />
+                  </td>
+                  <td className="border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.roro}
+                      onSave={(value) => updateRecord(record.id, 'roro', value as string)}
+                      placeholder="RoRo"
+                      className={getVolumeFieldStyles(record.roro)}
+                    />
+                  </td>
+                  <td className="border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.lcl}
+                      onSave={(value) => updateRecord(record.id, 'lcl', value as string)}
+                      placeholder="LCL"
+                      className={getVolumeFieldStyles(record.lcl)}
+                    />
+                  </td>
+                  <td className="border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.air}
+                      onSave={(value) => updateRecord(record.id, 'air', value as string)}
+                      placeholder="Air"
+                      className={getVolumeFieldStyles(record.air)}
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.truck}
+                      onSave={(value) => updateRecord(record.id, 'truck', value as string)}
+                      placeholder="Truck"
+                      className={getVolumeFieldStyles(record.truck)}
+                    />
+                  </td>
+                  <td className="border-l-4 border-black border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.ssl}
+                      onSave={(value) => updateRecord(record.id, 'ssl', value as string)}
+                      placeholder="Enter SSL"
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.nvo}
+                      onSave={(value) => updateRecord(record.id, 'nvo', value as string)}
+                      placeholder="Enter NVO"
+                    />
+                  </td>
+                  <td className="border-l-4 border-black border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.comments}
+                      onSave={(value) => updateRecord(record.id, 'comments', value as string)}
+                      placeholder="Enter comments"
+                    />
+                  </td>
+                  <td className="border-l-4 border-black border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.salesContact}
+                      onSave={(value) => updateRecord(record.id, 'salesContact', value as string)}
+                      placeholder="Enter sales contact"
+                    />
+                  </td>
+                  <td className="p-1 text-center border-r-4 border-black">
+                    <Checkbox
+                      checked={selectedRows.includes(record.id)}
+                      onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
+                      className="h-3 w-3 border"
+                    />
+                  </td>
+                  <td className="p-1 text-center">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
+                          <Trash2 className="h-3 w-3 text-red-500" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Record</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteRecord(record.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </td>
+                </tr>
+              ))}
               <tr>
                 <td colSpan={20} className="h-16"></td>
               </tr>

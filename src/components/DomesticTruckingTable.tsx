@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Edit3, Save, X, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
-import { StatusBadge } from '@/components/ui/status-badge';
+import InlineEditCell from './InlineEditCell';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,8 +31,6 @@ interface DomesticTruckingTableProps {
 }
 
 const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: DomesticTruckingTableProps) => {
-  const [editingCell, setEditingCell] = useState<{ id: string; field: keyof DomesticTruckingRecord } | null>(null);
-  const [editValue, setEditValue] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,35 +41,6 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
       }
     }
   }, [data.length]);
-
-  const startEdit = (
-    id: string,
-    field: keyof DomesticTruckingRecord,
-    currentValue: string | boolean
-  ) => {
-    setEditingCell({ id, field });
-    setEditValue(String(currentValue));
-  };
-
-  const saveEdit = () => {
-    if (editingCell) {
-      const { id, field } = editingCell;
-      let value: string | boolean = editValue;
-
-      if (field === 'woSent' || field === 'insurance' || field === 'paymentReceived' || field === 'paymentMade') {
-        value = editValue === 'true';
-      }
-
-      updateRecord(id, field, value);
-    }
-    setEditingCell(null);
-    setEditValue('');
-  };
-
-  const cancelEdit = () => {
-    setEditingCell(null);
-    setEditValue('');
-  };
 
   const handleSelectRow = (id: string, checked: boolean) => {
     if (checked) {
@@ -87,113 +56,6 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
     } else {
       setSelectedRows([]);
     }
-  };
-
-  const renderCell = (record: DomesticTruckingRecord, field: keyof DomesticTruckingRecord, isCheckbox = false, isDate = false) => {
-    const isEditing = editingCell?.id === record.id && editingCell?.field === field;
-    const value = record[field];
-
-    if (isEditing) {
-      return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-[9999]" onClick={cancelEdit}>
-          <div className="bg-white border-2 border-blue-500 rounded-lg shadow-2xl p-4 min-w-[300px] max-w-[500px] w-full mx-4 z-[10000]" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Editing: {field}
-              </label>
-              <Input
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="w-full text-base border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                type={isDate ? 'date' : 'text'}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    saveEdit();
-                  }
-                  if (e.key === 'Escape') {
-                    e.preventDefault();
-                    cancelEdit();
-                  }
-                }}
-                autoFocus
-                placeholder={`Enter ${field}...`}
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={cancelEdit}
-                className="px-4"
-              >
-                <X className="h-4 w-4 mr-1" />
-                Cancel
-              </Button>
-              <Button 
-                size="sm" 
-                onClick={saveEdit}
-                className="px-4 bg-blue-600 hover:bg-blue-700"
-              >
-                <Save className="h-4 w-4 mr-1" />
-                Save
-              </Button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (isCheckbox) {
-      const getStatusLabels = (field: keyof DomesticTruckingRecord) => {
-        switch (field) {
-          case 'woSent':
-            return { true: 'Sent', false: 'Pending' };
-          case 'insurance':
-            return { true: 'Yes', false: 'No' };
-          case 'paymentReceived':
-          case 'paymentMade':
-            return { true: 'Yes', false: 'No' };
-          default:
-            return { true: 'Yes', false: 'No' };
-        }
-      };
-
-      const labels = getStatusLabels(field);
-      const boolValue = value as boolean;
-      const variant = boolValue ? 'success' : 'default';
-      
-      return (
-        <div 
-          className="flex items-center justify-center py-1 cursor-pointer"
-          onClick={() => updateRecord(record.id, field, !value)}
-        >
-          <StatusBadge
-            status={boolValue}
-            trueLabel={labels.true}
-            falseLabel={labels.false}
-            variant={variant}
-          />
-        </div>
-      );
-    }
-
-    return (
-      <div
-        className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200"
-        onClick={() => startEdit(record.id, field, value)}
-      >
-        <span className={`text-xs truncate ${
-          isDate && value ? 'text-blue-700 bg-blue-50 px-1 py-0.5 rounded text-[10px]' :
-          value ? 'text-gray-800' : 'text-gray-400 italic opacity-50'
-        }`}>
-          {String(value) || (
-            <span className="text-gray-400 text-[10px] opacity-60">Click to edit</span>
-          )}
-        </span>
-        <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
-      </div>
-    );
   };
 
   return (
@@ -240,26 +102,71 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
                   }`}
                 >
                   <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-                    <div
-                      className="flex items-center justify-between group cursor-pointer hover:bg-blue-50 px-1.5 py-1 rounded transition-all duration-200 min-h-[24px] border border-transparent hover:border-blue-200"
-                      onClick={() => startEdit(record.id, 'customer', record.customer)}
-                    >
-                      <span className="text-xs truncate font-bold text-gray-800">
-                        {record.customer || (
-                          <span className="text-gray-400 text-[10px] opacity-60">Click to edit</span>
-                        )}
-                      </span>
-                      <Edit3 className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 text-blue-600 shrink-0 ml-1 transition-opacity" />
-                    </div>
+                    <InlineEditCell
+                      value={record.customer}
+                      onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+                      placeholder="Enter customer name"
+                      className="font-bold"
+                    />
                   </td>
-                  <td className="border-r border-gray-500 p-1">{renderCell(record, 'file')}</td>
-                  <td className="border-r-4 border-black p-1">{renderCell(record, 'woSent', true)}</td>
-                  <td className="border-r border-gray-500 p-1">{renderCell(record, 'insurance', true)}</td>
-                  <td className="border-r-4 border-black p-1">{renderCell(record, 'pickDate', false, true)}</td>
-                  <td className="border-r-4 border-black p-1">{renderCell(record, 'delivered', false, true)}</td>
-                  <td className="border-r border-gray-500 p-1">{renderCell(record, 'paymentReceived', true)}</td>
-                  <td className="border-r-4 border-black p-1">{renderCell(record, 'paymentMade', true)}</td>
-                  <td className="border-r-4 border-black p-1">{renderCell(record, 'notes')}</td>
+                  <td className="border-r border-gray-500 p-1">
+                    <InlineEditCell
+                      value={record.file}
+                      onSave={(value) => updateRecord(record.id, 'file', value as string)}
+                      placeholder="Enter file"
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1 text-center">
+                    <InlineEditCell
+                      value={record.woSent}
+                      onSave={(value) => updateRecord(record.id, 'woSent', value as boolean)}
+                      isBoolean={true}
+                    />
+                  </td>
+                  <td className="border-r border-gray-500 p-1 text-center">
+                    <InlineEditCell
+                      value={record.insurance}
+                      onSave={(value) => updateRecord(record.id, 'insurance', value as boolean)}
+                      isBoolean={true}
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.pickDate}
+                      onSave={(value) => updateRecord(record.id, 'pickDate', value as string)}
+                      isDate={true}
+                      placeholder="Select pick date"
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.delivered}
+                      onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
+                      isDate={true}
+                      placeholder="Select delivery date"
+                    />
+                  </td>
+                  <td className="border-r border-gray-500 p-1 text-center">
+                    <InlineEditCell
+                      value={record.paymentReceived}
+                      onSave={(value) => updateRecord(record.id, 'paymentReceived', value as boolean)}
+                      isBoolean={true}
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1 text-center">
+                    <InlineEditCell
+                      value={record.paymentMade}
+                      onSave={(value) => updateRecord(record.id, 'paymentMade', value as boolean)}
+                      isBoolean={true}
+                    />
+                  </td>
+                  <td className="border-r-4 border-black p-1">
+                    <InlineEditCell
+                      value={record.notes}
+                      onSave={(value) => updateRecord(record.id, 'notes', value as string)}
+                      placeholder="Enter notes"
+                    />
+                  </td>
                   <td className="p-1 text-center border-r-4 border-black">
                     <Checkbox
                       checked={selectedRows.includes(record.id)}

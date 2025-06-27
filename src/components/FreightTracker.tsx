@@ -110,7 +110,7 @@ const FreightTracker = () => {
 
   const { searchTerm, setSearchTerm } = getCurrentSearchProps();
 
-  const getImportDataType = (): 'export' | 'import' | 'all-files' | 'domestic-trucking' => {
+  const getImportDataType = (): 'export' | 'import' | 'all-files' => {
     switch (activeTab) {
       case 'export-table':
         return 'export';
@@ -118,8 +118,6 @@ const FreightTracker = () => {
         return 'import';
       case 'all-files':
         return 'all-files';
-      case 'domestic-trucking':
-        return 'domestic-trucking';
       default:
         return 'all-files';
     }
