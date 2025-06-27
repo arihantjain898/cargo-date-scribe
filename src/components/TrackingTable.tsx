@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Archive } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import InlineEditCell from './InlineEditCell';
 import {
@@ -58,6 +58,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
     }
   };
 
+  const handleArchiveRecord = (id: string) => {
+    updateRecord(id, 'archived', true);
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
@@ -76,13 +80,13 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 <th className="bg-gray-100 p-2 text-center font-bold text-gray-900 w-12">Delete</th>
               </tr>
               <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
-                <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 w-[120px] sticky left-0 z-40">Customer</th>
+                <th className="bg-gray-300 border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 w-[120px] sticky left-0 z-40">Customer</th>
                 <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-[80px]">Ref</th>
                 <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-[80px]">File</th>
-                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-[100px]">Work Order</th>
-                <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-[80px]">Drop Done?</th>
+                <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-[100px]">Booking#</th>
+                <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-[80px]">Dropped?</th>
                 <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-[100px]">Drop Date</th>
-                <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-[100px]">Return Needed?</th>
+                <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-[100px]">Returned?</th>
                 <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-[100px]">Return Date</th>
                 <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-[80px]">Docs Sent?</th>
                 <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-[100px]">Docs Rec'd?</th>
@@ -99,7 +103,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-[80px]">Insured?</th>
                 <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-[80px]">Released?</th>
                 <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-[200px]">Notes</th>
-                <th className="bg-gray-300 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
+                <th className="bg-gray-300 border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 w-10">Archive</th>
                 <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
               </tr>
             </thead>
@@ -111,7 +115,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                   }`}
                 >
-                  <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
+                  <td className="border-r border-gray-500 p-1 sticky left-0 z-20 bg-inherit">
                     <InlineEditCell
                       value={record.customer}
                       onSave={(value) => updateRecord(record.id, 'customer', value as string)}
@@ -137,7 +141,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     <InlineEditCell
                       value={record.workOrder}
                       onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
-                      placeholder="Enter work order"
+                      placeholder="Enter booking#"
                     />
                   </td>
                   <td className="border-r border-gray-500 p-1 text-center">
@@ -145,6 +149,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       value={record.dropDone}
                       onSave={(value) => updateRecord(record.id, 'dropDone', value as boolean)}
                       isBoolean={true}
+                      booleanOptions={[
+                        { value: false, label: 'Pending' },
+                        { value: true, label: 'Done' }
+                      ]}
                     />
                   </td>
                   <td className="border-r border-gray-500 p-1">
@@ -160,6 +168,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       value={record.returnNeeded}
                       onSave={(value) => updateRecord(record.id, 'returnNeeded', value as boolean)}
                       isBoolean={true}
+                      booleanOptions={[
+                        { value: false, label: 'Pending' },
+                        { value: true, label: 'Done' }
+                      ]}
                     />
                   </td>
                   <td className="border-r-4 border-black p-1">
@@ -204,6 +216,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       value={record.titlesDispatched}
                       onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as boolean)}
                       isBoolean={true}
+                      booleanOptions={[
+                        { value: false, label: 'N/A' },
+                        { value: true, label: 'Done' }
+                      ]}
                     />
                   </td>
                   <td className="border-r border-gray-500 p-1 text-center">
@@ -218,6 +234,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                       value={record.titlesReturned}
                       onSave={(value) => updateRecord(record.id, 'titlesReturned', value as boolean)}
                       isBoolean={true}
+                      booleanOptions={[
+                        { value: false, label: 'N/A' },
+                        { value: true, label: 'Done' }
+                      ]}
                     />
                   </td>
                   <td className="border-r border-gray-500 p-1 text-center">
@@ -277,11 +297,30 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                     />
                   </td>
                   <td className="p-1 text-center border-r-4 border-black">
-                    <Checkbox
-                      checked={selectedRows.includes(record.id)}
-                      onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
-                      className="h-3 w-3 border"
-                    />
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-yellow-50 rounded-full">
+                          <Archive className="h-3 w-3 text-yellow-600" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Archive Record</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to archive this record for {record.customer}? Archived records will be hidden from the main view.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleArchiveRecord(record.id)}
+                            className="bg-yellow-600 hover:bg-yellow-700"
+                          >
+                            Archive
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </td>
                   <td className="p-1 text-center">
                     <AlertDialog>

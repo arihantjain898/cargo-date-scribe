@@ -25,4 +25,5 @@ export interface TrackingRecord {
   released: boolean;
   docsSentToCustomer: boolean;
   notes: string;
+  archived?: boolean;
 }

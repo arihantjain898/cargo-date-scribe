@@ -65,7 +65,7 @@ const EventDetailModal = ({ event, isOpen, onClose }: EventDetailModalProps) => 
               variant="outline" 
               className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
             >
-              {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic'}
+              {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic Trucking'}
             </Badge>
           </div>
           
@@ -385,7 +385,7 @@ const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarView
                   variant="outline" 
                   className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
                 >
-                  {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic'}
+                  {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic Trucking'}
                 </Badge>
               </div>
             </div>
@@ -464,7 +464,7 @@ const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarView
                 onClick={() => setCalendarFilter('domestic')}
                 className="text-xs px-2 py-1"
               >
-                Domestic
+                D-Trucking
               </Button>
             </div>
           </CardTitle>
@@ -504,7 +504,7 @@ const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarView
                   Delivery Date
                 </Badge>
               </div>
-              <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Domestic Events:</div>
+              <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Domestic Trucking Events:</div>
               <div className="space-y-1">
                 <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300 justify-start text-xs block w-fit">
                   Pick Date
@@ -568,7 +568,7 @@ const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarView
                           'bg-yellow-100 text-yellow-700 border-yellow-300'
                         }`}
                       >
-                        {event.source === 'export' ? 'EXP' : event.source === 'import' ? 'IMP' : 'DOM'}
+                        {event.source === 'export' ? 'EXP' : event.source === 'import' ? 'IMP' : 'D-TRK'}
                       </Badge>
                     </div>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
