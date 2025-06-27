@@ -93,7 +93,7 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.dropDate}
           onSave={(value) => updateRecord(record.id, 'dropDate', value)}
-          type="date"
+          isDate={true}
         />
       </td>
       <td className="border-r border-gray-300 p-1 text-center">
@@ -110,7 +110,7 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.returnDate}
           onSave={(value) => updateRecord(record.id, 'returnDate', value)}
-          type="date"
+          isDate={true}
         />
       </td>
       <td className="border-r border-gray-300 p-1 text-center">
@@ -141,7 +141,7 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.docCutoffDate}
           onSave={(value) => updateRecord(record.id, 'docCutoffDate', value)}
-          type="date"
+          isDate={true}
         />
       </td>
       <td className="border-r border-gray-300 p-1 text-center">
@@ -240,7 +240,7 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value)}
-          multiline
+          placeholder="Add notes..."
         />
       </td>
       <td className="bg-gray-100 border-r border-gray-300 p-1 text-center">

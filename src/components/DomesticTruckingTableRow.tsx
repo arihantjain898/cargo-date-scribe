@@ -87,14 +87,14 @@ const DomesticTruckingTableRow = ({
         <InlineEditCell
           value={record.pickDate}
           onSave={(value) => updateRecord(record.id, 'pickDate', value)}
-          type="date"
+          isDate={true}
         />
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.delivered}
           onSave={(value) => updateRecord(record.id, 'delivered', value)}
-          type="date"
+          isDate={true}
         />
       </td>
       <td className="border-r border-gray-300 p-1 text-center">
@@ -117,7 +117,7 @@ const DomesticTruckingTableRow = ({
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value)}
-          multiline
+          placeholder="Add notes..."
         />
       </td>
       <td className="bg-gray-100 border-r border-gray-300 p-1 text-center">

@@ -77,7 +77,7 @@ const ImportTrackingTableRow = ({
         <InlineEditCell
           value={record.etaFinalPod}
           onSave={(value) => updateRecord(record.id, 'etaFinalPod', value)}
-          type="date"
+          isDate={true}
         />
       </td>
       <td className="border-r border-gray-300 p-1">
@@ -206,14 +206,14 @@ const ImportTrackingTableRow = ({
         <InlineEditCell
           value={record.deliveryDate}
           onSave={(value) => updateRecord(record.id, 'deliveryDate', value)}
-          type="date"
+          isDate={true}
         />
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value)}
-          multiline
+          placeholder="Add notes..."
         />
       </td>
       <td className="bg-gray-100 border-r border-gray-300 p-1 text-center">
