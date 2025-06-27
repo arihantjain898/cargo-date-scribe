@@ -84,11 +84,13 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   deleteRecord={deleteRecord}
                   onArchive={handleArchiveRecord}
                   onUnarchive={handleUnarchiveRecord}
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                 />
               ))}
               <tr>
-                <td colSpan={25} className="h-12"></td>
+                <td colSpan={26} className="h-12"></td>
               </tr>
             </tbody>
           </table>

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import InlineEditCell from './InlineEditCell';
@@ -23,6 +24,8 @@ interface DomesticTruckingTableRowProps {
   deleteRecord: (id: string) => void;
   onArchive: (id: string) => void;
   onUnarchive: (id: string) => void;
+  selectedRows: string[];
+  setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
 }
 
@@ -32,7 +35,9 @@ const DomesticTruckingTableRow = ({
   updateRecord, 
   deleteRecord, 
   onArchive, 
-  onUnarchive, 
+  onUnarchive,
+  selectedRows,
+  setSelectedRows,
   showArchived 
 }: DomesticTruckingTableRowProps) => {
   const isArchived = record.archived;
@@ -40,6 +45,14 @@ const DomesticTruckingTableRow = ({
     isArchived ? 'bg-gray-100 opacity-50' : 
     index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
   }`;
+
+  const handleSelectRow = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedRows(prev => [...prev, id]);
+    } else {
+      setSelectedRows(prev => prev.filter(rowId => rowId !== id));
+    }
+  };
 
   return (
     <tr className={rowClassName}>
@@ -109,7 +122,14 @@ const DomesticTruckingTableRow = ({
           placeholder="Enter notes"
         />
       </td>
-      <td className="p-1 text-center border-r-4 border-black">
+      <td className="p-1 text-center border-r border-gray-500">
+        <Checkbox
+          checked={selectedRows.includes(record.id)}
+          onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
+          className="h-3 w-3 border"
+        />
+      </td>
+      <td className="p-1 text-center border-r border-gray-500">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-yellow-50 rounded-full">
