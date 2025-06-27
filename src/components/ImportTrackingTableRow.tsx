@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
-import { TrackingRecord } from '../types/TrackingRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import InlineEditCell from './InlineEditCell';
 import {
   AlertDialog,
@@ -16,17 +16,17 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-interface TrackingTableRowProps {
-  record: TrackingRecord;
+interface ImportTrackingTableRowProps {
+  record: ImportTrackingRecord;
   index: number;
-  updateRecord: (id: string, field: keyof TrackingRecord, value: string | boolean) => void;
+  updateRecord: (id: string, field: keyof ImportTrackingRecord, value: string | boolean) => void;
   deleteRecord: (id: string) => void;
   onArchive: (id: string) => void;
   onUnarchive: (id: string) => void;
   showArchived: boolean;
 }
 
-const TrackingTableRow = ({ 
+const ImportTrackingTableRow = ({ 
   record, 
   index, 
   updateRecord, 
@@ -34,7 +34,7 @@ const TrackingTableRow = ({
   onArchive, 
   onUnarchive, 
   showArchived 
-}: TrackingTableRowProps) => {
+}: ImportTrackingTableRowProps) => {
   const isArchived = record.archived;
   const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
     isArchived ? 'bg-gray-100 opacity-50' : 
@@ -53,9 +53,9 @@ const TrackingTableRow = ({
       </td>
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
-          value={record.ref}
-          onSave={(value) => updateRecord(record.id, 'ref', value as string)}
-          placeholder="Enter reference"
+          value={record.booking}
+          onSave={(value) => updateRecord(record.id, 'booking', value as string)}
+          placeholder="Enter booking"
         />
       </td>
       <td className="border-r border-gray-500 p-1">
@@ -67,142 +67,123 @@ const TrackingTableRow = ({
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
-          value={record.workOrder}
-          onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
-          placeholder="Enter booking#"
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.dropDone}
-          onSave={(value) => updateRecord(record.id, 'dropDone', value as string)}
-          placeholder="Select status"
-          options={['No', 'Pending', 'Yes']}
+          value={record.etaFinalPod}
+          onSave={(value) => updateRecord(record.id, 'etaFinalPod', value as string)}
+          isDate={true}
+          placeholder="Select ETA date"
         />
       </td>
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
-          value={record.dropDate}
-          onSave={(value) => updateRecord(record.id, 'dropDate', value as string)}
-          isDate={true}
-          placeholder="Select drop date"
+          value={record.bond}
+          onSave={(value) => updateRecord(record.id, 'bond', value as string)}
+          placeholder="Enter bond"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.returnNeeded}
-          onSave={(value) => updateRecord(record.id, 'returnNeeded', value as string)}
-          placeholder="Select status"
-          options={['No', 'Pending', 'Yes']}
-        />
-      </td>
-      <td className="border-r-4 border-black p-1">
-        <InlineEditCell
-          value={record.returnDate}
-          onSave={(value) => updateRecord(record.id, 'returnDate', value as string)}
-          isDate={true}
-          placeholder="Select return date"
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.docsSent}
-          onSave={(value) => updateRecord(record.id, 'docsSent', value as boolean)}
+          value={record.poa}
+          onSave={(value) => updateRecord(record.id, 'poa', value as boolean)}
           isBoolean={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.docsReceived}
-          onSave={(value) => updateRecord(record.id, 'docsReceived', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      <td className="border-r-4 border-black p-1">
-        <InlineEditCell
-          value={record.docCutoffDate}
-          onSave={(value) => updateRecord(record.id, 'docCutoffDate', value as string)}
-          isDate={true}
-          placeholder="Select cutoff date"
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.aesMblVgmSent}
-          onSave={(value) => updateRecord(record.id, 'aesMblVgmSent', value as boolean)}
+          value={record.isf}
+          onSave={(value) => updateRecord(record.id, 'isf', value as boolean)}
           isBoolean={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.titlesDispatched}
-          onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as string)}
-          placeholder="Select status"
-          options={['N/A', 'Yes', 'No']}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.validatedFwd}
-          onSave={(value) => updateRecord(record.id, 'validatedFwd', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.titlesReturned}
-          onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
-          placeholder="Select status"
-          options={['N/A', 'Yes', 'No']}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.sslDraftInvRec}
-          onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.draftInvApproved}
-          onSave={(value) => updateRecord(record.id, 'draftInvApproved', value as boolean)}
+          value={record.packingListCommercialInvoice}
+          onSave={(value) => updateRecord(record.id, 'packingListCommercialInvoice', value as boolean)}
           isBoolean={true}
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
-          value={record.transphereInvSent}
-          onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
+          value={record.billOfLading}
+          onSave={(value) => updateRecord(record.id, 'billOfLading', value as boolean)}
           isBoolean={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.paymentRec}
-          onSave={(value) => updateRecord(record.id, 'paymentRec', value as boolean)}
+          value={record.arrivalNotice}
+          onSave={(value) => updateRecord(record.id, 'arrivalNotice', value as boolean)}
           isBoolean={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.sslPaid}
-          onSave={(value) => updateRecord(record.id, 'sslPaid', value as boolean)}
+          value={record.isfFiled}
+          onSave={(value) => updateRecord(record.id, 'isfFiled', value as boolean)}
           isBoolean={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.insured}
-          onSave={(value) => updateRecord(record.id, 'insured', value as boolean)}
+          value={record.entryFiled}
+          onSave={(value) => updateRecord(record.id, 'entryFiled', value as boolean)}
           isBoolean={true}
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
-          value={record.released}
-          onSave={(value) => updateRecord(record.id, 'released', value as boolean)}
+          value={record.blRelease}
+          onSave={(value) => updateRecord(record.id, 'blRelease', value as boolean)}
           isBoolean={true}
+        />
+      </td>
+      <td className="border-r border-gray-500 p-1 text-center">
+        <InlineEditCell
+          value={record.customsRelease}
+          onSave={(value) => updateRecord(record.id, 'customsRelease', value as boolean)}
+          isBoolean={true}
+        />
+      </td>
+      <td className="border-r border-gray-500 p-1 text-center">
+        <InlineEditCell
+          value={record.invoiceSent}
+          onSave={(value) => updateRecord(record.id, 'invoiceSent', value as boolean)}
+          isBoolean={true}
+        />
+      </td>
+      <td className="border-r border-gray-500 p-1 text-center">
+        <InlineEditCell
+          value={record.paymentReceived}
+          onSave={(value) => updateRecord(record.id, 'paymentReceived', value as boolean)}
+          isBoolean={true}
+        />
+      </td>
+      <td className="border-r-4 border-black p-1 text-center">
+        <InlineEditCell
+          value={record.workOrderSetup}
+          onSave={(value) => updateRecord(record.id, 'workOrderSetup', value as boolean)}
+          isBoolean={true}
+        />
+      </td>
+      <td className="border-r border-gray-500 p-1 text-center">
+        <InlineEditCell
+          value={record.delivered}
+          onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
+          placeholder="Select status"
+        />
+      </td>
+      <td className="border-r border-gray-500 p-1 text-center">
+        <InlineEditCell
+          value={record.returned}
+          onSave={(value) => updateRecord(record.id, 'returned', value as string)}
+          placeholder="Select status"
+        />
+      </td>
+      <td className="border-r-4 border-black p-1">
+        <InlineEditCell
+          value={record.deliveryDate}
+          onSave={(value) => updateRecord(record.id, 'deliveryDate', value as string)}
+          isDate={true}
+          placeholder="Select delivery date"
         />
       </td>
       <td className="border-r-4 border-black p-1">
@@ -277,4 +258,4 @@ const TrackingTableRow = ({
   );
 };
 
-export default TrackingTableRow;
+export default ImportTrackingTableRow;

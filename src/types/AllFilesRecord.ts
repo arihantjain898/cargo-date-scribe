@@ -1,9 +1,9 @@
 
 export interface AllFilesRecord {
   id: string;
+  customer: string;
   file: string;
   number: string;
-  customer: string;
   originPort: string;
   originState: string;
   destinationPort: string;
@@ -18,4 +18,5 @@ export interface AllFilesRecord {
   nvo: string;
   comments: string;
   salesContact: string;
+  archived?: boolean;
 }
