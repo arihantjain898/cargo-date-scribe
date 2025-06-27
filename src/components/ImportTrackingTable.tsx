@@ -84,6 +84,8 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                   deleteRecord={deleteRecord}
                   onArchive={handleArchiveRecord}
                   onUnarchive={handleUnarchiveRecord}
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                 />
               ))}
