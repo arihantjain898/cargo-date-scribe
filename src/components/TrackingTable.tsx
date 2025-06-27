@@ -119,11 +119,11 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
 
     if (isEditing) {
       return (
-        <div className="flex items-center gap-1 min-w-0 p-1">
+        <div className="flex items-center gap-1 min-w-0 p-1 relative z-50">
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500 bg-white"
+            className="h-5 text-xs min-w-0 flex-1 border-blue-300 focus:border-blue-500 bg-white relative z-50"
             type={isDate ? 'date' : 'text'}
             onKeyDown={(e) => {
               if (e.key === 'Enter') saveEdit();
@@ -131,10 +131,10 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
             }}
             autoFocus
           />
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-green-100" onClick={saveEdit}>
+          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-green-100 relative z-50" onClick={saveEdit}>
             <Save className="h-2 w-2 text-green-600" />
           </Button>
-          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-red-100" onClick={cancelEdit}>
+          <Button size="sm" variant="ghost" className="h-4 w-4 p-0 shrink-0 hover:bg-red-100 relative z-50" onClick={cancelEdit}>
             <X className="h-2 w-2 text-red-600" />
           </Button>
         </div>
