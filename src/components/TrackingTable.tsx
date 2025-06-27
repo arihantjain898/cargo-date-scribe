@@ -6,17 +6,6 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import TrackingTableHeader from './TrackingTableHeader';
 import TrackingTableRow from './TrackingTableRow';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 
 interface TrackingTableProps {
   data: TrackingRecord[];
@@ -85,10 +74,12 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   onArchive={handleArchiveRecord}
                   onUnarchive={handleUnarchiveRecord}
                   showArchived={showArchived}
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
                 />
               ))}
               <tr>
-                <td colSpan={25} className="h-12"></td>
+                <td colSpan={26} className="h-12"></td>
               </tr>
             </tbody>
           </table>

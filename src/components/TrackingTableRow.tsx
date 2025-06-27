@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { TrackingRecord } from '../types/TrackingRecord';
 import InlineEditCell from './InlineEditCell';
 import {
@@ -24,6 +25,8 @@ interface TrackingTableRowProps {
   onArchive: (id: string) => void;
   onUnarchive: (id: string) => void;
   showArchived: boolean;
+  selectedRows?: string[];
+  setSelectedRows?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const TrackingTableRow = ({ 
@@ -33,245 +36,250 @@ const TrackingTableRow = ({
   deleteRecord, 
   onArchive, 
   onUnarchive, 
-  showArchived 
+  showArchived,
+  selectedRows = [],
+  setSelectedRows
 }: TrackingTableRowProps) => {
-  const isArchived = record.archived;
-  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
-    isArchived ? 'bg-gray-100 opacity-50' : 
-    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-  }`;
+  const isSelected = selectedRows.includes(record.id);
+
+  const handleSelectChange = (checked: boolean) => {
+    if (!setSelectedRows) return;
+    
+    if (checked) {
+      setSelectedRows(prev => [...prev, record.id]);
+    } else {
+      setSelectedRows(prev => prev.filter(id => id !== record.id));
+    }
+  };
 
   return (
-    <tr className={rowClassName}>
-      <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
+    <tr className={`border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${record.archived ? 'opacity-60' : ''}`}>
+      <td className="bg-gray-100 border-r-4 border-black p-1 text-left sticky left-0 z-20">
         <InlineEditCell
           value={record.customer}
-          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
-          className="font-bold"
+          onSave={(value) => updateRecord(record.id, 'customer', value)}
+          className="font-medium text-gray-900"
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-300 p-1">
         <InlineEditCell
           value={record.ref}
-          onSave={(value) => updateRecord(record.id, 'ref', value as string)}
-          placeholder="Enter reference"
+          onSave={(value) => updateRecord(record.id, 'ref', value)}
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-300 p-1">
         <InlineEditCell
           value={record.file}
-          onSave={(value) => updateRecord(record.id, 'file', value as string)}
-          placeholder="Enter file"
+          onSave={(value) => updateRecord(record.id, 'file', value)}
         />
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.workOrder}
-          onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
-          placeholder="Enter booking#"
+          onSave={(value) => updateRecord(record.id, 'workOrder', value)}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
+      <td className="border-r border-gray-300 p-1 text-center">
+        <select
           value={record.dropDone}
-          onSave={(value) => updateRecord(record.id, 'dropDone', value as string)}
-          placeholder="Select status"
-          options={['No', 'Pending', 'Yes']}
-        />
+          onChange={(e) => updateRecord(record.id, 'dropDone', e.target.value)}
+          className="w-full p-1 border rounded text-xs"
+        >
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.dropDate}
-          onSave={(value) => updateRecord(record.id, 'dropDate', value as string)}
-          isDate={true}
-          placeholder="Select drop date"
+          onSave={(value) => updateRecord(record.id, 'dropDate', value)}
+          type="date"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
+      <td className="border-r border-gray-300 p-1 text-center">
+        <select
           value={record.returnNeeded}
-          onSave={(value) => updateRecord(record.id, 'returnNeeded', value as string)}
-          placeholder="Select status"
-          options={['No', 'Pending', 'Yes']}
-        />
+          onChange={(e) => updateRecord(record.id, 'returnNeeded', e.target.value)}
+          className="w-full p-1 border rounded text-xs"
+        >
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.returnDate}
-          onSave={(value) => updateRecord(record.id, 'returnDate', value as string)}
-          isDate={true}
-          placeholder="Select return date"
+          onSave={(value) => updateRecord(record.id, 'returnDate', value)}
+          type="date"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.docsSent}
-          onSave={(value) => updateRecord(record.id, 'docsSent', value as boolean)}
-          isBoolean={true}
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.docsSent}
+          onChange={(e) => updateRecord(record.id, 'docsSent', e.target.checked)}
+          className="w-4 h-4"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.docsReceived}
-          onSave={(value) => updateRecord(record.id, 'docsReceived', value as boolean)}
-          isBoolean={true}
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.docsReceived}
+          onChange={(e) => updateRecord(record.id, 'docsReceived', e.target.checked)}
+          className="w-4 h-4"
+        />
+      </td>
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.aesMblVgmSent}
+          onChange={(e) => updateRecord(record.id, 'aesMblVgmSent', e.target.checked)}
+          className="w-4 h-4"
         />
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.docCutoffDate}
-          onSave={(value) => updateRecord(record.id, 'docCutoffDate', value as string)}
-          isDate={true}
-          placeholder="Select cutoff date"
+          onSave={(value) => updateRecord(record.id, 'docCutoffDate', value)}
+          type="date"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.aesMblVgmSent}
-          onSave={(value) => updateRecord(record.id, 'aesMblVgmSent', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
+      <td className="border-r border-gray-300 p-1 text-center">
+        <select
           value={record.titlesDispatched}
-          onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as string)}
-          placeholder="Select status"
-          options={['N/A', 'Yes', 'No']}
+          onChange={(e) => updateRecord(record.id, 'titlesDispatched', e.target.value)}
+          className="w-full p-1 border rounded text-xs"
+        >
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </td>
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.validatedFwd}
+          onChange={(e) => updateRecord(record.id, 'validatedFwd', e.target.checked)}
+          className="w-4 h-4"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.validatedFwd}
-          onSave={(value) => updateRecord(record.id, 'validatedFwd', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
+      <td className="border-r-4 border-black p-1 text-center">
+        <select
           value={record.titlesReturned}
-          onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
-          placeholder="Select status"
-          options={['N/A', 'Yes', 'No']}
+          onChange={(e) => updateRecord(record.id, 'titlesReturned', e.target.value)}
+          className="w-full p-1 border rounded text-xs"
+        >
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </td>
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.sslDraftInvRec}
+          onChange={(e) => updateRecord(record.id, 'sslDraftInvRec', e.target.checked)}
+          className="w-4 h-4"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.sslDraftInvRec}
-          onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as boolean)}
-          isBoolean={true}
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.draftInvApproved}
+          onChange={(e) => updateRecord(record.id, 'draftInvApproved', e.target.checked)}
+          className="w-4 h-4"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.draftInvApproved}
-          onSave={(value) => updateRecord(record.id, 'draftInvApproved', value as boolean)}
-          isBoolean={true}
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.transphereInvSent}
+          onChange={(e) => updateRecord(record.id, 'transphereInvSent', e.target.checked)}
+          className="w-4 h-4"
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
-        <InlineEditCell
-          value={record.transphereInvSent}
-          onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.paymentRec}
-          onSave={(value) => updateRecord(record.id, 'paymentRec', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.sslPaid}
-          onSave={(value) => updateRecord(record.id, 'sslPaid', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.insured}
-          onSave={(value) => updateRecord(record.id, 'insured', value as boolean)}
-          isBoolean={true}
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.paymentRec}
+          onChange={(e) => updateRecord(record.id, 'paymentRec', e.target.checked)}
+          className="w-4 h-4"
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
-        <InlineEditCell
-          value={record.released}
-          onSave={(value) => updateRecord(record.id, 'released', value as boolean)}
-          isBoolean={true}
+        <input
+          type="checkbox"
+          checked={record.sslPaid}
+          onChange={(e) => updateRecord(record.id, 'sslPaid', e.target.checked)}
+          className="w-4 h-4"
+        />
+      </td>
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.insured}
+          onChange={(e) => updateRecord(record.id, 'insured', e.target.checked)}
+          className="w-4 h-4"
+        />
+      </td>
+      <td className="border-r border-gray-300 p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.released}
+          onChange={(e) => updateRecord(record.id, 'released', e.target.checked)}
+          className="w-4 h-4"
+        />
+      </td>
+      <td className="border-r-4 border-black p-1 text-center">
+        <input
+          type="checkbox"
+          checked={record.docsSentToCustomer}
+          onChange={(e) => updateRecord(record.id, 'docsSentToCustomer', e.target.checked)}
+          className="w-4 h-4"
         />
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
-          onSave={(value) => updateRecord(record.id, 'notes', value as string)}
-          placeholder="Enter notes"
+          onSave={(value) => updateRecord(record.id, 'notes', value)}
+          multiline
         />
       </td>
-      <td className="p-1 text-center border-r-4 border-black">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-yellow-50 rounded-full">
-              {isArchived ? (
-                <ArchiveRestore className="h-3 w-3 text-green-600" />
-              ) : (
-                <Archive className="h-3 w-3 text-yellow-600" />
-              )}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {isArchived ? 'Unarchive Record' : 'Archive Record'}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {isArchived 
-                  ? `Are you sure you want to unarchive this record for ${record.customer}? It will be visible in the main view again.`
-                  : `Are you sure you want to archive this record for ${record.customer}? Archived records will be hidden from the main view.`
-                }
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => isArchived ? onUnarchive(record.id) : onArchive(record.id)}
-                className={isArchived ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}
-              >
-                {isArchived ? 'Unarchive' : 'Archive'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+      <td className="bg-gray-100 border-r border-gray-300 p-1 text-center">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={handleSelectChange}
+          className="w-4 h-4"
+        />
       </td>
-      <td className="p-1 text-center">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
-              <Trash2 className="h-3 w-3 text-red-500" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Record</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteRecord(record.id)}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+      <td className="bg-gray-100 p-1 text-center">
+        <div className="flex items-center justify-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => record.archived ? onUnarchive(record.id) : onArchive(record.id)}
+            className="h-6 w-6 p-0"
+          >
+            {record.archived ? <ArchiveRestore className="h-3 w-3" /> : <Archive className="h-3 w-3" />}
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-red-600 hover:text-red-800">
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the record.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => deleteRecord(record.id)}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </td>
     </tr>
   );
