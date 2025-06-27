@@ -2,7 +2,12 @@
 import FreightTracker from '../components/FreightTracker';
 
 const Index = () => {
-  return <FreightTracker />;
+  console.log("Index component rendering");
+  return (
+    <div>
+      <FreightTracker />
+    </div>
+  );
 };
 
 export default Index;
