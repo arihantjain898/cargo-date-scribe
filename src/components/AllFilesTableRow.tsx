@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -188,7 +187,7 @@ const AllFilesTableRow = ({
           placeholder="Enter sales contact"
         />
       </td>
-      <td className="p-1 text-center border-r-4 border-black">
+      <td className="p-1 text-center border-r border-gray-500">
         <Checkbox
           checked={selectedRows.includes(record.id)}
           onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
