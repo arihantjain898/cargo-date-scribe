@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { 
   collection, 
@@ -32,7 +31,7 @@ export const useFirestore = <T>(collectionName: string, userId?: string) => {
     const q = query(
       collectionRef, 
       where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      orderBy('createdAt', 'asc')
     );
 
     const unsubscribe = onSnapshot(q, 

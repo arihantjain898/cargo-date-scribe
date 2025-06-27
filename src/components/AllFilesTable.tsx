@@ -91,7 +91,7 @@ const AllFilesTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                 />
               ))}
               <tr>
-                <td colSpan={20} className="h-16"></td>
+                <td colSpan={21} className="h-16"></td>
               </tr>
             </tbody>
           </table>

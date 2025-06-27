@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Archive, ArchiveRestore } from 'lucide-react';
+import { Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
@@ -188,14 +187,14 @@ const AllFilesTableRow = ({
           placeholder="Enter sales contact"
         />
       </td>
-      <td className="p-1 text-center border-r-4 border-black">
+      <td className="p-1 text-center border-r border-gray-500">
         <Checkbox
           checked={selectedRows.includes(record.id)}
           onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
           className="h-3 w-3 border"
         />
       </td>
-      <td className="p-1 text-center">
+      <td className="p-1 text-center border-r border-gray-500">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-yellow-50 rounded-full">
@@ -225,6 +224,32 @@ const AllFilesTableRow = ({
                 className={isArchived ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}
               >
                 {isArchived ? 'Unarchive' : 'Archive'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </td>
+      <td className="p-1 text-center">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
+              <Trash2 className="h-3 w-3 text-red-600" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Record</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to permanently delete this record for {record.customer}? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => deleteRecord(record.id)}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Delete
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
