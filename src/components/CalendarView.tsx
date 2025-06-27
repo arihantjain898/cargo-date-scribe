@@ -241,8 +241,8 @@ const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarView
         importEventList.push({
           date: record.etaFinalPod,
           type: 'eta',
-          customer: record.reference,
-          ref: record.reference,
+          customer: record.customer,
+          ref: record.booking,
           file: record.file,
           source: 'import',
           bond: record.bond,
@@ -254,8 +254,8 @@ const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarView
         importEventList.push({
           date: record.deliveryDate,
           type: 'delivery',
-          customer: record.reference,
-          ref: record.reference,
+          customer: record.customer,
+          ref: record.booking,
           file: record.file,
           source: 'import',
           bond: record.bond,
