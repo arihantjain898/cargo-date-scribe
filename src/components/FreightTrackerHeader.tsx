@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText, Trash2, Home, Undo, Redo, Database } from 'lucide-react';
+import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText, Trash2, Home, Undo, Redo, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import ExcelExportDialog from './ExcelExportDialog';
 import ExcelImportDialog from './ExcelImportDialog';
 import NotificationSettings from './NotificationSettings';
@@ -23,15 +24,14 @@ interface FreightTrackerHeaderProps {
   filteredImportData: ImportTrackingRecord[];
   filteredAllFilesData: AllFilesRecord[];
   filteredDomesticTruckingData: DomesticTruckingRecord[];
-  sampleDataAdded: boolean;
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
   onRedo: () => void;
-  onAddSampleData: () => void;
   onAddRecord: () => void;
   onImportClick: () => void;
   onDeleteBulkRecords: () => void;
+  onArchiveBulkRecords: () => void;
 }
 
 const FreightTrackerHeader = ({
@@ -46,15 +46,14 @@ const FreightTrackerHeader = ({
   filteredImportData,
   filteredAllFilesData,
   filteredDomesticTruckingData,
-  sampleDataAdded,
   canUndo,
   canRedo,
   onUndo,
   onRedo,
-  onAddSampleData,
   onAddRecord,
   onImportClick,
-  onDeleteBulkRecords
+  onDeleteBulkRecords,
+  onArchiveBulkRecords
 }: FreightTrackerHeaderProps) => {
   const getSearchPlaceholder = () => {
     switch (activeTab) {
@@ -118,18 +117,6 @@ const FreightTrackerHeader = ({
             Redo
           </Button>
 
-          {!sampleDataAdded && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="text-xs md:text-sm"
-              onClick={onAddSampleData}
-            >
-              <Database className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-              Add Sample Data
-            </Button>
-          )}
-
           <ExcelExportDialog 
             activeTab={activeTab}
             exportData={filteredExportData} 
@@ -162,15 +149,44 @@ const FreightTrackerHeader = ({
           </ExcelImportDialog>
 
           {hasSelectedRows && (
-            <Button 
-              variant="destructive" 
-              size="sm"
-              className="text-xs md:text-sm"
-              onClick={onDeleteBulkRecords}
-            >
-              <Trash2 className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-              Delete Selected ({getSelectedCount()})
-            </Button>
+            <>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="text-xs md:text-sm"
+                onClick={onArchiveBulkRecords}
+              >
+                <Archive className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                Archive Selected ({getSelectedCount()})
+              </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    className="text-xs md:text-sm"
+                  >
+                    <Trash2 className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                    Delete Selected ({getSelectedCount()})
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete {getSelectedCount()} selected record{getSelectedCount() > 1 ? 's' : ''}. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onDeleteBulkRecords} className="bg-red-600 hover:bg-red-700">
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
           )}
 
           <NotificationSettings>
