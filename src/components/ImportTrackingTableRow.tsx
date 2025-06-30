@@ -58,10 +58,10 @@ const ImportTrackingTableRow = ({
     }
   };
 
-  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
+  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
-    isArchived ? 'bg-gray-100 opacity-50' : 
-    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+    isArchived ? 'bg-gray-200 opacity-60' : 
+    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
   } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
 
   return (
