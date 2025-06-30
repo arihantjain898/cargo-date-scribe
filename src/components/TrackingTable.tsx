@@ -28,9 +28,10 @@ interface TrackingTableProps {
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
+  highlightedRowId?: string | null;
 }
 
-const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: TrackingTableProps) => {
+const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId }: TrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -87,6 +88,7 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
+                  isHighlighted={highlightedRowId === record.id}
                 />
               ))}
               <tr>
