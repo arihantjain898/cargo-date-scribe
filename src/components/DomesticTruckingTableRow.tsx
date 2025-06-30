@@ -1,10 +1,10 @@
+
 import React from 'react';
 import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import InlineEditCell from './InlineEditCell';
-import CheckboxCell from './CheckboxCell';
 import {
   AlertDialog,
   AlertDialogAction,

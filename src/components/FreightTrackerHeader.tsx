@@ -1,11 +1,9 @@
-
 import React from 'react';
 import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText, Trash2, Home, Undo, Redo, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import ExcelExportDialog from './ExcelExportDialog';
-import ExcelImportDialog from './ExcelImportDialog';
 import NotificationSettings from './NotificationSettings';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
@@ -29,7 +27,6 @@ interface FreightTrackerHeaderProps {
   onUndo: () => void;
   onRedo: () => void;
   onAddRecord: () => void;
-  onImportClick: () => void;
   onDeleteBulkRecords: () => void;
   onArchiveBulkRecords: () => void;
 }
@@ -51,7 +48,6 @@ const FreightTrackerHeader = ({
   onUndo,
   onRedo,
   onAddRecord,
-  onImportClick,
   onDeleteBulkRecords,
   onArchiveBulkRecords
 }: FreightTrackerHeaderProps) => {
@@ -133,20 +129,6 @@ const FreightTrackerHeader = ({
               Export Excel
             </Button>
           </ExcelExportDialog>
-
-          <ExcelImportDialog
-            activeTab={activeTab}
-            onImportClick={onImportClick}
-          >
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="text-xs md:text-sm"
-            >
-              <Upload className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-              Import Excel
-            </Button>
-          </ExcelImportDialog>
 
           {hasSelectedRows && (
             <>

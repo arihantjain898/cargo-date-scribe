@@ -6,6 +6,7 @@ import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
 import { useDomesticTruckingSearch } from '../hooks/useDomesticTruckingSearch';
 import FreightTrackerHeader from './FreightTrackerHeader';
 import FreightTrackerTabs from './FreightTrackerTabs';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('all-files');
@@ -39,7 +40,21 @@ const FreightTracker = () => {
 
   // Search functionality with proper typing
   const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
-  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useSearch(importData);
+  
+  // Create a custom search hook for import data
+  const [importSearchTerm, setImportSearchTerm] = useState('');
+  const filteredImportData = importData.filter((record: ImportTrackingRecord) => {
+    if (!importSearchTerm) return true;
+    const searchLower = importSearchTerm.toLowerCase();
+    return (
+      record.customer?.toLowerCase().includes(searchLower) ||
+      record.booking?.toLowerCase().includes(searchLower) ||
+      record.file?.toLowerCase().includes(searchLower) ||
+      record.bond?.toLowerCase().includes(searchLower) ||
+      record.notes?.toLowerCase().includes(searchLower)
+    );
+  });
+
   const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
   const { searchTerm: domesticTruckingSearchTerm, setSearchTerm: setDomesticTruckingSearchTerm, filteredData: filteredDomesticTruckingData } = useDomesticTruckingSearch(domesticTruckingData);
 

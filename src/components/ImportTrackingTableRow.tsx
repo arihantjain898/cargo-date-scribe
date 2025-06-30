@@ -3,9 +3,7 @@ import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
-import { formatDate } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
-import CheckboxCell from './CheckboxCell';
 import {
   AlertDialog,
   AlertDialogAction,
