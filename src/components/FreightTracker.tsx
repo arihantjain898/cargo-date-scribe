@@ -329,7 +329,6 @@ const FreightTracker = () => {
           deleteRecord={(id) => deleteRecord('allFiles', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
-          highlightedRowId={highlightedRowId}
           onFileClick={handleFileClick}
         />
       )}
