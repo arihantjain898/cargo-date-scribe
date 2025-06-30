@@ -58,17 +58,10 @@ const AllFilesTableRow = ({
 
   return (
     <tr className={rowClasses}>
-      <td className="p-2 border-b border-gray-200 sticky left-0 bg-inherit z-10">
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={handleCheckboxChange}
-        />
-      </td>
-      
-      <td className="p-2 border-b border-gray-200 sticky left-8 bg-inherit z-10 min-w-[120px]">
+      <td className="p-2 border-b border-gray-200 sticky left-0 bg-inherit z-10 min-w-[120px]">
         <InlineEditCell
           value={record.customer}
-          onChange={(value) => updateRecord(record.id, 'customer', value)}
+          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
         />
       </td>
       
@@ -76,8 +69,7 @@ const AllFilesTableRow = ({
         <div className="flex items-center gap-2">
           <InlineEditCell
             value={record.file}
-            onChange={(value) => updateRecord(record.id, 'file', value)}
-            type="select"
+            onSave={(value) => updateRecord(record.id, 'file', value as string)}
             options={['ES', 'IS', 'DT']}
           />
           {record.number && onFileClick && (
@@ -97,144 +89,151 @@ const AllFilesTableRow = ({
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.number}
-          onChange={(value) => updateRecord(record.id, 'number', value)}
+          onSave={(value) => updateRecord(record.id, 'number', value as string)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.originPort}
-          onChange={(value) => updateRecord(record.id, 'originPort', value)}
+          onSave={(value) => updateRecord(record.id, 'originPort', value as string)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.originState}
-          onChange={(value) => updateRecord(record.id, 'originState', value)}
+          onSave={(value) => updateRecord(record.id, 'originState', value as string)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.destinationPort}
-          onChange={(value) => updateRecord(record.id, 'destinationPort', value)}
+          onSave={(value) => updateRecord(record.id, 'destinationPort', value as string)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.destinationCountry}
-          onChange={(value) => updateRecord(record.id, 'destinationCountry', value)}
+          onSave={(value) => updateRecord(record.id, 'destinationCountry', value as string)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.container20)} font-medium`}>
         <InlineEditCell
           value={record.container20}
-          onChange={(value) => updateRecord(record.id, 'container20', value)}
+          onSave={(value) => updateRecord(record.id, 'container20', value as string)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.container40)} font-medium`}>
         <InlineEditCell
           value={record.container40}
-          onChange={(value) => updateRecord(record.id, 'container40', value)}
+          onSave={(value) => updateRecord(record.id, 'container40', value as string)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.roro)} font-medium`}>
         <InlineEditCell
           value={record.roro}
-          onChange={(value) => updateRecord(record.id, 'roro', value)}
+          onSave={(value) => updateRecord(record.id, 'roro', value as string)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.lcl)} font-medium`}>
         <InlineEditCell
           value={record.lcl}
-          onChange={(value) => updateRecord(record.id, 'lcl', value)}
+          onSave={(value) => updateRecord(record.id, 'lcl', value as string)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.air)} font-medium`}>
         <InlineEditCell
           value={record.air}
-          onChange={(value) => updateRecord(record.id, 'air', value)}
+          onSave={(value) => updateRecord(record.id, 'air', value as string)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.truck)} font-medium`}>
         <InlineEditCell
           value={record.truck}
-          onChange={(value) => updateRecord(record.id, 'truck', value)}
+          onSave={(value) => updateRecord(record.id, 'truck', value as string)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.ssl}
-          onChange={(value) => updateRecord(record.id, 'ssl', value)}
+          onSave={(value) => updateRecord(record.id, 'ssl', value as string)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.nvo}
-          onChange={(value) => updateRecord(record.id, 'nvo', value)}
+          onSave={(value) => updateRecord(record.id, 'nvo', value as string)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.comments}
-          onChange={(value) => updateRecord(record.id, 'comments', value)}
+          onSave={(value) => updateRecord(record.id, 'comments', value as string)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.salesContact}
-          onChange={(value) => updateRecord(record.id, 'salesContact', value)}
+          onSave={(value) => updateRecord(record.id, 'salesContact', value as string)}
         />
       </td>
       
-      <td className="p-2 border-b border-gray-200 sticky right-0 bg-inherit">
-        <div className="flex items-center gap-1">
-          {!showArchived && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onArchive(record.id)}
-              className="h-7 w-7 p-0 hover:bg-gray-200"
-              title="Archive"
-            >
-              <Archive className="h-3 w-3" />
-            </Button>
-          )}
-          
-          {showArchived && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onUnarchive(record.id)}
-              className="h-7 w-7 p-0 hover:bg-gray-200"
-              title="Unarchive"
-            >
-              <ArchiveRestore className="h-3 w-3" />
-            </Button>
-          )}
-          
+      <td className="p-2 border-b border-gray-200">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={handleCheckboxChange}
+        />
+      </td>
+      
+      <td className="p-2 border-b border-gray-200">
+        {!showArchived && (
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => deleteRecord(record.id)}
-            className="h-7 w-7 p-0 hover:bg-red-100 text-red-600"
-            title="Delete"
+            onClick={() => onArchive(record.id)}
+            className="h-7 w-7 p-0 hover:bg-gray-200"
+            title="Archive"
           >
-            <Trash2 className="h-3 w-3" />
+            <Archive className="h-3 w-3" />
           </Button>
-        </div>
+        )}
+        
+        {showArchived && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onUnarchive(record.id)}
+            className="h-7 w-7 p-0 hover:bg-gray-200"
+            title="Unarchive"
+          >
+            <ArchiveRestore className="h-3 w-3" />
+          </Button>
+        )}
+      </td>
+      
+      <td className="p-2 border-b border-gray-200">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => deleteRecord(record.id)}
+          className="h-7 w-7 p-0 hover:bg-red-100 text-red-600"
+          title="Delete"
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
       </td>
     </tr>
   );
