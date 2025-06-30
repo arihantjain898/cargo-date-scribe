@@ -240,7 +240,7 @@ const FreightTracker = () => {
     let targetData: any[] = [];
     let found = false;
     
-    if (fileType === 'Export') {
+    if (fileType === 'ES') {
       targetTab = 'export-table';
       targetData = exportData;
       const targetRecord = exportData.find(record => record.file === fileNumber);
@@ -248,7 +248,7 @@ const FreightTracker = () => {
         found = true;
         setHighlightedRowId(targetRecord.id);
       }
-    } else if (fileType === 'Import') {
+    } else if (fileType === 'IS') {
       targetTab = 'import-table';
       targetData = importData;
       const targetRecord = importData.find(record => record.file === fileNumber);
@@ -256,7 +256,7 @@ const FreightTracker = () => {
         found = true;
         setHighlightedRowId(targetRecord.id);
       }
-    } else if (fileType === 'Domestic Trucking') {
+    } else if (fileType === 'DT') {
       targetTab = 'domestic-trucking';
       targetData = domesticTruckingData;
       const targetRecord = domesticTruckingData.find(record => record.file === fileNumber);

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -55,6 +56,7 @@ const AllFilesTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.number && record.file) {
+      // Use the file type (ES, IS, DT) and the number to link
       onFileClick(record.number, record.file);
     }
   };
