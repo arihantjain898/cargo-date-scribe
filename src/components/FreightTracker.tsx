@@ -37,7 +37,7 @@ const FreightTracker = () => {
     addDomesticTruckingItem
   } = useFreightTrackerData('demo-user');
 
-  // Search functionality - use correct data types for each hook
+  // Search functionality
   const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
   const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useSearch(importData);
   const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
@@ -80,10 +80,10 @@ const FreightTracker = () => {
     }
 
     if (targetTab && targetData.length > 0) {
-      // Find matching record by checking if the file number contains the number
+      // Find matching record by exact file match
       const matchingRecord = targetData.find(record => {
         const recordFileNumber = record.file || '';
-        return recordFileNumber.includes(fileNumber);
+        return recordFileNumber === `${fileType} ${fileNumber}`;
       });
 
       if (matchingRecord) {
@@ -104,7 +104,7 @@ const FreightTracker = () => {
           setHighlightedRowId(null);
         }, 3000);
       } else {
-        console.log('No matching record found in', targetTab);
+        console.log('No matching record found in', targetTab, 'for file:', `${fileType} ${fileNumber}`);
         // Still switch to the appropriate tab even if no exact match
         setActiveTab(targetTab);
       }
@@ -113,99 +113,102 @@ const FreightTracker = () => {
 
   // Add record handlers
   const handleAddRecord = async () => {
-    const newRecord = {
-      customer: '',
-      ref: '',
-      file: '',
-      workOrder: '',
-      dropDone: '',
-      dropDate: '',
-      returnNeeded: '',
-      returnDate: '',
-      docsSent: false,
-      docsReceived: false,
-      aesMblVgmSent: false,
-      docCutoffDate: '',
-      titlesDispatched: '',
-      validatedFwd: false,
-      titlesReturned: '',
-      sslDraftInvRec: false,
-      draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: false,
-      sslPaid: false,
-      insured: false,
-      released: false,
-      docsSentToCustomer: false,
-      notes: ''
-    };
-
-    switch (activeTab) {
-      case 'export-table':
-        await addExportItem(newRecord);
-        break;
-      case 'import-table':
-        const newImportRecord = {
-          customer: '',
-          booking: '',
-          file: '',
-          etaFinalPod: '',
-          bond: '',
-          poa: false,
-          isf: false,
-          packingListCommercialInvoice: false,
-          billOfLading: false,
-          arrivalNotice: false,
-          isfFiled: false,
-          entryFiled: false,
-          blRelease: false,
-          customsRelease: false,
-          invoiceSent: false,
-          paymentReceived: false,
-          workOrderSetup: false,
-          delivered: '',
-          returned: '',
-          deliveryDate: '',
-          notes: ''
-        };
-        await addImportItem(newImportRecord);
-        break;
-      case 'all-files':
-        const newAllFilesRecord = {
-          customer: '',
-          file: 'ES',
-          number: '',
-          originPort: '',
-          originState: '',
-          destinationPort: '',
-          destinationCountry: '',
-          container20: '',
-          container40: '',
-          roro: '',
-          lcl: '',
-          air: '',
-          truck: '',
-          ssl: '',
-          nvo: '',
-          comments: '',
-          salesContact: ''
-        };
-        await addAllFilesItem(newAllFilesRecord);
-        break;
-      case 'domestic-trucking':
-        const newDomesticRecord = {
-          customer: '',
-          file: '',
-          woSent: false,
-          insurance: false,
-          pickDate: '',
-          delivered: '',
-          paymentReceived: false,
-          paymentMade: false,
-          notes: ''
-        };
-        await addDomesticTruckingItem(newDomesticRecord);
-        break;
+    try {
+      switch (activeTab) {
+        case 'export-table':
+          const newExportRecord = {
+            customer: '',
+            ref: '',
+            file: '',
+            workOrder: '',
+            dropDone: '',
+            dropDate: '',
+            returnNeeded: '',
+            returnDate: '',
+            docsSent: false,
+            docsReceived: false,
+            aesMblVgmSent: false,
+            docCutoffDate: '',
+            titlesDispatched: '',
+            validatedFwd: false,
+            titlesReturned: '',
+            sslDraftInvRec: false,
+            draftInvApproved: false,
+            transphereInvSent: false,
+            paymentRec: false,
+            sslPaid: false,
+            insured: false,
+            released: false,
+            docsSentToCustomer: false,
+            notes: ''
+          };
+          await addExportItem(newExportRecord);
+          break;
+        case 'import-table':
+          const newImportRecord = {
+            customer: '',
+            booking: '',
+            file: '',
+            etaFinalPod: '',
+            bond: '',
+            poa: false,
+            isf: false,
+            packingListCommercialInvoice: false,
+            billOfLading: false,
+            arrivalNotice: false,
+            isfFiled: false,
+            entryFiled: false,
+            blRelease: false,
+            customsRelease: false,
+            invoiceSent: false,
+            paymentReceived: false,
+            workOrderSetup: false,
+            delivered: '',
+            returned: '',
+            deliveryDate: '',
+            notes: ''
+          };
+          await addImportItem(newImportRecord);
+          break;
+        case 'all-files':
+          const newAllFilesRecord = {
+            customer: '',
+            file: 'ES',
+            number: '',
+            originPort: '',
+            originState: '',
+            destinationPort: '',
+            destinationCountry: '',
+            container20: '',
+            container40: '',
+            roro: '',
+            lcl: '',
+            air: '',
+            truck: '',
+            ssl: '',
+            nvo: '',
+            comments: '',
+            salesContact: ''
+          };
+          await addAllFilesItem(newAllFilesRecord);
+          break;
+        case 'domestic-trucking':
+          const newDomesticRecord = {
+            customer: '',
+            file: '',
+            woSent: false,
+            insurance: false,
+            pickDate: '',
+            delivered: '',
+            paymentReceived: false,
+            paymentMade: false,
+            notes: ''
+          };
+          await addDomesticTruckingItem(newDomesticRecord);
+          break;
+      }
+    } catch (error) {
+      console.error('Error adding record:', error);
     }
   };
 

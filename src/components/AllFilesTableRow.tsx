@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -55,7 +54,7 @@ const AllFilesTableRow = ({
   };
 
   const handleFileClick = () => {
-    if (onFileClick && record.number) {
+    if (onFileClick && record.number && record.file) {
       onFileClick(record.number, record.file);
     }
   };
@@ -83,13 +82,13 @@ const AllFilesTableRow = ({
             onSave={(value) => updateRecord(record.id, 'file', value as string)}
             options={['ES', 'IS', 'DT']}
           />
-          {record.number && onFileClick && (
+          {record.number && record.file && onFileClick && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleFileClick}
               className="h-6 w-6 p-0 hover:bg-blue-100"
-              title="Open linked checklist"
+              title={`Open ${record.file} ${record.number} in checklist`}
             >
               <ExternalLink className="h-3 w-3 text-blue-600" />
             </Button>
