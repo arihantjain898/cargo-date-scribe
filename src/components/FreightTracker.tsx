@@ -7,7 +7,6 @@ import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
 import { useDomesticTruckingSearch } from '../hooks/useDomesticTruckingSearch';
 import FreightTrackerHeader from './FreightTrackerHeader';
 import FreightTrackerTabs from './FreightTrackerTabs';
-import FirebaseAuthWrapper from './FirebaseAuthWrapper';
 
 const FreightTracker = () => {
   const { user } = useFirebaseAuth();
@@ -34,9 +33,9 @@ const FreightTracker = () => {
     deleteImportItem,
     deleteAllFilesItem,
     deleteDomesticTruckingItem
-  } = useFreightTrackerData(user?.uid || '');
+  } = useFreightTrackerData(user?.uid || 'demo-user');
 
-  // Search functionality
+  // Search functionality - use correct data types for each hook
   const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
   const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useSearch(importData);
   const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
@@ -114,58 +113,56 @@ const FreightTracker = () => {
   }
 
   return (
-    <FirebaseAuthWrapper>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <FreightTrackerHeader
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          activeTab={activeTab}
-          selectedRows={selectedRows}
-          selectedImportRows={selectedImportRows}
-          selectedAllFilesRows={selectedAllFilesRows}
-          selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-          filteredExportData={filteredExportData}
-          filteredImportData={filteredImportData}
-          filteredAllFilesData={filteredAllFilesData}
-          filteredDomesticTruckingData={filteredDomesticTruckingData}
-          canUndo={false}
-          canRedo={false}
-          onUndo={() => {}}
-          onRedo={() => {}}
-          onAddRecord={() => {}}
-          onImportClick={() => {}}
-          onDeleteBulkRecords={() => {}}
-          onArchiveBulkRecords={() => {}}
-        />
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <FreightTrackerHeader
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        activeTab={activeTab}
+        selectedRows={selectedRows}
+        selectedImportRows={selectedImportRows}
+        selectedAllFilesRows={selectedAllFilesRows}
+        selectedDomesticTruckingRows={selectedDomesticTruckingRows}
+        filteredExportData={filteredExportData}
+        filteredImportData={filteredImportData}
+        filteredAllFilesData={filteredAllFilesData}
+        filteredDomesticTruckingData={filteredDomesticTruckingData}
+        canUndo={false}
+        canRedo={false}
+        onUndo={() => {}}
+        onRedo={() => {}}
+        onAddRecord={() => {}}
+        onImportClick={() => {}}
+        onDeleteBulkRecords={() => {}}
+        onArchiveBulkRecords={() => {}}
+      />
 
-        <FreightTrackerTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          filteredExportData={filteredExportData}
-          filteredImportData={filteredImportData}
-          filteredAllFilesData={filteredAllFilesData}
-          filteredDomesticTruckingData={filteredDomesticTruckingData}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-          selectedImportRows={selectedImportRows}
-          setSelectedImportRows={setSelectedImportRows}
-          selectedAllFilesRows={selectedAllFilesRows}
-          setSelectedAllFilesRows={setSelectedAllFilesRows}
-          selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-          setSelectedDomesticTruckingRows={setSelectedDomesticTruckingRows}
-          updateRecord={updateRecord}
-          updateImportRecord={updateImportRecord}
-          updateAllFilesRecord={updateAllFilesRecord}
-          updateDomesticTruckingRecord={updateDomesticTruckingRecord}
-          deleteRecord={deleteExportItem}
-          deleteImportRecord={deleteImportItem}
-          deleteAllFilesRecord={deleteAllFilesItem}
-          deleteDomesticTruckingRecord={deleteDomesticTruckingItem}
-          onFileClick={handleFileClick}
-          highlightedRowId={highlightedRowId}
-        />
-      </div>
-    </FirebaseAuthWrapper>
+      <FreightTrackerTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        filteredExportData={filteredExportData}
+        filteredImportData={filteredImportData}
+        filteredAllFilesData={filteredAllFilesData}
+        filteredDomesticTruckingData={filteredDomesticTruckingData}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        selectedImportRows={selectedImportRows}
+        setSelectedImportRows={setSelectedImportRows}
+        selectedAllFilesRows={selectedAllFilesRows}
+        setSelectedAllFilesRows={setSelectedAllFilesRows}
+        selectedDomesticTruckingRows={selectedDomesticTruckingRows}
+        setSelectedDomesticTruckingRows={setSelectedDomesticTruckingRows}
+        updateRecord={updateRecord}
+        updateImportRecord={updateImportRecord}
+        updateAllFilesRecord={updateAllFilesRecord}
+        updateDomesticTruckingRecord={updateDomesticTruckingRecord}
+        deleteRecord={deleteExportItem}
+        deleteImportRecord={deleteImportItem}
+        deleteAllFilesRecord={deleteAllFilesItem}
+        deleteDomesticTruckingRecord={deleteDomesticTruckingItem}
+        onFileClick={handleFileClick}
+        highlightedRowId={highlightedRowId}
+      />
+    </div>
   );
 };
 
