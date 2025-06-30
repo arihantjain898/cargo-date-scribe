@@ -6,6 +6,17 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import DomesticTruckingTableHeader from './DomesticTruckingTableHeader';
 import DomesticTruckingTableRow from './DomesticTruckingTableRow';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface DomesticTruckingTableProps {
   data: DomesticTruckingRecord[];
@@ -17,10 +28,9 @@ interface DomesticTruckingTableProps {
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
-  highlightedRowId?: string | null;
 }
 
-const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId }: DomesticTruckingTableProps) => {
+const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: DomesticTruckingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -46,7 +56,7 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <div className="p-4 border-b flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Domestic Trucking</h2>
+        <h2 className="text-lg font-semibold">Domestic Trucking Checklist</h2>
         <div className="flex gap-2">
           <Button
             variant={showArchived ? "default" : "outline"}
@@ -77,7 +87,6 @@ const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows,
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
-                  isHighlighted={highlightedRowId === record.id}
                 />
               ))}
               <tr>

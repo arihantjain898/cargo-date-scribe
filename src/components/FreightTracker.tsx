@@ -7,6 +7,7 @@ import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
 import { useDomesticTruckingSearch } from '../hooks/useDomesticTruckingSearch';
 import FreightTrackerHeader from './FreightTrackerHeader';
 import FreightTrackerTabs from './FreightTrackerTabs';
+import { generateSampleData } from '../data/generateSampleData';
 
 const FreightTracker = () => {
   const { user } = useFirebaseAuth();
@@ -119,21 +120,21 @@ const FreightTracker = () => {
         setSearchTerm={setSearchTerm}
         activeTab={activeTab}
         selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
         selectedImportRows={selectedImportRows}
+        setSelectedImportRows={setSelectedImportRows}
         selectedAllFilesRows={selectedAllFilesRows}
+        setSelectedAllFilesRows={setSelectedAllFilesRows}
         selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-        filteredExportData={filteredExportData}
-        filteredImportData={filteredImportData}
-        filteredAllFilesData={filteredAllFilesData}
-        filteredDomesticTruckingData={filteredDomesticTruckingData}
-        canUndo={false}
-        canRedo={false}
-        onUndo={() => {}}
-        onRedo={() => {}}
-        onAddRecord={() => {}}
-        onImportClick={() => {}}
-        onDeleteBulkRecords={() => {}}
-        onArchiveBulkRecords={() => {}}
+        setSelectedDomesticTruckingRows={setSelectedDomesticTruckingRows}
+        deleteExportItem={deleteExportItem}
+        deleteImportItem={deleteImportItem}
+        deleteAllFilesItem={deleteAllFilesItem}
+        deleteDomesticTruckingItem={deleteDomesticTruckingItem}
+        updateRecord={updateRecord}
+        updateImportRecord={updateImportRecord}
+        updateAllFilesRecord={updateAllFilesRecord}
+        updateDomesticTruckingRecord={updateDomesticTruckingRecord}
       />
 
       <FreightTrackerTabs

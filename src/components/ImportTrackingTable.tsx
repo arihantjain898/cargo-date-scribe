@@ -28,10 +28,9 @@ interface ImportTrackingTableProps {
   deleteRecord: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
-  highlightedRowId?: string | null;
 }
 
-const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId }: ImportTrackingTableProps) => {
+const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows }: ImportTrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -88,7 +87,6 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
-                  isHighlighted={highlightedRowId === record.id}
                 />
               ))}
               <tr>
