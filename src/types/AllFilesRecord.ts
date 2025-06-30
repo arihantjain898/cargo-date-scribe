@@ -19,4 +19,5 @@ export interface AllFilesRecord {
   comments: string;
   salesContact: string;
   archived?: boolean | string;
+  userId?: string;
 }

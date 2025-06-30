@@ -26,4 +26,5 @@ export interface TrackingRecord {
   docsSentToCustomer: boolean;
   notes: string;
   archived?: boolean;
+  userId?: string;
 }

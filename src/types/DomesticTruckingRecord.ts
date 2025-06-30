@@ -11,4 +11,5 @@ export interface DomesticTruckingRecord {
   paymentMade: boolean;
   notes: string;
   archived?: boolean;
+  userId?: string;
 }

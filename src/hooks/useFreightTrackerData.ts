@@ -6,14 +6,9 @@ import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import { useFirestore } from './useFirestore';
 import { useNotifications } from './useNotifications';
-import { generateSampleExportData } from '../data/generateSampleData';
-import { sampleImportData } from '../data/sampleImportData';
-import { sampleAllFilesData } from '../data/sampleAllFilesData';
-import { sampleDomesticTruckingData } from '../data/sampleDomesticTruckingData';
 
 export const useFreightTrackerData = (currentUserId: string) => {
   const { addNotification } = useNotifications();
-  const [hasLoadedSample, setHasLoadedSample] = useState(false);
 
   const {
     data: exportData,
@@ -46,52 +41,6 @@ export const useFreightTrackerData = (currentUserId: string) => {
     updateItem: updateDomesticTruckingItem,
     deleteItem: deleteDomesticTruckingItem
   } = useFirestore<DomesticTruckingRecord>('domestic_trucking', currentUserId);
-
-  // Load sample data once when user is authenticated and collections are empty
-  useEffect(() => {
-    const loadSampleData = async () => {
-      if (!currentUserId || hasLoadedSample) return;
-      
-      const allEmpty = exportData.length === 0 && 
-                      importData.length === 0 && 
-                      allFilesData.length === 0 && 
-                      domesticTruckingData.length === 0;
-
-      if (allEmpty && !exportLoading && !importLoading && !allFilesLoading && !domesticTruckingLoading) {
-        try {
-          console.log('Loading sample data...');
-          
-          // Add sample export data
-          const sampleExportData = generateSampleExportData();
-          for (const record of sampleExportData) {
-            await addExportItem({ ...record, userId: currentUserId });
-          }
-
-          // Add sample import data
-          for (const record of sampleImportData) {
-            await addImportItem({ ...record, userId: currentUserId });
-          }
-
-          // Add sample all files data
-          for (const record of sampleAllFilesData) {
-            await addAllFilesItem({ ...record, userId: currentUserId });
-          }
-
-          // Add sample domestic trucking data
-          for (const record of sampleDomesticTruckingData) {
-            await addDomesticTruckingItem({ ...record, userId: currentUserId });
-          }
-
-          setHasLoadedSample(true);
-          console.log('Sample data loaded successfully');
-        } catch (error) {
-          console.error('Error loading sample data:', error);
-        }
-      }
-    };
-
-    loadSampleData();
-  }, [currentUserId, exportData.length, importData.length, allFilesData.length, domesticTruckingData.length, exportLoading, importLoading, allFilesLoading, domesticTruckingLoading, hasLoadedSample]);
 
   const updateRecord = async (
     id: string,

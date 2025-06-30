@@ -23,4 +23,5 @@ export interface ImportTrackingRecord {
   deliveryDate: string;
   notes: string;
   archived?: boolean;
+  userId?: string;
 }
