@@ -30,7 +30,11 @@ const FreightTracker = () => {
     deleteExportItem,
     deleteImportItem,
     deleteAllFilesItem,
-    deleteDomesticTruckingItem
+    deleteDomesticTruckingItem,
+    addExportItem,
+    addImportItem,
+    addAllFilesItem,
+    addDomesticTruckingItem
   } = useFreightTrackerData('demo-user');
 
   // Search functionality - use correct data types for each hook
@@ -57,7 +61,7 @@ const FreightTracker = () => {
 
   const { searchTerm, setSearchTerm } = getCurrentSearchProps();
 
-  // Handle file clicks from All Files tab
+  // Handle file clicks from All Files tab - scroll to specific row
   const handleFileClick = (fileNumber: string, fileType: string) => {
     console.log('Handling file click:', { fileNumber, fileType });
     
@@ -87,6 +91,14 @@ const FreightTracker = () => {
         setActiveTab(targetTab);
         setHighlightedRowId(matchingRecord.id);
         
+        // Scroll to the specific row after a short delay to ensure the tab has switched
+        setTimeout(() => {
+          const rowElement = document.querySelector(`[data-row-id="${matchingRecord.id}"]`);
+          if (rowElement) {
+            rowElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+        
         // Clear highlight after 3 seconds
         setTimeout(() => {
           setHighlightedRowId(null);
@@ -96,6 +108,104 @@ const FreightTracker = () => {
         // Still switch to the appropriate tab even if no exact match
         setActiveTab(targetTab);
       }
+    }
+  };
+
+  // Add record handlers
+  const handleAddRecord = async () => {
+    const newRecord = {
+      customer: '',
+      ref: '',
+      file: '',
+      workOrder: '',
+      dropDone: '',
+      dropDate: '',
+      returnNeeded: '',
+      returnDate: '',
+      docsSent: false,
+      docsReceived: false,
+      aesMblVgmSent: false,
+      docCutoffDate: '',
+      titlesDispatched: '',
+      validatedFwd: false,
+      titlesReturned: '',
+      sslDraftInvRec: false,
+      draftInvApproved: false,
+      transphereInvSent: false,
+      paymentRec: false,
+      sslPaid: false,
+      insured: false,
+      released: false,
+      docsSentToCustomer: false,
+      notes: ''
+    };
+
+    switch (activeTab) {
+      case 'export-table':
+        await addExportItem(newRecord);
+        break;
+      case 'import-table':
+        const newImportRecord = {
+          customer: '',
+          booking: '',
+          file: '',
+          etaFinalPod: '',
+          bond: '',
+          poa: false,
+          isf: false,
+          packingListCommercialInvoice: false,
+          billOfLading: false,
+          arrivalNotice: false,
+          isfFiled: false,
+          entryFiled: false,
+          blRelease: false,
+          customsRelease: false,
+          invoiceSent: false,
+          paymentReceived: false,
+          workOrderSetup: false,
+          delivered: '',
+          returned: '',
+          deliveryDate: '',
+          notes: ''
+        };
+        await addImportItem(newImportRecord);
+        break;
+      case 'all-files':
+        const newAllFilesRecord = {
+          customer: '',
+          file: 'ES',
+          number: '',
+          originPort: '',
+          originState: '',
+          destinationPort: '',
+          destinationCountry: '',
+          container20: '',
+          container40: '',
+          roro: '',
+          lcl: '',
+          air: '',
+          truck: '',
+          ssl: '',
+          nvo: '',
+          comments: '',
+          salesContact: ''
+        };
+        await addAllFilesItem(newAllFilesRecord);
+        break;
+      case 'domestic-trucking':
+        const newDomesticRecord = {
+          customer: '',
+          file: '',
+          woSent: false,
+          insurance: false,
+          pickDate: '',
+          delivered: '',
+          paymentReceived: false,
+          paymentMade: false,
+          notes: ''
+        };
+        await addDomesticTruckingItem(newDomesticRecord);
+        break;
     }
   };
 
@@ -128,7 +238,7 @@ const FreightTracker = () => {
         canRedo={false}
         onUndo={() => {}}
         onRedo={() => {}}
-        onAddRecord={() => {}}
+        onAddRecord={handleAddRecord}
         onImportClick={() => {}}
         onDeleteBulkRecords={() => {}}
         onArchiveBulkRecords={() => {}}

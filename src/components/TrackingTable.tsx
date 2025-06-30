@@ -6,17 +6,6 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import TrackingTableHeader from './TrackingTableHeader';
 import TrackingTableRow from './TrackingTableRow';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 
 interface TrackingTableProps {
   data: TrackingRecord[];

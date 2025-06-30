@@ -66,7 +66,7 @@ const AllFilesTableRow = ({
   }`;
 
   return (
-    <tr className={rowClassName}>
+    <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
         <InlineEditCell
           value={record.customer}
