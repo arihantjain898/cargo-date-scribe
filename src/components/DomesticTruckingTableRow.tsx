@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -66,28 +67,28 @@ const DomesticTruckingTableRow = ({
           className="font-bold"
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
           placeholder="Enter file"
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.woSent}
           onSave={(value) => updateRecord(record.id, 'woSent', value as boolean)}
           isBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.insurance}
           onSave={(value) => updateRecord(record.id, 'insurance', value as boolean)}
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.pickDate}
           onSave={(value) => updateRecord(record.id, 'pickDate', value as string)}

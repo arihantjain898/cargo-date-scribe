@@ -6,6 +6,10 @@ import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import { useFirestore } from './useFirestore';
 import { useNotifications } from './useNotifications';
+import { generateSampleData } from '../data/generateSampleData';
+import { generateSampleImportData } from '../data/sampleImportData';
+import { generateSampleAllFilesData } from '../data/sampleAllFilesData';
+import { generateSampleDomesticTruckingData } from '../data/sampleDomesticTruckingData';
 
 export const useFreightTrackerData = (currentUserId: string) => {
   const { addNotification } = useNotifications();
@@ -41,6 +45,43 @@ export const useFreightTrackerData = (currentUserId: string) => {
     updateItem: updateDomesticTruckingItem,
     deleteItem: deleteDomesticTruckingItem
   } = useFirestore<DomesticTruckingRecord>('domestic_trucking', currentUserId);
+
+  // Load sample data if no data exists
+  useEffect(() => {
+    const loadSampleData = async () => {
+      if (exportData.length === 0) {
+        const sampleExportData = generateSampleData();
+        for (const record of sampleExportData) {
+          await addExportItem(record);
+        }
+      }
+
+      if (importData.length === 0) {
+        const sampleImportData = generateSampleImportData();
+        for (const record of sampleImportData) {
+          await addImportItem(record);
+        }
+      }
+
+      if (allFilesData.length === 0) {
+        const sampleAllFilesData = generateSampleAllFilesData();
+        for (const record of sampleAllFilesData) {
+          await addAllFilesItem(record);
+        }
+      }
+
+      if (domesticTruckingData.length === 0) {
+        const sampleDomesticData = generateSampleDomesticTruckingData();
+        for (const record of sampleDomesticData) {
+          await addDomesticTruckingItem(record);
+        }
+      }
+    };
+
+    if (!exportLoading && !importLoading && !allFilesLoading && !domesticTruckingLoading) {
+      loadSampleData();
+    }
+  }, [exportData.length, importData.length, allFilesData.length, domesticTruckingData.length, exportLoading, importLoading, allFilesLoading, domesticTruckingLoading]);
 
   const updateRecord = async (
     id: string,
