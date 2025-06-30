@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import { useUndoRedo } from '../hooks/useUndoRedo';
@@ -113,8 +112,8 @@ const FreightTracker = () => {
       });
     } else if (activeTab === 'all-files') {
       addAllFilesItem({
-        customer: 'New Customer',
-        file: 'New File',
+        customer: '',
+        file: '',
         number: '',
         originPort: '',
         originState: '',

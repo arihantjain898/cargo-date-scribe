@@ -60,14 +60,14 @@ const AllFilesTableRow = ({
     }
   };
 
-  // Improved row distinction with alternating colors and better borders
-  const rowClassName = `border-b-2 border-gray-300 transition-all duration-200 ${
-    isArchived ? 'bg-gray-100 opacity-50' : 
-    index % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'
+  // More distinct row distinction with stronger alternating colors
+  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
+    isArchived ? 'bg-gray-200 opacity-60' : 
+    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-gray-100 hover:bg-blue-100'
   }`;
 
   // Helper function to get text styling based on content
-  const getTextStyling = (value: string) => {
+  const getTextStyling = (value: string, placeholder?: string) => {
     if (!value || value.trim() === '') {
       return 'text-gray-400 italic';
     }
@@ -80,7 +80,7 @@ const AllFilesTableRow = ({
         <InlineEditCell
           value={record.customer}
           onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
+          placeholder="Enter customer"
           className={getTextStyling(record.customer)}
         />
       </td>
@@ -91,6 +91,7 @@ const AllFilesTableRow = ({
             value={record.file}
             onSave={(value) => updateRecord(record.id, 'file', value as string)}
             options={['EA', 'ES', 'IS', 'IA', 'DT', 'ET']}
+            placeholder="Select file type"
             className={getTextStyling(record.file)}
           />
           {record.number && record.file && onFileClick && (
