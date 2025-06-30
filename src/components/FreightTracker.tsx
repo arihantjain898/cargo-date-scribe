@@ -2,14 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { DatePicker } from '@/components/ui/date-picker';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
 import {
   Table,
   TableHeader,
@@ -23,8 +16,12 @@ import {
 
 import AllFilesTable from './AllFilesTable';
 import ImportTrackingTable from './ImportTrackingTable';
-import ExportTrackingTable from './ExportTrackingTable';
+import TrackingTable from './TrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
+import { AllFilesRecord } from '../types/AllFilesRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { TrackingRecord } from '../types/TrackingRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('allFiles');
@@ -170,6 +167,7 @@ const FreightTracker = () => {
       sslPaid: false,
       insured: false,
       released: false,
+      docsSentToCustomer: false,
       notes: '',
       archived: false,
     };
@@ -346,7 +344,7 @@ const FreightTracker = () => {
         />
       )}
       {activeTab === 'exportTracking' && (
-        <ExportTrackingTable
+        <TrackingTable
           data={exportTrackingData}
           updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('exportTracking', id)}
