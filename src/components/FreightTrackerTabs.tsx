@@ -36,6 +36,7 @@ interface FreightTrackerTabsProps {
   deleteAllFilesRecord: (id: string) => void;
   deleteDomesticTruckingRecord: (id: string) => void;
   onFileClick: (fileNumber: string, fileType: string) => void;
+  onCalendarEventClick?: (fileNumber: string, source: string) => void;
   highlightedRowId?: string | null;
 }
 
@@ -63,6 +64,7 @@ const FreightTrackerTabs = ({
   deleteAllFilesRecord,
   deleteDomesticTruckingRecord,
   onFileClick,
+  onCalendarEventClick,
   highlightedRowId
 }: FreightTrackerTabsProps) => {
   return (
@@ -155,6 +157,7 @@ const FreightTrackerTabs = ({
             data={filteredExportData} 
             importData={filteredImportData}
             domesticData={filteredDomesticTruckingData}
+            onCalendarEventClick={onCalendarEventClick}
           />
         </TabsContent>
       </Tabs>

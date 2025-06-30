@@ -15,6 +15,7 @@ interface CalendarViewProps {
   data: TrackingRecord[];
   importData?: ImportTrackingRecord[];
   domesticData?: DomesticTruckingRecord[];
+  onCalendarEventClick?: (fileNumber: string, source: string) => void;
 }
 
 interface CalendarEvent {
@@ -37,10 +38,18 @@ interface EventDetailModalProps {
   event: CalendarEvent | null;
   isOpen: boolean;
   onClose: () => void;
+  onEventClick?: (fileNumber: string, source: string) => void;
 }
 
-const EventDetailModal = ({ event, isOpen, onClose }: EventDetailModalProps) => {
+const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailModalProps) => {
   if (!event) return null;
+
+  const handleEventClick = () => {
+    if (onEventClick) {
+      onEventClick(event.file, event.source);
+      onClose();
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -48,9 +57,6 @@ const EventDetailModal = ({ event, isOpen, onClose }: EventDetailModalProps) => 
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             Event Details
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
@@ -76,7 +82,9 @@ const EventDetailModal = ({ event, isOpen, onClose }: EventDetailModalProps) => 
             </div>
             <div>
               <div className="font-medium text-gray-600">File #</div>
-              <div className="text-gray-900">{event.file}</div>
+              <div className="text-gray-900 cursor-pointer text-blue-600 hover:underline" onClick={handleEventClick}>
+                {event.file}
+              </div>
             </div>
             <div>
               <div className="font-medium text-gray-600">Reference</div>
@@ -84,7 +92,7 @@ const EventDetailModal = ({ event, isOpen, onClose }: EventDetailModalProps) => 
             </div>
             <div>
               <div className="font-medium text-gray-600">Date</div>
-              <div className="text-gray-900">{new Date(event.date).toLocaleDateString()}</div>
+              <div className="text-gray-900">{new Date(event.date + 'T00:00:00').toLocaleDateString()}</div>
             </div>
             
             {event.originPort && (
@@ -122,6 +130,15 @@ const EventDetailModal = ({ event, isOpen, onClose }: EventDetailModalProps) => 
               </div>
             )}
           </div>
+          
+          {onEventClick && (
+            <Button 
+              onClick={handleEventClick}
+              className="w-full mt-4"
+            >
+              Go to {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic Trucking'} Table
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -183,7 +200,7 @@ const getEventTypeLabel = (type: string) => {
   }
 };
 
-const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarViewProps) => {
+const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEventClick }: CalendarViewProps) => {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [calendarFilter, setCalendarFilter] = useState<'all' | 'export' | 'import' | 'domestic'>('all');
@@ -358,7 +375,7 @@ const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarView
                   calendarFilter === 'import' ? importEvents : domesticEvents;
     
     return events
-      .filter(event => new Date(event.date) >= new Date())
+      .filter(event => new Date(event.date + 'T00:00:00') >= new Date())
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(0, 9);
   };
@@ -645,6 +662,7 @@ const CalendarView = ({ data, importData = [], domesticData = [] }: CalendarView
         event={selectedEvent}
         isOpen={isEventModalOpen}
         onClose={() => setIsEventModalOpen(false)}
+        onEventClick={onCalendarEventClick}
       />
     </div>
   );
