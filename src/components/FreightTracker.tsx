@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import { useUndoRedo } from '../hooks/useUndoRedo';
@@ -239,11 +238,14 @@ const FreightTracker = () => {
     let targetTab = '';
     let targetData: any[] = [];
     let found = false;
+    let searchFileNumber = '';
     
     if (fileType === 'ES') {
       targetTab = 'export-table';
       targetData = exportData;
-      const targetRecord = exportData.find(record => record.file === fileNumber);
+      // Look for ES + fileNumber (e.g., "ES0017") in the export data
+      searchFileNumber = `ES${fileNumber}`;
+      const targetRecord = exportData.find(record => record.file === searchFileNumber);
       if (targetRecord) {
         found = true;
         setHighlightedRowId(targetRecord.id);
@@ -251,7 +253,9 @@ const FreightTracker = () => {
     } else if (fileType === 'IS') {
       targetTab = 'import-table';
       targetData = importData;
-      const targetRecord = importData.find(record => record.file === fileNumber);
+      // Look for IS + fileNumber (e.g., "IS0017") in the import data
+      searchFileNumber = `IS${fileNumber}`;
+      const targetRecord = importData.find(record => record.file === searchFileNumber);
       if (targetRecord) {
         found = true;
         setHighlightedRowId(targetRecord.id);
@@ -259,7 +263,9 @@ const FreightTracker = () => {
     } else if (fileType === 'DT') {
       targetTab = 'domestic-trucking';
       targetData = domesticTruckingData;
-      const targetRecord = domesticTruckingData.find(record => record.file === fileNumber);
+      // Look for DT + fileNumber (e.g., "DT0017") in the domestic trucking data
+      searchFileNumber = `DT${fileNumber}`;
+      const targetRecord = domesticTruckingData.find(record => record.file === searchFileNumber);
       if (targetRecord) {
         found = true;
         setHighlightedRowId(targetRecord.id);
@@ -267,14 +273,14 @@ const FreightTracker = () => {
     }
     
     if (!found) {
-      alert(`No matching record found in ${fileType} table for file: ${fileNumber}`);
+      alert(`No matching record found in ${fileType} table for file: ${searchFileNumber}`);
       return;
     }
     
     setActiveTab(targetTab);
     
     setTimeout(() => {
-      const targetElement = document.querySelector(`[data-row-id="${found ? (targetData.find(r => r.file === fileNumber)?.id) : ''}"]`);
+      const targetElement = document.querySelector(`[data-row-id="${found ? (targetData.find(r => r.file === searchFileNumber)?.id) : ''}"]`);
       if (targetElement) {
         targetElement.scrollIntoView({ 
           behavior: 'smooth', 
