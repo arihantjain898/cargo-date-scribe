@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Palette } from 'lucide-react';
 
 interface InlineEditCellProps {
   value: string | boolean;
@@ -12,6 +14,7 @@ interface InlineEditCellProps {
   placeholder?: string;
   className?: string;
   options?: string[];
+  dateColorOptions?: boolean;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -21,15 +24,27 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isDate = false,
   placeholder = "Click to edit",
   className = "",
-  options = []
+  options = [],
+  dateColorOptions = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
+  const [dateColor, setDateColor] = useState<string>('gray');
+  const [showColorPicker, setShowColorPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setEditValue(String(value));
+    // Parse stored date color from value if it exists
+    const storedValue = String(value);
+    if (storedValue.includes('|color:')) {
+      const [dateValue, colorPart] = storedValue.split('|color:');
+      setEditValue(dateValue);
+      setDateColor(colorPart);
+    } else {
+      setEditValue(storedValue);
+      setDateColor('gray');
+    }
   }, [value]);
 
   useEffect(() => {
@@ -46,15 +61,29 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   const handleSave = () => {
     if (isBoolean) {
       onSave(editValue === 'true');
+    } else if (isDate && dateColorOptions) {
+      // Save date with color information
+      const valueWithColor = editValue ? `${editValue}|color:${dateColor}` : '';
+      onSave(valueWithColor);
     } else {
       onSave(editValue);
     }
     setIsEditing(false);
+    setShowColorPicker(false);
   };
 
   const handleCancel = () => {
-    setEditValue(String(value));
+    const storedValue = String(value);
+    if (storedValue.includes('|color:')) {
+      const [dateValue, colorPart] = storedValue.split('|color:');
+      setEditValue(dateValue);
+      setDateColor(colorPart);
+    } else {
+      setEditValue(storedValue);
+      setDateColor('gray');
+    }
     setIsEditing(false);
+    setShowColorPicker(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -86,19 +115,74 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     setIsEditing(false);
   };
 
+  const handleColorChange = (color: string) => {
+    setDateColor(color);
+    setShowColorPicker(false);
+  };
+
+  const getDateColorClass = (color: string) => {
+    switch (color) {
+      case 'green': return 'bg-green-100 text-green-800 border-green-300';
+      case 'yellow': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'red': return 'bg-red-100 text-red-800 border-red-300';
+      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
   if (isEditing && !isBoolean && options.length === 0) {
     return (
       <div className="w-full min-h-[24px] p-1">
         {isDate ? (
-          <Input
-            ref={inputRef}
-            type="date"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            onBlur={handleSave}
-            onKeyDown={handleKeyDown}
-            className="w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500"
-          />
+          <div className="flex items-center space-x-2">
+            <Input
+              ref={inputRef}
+              type="date"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={handleSave}
+              onKeyDown={handleKeyDown}
+              className="w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500"
+            />
+            {dateColorOptions && (
+              <div className="relative">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowColorPicker(!showColorPicker)}
+                  className="h-8 w-8 p-0"
+                >
+                  <Palette className="h-3 w-3" />
+                </Button>
+                {showColorPicker && (
+                  <div className="absolute top-full left-0 mt-1 bg-white border rounded-md shadow-lg z-50 p-2">
+                    <div className="flex space-x-1">
+                      <button
+                        onClick={() => handleColorChange('gray')}
+                        className="w-6 h-6 bg-gray-300 rounded border hover:scale-110"
+                        title="Gray (Default)"
+                      />
+                      <button
+                        onClick={() => handleColorChange('green')}
+                        className="w-6 h-6 bg-green-300 rounded border hover:scale-110"
+                        title="Green"
+                      />
+                      <button
+                        onClick={() => handleColorChange('yellow')}
+                        className="w-6 h-6 bg-yellow-300 rounded border hover:scale-110"
+                        title="Yellow"
+                      />
+                      <button
+                        onClick={() => handleColorChange('red')}
+                        className="w-6 h-6 bg-red-300 rounded border hover:scale-110"
+                        title="Red"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         ) : (
           <Textarea
             ref={textareaRef}
@@ -133,9 +217,21 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     );
   }
 
-  const displayValue = isBoolean 
-    ? (value ? 'Yes' : 'No')
-    : (String(value) || placeholder);
+  // Parse display value for dates with colors
+  let displayValue = String(value);
+  let currentColor = 'gray';
+  
+  if (isDate && dateColorOptions && displayValue.includes('|color:')) {
+    const [dateValue, colorPart] = displayValue.split('|color:');
+    displayValue = dateValue;
+    currentColor = colorPart;
+  }
+
+  if (isBoolean) {
+    displayValue = value ? 'Yes' : 'No';
+  } else if (!displayValue) {
+    displayValue = placeholder;
+  }
 
   const getStatusColor = (val: string) => {
     if (val === 'Yes' || val === 'Done') return 'bg-green-100 text-green-800 hover:bg-green-200';
@@ -153,7 +249,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
       }`
     : `w-full min-h-[24px] p-1 text-xs cursor-pointer hover:bg-blue-50 rounded border border-transparent hover:border-blue-200 transition-all duration-200 ${
         value ? 'text-gray-800' : 'text-gray-400 italic'
-      } ${isDate && value ? 'text-blue-700 bg-blue-50' : ''}`;
+      } ${isDate && value ? `px-1 py-0.5 rounded text-[10px] ${getDateColorClass(currentColor)}` : ''}`;
 
   return (
     <div

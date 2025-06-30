@@ -35,33 +35,50 @@ const FreightTracker = () => {
 
   useEffect(() => {
     // Load data from localStorage on component mount
-    const storedAllFilesData = localStorage.getItem('allFilesData');
-    if (storedAllFilesData) {
-      setAllFilesData(JSON.parse(storedAllFilesData));
-    }
+    try {
+      const storedAllFilesData = localStorage.getItem('allFilesData');
+      if (storedAllFilesData) {
+        const parsedData = JSON.parse(storedAllFilesData);
+        setAllFilesData(Array.isArray(parsedData) ? parsedData : []);
+      }
 
-    const storedImportTrackingData = localStorage.getItem('importTrackingData');
-    if (storedImportTrackingData) {
-      setImportTrackingData(JSON.parse(storedImportTrackingData));
-    }
+      const storedImportTrackingData = localStorage.getItem('importTrackingData');
+      if (storedImportTrackingData) {
+        const parsedData = JSON.parse(storedImportTrackingData);
+        setImportTrackingData(Array.isArray(parsedData) ? parsedData : []);
+      }
 
-    const storedExportTrackingData = localStorage.getItem('exportTrackingData');
-    if (storedExportTrackingData) {
-      setExportTrackingData(JSON.parse(storedExportTrackingData));
-    }
+      const storedExportTrackingData = localStorage.getItem('exportTrackingData');
+      if (storedExportTrackingData) {
+        const parsedData = JSON.parse(storedExportTrackingData);
+        setExportTrackingData(Array.isArray(parsedData) ? parsedData : []);
+      }
 
-    const storedDomesticTruckingData = localStorage.getItem('domesticTruckingData');
-    if (storedDomesticTruckingData) {
-      setDomesticTruckingData(JSON.parse(storedDomesticTruckingData));
+      const storedDomesticTruckingData = localStorage.getItem('domesticTruckingData');
+      if (storedDomesticTruckingData) {
+        const parsedData = JSON.parse(storedDomesticTruckingData);
+        setDomesticTruckingData(Array.isArray(parsedData) ? parsedData : []);
+      }
+    } catch (error) {
+      console.error('Error loading data from localStorage:', error);
+      // Initialize with empty arrays if there's an error
+      setAllFilesData([]);
+      setImportTrackingData([]);
+      setExportTrackingData([]);
+      setDomesticTruckingData([]);
     }
   }, []);
 
   useEffect(() => {
     // Save data to localStorage whenever it changes
-    localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
-    localStorage.setItem('importTrackingData', JSON.stringify(importTrackingData));
-    localStorage.setItem('exportTrackingData', JSON.stringify(exportTrackingData));
-    localStorage.setItem('domesticTruckingData', JSON.stringify(domesticTruckingData));
+    try {
+      localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
+      localStorage.setItem('importTrackingData', JSON.stringify(importTrackingData));
+      localStorage.setItem('exportTrackingData', JSON.stringify(exportTrackingData));
+      localStorage.setItem('domesticTruckingData', JSON.stringify(domesticTruckingData));
+    } catch (error) {
+      console.error('Error saving data to localStorage:', error);
+    }
   }, [allFilesData, importTrackingData, exportTrackingData, domesticTruckingData]);
 
   // Function to add a new record to All Files
