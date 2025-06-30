@@ -61,19 +61,10 @@ const AllFilesTableRow = ({
     }
   };
 
-  // Check if record has any content to determine styling
-  const hasContent = record.customer || record.file || record.number || record.originPort;
-  
-  const rowClassName = `border-b border-gray-300 transition-all duration-200 hover:bg-gray-50 ${
+  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
     isArchived ? 'bg-gray-100 opacity-50' : 
-    index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
+    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
   }`;
-
-  const getCellClassName = (value: string, isImportant: boolean = false) => {
-    const isEmpty = !value || value.trim() === '';
-    const baseClass = isEmpty ? 'text-gray-400 font-normal' : hasContent ? 'text-gray-900 font-medium' : 'text-gray-500 font-normal';
-    return isImportant && !isEmpty ? `${baseClass} font-bold` : baseClass;
-  };
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -82,7 +73,7 @@ const AllFilesTableRow = ({
           value={record.customer}
           onSave={(value) => updateRecord(record.id, 'customer', value as string)}
           placeholder="Enter customer name"
-          className={getCellClassName(record.customer, true)}
+          className="font-bold"
         />
       </td>
       
@@ -91,9 +82,7 @@ const AllFilesTableRow = ({
           <InlineEditCell
             value={record.file}
             onSave={(value) => updateRecord(record.id, 'file', value as string)}
-            options={['ES', 'IS', 'DT', 'EA', 'IA', 'ET']}
-            placeholder="Select file type"
-            className={getCellClassName(record.file)}
+            options={['ES', 'IS', 'DT']}
           />
           {record.number && record.file && onFileClick && (
             <Button
@@ -114,7 +103,6 @@ const AllFilesTableRow = ({
           value={record.number}
           onSave={(value) => updateRecord(record.id, 'number', value as string)}
           placeholder="Enter number"
-          className={getCellClassName(record.number)}
         />
       </td>
       
@@ -123,7 +111,6 @@ const AllFilesTableRow = ({
           value={record.originPort}
           onSave={(value) => updateRecord(record.id, 'originPort', value as string)}
           placeholder="Enter origin port"
-          className={getCellClassName(record.originPort)}
         />
       </td>
       
@@ -132,7 +119,6 @@ const AllFilesTableRow = ({
           value={record.originState}
           onSave={(value) => updateRecord(record.id, 'originState', value as string)}
           placeholder="Enter origin state"
-          className={getCellClassName(record.originState)}
         />
       </td>
       
@@ -141,7 +127,6 @@ const AllFilesTableRow = ({
           value={record.destinationPort}
           onSave={(value) => updateRecord(record.id, 'destinationPort', value as string)}
           placeholder="Enter destination port"
-          className={getCellClassName(record.destinationPort)}
         />
       </td>
       
@@ -150,7 +135,6 @@ const AllFilesTableRow = ({
           value={record.destinationCountry}
           onSave={(value) => updateRecord(record.id, 'destinationCountry', value as string)}
           placeholder="Enter destination country"
-          className={getCellClassName(record.destinationCountry)}
         />
       </td>
       
@@ -159,7 +143,6 @@ const AllFilesTableRow = ({
           value={record.container20}
           onSave={(value) => updateRecord(record.id, 'container20', value as string)}
           placeholder="20'"
-          className={getCellClassName(record.container20)}
         />
       </td>
       
@@ -168,7 +151,6 @@ const AllFilesTableRow = ({
           value={record.container40}
           onSave={(value) => updateRecord(record.id, 'container40', value as string)}
           placeholder="40'"
-          className={getCellClassName(record.container40)}
         />
       </td>
       
@@ -177,7 +159,6 @@ const AllFilesTableRow = ({
           value={record.roro}
           onSave={(value) => updateRecord(record.id, 'roro', value as string)}
           placeholder="RoRo"
-          className={getCellClassName(record.roro)}
         />
       </td>
       
@@ -186,7 +167,6 @@ const AllFilesTableRow = ({
           value={record.lcl}
           onSave={(value) => updateRecord(record.id, 'lcl', value as string)}
           placeholder="LCL"
-          className={getCellClassName(record.lcl)}
         />
       </td>
       
@@ -195,7 +175,6 @@ const AllFilesTableRow = ({
           value={record.air}
           onSave={(value) => updateRecord(record.id, 'air', value as string)}
           placeholder="Air"
-          className={getCellClassName(record.air)}
         />
       </td>
       
@@ -204,7 +183,6 @@ const AllFilesTableRow = ({
           value={record.truck}
           onSave={(value) => updateRecord(record.id, 'truck', value as string)}
           placeholder="Truck"
-          className={getCellClassName(record.truck)}
         />
       </td>
       
@@ -212,8 +190,7 @@ const AllFilesTableRow = ({
         <InlineEditCell
           value={record.ssl}
           onSave={(value) => updateRecord(record.id, 'ssl', value as string)}
-          placeholder="SSL or Trucker"
-          className={getCellClassName(record.ssl)}
+          placeholder="SSL"
         />
       </td>
       
@@ -222,7 +199,6 @@ const AllFilesTableRow = ({
           value={record.nvo}
           onSave={(value) => updateRecord(record.id, 'nvo', value as string)}
           placeholder="NVO"
-          className={getCellClassName(record.nvo)}
         />
       </td>
       
@@ -231,7 +207,6 @@ const AllFilesTableRow = ({
           value={record.comments}
           onSave={(value) => updateRecord(record.id, 'comments', value as string)}
           placeholder="Enter comments"
-          className={getCellClassName(record.comments)}
         />
       </td>
       
@@ -240,7 +215,6 @@ const AllFilesTableRow = ({
           value={record.salesContact}
           onSave={(value) => updateRecord(record.id, 'salesContact', value as string)}
           placeholder="Enter sales contact"
-          className={getCellClassName(record.salesContact)}
         />
       </td>
       
