@@ -1,10 +1,8 @@
-
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import FreightTrackerTabs from './FreightTrackerTabs';
 import { AllFilesRecord } from '../types/AllFilesRecord';
@@ -13,8 +11,8 @@ import { TrackingRecord } from '../types/TrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 const FreightTracker = () => {
-  const { user } = useFirebaseAuth();
-  const currentUserId = user?.uid || '';
+  // Use a hardcoded user ID for now since we removed authentication
+  const currentUserId = 'demo-user-123';
   
   const {
     exportData,
@@ -51,17 +49,6 @@ const FreightTracker = () => {
     loading,
     currentUserId
   });
-
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Please log in to continue</h2>
-          <p className="text-gray-600">You need to be logged in to access the freight tracker.</p>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
