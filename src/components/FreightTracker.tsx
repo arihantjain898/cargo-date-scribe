@@ -37,7 +37,7 @@ const FreightTracker = () => {
     addDomesticTruckingItem
   } = useFreightTrackerData('demo-user');
 
-  // Search functionality
+  // Search functionality with proper typing
   const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
   const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useSearch(importData);
   const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
@@ -80,15 +80,16 @@ const FreightTracker = () => {
     }
 
     if (targetTab && targetData.length > 0) {
-      // Find matching record by file number only
+      // Find matching record by file number
       const matchingRecord = targetData.find(record => {
         const recordFile = record.file || '';
-        // For DT records, match against fileNumber directly
-        if (fileType === 'DT') {
-          return recordFile === fileNumber || recordFile === `DT${fileNumber}` || recordFile.includes(fileNumber);
-        }
-        // For ES/IS records, match the full file reference
-        return recordFile === `${fileType} ${fileNumber}` || recordFile === `${fileType}${fileNumber}` || recordFile.includes(fileNumber);
+        console.log('Comparing:', recordFile, 'with target:', `${fileType} ${fileNumber}`);
+        
+        // Try different matching patterns
+        return recordFile === `${fileType} ${fileNumber}` || 
+               recordFile === `${fileType}${fileNumber}` || 
+               recordFile === fileNumber ||
+               recordFile.includes(fileNumber);
       });
 
       if (matchingRecord) {
@@ -96,7 +97,7 @@ const FreightTracker = () => {
         setActiveTab(targetTab);
         setHighlightedRowId(matchingRecord.id);
         
-        // Scroll to the specific row after a short delay to ensure the tab has switched
+        // Scroll to the specific row after tab switch
         setTimeout(() => {
           const rowElement = document.querySelector(`[data-row-id="${matchingRecord.id}"]`);
           if (rowElement) {
@@ -105,7 +106,7 @@ const FreightTracker = () => {
           } else {
             console.log('Row element not found for ID:', matchingRecord.id);
           }
-        }, 200);
+        }, 300);
         
         // Clear highlight after 3 seconds
         setTimeout(() => {
@@ -252,7 +253,6 @@ const FreightTracker = () => {
         onUndo={() => {}}
         onRedo={() => {}}
         onAddRecord={handleAddRecord}
-        onImportClick={() => {}}
         onDeleteBulkRecords={() => {}}
         onArchiveBulkRecords={() => {}}
       />

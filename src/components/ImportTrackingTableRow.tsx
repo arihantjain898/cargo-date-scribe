@@ -1,9 +1,11 @@
 import React from 'react';
+import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { formatDate } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
+import CheckboxCell from './CheckboxCell';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,35 +31,43 @@ interface ImportTrackingTableRowProps {
   isHighlighted?: boolean;
 }
 
-const ImportTrackingTableRow = ({ 
-  record, 
-  index, 
-  updateRecord, 
-  deleteRecord, 
-  onArchive, 
+const ImportTrackingTableRow = ({
+  record,
+  index,
+  updateRecord,
+  deleteRecord,
+  onArchive,
   onUnarchive,
   selectedRows,
   setSelectedRows,
   showArchived,
   isHighlighted = false
 }: ImportTrackingTableRowProps) => {
+  const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
-  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
-    isArchived ? 'bg-gray-100 opacity-50' : 
-    isHighlighted ? 'bg-yellow-200 border-yellow-400' :
-    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-  }`;
 
-  const handleSelectRow = (id: string, checked: boolean) => {
+  // Check if all boolean fields are true (completed)
+  const isCompleted = record.poa && record.isf && record.packingListCommercialInvoice && 
+                     record.billOfLading && record.arrivalNotice && record.isfFiled && 
+                     record.entryFiled && record.blRelease && record.customsRelease && 
+                     record.invoiceSent && record.paymentReceived && record.workOrderSetup;
+
+  const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
-      setSelectedRows(prev => [...prev, id]);
+      setSelectedRows(prev => [...prev, record.id]);
     } else {
-      setSelectedRows(prev => prev.filter(rowId => rowId !== id));
+      setSelectedRows(prev => prev.filter(id => id !== record.id));
     }
   };
 
+  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
+    isHighlighted ? 'bg-yellow-200 animate-pulse' :
+    isArchived ? 'bg-gray-100 opacity-50' : 
+    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+  } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
+
   return (
-    <tr className={rowClassName}>
+    <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
         <InlineEditCell
           value={record.customer}
@@ -84,8 +94,7 @@ const ImportTrackingTableRow = ({
         <InlineEditCell
           value={record.etaFinalPod}
           onSave={(value) => updateRecord(record.id, 'etaFinalPod', value as string)}
-          isDate={true}
-          placeholder="Select ETA date"
+          placeholder="Enter ETA"
         />
       </td>
       <td className="border-r border-gray-500 p-1">
@@ -212,8 +221,8 @@ const ImportTrackingTableRow = ({
       </td>
       <td className="p-1 text-center border-r border-gray-500">
         <Checkbox
-          checked={selectedRows.includes(record.id)}
-          onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
+          checked={isSelected}
+          onCheckedChange={handleCheckboxChange}
           className="h-3 w-3 border"
         />
       </td>
