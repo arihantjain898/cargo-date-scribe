@@ -80,10 +80,15 @@ const FreightTracker = () => {
     }
 
     if (targetTab && targetData.length > 0) {
-      // Find matching record by exact file match
+      // Find matching record by file number only
       const matchingRecord = targetData.find(record => {
-        const recordFileNumber = record.file || '';
-        return recordFileNumber === `${fileType} ${fileNumber}`;
+        const recordFile = record.file || '';
+        // For DT records, match against fileNumber directly
+        if (fileType === 'DT') {
+          return recordFile === fileNumber || recordFile === `DT${fileNumber}` || recordFile.includes(fileNumber);
+        }
+        // For ES/IS records, match the full file reference
+        return recordFile === `${fileType} ${fileNumber}` || recordFile === `${fileType}${fileNumber}` || recordFile.includes(fileNumber);
       });
 
       if (matchingRecord) {
@@ -96,8 +101,11 @@ const FreightTracker = () => {
           const rowElement = document.querySelector(`[data-row-id="${matchingRecord.id}"]`);
           if (rowElement) {
             rowElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            console.log('Scrolled to row:', matchingRecord.id);
+          } else {
+            console.log('Row element not found for ID:', matchingRecord.id);
           }
-        }, 100);
+        }, 200);
         
         // Clear highlight after 3 seconds
         setTimeout(() => {
@@ -105,9 +113,11 @@ const FreightTracker = () => {
         }, 3000);
       } else {
         console.log('No matching record found in', targetTab, 'for file:', `${fileType} ${fileNumber}`);
-        // Still switch to the appropriate tab even if no exact match
-        setActiveTab(targetTab);
+        alert(`No matching record found for ${fileType} ${fileNumber} in ${targetTab.replace('-', ' ')}`);
       }
+    } else {
+      console.log('Invalid target tab or no data available');
+      alert(`Cannot navigate to ${fileType} records - no data available`);
     }
   };
 

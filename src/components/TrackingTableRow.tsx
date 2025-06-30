@@ -42,9 +42,17 @@ const TrackingTableRow = ({
   isHighlighted = false
 }: TrackingTableRowProps) => {
   const isArchived = record.archived;
+  
+  // Check if record is completed (all boolean fields are true)
+  const isCompleted = record.docsSent && record.docsReceived && record.aesMblVgmSent && 
+                     record.validatedFwd && record.sslDraftInvRec && record.draftInvApproved && 
+                     record.transphereInvSent && record.paymentRec && record.sslPaid && 
+                     record.insured && record.released && record.docsSentToCustomer;
+  
   const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
     isArchived ? 'bg-gray-100 opacity-50' : 
     isHighlighted ? 'bg-yellow-200 border-yellow-400' :
+    isCompleted ? 'bg-green-50 border-2 border-green-500' :
     index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
   }`;
 
@@ -57,7 +65,7 @@ const TrackingTableRow = ({
   };
 
   return (
-    <tr className={rowClassName}>
+    <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
         <InlineEditCell
           value={record.customer}
