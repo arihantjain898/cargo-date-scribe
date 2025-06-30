@@ -56,15 +56,23 @@ const AllFilesTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.number && record.file) {
-      // Use the file type (ES, IS, DT) and the number to link
       onFileClick(record.number, record.file);
     }
   };
 
-  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
+  // Improved row distinction with alternating colors and better borders
+  const rowClassName = `border-b-2 border-gray-300 transition-all duration-200 ${
     isArchived ? 'bg-gray-100 opacity-50' : 
-    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+    index % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'
   }`;
+
+  // Helper function to get text styling based on content
+  const getTextStyling = (value: string) => {
+    if (!value || value.trim() === '') {
+      return 'text-gray-400 italic';
+    }
+    return 'text-gray-900 font-medium';
+  };
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -73,7 +81,7 @@ const AllFilesTableRow = ({
           value={record.customer}
           onSave={(value) => updateRecord(record.id, 'customer', value as string)}
           placeholder="Enter customer name"
-          className="font-bold"
+          className={getTextStyling(record.customer)}
         />
       </td>
       
@@ -82,7 +90,8 @@ const AllFilesTableRow = ({
           <InlineEditCell
             value={record.file}
             onSave={(value) => updateRecord(record.id, 'file', value as string)}
-            options={['ES', 'IS', 'DT']}
+            options={['EA', 'ES', 'IS', 'IA', 'DT', 'ET']}
+            className={getTextStyling(record.file)}
           />
           {record.number && record.file && onFileClick && (
             <Button
@@ -103,6 +112,7 @@ const AllFilesTableRow = ({
           value={record.number}
           onSave={(value) => updateRecord(record.id, 'number', value as string)}
           placeholder="Enter number"
+          className={getTextStyling(record.number)}
         />
       </td>
       
@@ -111,6 +121,7 @@ const AllFilesTableRow = ({
           value={record.originPort}
           onSave={(value) => updateRecord(record.id, 'originPort', value as string)}
           placeholder="Enter origin port"
+          className={getTextStyling(record.originPort)}
         />
       </td>
       
@@ -119,6 +130,7 @@ const AllFilesTableRow = ({
           value={record.originState}
           onSave={(value) => updateRecord(record.id, 'originState', value as string)}
           placeholder="Enter origin state"
+          className={getTextStyling(record.originState)}
         />
       </td>
       
@@ -127,6 +139,7 @@ const AllFilesTableRow = ({
           value={record.destinationPort}
           onSave={(value) => updateRecord(record.id, 'destinationPort', value as string)}
           placeholder="Enter destination port"
+          className={getTextStyling(record.destinationPort)}
         />
       </td>
       
@@ -135,54 +148,61 @@ const AllFilesTableRow = ({
           value={record.destinationCountry}
           onSave={(value) => updateRecord(record.id, 'destinationCountry', value as string)}
           placeholder="Enter destination country"
+          className={getTextStyling(record.destinationCountry)}
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container20)} font-medium`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container20)}`}>
         <InlineEditCell
           value={record.container20}
           onSave={(value) => updateRecord(record.id, 'container20', value as string)}
           placeholder="20'"
+          className="font-medium"
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container40)} font-medium`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container40)}`}>
         <InlineEditCell
           value={record.container40}
           onSave={(value) => updateRecord(record.id, 'container40', value as string)}
           placeholder="40'"
+          className="font-medium"
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.roro)} font-medium`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.roro)}`}>
         <InlineEditCell
           value={record.roro}
           onSave={(value) => updateRecord(record.id, 'roro', value as string)}
           placeholder="RoRo"
+          className="font-medium"
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.lcl)} font-medium`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.lcl)}`}>
         <InlineEditCell
           value={record.lcl}
           onSave={(value) => updateRecord(record.id, 'lcl', value as string)}
           placeholder="LCL"
+          className="font-medium"
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.air)} font-medium`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.air)}`}>
         <InlineEditCell
           value={record.air}
           onSave={(value) => updateRecord(record.id, 'air', value as string)}
           placeholder="Air"
+          className="font-medium"
         />
       </td>
       
-      <td className={`border-r-4 border-black p-1 ${getContainerVolumeColor(record.truck)} font-medium`}>
+      <td className={`border-r-4 border-black p-1 ${getContainerVolumeColor(record.truck)}`}>
         <InlineEditCell
           value={record.truck}
           onSave={(value) => updateRecord(record.id, 'truck', value as string)}
           placeholder="Truck"
+          className="font-medium"
         />
       </td>
       
@@ -190,7 +210,8 @@ const AllFilesTableRow = ({
         <InlineEditCell
           value={record.ssl}
           onSave={(value) => updateRecord(record.id, 'ssl', value as string)}
-          placeholder="SSL"
+          placeholder="SSL or Trucker"
+          className={getTextStyling(record.ssl)}
         />
       </td>
       
@@ -199,6 +220,7 @@ const AllFilesTableRow = ({
           value={record.nvo}
           onSave={(value) => updateRecord(record.id, 'nvo', value as string)}
           placeholder="NVO"
+          className={getTextStyling(record.nvo)}
         />
       </td>
       
@@ -207,6 +229,7 @@ const AllFilesTableRow = ({
           value={record.comments}
           onSave={(value) => updateRecord(record.id, 'comments', value as string)}
           placeholder="Enter comments"
+          className={getTextStyling(record.comments)}
         />
       </td>
       
@@ -215,6 +238,7 @@ const AllFilesTableRow = ({
           value={record.salesContact}
           onSave={(value) => updateRecord(record.id, 'salesContact', value as string)}
           placeholder="Enter sales contact"
+          className={getTextStyling(record.salesContact)}
         />
       </td>
       

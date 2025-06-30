@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import { useUndoRedo } from '../hooks/useUndoRedo';
@@ -243,7 +244,6 @@ const FreightTracker = () => {
     if (fileType === 'ES') {
       targetTab = 'export-table';
       targetData = exportData;
-      // Look for ES + fileNumber (e.g., "ES0017") in the export data
       searchFileNumber = `ES${fileNumber}`;
       const targetRecord = exportData.find(record => record.file === searchFileNumber);
       if (targetRecord) {
@@ -253,7 +253,6 @@ const FreightTracker = () => {
     } else if (fileType === 'IS') {
       targetTab = 'import-table';
       targetData = importData;
-      // Look for IS + fileNumber (e.g., "IS0017") in the import data
       searchFileNumber = `IS${fileNumber}`;
       const targetRecord = importData.find(record => record.file === searchFileNumber);
       if (targetRecord) {
@@ -263,7 +262,6 @@ const FreightTracker = () => {
     } else if (fileType === 'DT') {
       targetTab = 'domestic-trucking';
       targetData = domesticTruckingData;
-      // Look for DT + fileNumber (e.g., "DT0017") in the domestic trucking data
       searchFileNumber = `DT${fileNumber}`;
       const targetRecord = domesticTruckingData.find(record => record.file === searchFileNumber);
       if (targetRecord) {
