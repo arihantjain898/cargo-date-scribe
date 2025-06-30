@@ -18,5 +18,5 @@ export interface AllFilesRecord {
   nvo: string;
   comments: string;
   salesContact: string;
-  archived?: boolean;
+  archived?: boolean | string;
 }

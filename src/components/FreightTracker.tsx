@@ -12,12 +12,6 @@ import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
 import { useDomesticTruckingSearch } from '../hooks/useDomesticTruckingSearch';
 import { useNotifications } from '../hooks/useNotifications';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
-import { 
-  generateSampleExportData, 
-  generateSampleImportData, 
-  generateSampleAllFilesData, 
-  generateSampleDomesticTruckingData 
-} from '../data/generateSampleData';
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState(() => {
@@ -28,7 +22,7 @@ const FreightTracker = () => {
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
   const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
-  const [sampleDataAdded, setSampleDataAdded] = useState(false);
+  const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
 
   // Store previous state for undo/redo
   const [undoStack, setUndoStack] = useState<Array<{
@@ -81,12 +75,15 @@ const FreightTracker = () => {
     localStorage.setItem('freight-tracker-active-tab', activeTab);
   }, [activeTab]);
 
+  // Clear highlight after 3 seconds
   useEffect(() => {
-    if (!loading && !sampleDataAdded) {
-      // Automatically add sample data on first load
-      addSampleData();
+    if (highlightedRowId) {
+      const timer = setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [loading, sampleDataAdded]);
+  }, [highlightedRowId]);
 
   const getCurrentSearchProps = () => {
     switch (activeTab) {
@@ -112,34 +109,6 @@ const FreightTracker = () => {
       case 'all-files': return 'all-files';
       case 'domestic-trucking': return 'domestic-trucking';
       default: return 'all-files';
-    }
-  };
-
-  const addSampleData = async () => {
-    if (sampleDataAdded) return;
-
-    try {
-      const sampleExportData = generateSampleExportData();
-      await Promise.all(sampleExportData.map(record => addExportItem(record)));
-
-      const sampleImportData = generateSampleImportData();
-      await Promise.all(sampleImportData.map(record => addImportItem(record)));
-
-      const sampleAllFilesData = generateSampleAllFilesData();
-      await Promise.all(sampleAllFilesData.map(record => addAllFilesItem(record)));
-
-      const sampleDomesticData = generateSampleDomesticTruckingData();
-      await Promise.all(sampleDomesticData.map(record => addDomesticTruckingItem(record)));
-
-      setSampleDataAdded(true);
-      addNotification(
-        'Sample Data Added',
-        'Added sample data across all tabs for this month and next month',
-        'success'
-      );
-    } catch (error) {
-      console.error('Error adding sample data:', error);
-      addNotification('Error', 'Failed to add sample data', 'error');
     }
   };
 
@@ -400,25 +369,35 @@ const FreightTracker = () => {
     console.log('File clicked:', fileType + fileNumber);
     
     if (fileType === 'ES') {
-      const matchingExport = exportData.find(record => record.file === fileType + fileNumber);
+      // Look for export records that contain this file number
+      const matchingExport = exportData.find(record => 
+        record.file && record.file.includes(fileNumber)
+      );
       if (matchingExport) {
         setActiveTab('export-table');
+        setHighlightedRowId(matchingExport.id);
         addNotification('Success', `Opened Export Checklist for file ${fileType}${fileNumber}`, 'success');
       } else {
         addNotification('Info', `No matching export record found for ${fileType}${fileNumber}`, 'info');
       }
     } else if (fileType === 'IS') {
-      const matchingImport = importData.find(record => record.file === fileType + fileNumber);
+      const matchingImport = importData.find(record => 
+        record.file && record.file.includes(fileNumber)
+      );
       if (matchingImport) {
         setActiveTab('import-table');
+        setHighlightedRowId(matchingImport.id);
         addNotification('Success', `Opened Import Checklist for file ${fileType}${fileNumber}`, 'success');
       } else {
         addNotification('Info', `No matching import record found for ${fileType}${fileNumber}`, 'info');
       }
     } else if (fileType === 'DT') {
-      const matchingDomestic = domesticTruckingData.find(record => record.file === fileType + fileNumber);
+      const matchingDomestic = domesticTruckingData.find(record => 
+        record.file && record.file.includes(fileNumber)
+      );
       if (matchingDomestic) {
         setActiveTab('domestic-trucking');
+        setHighlightedRowId(matchingDomestic.id);
         addNotification('Success', `Opened Domestic Trucking for file ${fileType}${fileNumber}`, 'success');
       } else {
         addNotification('Info', `No matching domestic trucking record found for ${fileType}${fileNumber}`, 'info');
@@ -606,6 +585,7 @@ const FreightTracker = () => {
             deleteAllFilesRecord={deleteAllFilesRecord}
             deleteDomesticTruckingRecord={deleteDomesticTruckingRecord}
             onFileClick={handleFileClick}
+            highlightedRowId={highlightedRowId}
           />
 
           <input

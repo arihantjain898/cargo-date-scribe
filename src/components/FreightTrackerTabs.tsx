@@ -36,6 +36,7 @@ interface FreightTrackerTabsProps {
   deleteAllFilesRecord: (id: string) => void;
   deleteDomesticTruckingRecord: (id: string) => void;
   onFileClick: (fileNumber: string, fileType: string) => void;
+  highlightedRowId?: string | null;
 }
 
 const FreightTrackerTabs = ({
@@ -61,7 +62,8 @@ const FreightTrackerTabs = ({
   deleteImportRecord,
   deleteAllFilesRecord,
   deleteDomesticTruckingRecord,
-  onFileClick
+  onFileClick,
+  highlightedRowId
 }: FreightTrackerTabsProps) => {
   return (
     <div className="flex-1 overflow-hidden">
@@ -122,6 +124,7 @@ const FreightTrackerTabs = ({
             deleteRecord={deleteRecord}
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
+            highlightedRowId={highlightedRowId}
           />
         </TabsContent>
 
@@ -132,6 +135,7 @@ const FreightTrackerTabs = ({
             deleteRecord={deleteImportRecord}
             selectedRows={selectedImportRows}
             setSelectedRows={setSelectedImportRows}
+            highlightedRowId={highlightedRowId}
           />
         </TabsContent>
 
@@ -142,6 +146,7 @@ const FreightTrackerTabs = ({
             deleteRecord={deleteDomesticTruckingRecord}
             selectedRows={selectedDomesticTruckingRows}
             setSelectedRows={setSelectedDomesticTruckingRows}
+            highlightedRowId={highlightedRowId}
           />
         </TabsContent>
 

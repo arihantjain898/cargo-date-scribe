@@ -1,151 +1,316 @@
 
+import { addDays, format } from 'date-fns';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
-const customers = [
-  'ABC Manufacturing', 'XYZ Imports', 'Global Trade Co', 'Pacific Logistics',
-  'Atlantic Shipping', 'Continental Express', 'Metro Freight', 'Ocean View Trading',
-  'Mountain Peak Exports', 'Valley Industries', 'Sunrise Commerce', 'Sunset Logistics',
-  'Northern Winds', 'Southern Cross', 'Eastern Gateway', 'Western Frontier'
-];
-
-const ports = [
-  'Los Angeles', 'Long Beach', 'New York', 'Savannah', 'Seattle', 'Oakland',
-  'Houston', 'Charleston', 'Norfolk', 'Miami', 'Tacoma', 'Baltimore'
-];
-
-const countries = [
-  'China', 'Japan', 'South Korea', 'Germany', 'United Kingdom', 'France',
-  'Italy', 'Netherlands', 'Belgium', 'Canada', 'Mexico', 'Brazil'
-];
-
-const states = [
-  'CA', 'NY', 'TX', 'FL', 'IL', 'PA', 'OH', 'GA', 'NC', 'MI', 'NJ', 'VA'
-];
-
-const getRandomDate = (start: Date, end: Date): string => {
-  const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-  return date.toISOString().split('T')[0];
-};
-
-const getRandomElement = <T>(array: T[]): T => {
-  return array[Math.floor(Math.random() * array.length)];
-};
-
-const getRandomBoolean = (): boolean => Math.random() > 0.5;
-
-const getRandomNumber = (min: number, max: number): string => {
-  return Math.floor(Math.random() * (max - min + 1) + min).toString();
-};
-
 export const generateSampleExportData = (): Omit<TrackingRecord, 'id'>[] => {
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0);
-
-  return Array.from({ length: 25 }, (_, i) => ({
-    customer: getRandomElement(customers),
-    ref: `REF${String(i + 1).padStart(4, '0')}`,
-    file: `ES${String(i + 1).padStart(4, '0')}`, // ES prefix for export files
-    workOrder: `WO${String(i + 1).padStart(5, '0')}`,
-    dropDone: getRandomElement(['Yes', 'No', 'Pending']),
-    dropDate: getRandomDate(startOfMonth, endOfNextMonth),
-    returnNeeded: getRandomElement(['Yes', 'No', 'TBD']),
-    returnDate: getRandomDate(startOfMonth, endOfNextMonth),
-    docsSent: getRandomBoolean(),
-    docsReceived: getRandomBoolean(),
-    aesMblVgmSent: getRandomBoolean(),
-    docCutoffDate: getRandomDate(startOfMonth, endOfNextMonth),
-    titlesDispatched: getRandomElement(['Yes', 'No', 'Pending']),
-    validatedFwd: getRandomBoolean(),
-    titlesReturned: getRandomElement(['Yes', 'No', 'Pending']),
-    sslDraftInvRec: getRandomBoolean(),
-    draftInvApproved: getRandomBoolean(),
-    transphereInvSent: getRandomBoolean(),
-    paymentRec: getRandomBoolean(),
-    sslPaid: getRandomBoolean(),
-    insured: getRandomBoolean(),
-    released: getRandomBoolean(),
-    docsSentToCustomer: getRandomBoolean(),
-    notes: `Sample notes for export record ${i + 1}`
-  }));
+  const today = new Date();
+  
+  return [
+    // Completed record example
+    {
+      customer: "ABC Manufacturing",
+      ref: "REF-2024-001",
+      file: "ES0025",
+      workOrder: "WO-2024-001",
+      dropDone: "Yes",
+      dropDate: format(addDays(today, -5), 'yyyy-MM-dd'),
+      returnNeeded: "Yes",
+      returnDate: format(addDays(today, -3), 'yyyy-MM-dd'),
+      docsSent: true,
+      docsReceived: true,
+      aesMblVgmSent: true,
+      docCutoffDate: format(addDays(today, -7), 'yyyy-MM-dd'),
+      titlesDispatched: "Yes",
+      validatedFwd: true,
+      titlesReturned: "Yes",
+      sslDraftInvRec: true,
+      draftInvApproved: true,
+      transphereInvSent: true,
+      paymentRec: true,
+      sslPaid: true,
+      insured: true,
+      released: true,
+      docsSentToCustomer: true,
+      notes: "Completed shipment to Germany"
+    },
+    // Partial record
+    {
+      customer: "XYZ Corp",
+      ref: "REF-2024-002",
+      file: "ES0026",
+      workOrder: "WO-2024-002",
+      dropDone: "No",
+      dropDate: "",
+      returnNeeded: "Yes",
+      returnDate: "",
+      docsSent: true,
+      docsReceived: false,
+      aesMblVgmSent: false,
+      docCutoffDate: format(addDays(today, 2), 'yyyy-MM-dd'),
+      titlesDispatched: "No",
+      validatedFwd: false,
+      titlesReturned: "No",
+      sslDraftInvRec: false,
+      draftInvApproved: false,
+      transphereInvSent: false,
+      paymentRec: false,
+      sslPaid: false,
+      insured: true,
+      released: false,
+      docsSentToCustomer: false,
+      notes: "Pending documentation"
+    },
+    // Future record
+    {
+      customer: "Global Traders Ltd",
+      ref: "REF-2024-003",
+      file: "ES0027",
+      workOrder: "WO-2024-003",
+      dropDone: "No",
+      dropDate: "",
+      returnNeeded: "No",
+      returnDate: "",
+      docsSent: false,
+      docsReceived: false,
+      aesMblVgmSent: false,
+      docCutoffDate: format(addDays(today, 15), 'yyyy-MM-dd'),
+      titlesDispatched: "No",
+      validatedFwd: false,
+      titlesReturned: "No",
+      sslDraftInvRec: false,
+      draftInvApproved: false,
+      transphereInvSent: false,
+      paymentRec: false,
+      sslPaid: false,
+      insured: false,
+      released: false,
+      docsSentToCustomer: false,
+      notes: "Scheduled for next month"
+    }
+  ];
 };
 
 export const generateSampleImportData = (): Omit<ImportTrackingRecord, 'id'>[] => {
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0);
-
-  return Array.from({ length: 20 }, (_, i) => ({
-    customer: getRandomElement(customers),
-    booking: `BKG${String(i + 1).padStart(6, '0')}`,
-    file: `IS${String(i + 1).padStart(4, '0')}`, // IS prefix for import files
-    etaFinalPod: getRandomDate(startOfMonth, endOfNextMonth),
-    bond: `BD${String(i + 1).padStart(5, '0')}`,
-    poa: getRandomBoolean(),
-    isf: getRandomBoolean(),
-    packingListCommercialInvoice: getRandomBoolean(),
-    billOfLading: getRandomBoolean(),
-    arrivalNotice: getRandomBoolean(),
-    isfFiled: getRandomBoolean(),
-    entryFiled: getRandomBoolean(),
-    blRelease: getRandomBoolean(),
-    customsRelease: getRandomBoolean(),
-    invoiceSent: getRandomBoolean(),
-    paymentReceived: getRandomBoolean(),
-    workOrderSetup: getRandomBoolean(),
-    delivered: getRandomElement(['Yes', 'No', 'Pending']),
-    returned: getRandomElement(['Yes', 'No', 'N/A']),
-    deliveryDate: getRandomDate(startOfMonth, endOfNextMonth),
-    notes: `Sample import notes ${i + 1}`
-  }));
+  const today = new Date();
+  
+  return [
+    // Completed record
+    {
+      customer: "Import Solutions Inc",
+      booking: "BOOK-2024-001",
+      file: "IS0025",
+      etaFinalPod: format(addDays(today, -2), 'yyyy-MM-dd'),
+      bond: "BOND-2024-001",
+      poa: true,
+      isf: true,
+      packingListCommercialInvoice: true,
+      billOfLading: true,
+      arrivalNotice: true,
+      isfFiled: true,
+      entryFiled: true,
+      blRelease: true,
+      customsRelease: true,
+      invoiceSent: true,
+      paymentReceived: true,
+      workOrderSetup: true,
+      delivered: "Yes",
+      returned: "No",
+      deliveryDate: format(addDays(today, -1), 'yyyy-MM-dd'),
+      notes: "Successfully completed import from China"
+    },
+    // Partial record
+    {
+      customer: "Tech Imports LLC",
+      booking: "BOOK-2024-002",
+      file: "IS0026",
+      etaFinalPod: format(addDays(today, 5), 'yyyy-MM-dd'),
+      bond: "BOND-2024-002",
+      poa: true,
+      isf: true,
+      packingListCommercialInvoice: false,
+      billOfLading: false,
+      arrivalNotice: false,
+      isfFiled: true,
+      entryFiled: false,
+      blRelease: false,
+      customsRelease: false,
+      invoiceSent: false,
+      paymentReceived: false,
+      workOrderSetup: false,
+      delivered: "No",
+      returned: "No",
+      deliveryDate: "",
+      notes: "Awaiting documentation"
+    },
+    // Future record
+    {
+      customer: "Future Imports Co",
+      booking: "BOOK-2024-003",
+      file: "IS0027",
+      etaFinalPod: format(addDays(today, 20), 'yyyy-MM-dd'),
+      bond: "",
+      poa: false,
+      isf: false,
+      packingListCommercialInvoice: false,
+      billOfLading: false,
+      arrivalNotice: false,
+      isfFiled: false,
+      entryFiled: false,
+      blRelease: false,
+      customsRelease: false,
+      invoiceSent: false,
+      paymentReceived: false,
+      workOrderSetup: false,
+      delivered: "No",
+      returned: "No",
+      deliveryDate: "",
+      notes: "Scheduled for next month"
+    }
+  ];
 };
 
 export const generateSampleAllFilesData = (): Omit<AllFilesRecord, 'id'>[] => {
-  const fileTypes = ['ES', 'IS', 'DT', 'LC'];
-  
-  return Array.from({ length: 30 }, (_, i) => {
-    const fileType = getRandomElement(fileTypes);
-    const fileNumber = String(i + 1).padStart(4, '0');
-    
-    return {
-      file: fileType,
-      number: fileNumber,
-      customer: getRandomElement(customers),
-      originPort: getRandomElement(ports),
-      originState: getRandomElement(states),
-      destinationPort: getRandomElement(ports),
-      destinationCountry: getRandomElement(countries),
-      container20: getRandomNumber(0, 5),
-      container40: getRandomNumber(0, 8),
-      roro: getRandomNumber(0, 3),
-      lcl: getRandomNumber(0, 2),
-      air: getRandomNumber(0, 1),
-      truck: getRandomNumber(0, 4),
-      ssl: getRandomElement(['SSL1', 'SSL2', 'SSL3', '']),
-      nvo: getRandomElement(['NVO-A', 'NVO-B', 'NVO-C', '']),
-      comments: `Sample comment for file ${fileType}${fileNumber} - Click to open linked checklist`,
-      salesContact: getRandomElement(['John Smith', 'Jane Doe', 'Mike Johnson', 'Sarah Wilson'])
-    };
-  });
+  return [
+    {
+      customer: "ABC Manufacturing",
+      file: "ES",
+      number: "0025",
+      originPort: "Los Angeles",
+      originState: "CA",
+      destinationPort: "Hamburg",
+      destinationCountry: "Germany",
+      container20: "2",
+      container40: "1",
+      roro: "",
+      lcl: "",
+      air: "",
+      truck: "",
+      ssl: "Pacific Shipping",
+      nvo: "Global Logistics",
+      comments: "High priority shipment",
+      salesContact: "John Smith"
+    },
+    {
+      customer: "Import Solutions Inc",
+      file: "IS",
+      number: "0025",
+      originPort: "Shanghai",
+      originState: "",
+      destinationPort: "Long Beach",
+      destinationCountry: "USA",
+      container20: "",
+      container40: "3",
+      roro: "",
+      lcl: "500",
+      air: "",
+      truck: "",
+      ssl: "China Shipping",
+      nvo: "Import Masters",
+      comments: "Electronics cargo",
+      salesContact: "Sarah Johnson"
+    },
+    {
+      customer: "Domestic Freight Co",
+      file: "DT",
+      number: "0025",
+      originPort: "Chicago",
+      originState: "IL",
+      destinationPort: "Miami",
+      destinationCountry: "USA",
+      container20: "",
+      container40: "",
+      roro: "",
+      lcl: "",
+      air: "",
+      truck: "2",
+      ssl: "",
+      nvo: "Highway Express",
+      comments: "Domestic trucking service",
+      salesContact: "Mike Wilson"
+    },
+    {
+      customer: "XYZ Corp",
+      file: "ES",
+      number: "0026",
+      originPort: "New York",
+      originState: "NY",
+      destinationPort: "Rotterdam",
+      destinationCountry: "Netherlands",
+      container20: "1",
+      container40: "",
+      roro: "",
+      lcl: "",
+      air: "",
+      truck: "",
+      ssl: "Atlantic Lines",
+      nvo: "Euro Logistics",
+      comments: "Machinery export",
+      salesContact: "John Smith"
+    },
+    {
+      customer: "Tech Imports LLC",
+      file: "IS",
+      number: "0026",
+      originPort: "Tokyo",
+      originState: "",
+      destinationPort: "Seattle",
+      destinationCountry: "USA",
+      container20: "",
+      container40: "2",
+      roro: "",
+      lcl: "",
+      air: "100",
+      truck: "",
+      ssl: "Pacific Maritime",
+      nvo: "Tech Logistics",
+      comments: "Technology imports",
+      salesContact: "Sarah Johnson"
+    }
+  ];
 };
 
 export const generateSampleDomesticTruckingData = (): Omit<DomesticTruckingRecord, 'id'>[] => {
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 2, 0);
-
-  return Array.from({ length: 15 }, (_, i) => ({
-    customer: getRandomElement(customers),
-    file: `DT${String(i + 1).padStart(4, '0')}`, // DT prefix for domestic trucking files
-    woSent: getRandomBoolean(),
-    insurance: getRandomBoolean(),
-    pickDate: getRandomDate(startOfMonth, endOfNextMonth),
-    delivered: getRandomDate(startOfMonth, endOfNextMonth),
-    paymentReceived: getRandomBoolean(),
-    paymentMade: getRandomBoolean(),
-    notes: `Domestic trucking notes ${i + 1}`
-  }));
+  const today = new Date();
+  
+  return [
+    // Completed record
+    {
+      customer: "Domestic Freight Co",
+      file: "DT0025",
+      woSent: true,
+      insurance: true,
+      pickDate: format(addDays(today, -3), 'yyyy-MM-dd'),
+      delivered: format(addDays(today, -1), 'yyyy-MM-dd'),
+      paymentReceived: true,
+      paymentMade: true,
+      notes: "Successfully completed domestic delivery"
+    },
+    // Partial record
+    {
+      customer: "Regional Transport Inc",
+      file: "DT0026",
+      woSent: true,
+      insurance: true,
+      pickDate: format(addDays(today, 1), 'yyyy-MM-dd'),
+      delivered: "",
+      paymentReceived: false,
+      paymentMade: false,
+      notes: "Scheduled for pickup tomorrow"
+    },
+    // Future record
+    {
+      customer: "Future Logistics LLC",
+      file: "DT0027",
+      woSent: false,
+      insurance: false,
+      pickDate: "",
+      delivered: "",
+      paymentReceived: false,
+      paymentMade: false,
+      notes: "Planning stage"
+    }
+  ];
 };

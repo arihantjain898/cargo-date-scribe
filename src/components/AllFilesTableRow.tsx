@@ -33,7 +33,7 @@ const AllFilesTableRow = ({
   onFileClick
 }: AllFilesTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
-  const isArchived = record.archived === 'true';
+  const isArchived = record.archived === 'true' || record.archived === true;
 
   const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
@@ -65,13 +65,20 @@ const AllFilesTableRow = ({
         />
       </td>
       
-      <td className="p-2 border-b border-gray-200 sticky left-8 bg-inherit z-10">
+      <td className="p-2 border-b border-gray-200 sticky left-8 bg-inherit z-10 min-w-[120px]">
+        <InlineEditCell
+          value={record.customer}
+          onChange={(value) => updateRecord(record.id, 'customer', value)}
+        />
+      </td>
+      
+      <td className="p-2 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <InlineEditCell
             value={record.file}
-            onUpdate={(value) => updateRecord(record.id, 'file', value)}
+            onChange={(value) => updateRecord(record.id, 'file', value)}
             type="select"
-            options={['ES', 'IS', 'DT', 'LC']}
+            options={['ES', 'IS', 'DT']}
           />
           {record.number && onFileClick && (
             <Button
@@ -90,112 +97,105 @@ const AllFilesTableRow = ({
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.number}
-          onUpdate={(value) => updateRecord(record.id, 'number', value)}
-        />
-      </td>
-      
-      <td className="p-2 border-b border-gray-200">
-        <InlineEditCell
-          value={record.customer}
-          onUpdate={(value) => updateRecord(record.id, 'customer', value)}
+          onChange={(value) => updateRecord(record.id, 'number', value)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.originPort}
-          onUpdate={(value) => updateRecord(record.id, 'originPort', value)}
+          onChange={(value) => updateRecord(record.id, 'originPort', value)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.originState}
-          onUpdate={(value) => updateRecord(record.id, 'originState', value)}
+          onChange={(value) => updateRecord(record.id, 'originState', value)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.destinationPort}
-          onUpdate={(value) => updateRecord(record.id, 'destinationPort', value)}
+          onChange={(value) => updateRecord(record.id, 'destinationPort', value)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.destinationCountry}
-          onUpdate={(value) => updateRecord(record.id, 'destinationCountry', value)}
+          onChange={(value) => updateRecord(record.id, 'destinationCountry', value)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.container20)} font-medium`}>
         <InlineEditCell
           value={record.container20}
-          onUpdate={(value) => updateRecord(record.id, 'container20', value)}
+          onChange={(value) => updateRecord(record.id, 'container20', value)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.container40)} font-medium`}>
         <InlineEditCell
           value={record.container40}
-          onUpdate={(value) => updateRecord(record.id, 'container40', value)}
+          onChange={(value) => updateRecord(record.id, 'container40', value)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.roro)} font-medium`}>
         <InlineEditCell
           value={record.roro}
-          onUpdate={(value) => updateRecord(record.id, 'roro', value)}
+          onChange={(value) => updateRecord(record.id, 'roro', value)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.lcl)} font-medium`}>
         <InlineEditCell
           value={record.lcl}
-          onUpdate={(value) => updateRecord(record.id, 'lcl', value)}
+          onChange={(value) => updateRecord(record.id, 'lcl', value)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.air)} font-medium`}>
         <InlineEditCell
           value={record.air}
-          onUpdate={(value) => updateRecord(record.id, 'air', value)}
+          onChange={(value) => updateRecord(record.id, 'air', value)}
         />
       </td>
       
       <td className={`p-2 border-b border-gray-200 ${getContainerVolumeColor(record.truck)} font-medium`}>
         <InlineEditCell
           value={record.truck}
-          onUpdate={(value) => updateRecord(record.id, 'truck', value)}
+          onChange={(value) => updateRecord(record.id, 'truck', value)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.ssl}
-          onUpdate={(value) => updateRecord(record.id, 'ssl', value)}
+          onChange={(value) => updateRecord(record.id, 'ssl', value)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.nvo}
-          onUpdate={(value) => updateRecord(record.id, 'nvo', value)}
+          onChange={(value) => updateRecord(record.id, 'nvo', value)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.comments}
-          onUpdate={(value) => updateRecord(record.id, 'comments', value)}
+          onChange={(value) => updateRecord(record.id, 'comments', value)}
         />
       </td>
       
       <td className="p-2 border-b border-gray-200">
         <InlineEditCell
           value={record.salesContact}
-          onUpdate={(value) => updateRecord(record.id, 'salesContact', value)}
+          onChange={(value) => updateRecord(record.id, 'salesContact', value)}
         />
       </td>
       
