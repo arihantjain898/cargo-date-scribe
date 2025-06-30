@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+
+import React, { useState, useRef } from 'react';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
+import { useUndoRedo } from '../hooks/useUndoRedo';
+import { useSearch } from '../hooks/useSearch';
+import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
+import { useDomesticTruckingSearch } from '../hooks/useDomesticTruckingSearch';
+import FreightTrackerHeader from './FreightTrackerHeader';
 import FreightTrackerTabs from './FreightTrackerTabs';
-import { AllFilesRecord } from '../types/AllFilesRecord';
-import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
-import { TrackingRecord } from '../types/TrackingRecord';
-import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 const FreightTracker = () => {
-  // Use a hardcoded user ID for now since we removed authentication
-  const currentUserId = 'demo-user-123';
+  const [activeTab, setActiveTab] = useState('all-files');
+  const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   
+  const currentUserId = 'demo-user';
   const {
     exportData,
     importData,
@@ -34,236 +33,351 @@ const FreightTracker = () => {
     deleteDomesticTruckingItem
   } = useFreightTrackerData(currentUserId);
 
-  const [activeTab, setActiveTab] = useState('all-files');
-  const [newCustomer, setNewCustomer] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
   const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
 
-  console.log('FreightTracker data:', {
-    exportData: exportData?.length || 0,
-    importData: importData?.length || 0,
-    allFilesData: allFilesData?.length || 0,
-    domesticTruckingData: domesticTruckingData?.length || 0,
-    loading,
-    currentUserId
+  const {
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    set: setHistory,
+  } = useUndoRedo();
+
+  React.useEffect(() => {
+    setHistory({
+      exportData,
+      importData,
+      allFilesData,
+      domesticTruckingData
+    });
+  }, [exportData, importData, allFilesData, domesticTruckingData, setHistory]);
+
+  const handleAddRecord = () => {
+    if (activeTab === 'export-table') {
+      addExportItem({
+        customer: 'New Customer',
+        ref: 'New Ref',
+        file: 'New File',
+        workOrder: 'New Work Order',
+        dropDone: '',
+        dropDate: '',
+        returnNeeded: '',
+        returnDate: '',
+        docsSent: false,
+        docsReceived: false,
+        aesMblVgmSent: false,
+        docCutoffDate: '',
+        titlesDispatched: '',
+        validatedFwd: false,
+        titlesReturned: '',
+        sslDraftInvRec: false,
+        draftInvApproved: false,
+        transphereInvSent: false,
+        paymentRec: false,
+        sslPaid: false,
+        insured: false,
+        released: false,
+        docsSentToCustomer: false,
+        notes: '',
+        archived: false,
+        userId: currentUserId
+      });
+    } else if (activeTab === 'import-table') {
+      addImportItem({
+        customer: 'New Customer',
+        booking: 'New Booking',
+        file: 'New File',
+        bond: 'New Bond',
+        etaFinalPod: '',
+        poa: false,
+        isf: false,
+        packingListCommercialInvoice: false,
+        billOfLading: false,
+        arrivalNotice: false,
+        isfFiled: false,
+        entryFiled: false,
+        blRelease: false,
+        customsRelease: false,
+        invoiceSent: false,
+        paymentReceived: false,
+        workOrderSetup: false,
+        delivered: '',
+        returned: '',
+        deliveryDate: '',
+        notes: '',
+        archived: false,
+        userId: currentUserId
+      });
+    } else if (activeTab === 'all-files') {
+      addAllFilesItem({
+        customer: 'New Customer',
+        file: 'New File',
+        number: '',
+        originPort: '',
+        originState: '',
+        destinationPort: '',
+        destinationCountry: '',
+        container20: '',
+        container40: '',
+        roro: '',
+        lcl: '',
+        air: '',
+        truck: '',
+        ssl: '',
+        nvo: '',
+        comments: '',
+        salesContact: '',
+        archived: false,
+        userId: currentUserId
+      });
+    } else if (activeTab === 'domestic-trucking') {
+      addDomesticTruckingItem({
+        customer: 'New Customer',
+        file: 'New File',
+        woSent: false,
+        insurance: false,
+        pickDate: '',
+        delivered: '',
+        paymentReceived: false,
+        paymentMade: false,
+        notes: '',
+        archived: false,
+        userId: currentUserId
+      });
+    }
+  };
+
+  const handleDeleteBulkRecords = () => {
+    if (activeTab === 'export-table') {
+      selectedRows.forEach(id => deleteExportItem(id));
+      setSelectedRows([]);
+    } else if (activeTab === 'import-table') {
+      selectedImportRows.forEach(id => deleteImportItem(id));
+      setSelectedImportRows([]);
+    } else if (activeTab === 'all-files') {
+      selectedAllFilesRows.forEach(id => deleteAllFilesItem(id));
+      setSelectedAllFilesRows([]);
+    } else if (activeTab === 'domestic-trucking') {
+      selectedDomesticTruckingRows.forEach(id => deleteDomesticTruckingItem(id));
+      setSelectedDomesticTruckingRows([]);
+    }
+  };
+
+  const handleArchiveBulkRecords = () => {
+    if (activeTab === 'export-table') {
+      selectedRows.forEach(id => updateRecord(id, 'archived', true));
+      setSelectedRows([]);
+    } else if (activeTab === 'import-table') {
+      selectedImportRows.forEach(id => updateImportRecord(id, 'archived', true));
+      setSelectedImportRows([]);
+    } else if (activeTab === 'domestic-trucking') {
+      selectedDomesticTruckingRows.forEach(id => updateDomesticTruckingRecord(id, 'archived', true));
+      setSelectedDomesticTruckingRows([]);
+    }
+  };
+
+  // Search functionality with proper typing
+  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
+  
+  // Create a custom search hook for import data
+  const [importSearchTerm, setImportSearchTerm] = useState('');
+  const filteredImportData = importData.filter((record) => {
+    if (!importSearchTerm) return true;
+    const searchLower = importSearchTerm.toLowerCase();
+    return (
+      record.customer?.toLowerCase().includes(searchLower) ||
+      record.booking?.toLowerCase().includes(searchLower) ||
+      record.file?.toLowerCase().includes(searchLower) ||
+      record.bond?.toLowerCase().includes(searchLower) ||
+      record.notes?.toLowerCase().includes(searchLower)
+    );
   });
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your data...</p>
-        </div>
-      </div>
-    );
-  }
+  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
+  const { searchTerm: domesticTruckingSearchTerm, setSearchTerm: setDomesticTruckingSearchTerm, filteredData: filteredDomesticTruckingData } = useDomesticTruckingSearch(domesticTruckingData);
 
-  // Function to add a new record to All Files
-  const addAllFilesRecord = async () => {
-    if (newCustomer.trim() === '') {
-      toast.error('Customer cannot be empty.');
-      return;
-    }
-
-    const newRecord: Omit<AllFilesRecord, 'id'> = {
-      customer: newCustomer,
-      file: '',
-      number: '',
-      originPort: '',
-      originState: '',
-      destinationPort: '',
-      destinationCountry: '',
-      container20: '',
-      container40: '',
-      roro: '',
-      lcl: '',
-      air: '',
-      truck: '',
-      ssl: '',
-      nvo: '',
-      comments: '',
-      salesContact: '',
-      archived: false,
-    };
-
-    try {
-      await addAllFilesItem(newRecord);
-      setNewCustomer('');
-      toast.success('Record added to All Files.');
-    } catch (error) {
-      console.error('Error adding all files record:', error);
-      toast.error('Failed to add record.');
+  const getSearchTerm = () => {
+    switch (activeTab) {
+      case 'export-table':
+        return exportSearchTerm;
+      case 'import-table':
+        return importSearchTerm;
+      case 'all-files':
+        return allFilesSearchTerm;
+      case 'domestic-trucking':
+        return domesticTruckingSearchTerm;
+      default:
+        return '';
     }
   };
 
-  // Function to add a new record to Import Tracking
-  const addImportTrackingRecord = async () => {
-    if (newCustomer.trim() === '') {
-      toast.error('Customer cannot be empty.');
-      return;
-    }
-
-    const newRecord: Omit<ImportTrackingRecord, 'id'> = {
-      customer: newCustomer,
-      booking: '',
-      file: '',
-      etaFinalPod: '',
-      bond: '',
-      poa: false,
-      isf: false,
-      packingListCommercialInvoice: false,
-      billOfLading: false,
-      arrivalNotice: false,
-      isfFiled: false,
-      entryFiled: false,
-      blRelease: false,
-      customsRelease: false,
-      invoiceSent: false,
-      paymentReceived: false,
-      workOrderSetup: false,
-      delivered: '',
-      returned: '',
-      deliveryDate: '',
-      notes: '',
-      archived: false,
-    };
-
-    try {
-      await addImportItem(newRecord);
-      setNewCustomer('');
-      toast.success('Record added to Import Tracking.');
-    } catch (error) {
-      console.error('Error adding import record:', error);
-      toast.error('Failed to add record.');
-    }
-  };
-
-  // Function to add a new record to Export Tracking
-  const addExportTrackingRecord = async () => {
-    if (newCustomer.trim() === '') {
-      toast.error('Customer cannot be empty.');
-      return;
-    }
-
-    const newRecord: Omit<TrackingRecord, 'id'> = {
-      customer: newCustomer,
-      ref: '',
-      file: '',
-      workOrder: '',
-      dropDone: '',
-      dropDate: '',
-      returnNeeded: '',
-      returnDate: '',
-      docsSent: false,
-      docsReceived: false,
-      docCutoffDate: '',
-      aesMblVgmSent: false,
-      titlesDispatched: '',
-      validatedFwd: false,
-      titlesReturned: '',
-      sslDraftInvRec: false,
-      draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: false,
-      sslPaid: false,
-      insured: false,
-      released: false,
-      docsSentToCustomer: false,
-      notes: '',
-      archived: false,
-    };
-
-    try {
-      await addExportItem(newRecord);
-      setNewCustomer('');
-      toast.success('Record added to Export Tracking.');
-    } catch (error) {
-      console.error('Error adding export record:', error);
-      toast.error('Failed to add record.');
-    }
-  };
-
-  // Function to add a new record to Domestic Trucking
-  const addDomesticTruckingRecord = async () => {
-    if (newCustomer.trim() === '') {
-      toast.error('Customer cannot be empty.');
-      return;
-    }
-
-    const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
-      customer: newCustomer,
-      file: '',
-      woSent: false,
-      insurance: false,
-      pickDate: '',
-      delivered: '',
-      paymentReceived: false,
-      paymentMade: false,
-      notes: '',
-      archived: false,
-    };
-
-    try {
-      await addDomesticTruckingItem(newRecord);
-      setNewCustomer('');
-      toast.success('Record added to Domestic Trucking.');
-    } catch (error) {
-      console.error('Error adding domestic trucking record:', error);
-      toast.error('Failed to add record.');
+  const setSearchTerm = (term: string) => {
+    switch (activeTab) {
+      case 'export-table':
+        setExportSearchTerm(term);
+        break;
+      case 'import-table':
+        setImportSearchTerm(term);
+        break;
+       case 'all-files':
+        setAllFilesSearchTerm(term);
+        break;
+      case 'domestic-trucking':
+        setDomesticTruckingSearchTerm(term);
+        break;
+      default:
+        break;
     }
   };
 
   const handleFileClick = (fileNumber: string, fileType: string) => {
-    console.log(`Opening ${fileType} ${fileNumber} in checklist`);
-    // Add your file opening logic here
+    console.log(`Linking to file: ${fileNumber}, type: ${fileType}`);
+    
+    let targetTab = '';
+    let targetData: any[] = [];
+    let found = false;
+    let searchFileNumber = '';
+    
+    if (fileType === 'ES') {
+      targetTab = 'export-table';
+      targetData = exportData;
+      searchFileNumber = `ES${fileNumber}`;
+      const targetRecord = exportData.find(record => record.file === searchFileNumber);
+      if (targetRecord) {
+        found = true;
+        setHighlightedRowId(targetRecord.id);
+      }
+    } else if (fileType === 'IS') {
+      targetTab = 'import-table';
+      targetData = importData;
+      searchFileNumber = `IS${fileNumber}`;
+      const targetRecord = importData.find(record => record.file === searchFileNumber);
+      if (targetRecord) {
+        found = true;
+        setHighlightedRowId(targetRecord.id);
+      }
+    } else if (fileType === 'DT') {
+      targetTab = 'domestic-trucking';
+      targetData = domesticTruckingData;
+      searchFileNumber = `DT${fileNumber}`;
+      const targetRecord = domesticTruckingData.find(record => record.file === searchFileNumber);
+      if (targetRecord) {
+        found = true;
+        setHighlightedRowId(targetRecord.id);
+      }
+    }
+    
+    if (!found) {
+      alert(`No matching record found in ${fileType} table for file: ${searchFileNumber}`);
+      return;
+    }
+    
+    setActiveTab(targetTab);
+    
+    setTimeout(() => {
+      const targetElement = document.querySelector(`[data-row-id="${found ? (targetData.find(r => r.file === searchFileNumber)?.id) : ''}"]`);
+      if (targetElement) {
+        targetElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+      
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+    }, 100);
   };
 
-  const handleCalendarEventClick = (fileNumber: string, source: string) => {
-    console.log(`Calendar event clicked: ${fileNumber} from ${source}`);
-    // Add your calendar event logic here
+  const handleCalendarEventClick = (eventFile: string, eventSource: string) => {
+    console.log(`Calendar linking to file: ${eventFile}, source: ${eventSource}`);
+    
+    let targetTab = '';
+    let targetData: any[] = [];
+    let found = false;
+    
+    if (eventSource === 'export') {
+      targetTab = 'export-table';
+      targetData = exportData;
+      const targetRecord = exportData.find(record => record.file === eventFile);
+      if (targetRecord) {
+        found = true;
+        setHighlightedRowId(targetRecord.id);
+      }
+    } else if (eventSource === 'import') {
+      targetTab = 'import-table';
+      targetData = importData;
+      const targetRecord = importData.find(record => record.file === eventFile);
+      if (targetRecord) {
+        found = true;
+        setHighlightedRowId(targetRecord.id);
+      }
+    } else if (eventSource === 'domestic') {
+      targetTab = 'domestic-trucking';
+      targetData = domesticTruckingData;
+      const targetRecord = domesticTruckingData.find(record => record.file === eventFile);
+      if (targetRecord) {
+        found = true;
+        setHighlightedRowId(targetRecord.id);
+      }
+    }
+    
+    if (!found) {
+      alert(`No matching record found in ${eventSource} table for file: ${eventFile}`);
+      return;
+    }
+    
+    setActiveTab(targetTab);
+    
+    setTimeout(() => {
+      const targetElement = document.querySelector(`[data-row-id="${found ? (targetData.find(r => r.file === eventFile)?.id) : ''}"]`);
+      if (targetElement) {
+        targetElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+      
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+    }, 100);
   };
 
+  
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-4 md:px-6 py-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Freight Tracker</h1>
-        
-        {/* Add New Record Section */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <Input
-            type="text"
-            placeholder="Enter customer name"
-            value={newCustomer}
-            onChange={(e) => setNewCustomer(e.target.value)}
-            className="flex-1 min-w-0"
-          />
-          <div className="flex flex-wrap gap-2">
-            {activeTab === 'all-files' && (
-              <Button onClick={addAllFilesRecord} size="sm">Add All Files Record</Button>
-            )}
-            {activeTab === 'import-table' && (
-              <Button onClick={addImportTrackingRecord} size="sm">Add Import Record</Button>
-            )}
-            {activeTab === 'export-table' && (
-              <Button onClick={addExportTrackingRecord} size="sm">Add Export Record</Button>
-            )}
-            {activeTab === 'domestic-trucking' && (
-              <Button onClick={addDomesticTruckingRecord} size="sm">Add Domestic Record</Button>
-            )}
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <FreightTrackerHeader
+        activeTab={activeTab}
+        searchTerm={getSearchTerm()}
+        setSearchTerm={setSearchTerm}
+        selectedRows={selectedRows}
+        selectedImportRows={selectedImportRows}
+        selectedAllFilesRows={selectedAllFilesRows}
+        selectedDomesticTruckingRows={selectedDomesticTruckingRows}
+        filteredExportData={filteredExportData}
+        filteredImportData={filteredImportData}
+        filteredAllFilesData={filteredAllFilesData}
+        filteredDomesticTruckingData={filteredDomesticTruckingData}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={undo}
+        onRedo={redo}
+        onAddRecord={handleAddRecord}
+        onDeleteBulkRecords={handleDeleteBulkRecords}
+        onArchiveBulkRecords={handleArchiveBulkRecords}
+      />
 
       <FreightTrackerTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        filteredExportData={exportData || []}
-        filteredImportData={importData || []}
-        filteredAllFilesData={allFilesData || []}
-        filteredDomesticTruckingData={domesticTruckingData || []}
+        filteredExportData={filteredExportData}
+        filteredImportData={filteredImportData}
+        filteredAllFilesData={filteredAllFilesData}
+        filteredDomesticTruckingData={filteredDomesticTruckingData}
         selectedRows={selectedRows}
         setSelectedRows={setSelectedRows}
         selectedImportRows={selectedImportRows}
@@ -282,6 +396,7 @@ const FreightTracker = () => {
         deleteDomesticTruckingRecord={deleteDomesticTruckingItem}
         onFileClick={handleFileClick}
         onCalendarEventClick={handleCalendarEventClick}
+        highlightedRowId={highlightedRowId}
       />
     </div>
   );

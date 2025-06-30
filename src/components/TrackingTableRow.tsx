@@ -43,19 +43,17 @@ const TrackingTableRow = ({
 }: TrackingTableRowProps) => {
   const isArchived = record.archived;
   
-  // Check if record is completed (all boolean fields are true or N/A)
+  // Check if record is completed (all boolean fields are true)
   const isCompleted = record.docsSent && record.docsReceived && record.aesMblVgmSent && 
-                     (record.validatedFwd === true || record.validatedFwd === 'N/A') && 
-                     record.sslDraftInvRec && record.draftInvApproved && 
+                     record.validatedFwd && record.sslDraftInvRec && record.draftInvApproved && 
                      record.transphereInvSent && record.paymentRec && record.sslPaid && 
-                     (record.insured === true || record.insured === 'N/A') && 
-                     record.released && record.docsSentToCustomer;
+                     record.insured && record.released && record.docsSentToCustomer;
   
-  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
-    isArchived ? 'bg-gray-200 opacity-60' : 
+  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
+    isArchived ? 'bg-gray-100 opacity-50' : 
     isHighlighted ? 'bg-yellow-200 border-yellow-400' :
     isCompleted ? 'bg-green-50 border-2 border-green-500' :
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
+    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
   }`;
 
   const handleSelectRow = (id: string, checked: boolean) => {
@@ -111,7 +109,6 @@ const TrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'dropDate', value as string)}
           isDate={true}
           placeholder="Select drop date"
-          dateColorOptions={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -128,7 +125,6 @@ const TrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'returnDate', value as string)}
           isDate={true}
           placeholder="Select return date"
-          dateColorOptions={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -151,7 +147,6 @@ const TrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'docCutoffDate', value as string)}
           isDate={true}
           placeholder="Select cutoff date"
-          dateColorOptions={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -172,9 +167,8 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.validatedFwd}
-          onSave={(value) => updateRecord(record.id, 'validatedFwd', value)}
-          placeholder="Select status"
-          options={['N/A', 'Yes', 'No']}
+          onSave={(value) => updateRecord(record.id, 'validatedFwd', value as boolean)}
+          isBoolean={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -223,9 +217,8 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.insured}
-          onSave={(value) => updateRecord(record.id, 'insured', value)}
-          placeholder="Select status"
-          options={['N/A', 'Yes', 'No']}
+          onSave={(value) => updateRecord(record.id, 'insured', value as boolean)}
+          isBoolean={true}
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
