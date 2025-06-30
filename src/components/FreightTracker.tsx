@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import { useUndoRedo } from '../hooks/useUndoRedo';
@@ -61,17 +62,27 @@ const FreightTracker = () => {
         ref: 'New Ref',
         file: 'New File',
         workOrder: 'New Work Order',
-        container: 'New Container',
-        seal: 'New Seal',
+        dropDone: '',
         dropDate: '',
+        returnNeeded: '',
         returnDate: '',
+        docsSent: false,
+        docsReceived: false,
+        aesMblVgmSent: false,
         docCutoffDate: '',
-        portCutoffDate: '',
-        vessel: 'New Vessel',
-        voyage: 'New Voyage',
+        titlesDispatched: '',
+        validatedFwd: false,
+        titlesReturned: '',
+        sslDraftInvRec: false,
+        draftInvApproved: false,
+        transphereInvSent: false,
+        paymentRec: false,
+        sslPaid: false,
+        insured: false,
+        released: false,
+        docsSentToCustomer: false,
         notes: '',
         archived: false,
-        id: Date.now().toString(),
         userId: currentUserId
       });
     } else if (activeTab === 'import-table') {
@@ -81,22 +92,45 @@ const FreightTracker = () => {
         file: 'New File',
         bond: 'New Bond',
         etaFinalPod: '',
-        deliveryDate: '',
+        poa: false,
+        isf: false,
+        packingListCommercialInvoice: false,
+        billOfLading: false,
+        arrivalNotice: false,
+        isfFiled: false,
         entryFiled: false,
+        blRelease: false,
         customsRelease: false,
+        invoiceSent: false,
+        paymentReceived: false,
+        workOrderSetup: false,
+        delivered: '',
+        returned: '',
+        deliveryDate: '',
         notes: '',
         archived: false,
-        id: Date.now().toString(),
         userId: currentUserId
       });
     } else if (activeTab === 'all-files') {
       addAllFilesItem({
         customer: 'New Customer',
         file: 'New File',
-        port: 'New Port',
-        destination: 'New Destination',
-        notes: '',
-        id: Date.now().toString(),
+        number: '',
+        originPort: '',
+        originState: '',
+        destinationPort: '',
+        destinationCountry: '',
+        container20: '',
+        container40: '',
+        roro: '',
+        lcl: '',
+        air: '',
+        truck: '',
+        ssl: '',
+        nvo: '',
+        comments: '',
+        salesContact: '',
+        archived: false,
         userId: currentUserId
       });
     } else if (activeTab === 'domestic-trucking') {
@@ -111,7 +145,6 @@ const FreightTracker = () => {
         paymentMade: false,
         notes: '',
         archived: false,
-        id: Date.now().toString(),
         userId: currentUserId
       });
     }
@@ -353,10 +386,10 @@ const FreightTracker = () => {
         updateImportRecord={updateImportRecord}
         updateAllFilesRecord={updateAllFilesRecord}
         updateDomesticTruckingRecord={updateDomesticTruckingRecord}
-        deleteRecord={deleteRecord}
-        deleteImportRecord={deleteImportRecord}
-        deleteAllFilesRecord={deleteAllFilesRecord}
-        deleteDomesticTruckingRecord={deleteDomesticTruckingRecord}
+        deleteRecord={deleteExportItem}
+        deleteImportRecord={deleteImportItem}
+        deleteAllFilesRecord={deleteAllFilesItem}
+        deleteDomesticTruckingRecord={deleteDomesticTruckingItem}
         onFileClick={handleFileClick}
         onCalendarEventClick={handleCalendarEventClick}
         highlightedRowId={highlightedRowId}
