@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import { useSearch } from '../hooks/useSearch';
 import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
@@ -9,7 +8,6 @@ import FreightTrackerHeader from './FreightTrackerHeader';
 import FreightTrackerTabs from './FreightTrackerTabs';
 
 const FreightTracker = () => {
-  const { user } = useFirebaseAuth();
   const [activeTab, setActiveTab] = useState('all-files');
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
 
@@ -33,7 +31,7 @@ const FreightTracker = () => {
     deleteImportItem,
     deleteAllFilesItem,
     deleteDomesticTruckingItem
-  } = useFreightTrackerData(user?.uid || 'demo-user');
+  } = useFreightTrackerData('demo-user');
 
   // Search functionality - use correct data types for each hook
   const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
