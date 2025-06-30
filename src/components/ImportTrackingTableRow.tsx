@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -27,6 +26,7 @@ interface ImportTrackingTableRowProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
+  isHighlighted?: boolean;
 }
 
 const ImportTrackingTableRow = ({ 
@@ -38,11 +38,13 @@ const ImportTrackingTableRow = ({
   onUnarchive,
   selectedRows,
   setSelectedRows,
-  showArchived 
+  showArchived,
+  isHighlighted = false
 }: ImportTrackingTableRowProps) => {
   const isArchived = record.archived;
   const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
     isArchived ? 'bg-gray-100 opacity-50' : 
+    isHighlighted ? 'bg-yellow-200 border-yellow-400' :
     index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
   }`;
 
