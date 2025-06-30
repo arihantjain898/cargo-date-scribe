@@ -57,10 +57,10 @@ const FreightTracker = () => {
   const handleAddRecord = () => {
     if (activeTab === 'export-table') {
       addExportItem({
-        customer: 'New Customer',
-        ref: 'New Ref',
-        file: 'New File',
-        workOrder: 'New Work Order',
+        customer: '',
+        ref: '',
+        file: '',
+        workOrder: '',
         dropDone: '',
         dropDate: '',
         returnNeeded: '',
@@ -86,10 +86,10 @@ const FreightTracker = () => {
       });
     } else if (activeTab === 'import-table') {
       addImportItem({
-        customer: 'New Customer',
-        booking: 'New Booking',
-        file: 'New File',
-        bond: 'New Bond',
+        customer: '',
+        booking: '',
+        file: '',
+        bond: '',
         etaFinalPod: '',
         poa: false,
         isf: false,
@@ -112,8 +112,8 @@ const FreightTracker = () => {
       });
     } else if (activeTab === 'all-files') {
       addAllFilesItem({
-        customer: 'New Customer',
-        file: 'New File',
+        customer: '',
+        file: '',
         number: '',
         originPort: '',
         originState: '',
@@ -134,8 +134,8 @@ const FreightTracker = () => {
       });
     } else if (activeTab === 'domestic-trucking') {
       addDomesticTruckingItem({
-        customer: 'New Customer',
-        file: 'New File',
+        customer: '',
+        file: '',
         woSent: false,
         insurance: false,
         pickDate: '',

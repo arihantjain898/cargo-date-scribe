@@ -2,7 +2,7 @@
 export interface AllFilesRecord {
   id: string;
   customer: string;
-  file: string;
+  file: 'ES' | 'IS' | 'DT' | 'EA' | 'IA' | 'ET' | string;
   number: string;
   originPort: string;
   originState: string;
