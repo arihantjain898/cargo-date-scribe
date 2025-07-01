@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
@@ -8,7 +9,7 @@ import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { toast } from 'sonner';
+import { Filter, X } from 'lucide-react';
 
 interface CalendarViewProps {
   data: TrackingRecord[];
@@ -38,31 +39,15 @@ interface EventDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEventClick?: (fileNumber: string, source: string) => void;
-  onAllFilesClick?: (fileNumber: string, fileType: string) => void;
 }
 
-const EventDetailModal = ({ event, isOpen, onClose, onEventClick, onAllFilesClick }: EventDetailModalProps) => {
+const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailModalProps) => {
   if (!event) return null;
 
   const handleEventClick = () => {
     if (onEventClick) {
       onEventClick(event.file, event.source);
       onClose();
-    }
-  };
-
-  const handleAllFilesClick = () => {
-    if (onAllFilesClick && event.file) {
-      // Extract file type (first 2 characters) and number (remaining digits)
-      const fileType = event.file.substring(0, 2);
-      const fileNumber = event.file.substring(2);
-      
-      if (fileType && fileNumber) {
-        onAllFilesClick(fileNumber, fileType);
-        onClose();
-      } else {
-        toast.error('Invalid file format for All Files lookup');
-      }
     }
   };
 
@@ -146,25 +131,14 @@ const EventDetailModal = ({ event, isOpen, onClose, onEventClick, onAllFilesClic
             )}
           </div>
           
-          <div className="flex gap-2">
-            {onEventClick && (
-              <Button 
-                onClick={handleEventClick}
-                className="flex-1"
-              >
-                Go to {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic Trucking'} Table
-              </Button>
-            )}
-            {onAllFilesClick && (
-              <Button 
-                onClick={handleAllFilesClick}
-                variant="outline"
-                className="flex-1"
-              >
-                Go to All Files
-              </Button>
-            )}
-          </div>
+          {onEventClick && (
+            <Button 
+              onClick={handleEventClick}
+              className="w-full mt-4"
+            >
+              Go to {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic Trucking'} Table
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -393,13 +367,6 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
     setIsEventModalOpen(true);
-  };
-
-  const handleAllFilesClick = (fileNumber: string, fileType: string) => {
-    // This will be passed from the parent component to handle navigation to All Files
-    if (onCalendarEventClick) {
-      onCalendarEventClick(fileNumber, 'allFiles');
-    }
   };
 
   const getFilteredEventsForUpcoming = () => {
@@ -696,7 +663,6 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         isOpen={isEventModalOpen}
         onClose={() => setIsEventModalOpen(false)}
         onEventClick={onCalendarEventClick}
-        onAllFilesClick={handleAllFilesClick}
       />
     </div>
   );

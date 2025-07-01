@@ -14,14 +14,14 @@ export interface TrackingRecord {
   aesMblVgmSent: boolean;
   docCutoffDate: string;
   titlesDispatched: string;
-  validatedFwd: boolean;
+  validatedFwd: boolean | string; // Now supports N/A as string
   titlesReturned: string;
   sslDraftInvRec: boolean;
   draftInvApproved: boolean;
   transphereInvSent: boolean;
   paymentRec: boolean;
   sslPaid: boolean;
-  insured: boolean;
+  insured: boolean | string; // Now supports N/A as string
   released: boolean;
   docsSentToCustomer: boolean;
   notes: string;

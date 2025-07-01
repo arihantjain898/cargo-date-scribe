@@ -25,8 +25,7 @@ const AllFilesTableFileCell = ({
     }
   };
 
-  // Updated file options in the specified order: EA, ES, ET, IS, IA, DT
-  const fileOptions = ['EA', 'ES', 'ET', 'IS', 'IA', 'DT'];
+  const fileOptions = ['EA', 'ES', 'IS', 'IA', 'DT', 'ET'];
 
   return (
     <div className="flex items-center gap-2">

@@ -42,10 +42,10 @@ const AllFilesTableRow = ({
     }
   };
 
-  // More distinctive alternating colors matching export/import tabs
+  // More distinctive blue alternating colors matching export/import tabs
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isArchived ? 'bg-gray-200 opacity-60' : 
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
+    index % 2 === 0 ? 'bg-slate-50 hover:bg-blue-100' : 'bg-blue-100 hover:bg-blue-200'
   }`;
 
   // Helper function to get text styling based on content
