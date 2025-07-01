@@ -1,30 +1,22 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { DatePicker } from '@/components/ui/date-picker';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from "@/components/ui/table"
+import { AllFilesRecord } from '../types/AllFilesRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { TrackingRecord } from '../types/TrackingRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 import AllFilesTable from './AllFilesTable';
 import ImportTrackingTable from './ImportTrackingTable';
-import ExportTrackingTable from './ExportTrackingTable';
+import TrackingTable from './TrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
+
+// Simple ID generator to replace uuid
+const generateId = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('allFiles');
@@ -75,7 +67,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: AllFilesRecord = {
-      id: uuidv4(),
+      id: generateId(),
       customer: newCustomer,
       file: '',
       number: '',
@@ -109,7 +101,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: ImportTrackingRecord = {
-      id: uuidv4(),
+      id: generateId(),
       customer: newCustomer,
       booking: '',
       file: '',
@@ -147,7 +139,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: TrackingRecord = {
-      id: uuidv4(),
+      id: generateId(),
       customer: newCustomer,
       ref: '',
       file: '',
@@ -187,7 +179,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: DomesticTruckingRecord = {
-      id: uuidv4(),
+      id: generateId(),
       customer: newCustomer,
       file: '',
       woSent: false,
@@ -269,6 +261,15 @@ const FreightTracker = () => {
     // Add your file opening logic here
   };
 
+  const handleBackToAllFiles = (customer: string) => {
+    setActiveTab('allFiles');
+    const matchingRecord = allFilesData.find(record => record.customer === customer);
+    if (matchingRecord) {
+      setHighlightedRowId(matchingRecord.id);
+      setTimeout(() => setHighlightedRowId(null), 3000);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Freight Tracker</h1>
@@ -331,7 +332,6 @@ const FreightTracker = () => {
           deleteRecord={(id) => deleteRecord('allFiles', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
-          highlightedRowId={highlightedRowId}
           onFileClick={handleFileClick}
         />
       )}
@@ -342,11 +342,11 @@ const FreightTracker = () => {
           deleteRecord={(id) => deleteRecord('importTracking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
-          highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'exportTracking' && (
-        <ExportTrackingTable
+        <TrackingTable
           data={exportTrackingData}
           updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('exportTracking', id)}
