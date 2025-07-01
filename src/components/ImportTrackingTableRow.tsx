@@ -77,7 +77,7 @@ const ImportTrackingTableRow = ({
             placeholder="Enter customer name"
             className="font-bold flex-1"
           />
-          {isHighlighted && onBackToAllFiles && (
+          {onBackToAllFiles && (
             <BackToAllFilesButton onBackToAllFiles={onBackToAllFiles} />
           )}
         </div>
