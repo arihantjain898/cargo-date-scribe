@@ -1,22 +1,10 @@
 
 import React from 'react';
-import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import AllFilesTableRowActions from './AllFilesTableRowActions';
+import AllFilesTableFileCell from './AllFilesTableFileCell';
 
 interface AllFilesTableRowProps {
   record: AllFilesRecord;
@@ -54,20 +42,14 @@ const AllFilesTableRow = ({
     }
   };
 
-  const handleFileClick = () => {
-    if (onFileClick && record.number && record.file) {
-      onFileClick(record.number, record.file);
-    }
-  };
-
-  // Improved row distinction with alternating colors and better borders
-  const rowClassName = `border-b-2 border-gray-300 transition-all duration-200 ${
-    isArchived ? 'bg-gray-100 opacity-50' : 
-    index % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'
+  // More distinctive alternating colors matching export/import tabs
+  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
+    isArchived ? 'bg-gray-200 opacity-60' : 
+    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
   }`;
 
   // Helper function to get text styling based on content
-  const getTextStyling = (value: string) => {
+  const getTextStyling = (value: string, placeholder?: string) => {
     if (!value || value.trim() === '') {
       return 'text-gray-400 italic';
     }
@@ -80,31 +62,19 @@ const AllFilesTableRow = ({
         <InlineEditCell
           value={record.customer}
           onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
+          placeholder="Enter customer"
           className={getTextStyling(record.customer)}
         />
       </td>
       
       <td className="border-r border-gray-500 p-1">
-        <div className="flex items-center gap-2">
-          <InlineEditCell
-            value={record.file}
-            onSave={(value) => updateRecord(record.id, 'file', value as string)}
-            options={['EA', 'ES', 'IS', 'IA', 'DT', 'ET']}
-            className={getTextStyling(record.file)}
-          />
-          {record.number && record.file && onFileClick && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleFileClick}
-              className="h-6 w-6 p-0 hover:bg-blue-100"
-              title={`Open ${record.file} ${record.number} in checklist`}
-            >
-              <ExternalLink className="h-3 w-3 text-blue-600" />
-            </Button>
-          )}
-        </div>
+        <AllFilesTableFileCell
+          fileValue={record.file}
+          numberValue={record.number}
+          onSave={(value) => updateRecord(record.id, 'file', value as string)}
+          onFileClick={onFileClick}
+          className={getTextStyling(record.file)}
+        />
       </td>
       
       <td className="border-r-4 border-black p-1">
@@ -242,76 +212,16 @@ const AllFilesTableRow = ({
         />
       </td>
       
-      <td className="p-1 text-center border-r border-gray-500">
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={handleCheckboxChange}
-          className="h-3 w-3 border"
-        />
-      </td>
-      
-      <td className="p-1 text-center border-r border-gray-500">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-yellow-50 rounded-full">
-              {isArchived ? (
-                <ArchiveRestore className="h-3 w-3 text-green-600" />
-              ) : (
-                <Archive className="h-3 w-3 text-yellow-600" />
-              )}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {isArchived ? 'Unarchive Record' : 'Archive Record'}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {isArchived 
-                  ? `Are you sure you want to unarchive this record for ${record.customer}? It will be visible in the main view again.`
-                  : `Are you sure you want to archive this record for ${record.customer}? Archived records will be hidden from the main view.`
-                }
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => isArchived ? onUnarchive(record.id) : onArchive(record.id)}
-                className={isArchived ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}
-              >
-                {isArchived ? 'Unarchive' : 'Archive'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </td>
-      
-      <td className="p-1 text-center">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
-              <Trash2 className="h-3 w-3 text-red-500" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Record</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteRecord(record.id)}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </td>
+      <AllFilesTableRowActions
+        recordId={record.id}
+        customerName={record.customer}
+        isSelected={isSelected}
+        isArchived={isArchived}
+        onCheckboxChange={handleCheckboxChange}
+        onArchive={onArchive}
+        onUnarchive={onUnarchive}
+        onDelete={deleteRecord}
+      />
     </tr>
   );
 };
