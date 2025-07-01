@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,17 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import ImportTrackingTableHeader from './ImportTrackingTableHeader';
 import ImportTrackingTableRow from './ImportTrackingTableRow';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface ImportTrackingTableProps {
   data: ImportTrackingRecord[];
@@ -17,18 +29,9 @@ interface ImportTrackingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onBackToAllFiles?: (fileNumber: string) => void;
 }
 
-const ImportTrackingTable = ({ 
-  data, 
-  updateRecord, 
-  deleteRecord, 
-  selectedRows, 
-  setSelectedRows, 
-  highlightedRowId,
-  onBackToAllFiles 
-}: ImportTrackingTableProps) => {
+const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId }: ImportTrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -86,7 +89,6 @@ const ImportTrackingTable = ({
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                   isHighlighted={highlightedRowId === record.id}
-                  onBackToAllFiles={onBackToAllFiles}
                 />
               ))}
               <tr>

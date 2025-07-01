@@ -18,18 +18,9 @@ interface DomesticTruckingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onBackToAllFiles?: (fileNumber: string) => void;
 }
 
-const DomesticTruckingTable = ({ 
-  data, 
-  updateRecord, 
-  deleteRecord, 
-  selectedRows, 
-  setSelectedRows, 
-  highlightedRowId,
-  onBackToAllFiles 
-}: DomesticTruckingTableProps) => {
+const DomesticTruckingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId }: DomesticTruckingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -87,7 +78,6 @@ const DomesticTruckingTable = ({
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                   isHighlighted={highlightedRowId === record.id}
-                  onBackToAllFiles={onBackToAllFiles}
                 />
               ))}
               <tr>
