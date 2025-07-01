@@ -33,13 +33,13 @@ import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 
 const FreightTracker = () => {
-  const { user } = useFirebaseAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const {
     exportData,
     importData,
     allFilesData,
     domesticTruckingData,
-    loading,
+    loading: dataLoading,
     addExportItem,
     addImportItem,
     addAllFilesItem,
@@ -59,14 +59,30 @@ const FreightTracker = () => {
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
-  console.log('FreightTracker - Current data:', {
+  console.log('FreightTracker - Auth state:', {
+    user: user?.uid,
+    authLoading,
+    dataLoading,
     allFiles: allFilesData.length,
     import: importData.length,
     export: exportData.length,
-    domestic: domesticTruckingData.length,
-    loading,
-    userId: user?.uid
+    domestic: domesticTruckingData.length
   });
+
+  // Show loading if auth is still loading
+  if (authLoading) {
+    return <div className="flex justify-center items-center h-64">Loading authentication...</div>;
+  }
+
+  // Show message if no user is authenticated
+  if (!user) {
+    return <div className="flex justify-center items-center h-64">Please log in to access the freight tracker.</div>;
+  }
+
+  // Show loading if data is still loading
+  if (dataLoading) {
+    return <div className="flex justify-center items-center h-64">Loading data...</div>;
+  }
 
   // Function to add a new record to All Files
   const addAllFilesRecord = async () => {
@@ -279,10 +295,6 @@ const FreightTracker = () => {
     setActiveTab('allFiles');
     setHighlightedRowId(null);
   };
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
-  }
 
   return (
     <div className="container mx-auto p-4">
