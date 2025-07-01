@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
+import { Trash2, Archive, ArchiveRestore, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
@@ -28,6 +28,7 @@ interface DomesticTruckingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   isHighlighted?: boolean;
+  onBackToAllFiles?: (fileNumber: string) => void;
 }
 
 const DomesticTruckingTableRow = ({
@@ -40,7 +41,8 @@ const DomesticTruckingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false
+  isHighlighted = false,
+  onBackToAllFiles
 }: DomesticTruckingTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
@@ -56,7 +58,12 @@ const DomesticTruckingTableRow = ({
     }
   };
 
-  // More distinctive alternating colors matching export/import tabs
+  const handleBackToAllFiles = () => {
+    if (onBackToAllFiles && record.file) {
+      onBackToAllFiles(record.file);
+    }
+  };
+
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
     isArchived ? 'bg-gray-200 opacity-60' : 
@@ -74,11 +81,24 @@ const DomesticTruckingTableRow = ({
         />
       </td>
       <td className="border-r-4 border-black p-1">
-        <InlineEditCell
-          value={record.file}
-          onSave={(value) => updateRecord(record.id, 'file', value as string)}
-          placeholder="Enter file"
-        />
+        <div className="flex items-center gap-2">
+          <InlineEditCell
+            value={record.file}
+            onSave={(value) => updateRecord(record.id, 'file', value as string)}
+            placeholder="Enter file"
+          />
+          {record.file && onBackToAllFiles && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBackToAllFiles}
+              className="h-6 w-6 p-0 hover:bg-blue-100"
+              title="Go back to All Files"
+            >
+              <ArrowLeft className="h-3 w-3 text-blue-600" />
+            </Button>
+          )}
+        </div>
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell

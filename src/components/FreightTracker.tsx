@@ -2,28 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { DatePicker } from '@/components/ui/date-picker';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from "@/components/ui/table"
+import { AllFilesRecord } from '../types/AllFilesRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { TrackingRecord } from '../types/TrackingRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 import AllFilesTable from './AllFilesTable';
 import ImportTrackingTable from './ImportTrackingTable';
-import ExportTrackingTable from './ExportTrackingTable';
+import TrackingTable from './TrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
 
 const FreightTracker = () => {
@@ -170,6 +157,7 @@ const FreightTracker = () => {
       sslPaid: false,
       insured: false,
       released: false,
+      docsSentToCustomer: false,
       notes: '',
       archived: false,
     };
@@ -264,9 +252,164 @@ const FreightTracker = () => {
     }
   };
 
+  // Enhanced file click handler that determines which tab to navigate to
   const handleFileClick = (fileNumber: string, fileType: string) => {
-    console.log(`Opening ${fileType} ${fileNumber} in checklist`);
-    // Add your file opening logic here
+    console.log(`Attempting to link ${fileType} ${fileNumber}`);
+    
+    const firstLetter = fileType.charAt(0).toUpperCase();
+    let targetTab = '';
+    let targetData: any[] = [];
+    
+    // Determine target tab based on first letter
+    switch (firstLetter) {
+      case 'E':
+        targetTab = 'exportTracking';
+        targetData = exportTrackingData;
+        break;
+      case 'I':
+        targetTab = 'importTracking';
+        targetData = importTrackingData;
+        break;
+      case 'D':
+        targetTab = 'domesticTrucking';
+        targetData = domesticTruckingData;
+        break;
+      default:
+        toast.error(`Unknown file type: ${fileType}`);
+        return;
+    }
+    
+    // Find matching record by file number
+    const matchingRecord = targetData.find(record => record.file === fileNumber);
+    
+    if (matchingRecord) {
+      setActiveTab(targetTab);
+      setHighlightedRowId(matchingRecord.id);
+      
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+      
+      toast.success(`Found ${fileType} ${fileNumber} in ${targetTab === 'exportTracking' ? 'Export Checklist' : targetTab === 'importTracking' ? 'Import Checklist' : 'Domestic Trucking'}`);
+    } else {
+      toast.error(`No matching record found for ${fileType} ${fileNumber}`);
+    }
+  };
+
+  // Back to All Files handler - finds matching record in All Files based on file type and number
+  const handleBackToAllFiles = (fileNumber: string, currentTab: string) => {
+    console.log(`Attempting to link back to All Files from ${currentTab} for file ${fileNumber}`);
+    
+    // Determine file type prefix based on current tab
+    let fileTypePrefix = '';
+    switch (currentTab) {
+      case 'exportTracking':
+        fileTypePrefix = 'E'; // Could be EA, ES, or ET
+        break;
+      case 'importTracking':
+        fileTypePrefix = 'I'; // Could be IS or IA
+        break;
+      case 'domesticTrucking':
+        fileTypePrefix = 'D'; // Could be DT
+        break;
+      default:
+        toast.error('Unknown tab for linking back to All Files');
+        return;
+    }
+    
+    // Find matching All Files record
+    const matchingRecord = allFilesData.find(record => {
+      const recordFileType = record.file;
+      const recordNumber = record.number;
+      
+      // Check if the file type starts with the expected prefix and number matches
+      return recordFileType.startsWith(fileTypePrefix) && recordNumber === fileNumber;
+    });
+    
+    if (matchingRecord) {
+      setActiveTab('allFiles');
+      setHighlightedRowId(matchingRecord.id);
+      
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+      
+      toast.success(`Found corresponding All Files record for ${matchingRecord.file} ${fileNumber}`);
+    } else {
+      toast.error(`No matching All Files record found for file ${fileNumber}`);
+    }
+  };
+
+  // Enhanced calendar event click handler
+  const handleCalendarEventClick = (fileNumber: string, source: string) => {
+    console.log(`Calendar event clicked: ${fileNumber} from ${source}`);
+    
+    // Extract file type and number from fileNumber (assuming format like "EA123" or "IS456")
+    const fileTypeMatch = fileNumber.match(/^([A-Z]{2})(\d+)$/);
+    
+    if (!fileTypeMatch) {
+      toast.error(`Invalid file number format: ${fileNumber}`);
+      return;
+    }
+    
+    const [, fileType, number] = fileTypeMatch;
+    
+    // First, try to find and navigate to the All Files record
+    const allFilesRecord = allFilesData.find(record => 
+      record.file === fileType && record.number === number
+    );
+    
+    if (allFilesRecord) {
+      setActiveTab('allFiles');
+      setHighlightedRowId(allFilesRecord.id);
+      
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+      
+      toast.success(`Found ${fileType} ${number} in All Files`);
+      return;
+    }
+    
+    // If not found in All Files, try the specific checklist tabs
+    const firstLetter = fileType.charAt(0);
+    let targetTab = '';
+    let targetData: any[] = [];
+    
+    switch (firstLetter) {
+      case 'E':
+        targetTab = 'exportTracking';
+        targetData = exportTrackingData;
+        break;
+      case 'I':
+        targetTab = 'importTracking';
+        targetData = importTrackingData;
+        break;
+      case 'D':
+        targetTab = 'domesticTrucking';
+        targetData = domesticTruckingData;
+        break;
+      default:
+        toast.error(`Unknown file type: ${fileType}`);
+        return;
+    }
+    
+    const checklistRecord = targetData.find(record => record.file === number);
+    
+    if (checklistRecord) {
+      setActiveTab(targetTab);
+      setHighlightedRowId(checklistRecord.id);
+      
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+      
+      toast.success(`Found ${fileType} ${number} in ${targetTab === 'exportTracking' ? 'Export Checklist' : targetTab === 'importTracking' ? 'Import Checklist' : 'Domestic Trucking'}`);
+    } else {
+      toast.error(`No matching record found for ${fileType} ${number}`);
+    }
   };
 
   return (
@@ -331,7 +474,6 @@ const FreightTracker = () => {
           deleteRecord={(id) => deleteRecord('allFiles', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
-          highlightedRowId={highlightedRowId}
           onFileClick={handleFileClick}
         />
       )}
@@ -343,16 +485,18 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={(fileNumber) => handleBackToAllFiles(fileNumber, 'importTracking')}
         />
       )}
       {activeTab === 'exportTracking' && (
-        <ExportTrackingTable
+        <TrackingTable
           data={exportTrackingData}
           updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('exportTracking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={(fileNumber) => handleBackToAllFiles(fileNumber, 'exportTracking')}
         />
       )}
       {activeTab === 'domesticTrucking' && (
@@ -363,6 +507,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={(fileNumber) => handleBackToAllFiles(fileNumber, 'domesticTrucking')}
         />
       )}
     </div>
