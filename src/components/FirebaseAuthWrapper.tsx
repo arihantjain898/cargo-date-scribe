@@ -4,6 +4,8 @@ import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import FreightTracker from './FreightTracker';
+import FreightTrackerWithLocalStorage from './FreightTrackerWithLocalStorage';
 
 interface FirebaseAuthWrapperProps {
   children: React.ReactNode;
@@ -15,7 +17,7 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
   const [password, setPassword] = React.useState('');
   const [isSignUp, setIsSignUp] = React.useState(false);
 
-  // BYPASS AUTH FOR TESTING - uncomment the next line to skip authentication
+  // BYPASS AUTH FOR TESTING - set to false to use Firebase authentication
   const BYPASS_AUTH = true;
 
   if (loading && !BYPASS_AUTH) {
@@ -26,12 +28,12 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
     );
   }
 
-  // If bypassing auth, render children directly with mock user context
+  // If bypassing auth, use localStorage version
   if (BYPASS_AUTH) {
     return (
       <div>
-        <div className="bg-white border-b p-4 flex justify-between items-center">
-          <span>Testing Mode - Auth Bypassed</span>
+        <div className="bg-yellow-100 border-b p-4 flex justify-between items-center">
+          <span className="text-yellow-800 font-medium">🚧 Testing Mode - Using localStorage (Firebase Auth Bypassed)</span>
           <Button 
             onClick={() => window.location.reload()} 
             variant="outline" 
@@ -40,7 +42,7 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
             Refresh
           </Button>
         </div>
-        {children}
+        <FreightTrackerWithLocalStorage useLocalStorage={true} />
       </div>
     );
   }
@@ -84,6 +86,7 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
     );
   }
 
+  // When authenticated, use Firebase version
   return (
     <div>
       <div className="bg-white border-b p-4 flex justify-between items-center">
@@ -92,7 +95,7 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
           Sign Out
         </Button>
       </div>
-      {children}
+      <FreightTracker />
     </div>
   );
 };
