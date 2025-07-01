@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { DatePicker } from '@/components/ui/date-picker';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -22,12 +23,8 @@ import {
 
 import AllFilesTable from './AllFilesTable';
 import ImportTrackingTable from './ImportTrackingTable';
-import TrackingTable from './TrackingTable';
+import ExportTrackingTable from './ExportTrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
-import { TrackingRecord } from '../types/TrackingRecord';
-import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
-import { AllFilesRecord } from '../types/AllFilesRecord';
-import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('allFiles');
@@ -173,7 +170,6 @@ const FreightTracker = () => {
       sslPaid: false,
       insured: false,
       released: false,
-      docsSentToCustomer: false,
       notes: '',
       archived: false,
     };
@@ -269,104 +265,8 @@ const FreightTracker = () => {
   };
 
   const handleFileClick = (fileNumber: string, fileType: string) => {
-    console.log(`Navigating to ${fileType} ${fileNumber}`);
-    
-    // Determine target tab based on file type
-    let targetTab = '';
-    let targetData: any[] = [];
-    
-    const firstLetter = fileType.charAt(0).toUpperCase();
-    switch (firstLetter) {
-      case 'E':
-        targetTab = 'exportTracking';
-        targetData = exportTrackingData;
-        break;
-      case 'I':
-        targetTab = 'importTracking';
-        targetData = importTrackingData;
-        break;
-      case 'D':
-        targetTab = 'domesticTrucking';
-        targetData = domesticTruckingData;
-        break;
-      default:
-        toast.error(`Invalid file type: ${fileType}`);
-        return;
-    }
-
-    // Find matching record
-    const matchingRecord = targetData.find(record => record.file === fileNumber);
-    
-    if (matchingRecord) {
-      // Store current All Files record for back navigation
-      sessionStorage.setItem('sourceAllFilesId', ''); // We'll find this by file/number
-      
-      setActiveTab(targetTab);
-      setHighlightedRowId(matchingRecord.id);
-      toast.success(`Navigated to ${fileType} ${fileNumber}`);
-    } else {
-      toast.error(`File ${fileType} ${fileNumber} not found in ${targetTab}`);
-    }
-  };
-
-  const handleBackToAllFiles = () => {
-    const currentTab = activeTab;
-    let fileType = '';
-    let fileNumber = '';
-    
-    // Determine file type from current tab
-    switch (currentTab) {
-      case 'exportTracking':
-        fileType = 'E';
-        break;
-      case 'importTracking':
-        fileType = 'I';
-        break;
-      case 'domesticTrucking':
-        fileType = 'D';
-        break;
-      default:
-        setActiveTab('allFiles');
-        setHighlightedRowId(null);
-        return;
-    }
-
-    // Find the highlighted record to get file number
-    let currentRecord = null;
-    switch (currentTab) {
-      case 'exportTracking':
-        currentRecord = exportTrackingData.find(r => r.id === highlightedRowId);
-        break;
-      case 'importTracking':
-        currentRecord = importTrackingData.find(r => r.id === highlightedRowId);
-        break;
-      case 'domesticTrucking':
-        currentRecord = domesticTruckingData.find(r => r.id === highlightedRowId);
-        break;
-    }
-
-    if (currentRecord) {
-      fileNumber = currentRecord.file;
-      
-      // Find matching All Files record
-      const allFilesRecord = allFilesData.find(record => 
-        record.file === fileType && record.number === fileNumber
-      );
-      
-      if (allFilesRecord) {
-        setActiveTab('allFiles');
-        setHighlightedRowId(allFilesRecord.id);
-        toast.success(`Returned to All Files - ${fileType}${fileNumber}`);
-      } else {
-        setActiveTab('allFiles');
-        setHighlightedRowId(null);
-        toast.info('Returned to All Files');
-      }
-    } else {
-      setActiveTab('allFiles');
-      setHighlightedRowId(null);
-      toast.info('Returned to All Files');
-    }
+    console.log(`Opening ${fileType} ${fileNumber} in checklist`);
+    // Add your file opening logic here
   };
 
   return (
@@ -431,6 +331,7 @@ const FreightTracker = () => {
           deleteRecord={(id) => deleteRecord('allFiles', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
+          highlightedRowId={highlightedRowId}
           onFileClick={handleFileClick}
         />
       )}
@@ -442,18 +343,16 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
-          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'exportTracking' && (
-        <TrackingTable
+        <ExportTrackingTable
           data={exportTrackingData}
           updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('exportTracking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
-          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'domesticTrucking' && (
@@ -464,7 +363,6 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
-          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
     </div>
