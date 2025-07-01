@@ -1,13 +1,10 @@
 
+import React from 'react';
 import FreightTracker from '../components/FreightTracker';
 
 const Index = () => {
   console.log("Index component rendering");
-  return (
-    <div>
-      <FreightTracker />
-    </div>
-  );
+  return <FreightTracker />;
 };
 
 export default Index;
