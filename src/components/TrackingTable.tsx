@@ -18,10 +18,9 @@ interface TrackingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onBackToAllFiles?: (fileNumber: string, fileType: string) => void;
 }
 
-const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId, onBackToAllFiles }: TrackingTableProps) => {
+const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId }: TrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -79,7 +78,6 @@ const TrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSele
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                   isHighlighted={highlightedRowId === record.id}
-                  onBackToAllFiles={onBackToAllFiles}
                 />
               ))}
               <tr>
