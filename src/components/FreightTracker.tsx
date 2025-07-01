@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
@@ -173,6 +174,7 @@ const FreightTracker = () => {
       sslPaid: false,
       insured: false,
       released: false,
+      docsSentToCustomer: false,
       notes: '',
       archived: false,
     };
