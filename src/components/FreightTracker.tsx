@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -40,36 +40,12 @@ const FreightTracker = () => {
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
-  useEffect(() => {
-    // Load data from localStorage on component mount
-    const storedAllFilesData = localStorage.getItem('allFilesData');
-    if (storedAllFilesData) {
-      setAllFilesData(JSON.parse(storedAllFilesData));
-    }
-
-    const storedImportTrackingData = localStorage.getItem('importTrackingData');
-    if (storedImportTrackingData) {
-      setImportTrackingData(JSON.parse(storedImportTrackingData));
-    }
-
-    const storedExportTrackingData = localStorage.getItem('exportTrackingData');
-    if (storedExportTrackingData) {
-      setExportTrackingData(JSON.parse(storedExportTrackingData));
-    }
-
-    const storedDomesticTruckingData = localStorage.getItem('domesticTruckingData');
-    if (storedDomesticTruckingData) {
-      setDomesticTruckingData(JSON.parse(storedDomesticTruckingData));
-    }
-  }, []);
-
-  useEffect(() => {
-    // Save data to localStorage whenever it changes
-    localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
-    localStorage.setItem('importTrackingData', JSON.stringify(importTrackingData));
-    localStorage.setItem('exportTrackingData', JSON.stringify(exportTrackingData));
-    localStorage.setItem('domesticTruckingData', JSON.stringify(domesticTruckingData));
-  }, [allFilesData, importTrackingData, exportTrackingData, domesticTruckingData]);
+  console.log('FreightTracker - Current data:', {
+    allFiles: allFilesData.length,
+    import: importTrackingData.length,
+    export: exportTrackingData.length,
+    domestic: domesticTruckingData.length
+  });
 
   // Function to add a new record to All Files
   const addAllFilesRecord = () => {
@@ -213,6 +189,7 @@ const FreightTracker = () => {
   // Generic function to update a record in a dataset
   const updateRecord = useCallback(
     (dataset: string, id: string, field: string, value: string | boolean) => {
+      console.log('Updating record:', { dataset, id, field, value });
       switch (dataset) {
         case 'allFiles':
           setAllFilesData(prevData =>
@@ -251,6 +228,7 @@ const FreightTracker = () => {
 
   // Generic function to delete a record from a dataset
   const deleteRecord = (dataset: string, id: string) => {
+    console.log('Deleting record:', { dataset, id });
     switch (dataset) {
       case 'allFiles':
         setAllFilesData(prevData => prevData.filter(item => item.id !== id));
@@ -272,6 +250,13 @@ const FreightTracker = () => {
   const handleFileClick = (fileNumber: string, fileType: string) => {
     console.log(`Opening ${fileType} ${fileNumber} in checklist`);
     // Add your file opening logic here
+  };
+
+  // Handle back to all files navigation
+  const handleBackToAllFiles = () => {
+    console.log('Navigating back to All Files');
+    setActiveTab('allFiles');
+    setHighlightedRowId(null);
   };
 
   return (
@@ -347,6 +332,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'exportTracking' && (
@@ -357,6 +343,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'domesticTrucking' && (
@@ -367,6 +354,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
     </div>
