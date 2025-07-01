@@ -15,10 +15,32 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
   const [password, setPassword] = React.useState('');
   const [isSignUp, setIsSignUp] = React.useState(false);
 
-  if (loading) {
+  // BYPASS AUTH FOR TESTING - uncomment the next line to skip authentication
+  const BYPASS_AUTH = true;
+
+  if (loading && !BYPASS_AUTH) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  // If bypassing auth, render children directly with mock user context
+  if (BYPASS_AUTH) {
+    return (
+      <div>
+        <div className="bg-white border-b p-4 flex justify-between items-center">
+          <span>Testing Mode - Auth Bypassed</span>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="outline" 
+            size="sm"
+          >
+            Refresh
+          </Button>
+        </div>
+        {children}
       </div>
     );
   }
