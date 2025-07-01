@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Calendar, Package, Truck, FileText, Home } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -40,6 +39,7 @@ interface FreightTrackerTabsProps {
   onCalendarEventClick?: (fileNumber: string, source: string) => void;
   highlightedRowId?: string | null;
   setHighlightedRowId: (id: string | null) => void;
+  onBackToAllFiles: () => void;
 }
 
 const FreightTrackerTabs = ({
@@ -68,12 +68,9 @@ const FreightTrackerTabs = ({
   onFileClick,
   onCalendarEventClick,
   highlightedRowId,
-  setHighlightedRowId
+  setHighlightedRowId,
+  onBackToAllFiles
 }: FreightTrackerTabsProps) => {
-  
-  const handleBackToAllFilesClick = () => {
-    handleBackToAllFiles(setActiveTab, setHighlightedRowId);
-  };
 
   const handleCalendarEventClickWithNavigation = (fileNumber: string, source: string) => {
     if (source === 'all-files') {
@@ -160,7 +157,7 @@ const FreightTrackerTabs = ({
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             highlightedRowId={highlightedRowId}
-            onBackToAllFiles={handleBackToAllFilesClick}
+            onBackToAllFiles={onBackToAllFiles}
           />
         </TabsContent>
 
@@ -172,7 +169,7 @@ const FreightTrackerTabs = ({
             selectedRows={selectedImportRows}
             setSelectedRows={setSelectedImportRows}
             highlightedRowId={highlightedRowId}
-            onBackToAllFiles={handleBackToAllFilesClick}
+            onBackToAllFiles={onBackToAllFiles}
           />
         </TabsContent>
 
@@ -184,7 +181,7 @@ const FreightTrackerTabs = ({
             selectedRows={selectedDomesticTruckingRows}
             setSelectedRows={setSelectedDomesticTruckingRows}
             highlightedRowId={highlightedRowId}
-            onBackToAllFiles={handleBackToAllFilesClick}
+            onBackToAllFiles={onBackToAllFiles}
           />
         </TabsContent>
 

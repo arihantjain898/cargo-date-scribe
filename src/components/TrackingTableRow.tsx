@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -77,7 +78,7 @@ const TrackingTableRow = ({
             placeholder="Enter customer name"
             className="font-bold flex-1"
           />
-          {isHighlighted && onBackToAllFiles && (
+          {onBackToAllFiles && (
             <BackToAllFilesButton onBackToAllFiles={onBackToAllFiles} />
           )}
         </div>
