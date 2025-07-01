@@ -274,6 +274,11 @@ const FreightTracker = () => {
     // Add your file opening logic here
   };
 
+  const handleBackToAllFiles = () => {
+    setActiveTab('allFiles');
+    setHighlightedRowId(null);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Freight Tracker</h1>
@@ -347,6 +352,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'exportTracking' && (
@@ -357,6 +363,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'domesticTrucking' && (
@@ -367,6 +374,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
     </div>
