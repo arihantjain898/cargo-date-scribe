@@ -4,6 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import InlineEditCell from './InlineEditCell';
+import BackToAllFilesButton from './BackToAllFilesButton';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +28,7 @@ interface TrackingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   isHighlighted?: boolean;
+  onBackToAllFiles?: () => void;
 }
 
 const TrackingTableRow = ({ 
@@ -39,7 +41,8 @@ const TrackingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false
+  isHighlighted = false,
+  onBackToAllFiles
 }: TrackingTableRowProps) => {
   const isArchived = record.archived;
   
@@ -47,7 +50,7 @@ const TrackingTableRow = ({
   const isCompleted = record.docsSent && record.docsReceived && record.aesMblVgmSent && 
                      record.validatedFwd && record.sslDraftInvRec && record.draftInvApproved && 
                      record.transphereInvSent && record.paymentRec && record.sslPaid && 
-                     record.insured && record.released && record.docsSentToCustomer;
+                     record.insured && record.released;
   
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isArchived ? 'bg-gray-200 opacity-60' : 
@@ -67,12 +70,17 @@ const TrackingTableRow = ({
   return (
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <InlineEditCell
-          value={record.customer}
-          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
-          className="font-bold"
-        />
+        <div className="flex items-center gap-1">
+          <InlineEditCell
+            value={record.customer}
+            onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+            placeholder="Enter customer name"
+            className="font-bold flex-1"
+          />
+          {onBackToAllFiles && (
+            <BackToAllFilesButton onBackToAllFiles={onBackToAllFiles} />
+          )}
+        </div>
       </td>
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell

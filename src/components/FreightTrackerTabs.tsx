@@ -11,6 +11,7 @@ import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
+import { handleFileNavigation, handleBackToAllFiles, handleCalendarToAllFiles } from '../utils/navigationUtils';
 
 interface FreightTrackerTabsProps {
   activeTab: string;
@@ -38,6 +39,7 @@ interface FreightTrackerTabsProps {
   onFileClick: (fileNumber: string, fileType: string) => void;
   onCalendarEventClick?: (fileNumber: string, source: string) => void;
   highlightedRowId?: string | null;
+  setHighlightedRowId: (id: string | null) => void;
 }
 
 const FreightTrackerTabs = ({
@@ -65,8 +67,39 @@ const FreightTrackerTabs = ({
   deleteDomesticTruckingRecord,
   onFileClick,
   onCalendarEventClick,
-  highlightedRowId
+  highlightedRowId,
+  setHighlightedRowId
 }: FreightTrackerTabsProps) => {
+  
+  const handleBackToAllFilesClick = () => {
+    handleBackToAllFiles(setActiveTab, setHighlightedRowId);
+  };
+
+  const handleCalendarEventClickWithNavigation = (fileNumber: string, source: string) => {
+    if (source === 'all-files') {
+      handleCalendarToAllFiles(fileNumber, setActiveTab, setHighlightedRowId, filteredAllFilesData);
+    } else {
+      // Extract file type and number for navigation to specific tabs
+      const fileType = fileNumber.substring(0, 2);
+      const number = fileNumber.substring(2);
+      
+      handleFileNavigation(
+        number,
+        fileType,
+        setActiveTab,
+        setHighlightedRowId,
+        filteredExportData,
+        filteredImportData,
+        filteredDomesticTruckingData
+      );
+    }
+    
+    // Call the original callback if provided
+    if (onCalendarEventClick) {
+      onCalendarEventClick(fileNumber, source);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-hidden">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
@@ -127,6 +160,7 @@ const FreightTrackerTabs = ({
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             highlightedRowId={highlightedRowId}
+            onBackToAllFiles={handleBackToAllFilesClick}
           />
         </TabsContent>
 
@@ -157,7 +191,7 @@ const FreightTrackerTabs = ({
             data={filteredExportData} 
             importData={filteredImportData}
             domesticData={filteredDomesticTruckingData}
-            onCalendarEventClick={onCalendarEventClick}
+            onCalendarEventClick={handleCalendarEventClickWithNavigation}
           />
         </TabsContent>
       </Tabs>
