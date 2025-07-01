@@ -1,21 +1,9 @@
 
 import React from 'react';
-import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Trash2, Archive, ArchiveRestore, ArrowLeft } from 'lucide-react';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import InlineEditCell from './InlineEditCell';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 
 interface DomesticTruckingTableRowProps {
   record: DomesticTruckingRecord;
@@ -28,6 +16,7 @@ interface DomesticTruckingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   isHighlighted?: boolean;
+  onBackToAllFiles?: (fileNumber: string, fileType: string) => void;
 }
 
 const DomesticTruckingTableRow = ({
@@ -40,14 +29,9 @@ const DomesticTruckingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false
+  isHighlighted,
+  onBackToAllFiles
 }: DomesticTruckingTableRowProps) => {
-  const isSelected = selectedRows.includes(record.id);
-  const isArchived = record.archived;
-
-  // Check if all boolean fields are true (completed)
-  const isCompleted = record.woSent && record.insurance && record.paymentReceived && record.paymentMade;
-
   const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
       setSelectedRows(prev => [...prev, record.id]);
@@ -56,148 +40,133 @@ const DomesticTruckingTableRow = ({
     }
   };
 
-  // More distinctive alternating colors matching export/import tabs
-  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
-    isHighlighted ? 'bg-yellow-200 animate-pulse' :
-    isArchived ? 'bg-gray-200 opacity-60' : 
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
-  } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
+  const handleBackToAllFiles = () => {
+    if (onBackToAllFiles && record.file) {
+      // Extract file type and number from the file field
+      const fileType = record.file.substring(0, 2); // e.g., "DT"
+      const fileNumber = record.file.substring(2); // e.g., "001"
+      onBackToAllFiles(fileNumber, fileType);
+    }
+  };
 
   return (
-    <tr className={rowClassName} data-row-id={record.id}>
-      <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <InlineEditCell
-          value={record.customer}
-          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
-          className="font-bold"
+    <tr className={`border-b hover:bg-gray-50 ${isHighlighted ? 'bg-yellow-100' : ''} ${record.archived ? 'opacity-50' : ''}`}>
+      <td className="p-2 border-r">
+        <input
+          type="checkbox"
+          checked={selectedRows.includes(record.id)}
+          onChange={(e) => handleCheckboxChange(e.target.checked)}
+          className="rounded"
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="p-2 border-r text-xs font-medium">
+        <div className="flex items-center gap-2">
+          {onBackToAllFiles && record.file && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBackToAllFiles}
+              className="h-6 w-6 p-0"
+              title="Back to All Files"
+            >
+              <ArrowLeft className="h-3 w-3" />
+            </Button>
+          )}
+          <InlineEditCell
+            value={record.customer}
+            onSave={(value) => updateRecord(record.id, 'customer', value)}
+          />
+        </div>
+      </td>
+      <td className="p-2 border-r">
         <InlineEditCell
           value={record.file}
-          onSave={(value) => updateRecord(record.id, 'file', value as string)}
-          placeholder="Enter file"
+          onSave={(value) => updateRecord(record.id, 'file', value)}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.woSent}
-          onSave={(value) => updateRecord(record.id, 'woSent', value as boolean)}
-          isBoolean={true}
+      <td className="p-2 border-r text-center">
+        <input
+          type="checkbox"
+          checked={record.woSent}
+          onChange={(e) => updateRecord(record.id, 'woSent', e.target.checked)}
+          className="rounded"
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
-        <InlineEditCell
-          value={record.insurance}
-          onSave={(value) => updateRecord(record.id, 'insurance', value as boolean)}
-          isBoolean={true}
+      <td className="p-2 border-r text-center">
+        <input
+          type="checkbox"
+          checked={record.insurance}
+          onChange={(e) => updateRecord(record.id, 'insurance', e.target.checked)}
+          className="rounded"
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="p-2 border-r">
         <InlineEditCell
           value={record.pickDate}
-          onSave={(value) => updateRecord(record.id, 'pickDate', value as string)}
-          isDate={true}
-          placeholder="Select pick date"
+          onSave={(value) => updateRecord(record.id, 'pickDate', value)}
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="p-2 border-r">
         <InlineEditCell
           value={record.delivered}
-          onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
-          isDate={true}
-          placeholder="Select delivery date"
+          onSave={(value) => updateRecord(record.id, 'delivered', value)}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.paymentReceived}
-          onSave={(value) => updateRecord(record.id, 'paymentReceived', value as boolean)}
-          isBoolean={true}
+      <td className="p-2 border-r text-center">
+        <input
+          type="checkbox"
+          checked={record.paymentReceived}
+          onChange={(e) => updateRecord(record.id, 'paymentReceived', e.target.checked)}
+          className="rounded"
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
-        <InlineEditCell
-          value={record.paymentMade}
-          onSave={(value) => updateRecord(record.id, 'paymentMade', value as boolean)}
-          isBoolean={true}
+      <td className="p-2 border-r text-center">
+        <input
+          type="checkbox"
+          checked={record.paymentMade}
+          onChange={(e) => updateRecord(record.id, 'paymentMade', e.target.checked)}
+          className="rounded"
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="p-2 border-r">
         <InlineEditCell
           value={record.notes}
-          onSave={(value) => updateRecord(record.id, 'notes', value as string)}
-          placeholder="Enter notes"
+          onSave={(value) => updateRecord(record.id, 'notes', value)}
         />
       </td>
-      <td className="p-1 text-center border-r border-gray-500">
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={handleCheckboxChange}
-          className="h-3 w-3 border"
-        />
-      </td>
-      <td className="p-1 text-center border-r border-gray-500">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-yellow-50 rounded-full">
-              {isArchived ? (
-                <ArchiveRestore className="h-3 w-3 text-green-600" />
-              ) : (
-                <Archive className="h-3 w-3 text-yellow-600" />
-              )}
+      <td className="p-2 text-center">
+        <div className="flex items-center justify-center gap-1">
+          {showArchived ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onUnarchive(record.id)}
+              className="h-6 w-6 p-0"
+              title="Unarchive"
+            >
+              <ArchiveRestore className="h-3 w-3" />
             </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {isArchived ? 'Unarchive Record' : 'Archive Record'}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {isArchived 
-                  ? `Are you sure you want to unarchive this record for ${record.customer}? It will be visible in the main view again.`
-                  : `Are you sure you want to archive this record for ${record.customer}? Archived records will be hidden from the main view.`
-                }
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => isArchived ? onUnarchive(record.id) : onArchive(record.id)}
-                className={isArchived ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}
-              >
-                {isArchived ? 'Unarchive' : 'Archive'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </td>
-      <td className="p-1 text-center">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 hover:bg-red-50 rounded-full">
-              <Trash2 className="h-3 w-3 text-red-500" />
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onArchive(record.id)}
+              className="h-6 w-6 p-0"
+              title="Archive"
+            >
+              <Archive className="h-3 w-3" />
             </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Record</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete this record for {record.customer}? This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteRecord(record.id)}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => deleteRecord(record.id)}
+            className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
+            title="Delete"
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
       </td>
     </tr>
   );

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -156,6 +157,7 @@ const FreightTracker = () => {
       sslPaid: false,
       insured: false,
       released: false,
+      docsSentToCustomer: false,
       notes: '',
       archived: false,
     };
@@ -381,7 +383,6 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           onFileClick={handleFileClick}
-          highlightedRowId={highlightedRowId}
         />
       )}
       {activeTab === 'importTracking' && (
