@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
@@ -40,29 +41,48 @@ const FreightTracker = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
+    console.log('Loading data from localStorage...');
     // Load data from localStorage on component mount
     const storedAllFilesData = localStorage.getItem('allFilesData');
     if (storedAllFilesData) {
+      console.log('Found allFilesData in localStorage:', storedAllFilesData);
       setAllFilesData(JSON.parse(storedAllFilesData));
+    } else {
+      console.log('No allFilesData found in localStorage');
     }
 
     const storedImportTrackingData = localStorage.getItem('importTrackingData');
     if (storedImportTrackingData) {
+      console.log('Found importTrackingData in localStorage:', storedImportTrackingData);
       setImportTrackingData(JSON.parse(storedImportTrackingData));
+    } else {
+      console.log('No importTrackingData found in localStorage');
     }
 
     const storedExportTrackingData = localStorage.getItem('exportTrackingData');
     if (storedExportTrackingData) {
+      console.log('Found exportTrackingData in localStorage:', storedExportTrackingData);
       setExportTrackingData(JSON.parse(storedExportTrackingData));
+    } else {
+      console.log('No exportTrackingData found in localStorage');
     }
 
     const storedDomesticTruckingData = localStorage.getItem('domesticTruckingData');
     if (storedDomesticTruckingData) {
+      console.log('Found domesticTruckingData in localStorage:', storedDomesticTruckingData);
       setDomesticTruckingData(JSON.parse(storedDomesticTruckingData));
+    } else {
+      console.log('No domesticTruckingData found in localStorage');
     }
   }, []);
 
   useEffect(() => {
+    console.log('Saving data to localStorage...');
+    console.log('allFilesData:', allFilesData);
+    console.log('importTrackingData:', importTrackingData);
+    console.log('exportTrackingData:', exportTrackingData);
+    console.log('domesticTruckingData:', domesticTruckingData);
+    
     // Save data to localStorage whenever it changes
     localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
     localStorage.setItem('importTrackingData', JSON.stringify(importTrackingData));
@@ -99,6 +119,7 @@ const FreightTracker = () => {
       archived: false,
     };
 
+    console.log('Adding new All Files record:', newRecord);
     setAllFilesData(prevData => [...prevData, newRecord]);
     setNewCustomer('');
     toast.success('Record added to All Files.');
@@ -137,6 +158,7 @@ const FreightTracker = () => {
       archived: false,
     };
 
+    console.log('Adding new Import Tracking record:', newRecord);
     setImportTrackingData(prevData => [...prevData, newRecord]);
     setNewCustomer('');
     toast.success('Record added to Import Tracking.');
@@ -178,6 +200,7 @@ const FreightTracker = () => {
       archived: false,
     };
 
+    console.log('Adding new Export Tracking record:', newRecord);
     setExportTrackingData(prevData => [...prevData, newRecord]);
     setNewCustomer('');
     toast.success('Record added to Export Tracking.');
@@ -204,6 +227,7 @@ const FreightTracker = () => {
       archived: false,
     };
 
+    console.log('Adding new Domestic Trucking record:', newRecord);
     setDomesticTruckingData(prevData => [...prevData, newRecord]);
     setNewCustomer('');
     toast.success('Record added to Domestic Trucking.');
@@ -212,6 +236,7 @@ const FreightTracker = () => {
   // Generic function to update a record in a dataset
   const updateRecord = useCallback(
     (dataset: string, id: string, field: string, value: string | boolean) => {
+      console.log(`Updating record in ${dataset}:`, { id, field, value });
       switch (dataset) {
         case 'allFiles':
           setAllFilesData(prevData =>
@@ -250,6 +275,7 @@ const FreightTracker = () => {
 
   // Generic function to delete a record from a dataset
   const deleteRecord = (dataset: string, id: string) => {
+    console.log(`Deleting record from ${dataset}:`, id);
     switch (dataset) {
       case 'allFiles':
         setAllFilesData(prevData => prevData.filter(item => item.id !== id));
@@ -277,6 +303,14 @@ const FreightTracker = () => {
     setActiveTab('allFiles');
     setHighlightedRowId(null);
   };
+
+  console.log('FreightTracker render - current data lengths:', {
+    allFiles: allFilesData.length,
+    import: importTrackingData.length,
+    export: exportTrackingData.length,
+    domestic: domesticTruckingData.length,
+    activeTab
+  });
 
   return (
     <div className="container mx-auto p-4">
