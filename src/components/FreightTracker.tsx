@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
@@ -370,7 +369,7 @@ const FreightTracker = () => {
         <DomesticTruckingTable
           data={domesticTruckingData}
           updateRecord={(id, field, value) => updateRecord('domesticTrucking', id, field, value)}
-          deleteRecord={(id) => deleteRecord('domesticTruckingData', id)}
+          deleteRecord={(id) => deleteRecord('domesticTrucking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
