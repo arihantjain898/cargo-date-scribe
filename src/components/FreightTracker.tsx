@@ -10,7 +10,6 @@ import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
-import { v4 as uuidv4 } from 'uuid';
 
 const FreightTracker = () => {
   const { user } = useFirebaseAuth();
@@ -253,41 +252,12 @@ const FreightTracker = () => {
       setActiveTab(targetTab);
       setHighlightedRowId(targetRecordId);
       
-      // Store the source All Files record ID for back navigation
-      const allFilesRecord = allFilesData.find(record => 
-        record.file === fileType && record.number === fileNumber
-      );
-      if (allFilesRecord) {
-        sessionStorage.setItem('sourceAllFilesId', allFilesRecord.id);
-      }
-      
       // Clear highlight after animation
       setTimeout(() => {
         setHighlightedRowId(null);
       }, 3000);
     } else {
       toast.error(`No matching record found for ${fileType} ${fileNumber}`);
-    }
-  };
-
-  const handleBackToAllFiles = () => {
-    const sourceAllFilesId = sessionStorage.getItem('sourceAllFilesId');
-    
-    setActiveTab('all-files');
-    
-    if (sourceAllFilesId) {
-      setHighlightedRowId(sourceAllFilesId);
-      sessionStorage.removeItem('sourceAllFilesId');
-      
-      // Clear highlight after animation
-      setTimeout(() => {
-        setHighlightedRowId(null);
-      }, 3000);
-      
-      toast.success('Returned to All Files');
-    } else {
-      setHighlightedRowId(null);
-      toast.info('Navigated to All Files');
     }
   };
 
@@ -359,7 +329,6 @@ const FreightTracker = () => {
         onFileClick={handleFileClick}
         highlightedRowId={highlightedRowId}
         setHighlightedRowId={setHighlightedRowId}
-        onBackToAllFiles={handleBackToAllFiles}
       />
     </div>
   );

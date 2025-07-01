@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -47,9 +46,6 @@ const ImportTrackingTableRow = ({
 }: ImportTrackingTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
-  
-  // Check if there's a source All Files ID stored for back navigation
-  const hasSourceAllFiles = sessionStorage.getItem('sourceAllFilesId');
 
   // Check if all boolean fields are true (completed)
   const isCompleted = record.poa && record.isf && record.packingListCommercialInvoice && 
@@ -81,7 +77,7 @@ const ImportTrackingTableRow = ({
             placeholder="Enter customer name"
             className="font-bold flex-1"
           />
-          {hasSourceAllFiles && onBackToAllFiles && (
+          {onBackToAllFiles && (
             <BackToAllFilesButton onBackToAllFiles={onBackToAllFiles} />
           )}
         </div>
