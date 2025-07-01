@@ -6,17 +6,6 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import ImportTrackingTableHeader from './ImportTrackingTableHeader';
 import ImportTrackingTableRow from './ImportTrackingTableRow';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 
 interface ImportTrackingTableProps {
   data: ImportTrackingRecord[];
@@ -29,9 +18,18 @@ interface ImportTrackingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
+  onBackToAllFiles?: () => void;
 }
 
-const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId }: ImportTrackingTableProps) => {
+const ImportTrackingTable = ({ 
+  data, 
+  updateRecord, 
+  deleteRecord, 
+  selectedRows, 
+  setSelectedRows, 
+  highlightedRowId,
+  onBackToAllFiles 
+}: ImportTrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -72,7 +70,7 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
       </div>
       
       <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
-        <div className="min-w-[2000px]">
+        <div className="min-w-[2400px]">
           <table className="w-full border-collapse text-xs">
             <ImportTrackingTableHeader />
             <tbody>
@@ -89,6 +87,7 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                   isHighlighted={highlightedRowId === record.id}
+                  onBackToAllFiles={onBackToAllFiles}
                 />
               ))}
               <tr>

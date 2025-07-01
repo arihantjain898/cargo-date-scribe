@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import InlineEditCell from './InlineEditCell';
+import BackToAllFilesButton from './BackToAllFilesButton';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +29,7 @@ interface DomesticTruckingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   isHighlighted?: boolean;
+  onBackToAllFiles?: () => void;
 }
 
 const DomesticTruckingTableRow = ({
@@ -40,7 +42,8 @@ const DomesticTruckingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false
+  isHighlighted = false,
+  onBackToAllFiles
 }: DomesticTruckingTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
@@ -56,7 +59,6 @@ const DomesticTruckingTableRow = ({
     }
   };
 
-  // More distinctive alternating colors matching export/import tabs
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
     isArchived ? 'bg-gray-200 opacity-60' : 
@@ -66,14 +68,19 @@ const DomesticTruckingTableRow = ({
   return (
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <InlineEditCell
-          value={record.customer}
-          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
-          className="font-bold"
-        />
+        <div className="flex items-center gap-1">
+          <InlineEditCell
+            value={record.customer}
+            onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+            placeholder="Enter customer name"
+            className="font-bold flex-1"
+          />
+          {onBackToAllFiles && (
+            <BackToAllFilesButton onBackToAllFiles={onBackToAllFiles} />
+          )}
+        </div>
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -87,7 +94,7 @@ const DomesticTruckingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.insurance}
           onSave={(value) => updateRecord(record.id, 'insurance', value as boolean)}
@@ -102,12 +109,12 @@ const DomesticTruckingTableRow = ({
           placeholder="Select pick date"
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.delivered}
           onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
-          isDate={true}
-          placeholder="Select delivery date"
+          options={['No', 'Yes']}
+          placeholder="Select status"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -117,7 +124,7 @@ const DomesticTruckingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.paymentMade}
           onSave={(value) => updateRecord(record.id, 'paymentMade', value as boolean)}
