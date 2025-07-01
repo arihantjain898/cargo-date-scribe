@@ -370,7 +370,7 @@ const FreightTracker = () => {
         <DomesticTruckingTable
           data={domesticTruckingData}
           updateRecord={(id, field, value) => updateRecord('domesticTrucking', id, field, value)}
-          deleteRecord={(id) => deleteRecord('domesticTrucking', id)}
+          deleteRecord={(id) => deleteRecord('domesticTruckingData', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
