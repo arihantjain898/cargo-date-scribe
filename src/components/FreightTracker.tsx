@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,29 +23,59 @@ const FreightTracker = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
+    console.log('Loading data from localStorage...');
     // Load data from localStorage on component mount
     const storedAllFilesData = localStorage.getItem('allFilesData');
     if (storedAllFilesData) {
-      setAllFilesData(JSON.parse(storedAllFilesData));
+      try {
+        const parsedData = JSON.parse(storedAllFilesData);
+        console.log('Loaded allFilesData:', parsedData);
+        setAllFilesData(parsedData);
+      } catch (error) {
+        console.error('Error parsing allFilesData:', error);
+        setAllFilesData([]);
+      }
     }
 
     const storedImportTrackingData = localStorage.getItem('importTrackingData');
     if (storedImportTrackingData) {
-      setImportTrackingData(JSON.parse(storedImportTrackingData));
+      try {
+        const parsedData = JSON.parse(storedImportTrackingData);
+        console.log('Loaded importTrackingData:', parsedData);
+        setImportTrackingData(parsedData);
+      } catch (error) {
+        console.error('Error parsing importTrackingData:', error);
+        setImportTrackingData([]);
+      }
     }
 
     const storedExportTrackingData = localStorage.getItem('exportTrackingData');
     if (storedExportTrackingData) {
-      setExportTrackingData(JSON.parse(storedExportTrackingData));
+      try {
+        const parsedData = JSON.parse(storedExportTrackingData);
+        console.log('Loaded exportTrackingData:', parsedData);
+        setExportTrackingData(parsedData);
+      } catch (error) {
+        console.error('Error parsing exportTrackingData:', error);
+        setExportTrackingData([]);
+      }
     }
 
     const storedDomesticTruckingData = localStorage.getItem('domesticTruckingData');
     if (storedDomesticTruckingData) {
-      setDomesticTruckingData(JSON.parse(storedDomesticTruckingData));
+      try {
+        const parsedData = JSON.parse(storedDomesticTruckingData);
+        console.log('Loaded domesticTruckingData:', parsedData);
+        setDomesticTruckingData(parsedData);
+      } catch (error) {
+        console.error('Error parsing domesticTruckingData:', error);
+        setDomesticTruckingData([]);
+      }
     }
   }, []);
 
   useEffect(() => {
+    console.log('Saving data to localStorage...');
     // Save data to localStorage whenever it changes
     localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
     localStorage.setItem('importTrackingData', JSON.stringify(importTrackingData));
@@ -196,6 +225,7 @@ const FreightTracker = () => {
   // Generic function to update a record in a dataset
   const updateRecord = useCallback(
     (dataset: string, id: string, field: string, value: string | boolean) => {
+      console.log(`Updating ${dataset} record ${id}: ${field} = ${value}`);
       switch (dataset) {
         case 'allFiles':
           setAllFilesData(prevData =>
@@ -234,6 +264,7 @@ const FreightTracker = () => {
 
   // Generic function to delete a record from a dataset
   const deleteRecord = (dataset: string, id: string) => {
+    console.log(`Deleting from ${dataset}: ${id}`);
     switch (dataset) {
       case 'allFiles':
         setAllFilesData(prevData => prevData.filter(item => item.id !== id));
@@ -320,6 +351,13 @@ const FreightTracker = () => {
     }
   };
 
+  console.log('Current data lengths:', {
+    allFiles: allFilesData.length,
+    import: importTrackingData.length,
+    export: exportTrackingData.length,
+    domestic: domesticTruckingData.length
+  });
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Freight Tracker</h1>
@@ -383,6 +421,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           onFileClick={handleFileClick}
+          highlightedRowId={highlightedRowId}
         />
       )}
       {activeTab === 'importTracking' && (
