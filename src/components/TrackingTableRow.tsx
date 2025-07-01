@@ -49,11 +49,11 @@ const TrackingTableRow = ({
                      record.transphereInvSent && record.paymentRec && record.sslPaid && 
                      record.insured && record.released && record.docsSentToCustomer;
   
-  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
-    isArchived ? 'bg-gray-200 opacity-60' : 
+  const rowClassName = `border-b-2 border-gray-400 transition-all duration-200 ${
+    isArchived ? 'bg-gray-100 opacity-50' : 
     isHighlighted ? 'bg-yellow-200 border-yellow-400' :
     isCompleted ? 'bg-green-50 border-2 border-green-500' :
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
+    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
   }`;
 
   const handleSelectRow = (id: string, checked: boolean) => {
