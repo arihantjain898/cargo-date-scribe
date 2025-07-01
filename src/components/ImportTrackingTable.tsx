@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -86,7 +87,6 @@ const ImportTrackingTable = ({
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                   isHighlighted={highlightedRowId === record.id}
-                  onBackToAllFiles={onBackToAllFiles}
                 />
               ))}
               <tr>
