@@ -1,29 +1,16 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { DatePicker } from '@/components/ui/date-picker';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-} from "@/components/ui/table"
+import { AllFilesRecord } from '../types/AllFilesRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { TrackingRecord } from '../types/TrackingRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 import AllFilesTable from './AllFilesTable';
 import ImportTrackingTable from './ImportTrackingTable';
-import ExportTrackingTable from './ExportTrackingTable';
+import TrackingTable from './TrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
 
 const FreightTracker = () => {
@@ -75,7 +62,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: AllFilesRecord = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       customer: newCustomer,
       file: '',
       number: '',
@@ -109,7 +96,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: ImportTrackingRecord = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       customer: newCustomer,
       booking: '',
       file: '',
@@ -147,18 +134,21 @@ const FreightTracker = () => {
     }
 
     const newRecord: TrackingRecord = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       customer: newCustomer,
       ref: '',
       file: '',
       workOrder: '',
       dropDone: '',
       dropDate: '',
+      dropDateColor: 'gray',
       returnNeeded: '',
       returnDate: '',
+      returnDateColor: 'gray',
       docsSent: false,
       docsReceived: false,
       docCutoffDate: '',
+      docCutoffDateColor: 'gray',
       aesMblVgmSent: false,
       titlesDispatched: '',
       validatedFwd: false,
@@ -187,7 +177,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: DomesticTruckingRecord = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       customer: newCustomer,
       file: '',
       woSent: false,
@@ -265,8 +255,71 @@ const FreightTracker = () => {
   };
 
   const handleFileClick = (fileNumber: string, fileType: string) => {
-    console.log(`Opening ${fileType} ${fileNumber} in checklist`);
-    // Add your file opening logic here
+    console.log(`Attempting to open ${fileType} ${fileNumber}`);
+    
+    // Determine which tab to switch to based on file type
+    let targetTab = '';
+    let foundRecord = false;
+
+    if (fileType.startsWith('E')) {
+      // Export file
+      targetTab = 'exportTracking';
+      const exportRecord = exportTrackingData.find(record => record.file === `${fileType}${fileNumber}`);
+      if (exportRecord) {
+        foundRecord = true;
+        setHighlightedRowId(exportRecord.id);
+      }
+    } else if (fileType.startsWith('I')) {
+      // Import file
+      targetTab = 'importTracking';
+      const importRecord = importTrackingData.find(record => record.file === `${fileType}${fileNumber}`);
+      if (importRecord) {
+        foundRecord = true;
+        setHighlightedRowId(importRecord.id);
+      }
+    } else if (fileType.startsWith('D')) {
+      // Domestic file
+      targetTab = 'domesticTrucking';
+      const domesticRecord = domesticTruckingData.find(record => record.file === `${fileType}${fileNumber}`);
+      if (domesticRecord) {
+        foundRecord = true;
+        setHighlightedRowId(domesticRecord.id);
+      }
+    }
+
+    if (foundRecord && targetTab) {
+      setActiveTab(targetTab);
+      toast.success(`Opened ${fileType}${fileNumber} in ${targetTab.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+      
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+    } else {
+      toast.error(`File ${fileType}${fileNumber} not found in corresponding table`);
+    }
+  };
+
+  const handleBackToAllFiles = (fileNumber: string, fileType: string) => {
+    console.log(`Going back to All Files for ${fileType}${fileNumber}`);
+    
+    // Find matching record in All Files based on file type and number
+    const allFilesRecord = allFilesData.find(record => 
+      record.file === fileType && record.number === fileNumber
+    );
+    
+    if (allFilesRecord) {
+      setActiveTab('allFiles');
+      setHighlightedRowId(allFilesRecord.id);
+      toast.success(`Found ${fileType}${fileNumber} in All Files`);
+      
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+    } else {
+      toast.error(`No matching record found in All Files for ${fileType}${fileNumber}`);
+    }
   };
 
   return (
@@ -331,7 +384,6 @@ const FreightTracker = () => {
           deleteRecord={(id) => deleteRecord('allFiles', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
-          highlightedRowId={highlightedRowId}
           onFileClick={handleFileClick}
         />
       )}
@@ -343,16 +395,18 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'exportTracking' && (
-        <ExportTrackingTable
+        <TrackingTable
           data={exportTrackingData}
           updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('exportTracking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'domesticTrucking' && (
@@ -363,6 +417,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
     </div>
