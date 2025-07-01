@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { DatePicker } from '@/components/ui/date-picker';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -23,8 +22,12 @@ import {
 
 import AllFilesTable from './AllFilesTable';
 import ImportTrackingTable from './ImportTrackingTable';
-import ExportTrackingTable from './ExportTrackingTable';
+import TrackingTable from './TrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
+import { TrackingRecord } from '../types/TrackingRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { AllFilesRecord } from '../types/AllFilesRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('allFiles');
@@ -331,7 +334,6 @@ const FreightTracker = () => {
           deleteRecord={(id) => deleteRecord('allFiles', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
-          highlightedRowId={highlightedRowId}
           onFileClick={handleFileClick}
         />
       )}
@@ -346,7 +348,7 @@ const FreightTracker = () => {
         />
       )}
       {activeTab === 'exportTracking' && (
-        <ExportTrackingTable
+        <TrackingTable
           data={exportTrackingData}
           updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('exportTracking', id)}

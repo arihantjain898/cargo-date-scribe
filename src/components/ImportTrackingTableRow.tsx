@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import InlineEditCell from './InlineEditCell';
+import BackToAllFilesButton from './BackToAllFilesButton';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +28,7 @@ interface ImportTrackingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   isHighlighted?: boolean;
+  onBackToAllFiles?: () => void;
 }
 
 const ImportTrackingTableRow = ({
@@ -39,7 +41,8 @@ const ImportTrackingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false
+  isHighlighted = false,
+  onBackToAllFiles
 }: ImportTrackingTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
@@ -67,12 +70,17 @@ const ImportTrackingTableRow = ({
   return (
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <InlineEditCell
-          value={record.customer}
-          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
-          className="font-bold"
-        />
+        <div className="flex items-center gap-1">
+          <InlineEditCell
+            value={record.customer}
+            onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+            placeholder="Enter customer name"
+            className="font-bold flex-1"
+          />
+          {onBackToAllFiles && (
+            <BackToAllFilesButton onBackToAllFiles={onBackToAllFiles} />
+          )}
+        </div>
       </td>
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
