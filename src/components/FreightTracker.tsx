@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -28,6 +27,11 @@ import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
+
+// Generate a simple ID without uuid
+const generateId = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('allFiles');
@@ -78,7 +82,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: AllFilesRecord = {
-      id: uuidv4(),
+      id: generateId(),
       customer: newCustomer,
       file: '',
       number: '',
@@ -112,7 +116,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: ImportTrackingRecord = {
-      id: uuidv4(),
+      id: generateId(),
       customer: newCustomer,
       booking: '',
       file: '',
@@ -150,7 +154,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: TrackingRecord = {
-      id: uuidv4(),
+      id: generateId(),
       customer: newCustomer,
       ref: '',
       file: '',
@@ -191,7 +195,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: DomesticTruckingRecord = {
-      id: uuidv4(),
+      id: generateId(),
       customer: newCustomer,
       file: '',
       woSent: false,
@@ -432,7 +436,6 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           onFileClick={handleFileClick}
-          highlightedRowId={highlightedRowId}
         />
       )}
       {activeTab === 'importTracking' && (
