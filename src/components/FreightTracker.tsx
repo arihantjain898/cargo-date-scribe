@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -141,14 +140,11 @@ const FreightTracker = () => {
       workOrder: '',
       dropDone: '',
       dropDate: '',
-      dropDateColor: 'gray',
       returnNeeded: '',
       returnDate: '',
-      returnDateColor: 'gray',
       docsSent: false,
       docsReceived: false,
       docCutoffDate: '',
-      docCutoffDateColor: 'gray',
       aesMblVgmSent: false,
       titlesDispatched: '',
       validatedFwd: false,
@@ -385,6 +381,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           onFileClick={handleFileClick}
+          highlightedRowId={highlightedRowId}
         />
       )}
       {activeTab === 'importTracking' && (
