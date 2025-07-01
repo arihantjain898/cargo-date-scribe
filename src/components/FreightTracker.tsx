@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -27,11 +28,6 @@ import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
-
-// Simple ID generator to replace uuid
-const generateId = () => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-};
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('allFiles');
@@ -82,7 +78,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: AllFilesRecord = {
-      id: generateId(),
+      id: uuidv4(),
       customer: newCustomer,
       file: '',
       number: '',
@@ -116,7 +112,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: ImportTrackingRecord = {
-      id: generateId(),
+      id: uuidv4(),
       customer: newCustomer,
       booking: '',
       file: '',
@@ -154,7 +150,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: TrackingRecord = {
-      id: generateId(),
+      id: uuidv4(),
       customer: newCustomer,
       ref: '',
       file: '',
@@ -195,7 +191,7 @@ const FreightTracker = () => {
     }
 
     const newRecord: DomesticTruckingRecord = {
-      id: generateId(),
+      id: uuidv4(),
       customer: newCustomer,
       file: '',
       woSent: false,

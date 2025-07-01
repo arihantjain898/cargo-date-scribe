@@ -4,8 +4,6 @@ import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import FreightTracker from './FreightTracker';
-import FreightTrackerWithLocalStorage from './FreightTrackerWithLocalStorage';
 
 interface FirebaseAuthWrapperProps {
   children: React.ReactNode;
@@ -17,32 +15,10 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
   const [password, setPassword] = React.useState('');
   const [isSignUp, setIsSignUp] = React.useState(false);
 
-  // BYPASS AUTH FOR TESTING - set to false to use Firebase authentication
-  const BYPASS_AUTH = true;
-
-  if (loading && !BYPASS_AUTH) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  // If bypassing auth, use localStorage version
-  if (BYPASS_AUTH) {
-    return (
-      <div>
-        <div className="bg-yellow-100 border-b p-4 flex justify-between items-center">
-          <span className="text-yellow-800 font-medium">🚧 Testing Mode - Using localStorage (Firebase Auth Bypassed)</span>
-          <Button 
-            onClick={() => window.location.reload()} 
-            variant="outline" 
-            size="sm"
-          >
-            Refresh
-          </Button>
-        </div>
-        <FreightTrackerWithLocalStorage useLocalStorage={true} />
       </div>
     );
   }
@@ -86,7 +62,6 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
     );
   }
 
-  // When authenticated, use Firebase version
   return (
     <div>
       <div className="bg-white border-b p-4 flex justify-between items-center">
@@ -95,7 +70,7 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
           Sign Out
         </Button>
       </div>
-      <FreightTracker />
+      {children}
     </div>
   );
 };
