@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
@@ -270,8 +269,104 @@ const FreightTracker = () => {
   };
 
   const handleFileClick = (fileNumber: string, fileType: string) => {
-    console.log(`Opening ${fileType} ${fileNumber} in checklist`);
-    // Add your file opening logic here
+    console.log(`Navigating to ${fileType} ${fileNumber}`);
+    
+    // Determine target tab based on file type
+    let targetTab = '';
+    let targetData: any[] = [];
+    
+    const firstLetter = fileType.charAt(0).toUpperCase();
+    switch (firstLetter) {
+      case 'E':
+        targetTab = 'exportTracking';
+        targetData = exportTrackingData;
+        break;
+      case 'I':
+        targetTab = 'importTracking';
+        targetData = importTrackingData;
+        break;
+      case 'D':
+        targetTab = 'domesticTrucking';
+        targetData = domesticTruckingData;
+        break;
+      default:
+        toast.error(`Invalid file type: ${fileType}`);
+        return;
+    }
+
+    // Find matching record
+    const matchingRecord = targetData.find(record => record.file === fileNumber);
+    
+    if (matchingRecord) {
+      // Store current All Files record for back navigation
+      sessionStorage.setItem('sourceAllFilesId', ''); // We'll find this by file/number
+      
+      setActiveTab(targetTab);
+      setHighlightedRowId(matchingRecord.id);
+      toast.success(`Navigated to ${fileType} ${fileNumber}`);
+    } else {
+      toast.error(`File ${fileType} ${fileNumber} not found in ${targetTab}`);
+    }
+  };
+
+  const handleBackToAllFiles = () => {
+    const currentTab = activeTab;
+    let fileType = '';
+    let fileNumber = '';
+    
+    // Determine file type from current tab
+    switch (currentTab) {
+      case 'exportTracking':
+        fileType = 'E';
+        break;
+      case 'importTracking':
+        fileType = 'I';
+        break;
+      case 'domesticTrucking':
+        fileType = 'D';
+        break;
+      default:
+        setActiveTab('allFiles');
+        setHighlightedRowId(null);
+        return;
+    }
+
+    // Find the highlighted record to get file number
+    let currentRecord = null;
+    switch (currentTab) {
+      case 'exportTracking':
+        currentRecord = exportTrackingData.find(r => r.id === highlightedRowId);
+        break;
+      case 'importTracking':
+        currentRecord = importTrackingData.find(r => r.id === highlightedRowId);
+        break;
+      case 'domesticTrucking':
+        currentRecord = domesticTruckingData.find(r => r.id === highlightedRowId);
+        break;
+    }
+
+    if (currentRecord) {
+      fileNumber = currentRecord.file;
+      
+      // Find matching All Files record
+      const allFilesRecord = allFilesData.find(record => 
+        record.file === fileType && record.number === fileNumber
+      );
+      
+      if (allFilesRecord) {
+        setActiveTab('allFiles');
+        setHighlightedRowId(allFilesRecord.id);
+        toast.success(`Returned to All Files - ${fileType}${fileNumber}`);
+      } else {
+        setActiveTab('allFiles');
+        setHighlightedRowId(null);
+        toast.info('Returned to All Files');
+      }
+    } else {
+      setActiveTab('allFiles');
+      setHighlightedRowId(null);
+      toast.info('Returned to All Files');
+    }
   };
 
   return (
@@ -337,6 +432,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           onFileClick={handleFileClick}
+          highlightedRowId={highlightedRowId}
         />
       )}
       {activeTab === 'importTracking' && (
@@ -347,6 +443,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'exportTracking' && (
@@ -357,6 +454,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
       {activeTab === 'domesticTrucking' && (
@@ -367,6 +465,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onBackToAllFiles={handleBackToAllFiles}
         />
       )}
     </div>
