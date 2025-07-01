@@ -77,7 +77,7 @@ const TrackingTableRow = ({
             placeholder="Enter customer name"
             className="font-bold flex-1"
           />
-          {onBackToAllFiles && (
+          {isHighlighted && onBackToAllFiles && (
             <BackToAllFilesButton onBackToAllFiles={onBackToAllFiles} />
           )}
         </div>

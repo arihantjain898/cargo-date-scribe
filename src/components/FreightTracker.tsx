@@ -432,6 +432,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           onFileClick={handleFileClick}
+          highlightedRowId={highlightedRowId}
         />
       )}
       {activeTab === 'importTracking' && (
