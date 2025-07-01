@@ -55,7 +55,7 @@ const TrackingTable = ({
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <div className="p-4 border-b flex justify-between items-center">
-        <h2 className="text-lg font-semibent">Export Checklist</h2>
+        <h2 className="text-lg font-semibold">Export Checklist</h2>
         <div className="flex gap-2">
           <Button
             variant={showArchived ? "default" : "outline"}
@@ -87,6 +87,7 @@ const TrackingTable = ({
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                   isHighlighted={highlightedRowId === record.id}
+                  onBackToAllFiles={onBackToAllFiles}
                 />
               ))}
               <tr>
