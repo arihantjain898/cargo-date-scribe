@@ -29,33 +29,53 @@ import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
+import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
+import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 
 const FreightTracker = () => {
+  const { user } = useFirebaseAuth();
+  const {
+    exportData,
+    importData,
+    allFilesData,
+    domesticTruckingData,
+    loading,
+    addExportItem,
+    addImportItem,
+    addAllFilesItem,
+    addDomesticTruckingItem,
+    updateRecord,
+    updateImportRecord,
+    updateAllFilesRecord,
+    updateDomesticTruckingRecord,
+    deleteExportItem,
+    deleteImportItem,
+    deleteAllFilesItem,
+    deleteDomesticTruckingItem
+  } = useFreightTrackerData(user?.uid || '');
+
   const [activeTab, setActiveTab] = useState('allFiles');
-  const [allFilesData, setAllFilesData] = useState<AllFilesRecord[]>([]);
-  const [importTrackingData, setImportTrackingData] = useState<ImportTrackingRecord[]>([]);
-  const [exportTrackingData, setExportTrackingData] = useState<TrackingRecord[]>([]);
-  const [domesticTruckingData, setDomesticTruckingData] = useState<DomesticTruckingRecord[]>([]);
   const [newCustomer, setNewCustomer] = useState('');
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   console.log('FreightTracker - Current data:', {
     allFiles: allFilesData.length,
-    import: importTrackingData.length,
-    export: exportTrackingData.length,
-    domestic: domesticTruckingData.length
+    import: importData.length,
+    export: exportData.length,
+    domestic: domesticTruckingData.length,
+    loading,
+    userId: user?.uid
   });
 
   // Function to add a new record to All Files
-  const addAllFilesRecord = () => {
+  const addAllFilesRecord = async () => {
     if (newCustomer.trim() === '') {
       toast.error('Customer cannot be empty.');
       return;
     }
 
-    const newRecord: AllFilesRecord = {
-      id: uuidv4(),
+    const newRecord: Omit<AllFilesRecord, 'id'> = {
       customer: newCustomer,
       file: '',
       number: '',
@@ -76,20 +96,24 @@ const FreightTracker = () => {
       archived: false,
     };
 
-    setAllFilesData(prevData => [...prevData, newRecord]);
-    setNewCustomer('');
-    toast.success('Record added to All Files.');
+    try {
+      await addAllFilesItem(newRecord);
+      setNewCustomer('');
+      toast.success('Record added to All Files.');
+    } catch (error) {
+      console.error('Error adding all files record:', error);
+      toast.error('Failed to add record.');
+    }
   };
 
   // Function to add a new record to Import Tracking
-  const addImportTrackingRecord = () => {
+  const addImportTrackingRecord = async () => {
     if (newCustomer.trim() === '') {
       toast.error('Customer cannot be empty.');
       return;
     }
 
-    const newRecord: ImportTrackingRecord = {
-      id: uuidv4(),
+    const newRecord: Omit<ImportTrackingRecord, 'id'> = {
       customer: newCustomer,
       booking: '',
       file: '',
@@ -114,20 +138,24 @@ const FreightTracker = () => {
       archived: false,
     };
 
-    setImportTrackingData(prevData => [...prevData, newRecord]);
-    setNewCustomer('');
-    toast.success('Record added to Import Tracking.');
+    try {
+      await addImportItem(newRecord);
+      setNewCustomer('');
+      toast.success('Record added to Import Tracking.');
+    } catch (error) {
+      console.error('Error adding import record:', error);
+      toast.error('Failed to add record.');
+    }
   };
 
   // Function to add a new record to Export Tracking
-  const addExportTrackingRecord = () => {
+  const addExportTrackingRecord = async () => {
     if (newCustomer.trim() === '') {
       toast.error('Customer cannot be empty.');
       return;
     }
 
-    const newRecord: TrackingRecord = {
-      id: uuidv4(),
+    const newRecord: Omit<TrackingRecord, 'id'> = {
       customer: newCustomer,
       ref: '',
       file: '',
@@ -155,20 +183,24 @@ const FreightTracker = () => {
       archived: false,
     };
 
-    setExportTrackingData(prevData => [...prevData, newRecord]);
-    setNewCustomer('');
-    toast.success('Record added to Export Tracking.');
+    try {
+      await addExportItem(newRecord);
+      setNewCustomer('');
+      toast.success('Record added to Export Tracking.');
+    } catch (error) {
+      console.error('Error adding export record:', error);
+      toast.error('Failed to add record.');
+    }
   };
 
   // Function to add a new record to Domestic Trucking
-  const addDomesticTruckingRecord = () => {
+  const addDomesticTruckingRecord = async () => {
     if (newCustomer.trim() === '') {
       toast.error('Customer cannot be empty.');
       return;
     }
 
-    const newRecord: DomesticTruckingRecord = {
-      id: uuidv4(),
+    const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
       customer: newCustomer,
       file: '',
       woSent: false,
@@ -181,49 +213,38 @@ const FreightTracker = () => {
       archived: false,
     };
 
-    setDomesticTruckingData(prevData => [...prevData, newRecord]);
-    setNewCustomer('');
-    toast.success('Record added to Domestic Trucking.');
+    try {
+      await addDomesticTruckingItem(newRecord);
+      setNewCustomer('');
+      toast.success('Record added to Domestic Trucking.');
+    } catch (error) {
+      console.error('Error adding domestic trucking record:', error);
+      toast.error('Failed to add record.');
+    }
   };
 
   // Generic function to update a record in a dataset
-  const updateRecord = useCallback(
+  const updateRecordGeneric = useCallback(
     (dataset: string, id: string, field: string, value: string | boolean) => {
       console.log('Updating record:', { dataset, id, field, value });
       switch (dataset) {
         case 'allFiles':
-          setAllFilesData(prevData =>
-            prevData.map(item =>
-              item.id === id ? { ...item, [field]: value } : item
-            )
-          );
+          updateAllFilesRecord(id, field as keyof AllFilesRecord, value as string);
           break;
         case 'importTracking':
-          setImportTrackingData(prevData =>
-            prevData.map(item =>
-              item.id === id ? { ...item, [field]: value } : item
-            )
-          );
+          updateImportRecord(id, field as keyof ImportTrackingRecord, value);
           break;
         case 'exportTracking':
-          setExportTrackingData(prevData =>
-            prevData.map(item =>
-              item.id === id ? { ...item, [field]: value } : item
-            )
-          );
+          updateRecord(id, field as keyof TrackingRecord, value);
           break;
         case 'domesticTrucking':
-          setDomesticTruckingData(prevData =>
-            prevData.map(item =>
-              item.id === id ? { ...item, [field]: value } : item
-            )
-          );
+          updateDomesticTruckingRecord(id, field as keyof DomesticTruckingRecord, value);
           break;
         default:
           console.error(`Invalid dataset: ${dataset}`);
       }
     },
-    []
+    [updateRecord, updateImportRecord, updateAllFilesRecord, updateDomesticTruckingRecord]
   );
 
   // Generic function to delete a record from a dataset
@@ -231,16 +252,16 @@ const FreightTracker = () => {
     console.log('Deleting record:', { dataset, id });
     switch (dataset) {
       case 'allFiles':
-        setAllFilesData(prevData => prevData.filter(item => item.id !== id));
+        deleteAllFilesItem(id);
         break;
       case 'importTracking':
-        setImportTrackingData(prevData => prevData.filter(item => item.id !== id));
+        deleteImportItem(id);
         break;
       case 'exportTracking':
-        setExportTrackingData(prevData => prevData.filter(item => item.id !== id));
+        deleteExportItem(id);
         break;
       case 'domesticTrucking':
-        setDomesticTruckingData(prevData => prevData.filter(item => item.id !== id));
+        deleteDomesticTruckingItem(id);
         break;
       default:
         console.error(`Invalid dataset: ${dataset}`);
@@ -258,6 +279,10 @@ const FreightTracker = () => {
     setActiveTab('allFiles');
     setHighlightedRowId(null);
   };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -317,7 +342,7 @@ const FreightTracker = () => {
       {activeTab === 'allFiles' && (
         <AllFilesTable
           data={allFilesData}
-          updateRecord={(id, field, value) => updateRecord('allFiles', id, field, value)}
+          updateRecord={(id, field, value) => updateRecordGeneric('allFiles', id, field, value)}
           deleteRecord={(id) => deleteRecord('allFiles', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
@@ -326,8 +351,8 @@ const FreightTracker = () => {
       )}
       {activeTab === 'importTracking' && (
         <ImportTrackingTable
-          data={importTrackingData}
-          updateRecord={(id, field, value) => updateRecord('importTracking', id, field, value)}
+          data={importData}
+          updateRecord={(id, field, value) => updateRecordGeneric('importTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('importTracking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
@@ -337,8 +362,8 @@ const FreightTracker = () => {
       )}
       {activeTab === 'exportTracking' && (
         <TrackingTable
-          data={exportTrackingData}
-          updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
+          data={exportData}
+          updateRecord={(id, field, value) => updateRecordGeneric('exportTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('exportTracking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
@@ -349,7 +374,7 @@ const FreightTracker = () => {
       {activeTab === 'domesticTrucking' && (
         <DomesticTruckingTable
           data={domesticTruckingData}
-          updateRecord={(id, field, value) => updateRecord('domesticTrucking', id, field, value)}
+          updateRecord={(id, field, value) => updateRecordGeneric('domesticTrucking', id, field, value)}
           deleteRecord={(id) => deleteRecord('domesticTrucking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
