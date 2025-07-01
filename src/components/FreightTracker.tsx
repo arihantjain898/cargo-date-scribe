@@ -1,74 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
-import FreightTrackerTabs from './FreightTrackerTabs';
-import { AllFilesRecord } from '../types/AllFilesRecord';
-import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
-import { TrackingRecord } from '../types/TrackingRecord';
-import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
+import { DatePicker } from '@/components/ui/date-picker';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from "@/components/ui/table"
+
+import AllFilesTable from './AllFilesTable';
+import ImportTrackingTable from './ImportTrackingTable';
+import ExportTrackingTable from './ExportTrackingTable';
+import DomesticTruckingTable from './DomesticTruckingTable';
 
 const FreightTracker = () => {
-  // Use a hardcoded user ID for now since we removed authentication
-  const currentUserId = 'demo-user-123';
-  
-  const {
-    exportData,
-    importData,
-    allFilesData,
-    domesticTruckingData,
-    loading,
-    addExportItem,
-    addImportItem,
-    addAllFilesItem,
-    addDomesticTruckingItem,
-    updateRecord,
-    updateImportRecord,
-    updateAllFilesRecord,
-    updateDomesticTruckingRecord,
-    deleteExportItem,
-    deleteImportItem,
-    deleteAllFilesItem,
-    deleteDomesticTruckingItem
-  } = useFreightTrackerData(currentUserId);
-
-  const [activeTab, setActiveTab] = useState('all-files');
+  const [activeTab, setActiveTab] = useState('allFiles');
+  const [allFilesData, setAllFilesData] = useState<AllFilesRecord[]>([]);
+  const [importTrackingData, setImportTrackingData] = useState<ImportTrackingRecord[]>([]);
+  const [exportTrackingData, setExportTrackingData] = useState<TrackingRecord[]>([]);
+  const [domesticTruckingData, setDomesticTruckingData] = useState<DomesticTruckingRecord[]>([]);
   const [newCustomer, setNewCustomer] = useState('');
+  const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
-  const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
-  const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
 
-  console.log('FreightTracker data:', {
-    exportData: exportData?.length || 0,
-    importData: importData?.length || 0,
-    allFilesData: allFilesData?.length || 0,
-    domesticTruckingData: domesticTruckingData?.length || 0,
-    loading,
-    currentUserId
-  });
+  useEffect(() => {
+    // Load data from localStorage on component mount
+    const storedAllFilesData = localStorage.getItem('allFilesData');
+    if (storedAllFilesData) {
+      setAllFilesData(JSON.parse(storedAllFilesData));
+    }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your data...</p>
-        </div>
-      </div>
-    );
-  }
+    const storedImportTrackingData = localStorage.getItem('importTrackingData');
+    if (storedImportTrackingData) {
+      setImportTrackingData(JSON.parse(storedImportTrackingData));
+    }
+
+    const storedExportTrackingData = localStorage.getItem('exportTrackingData');
+    if (storedExportTrackingData) {
+      setExportTrackingData(JSON.parse(storedExportTrackingData));
+    }
+
+    const storedDomesticTruckingData = localStorage.getItem('domesticTruckingData');
+    if (storedDomesticTruckingData) {
+      setDomesticTruckingData(JSON.parse(storedDomesticTruckingData));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save data to localStorage whenever it changes
+    localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
+    localStorage.setItem('importTrackingData', JSON.stringify(importTrackingData));
+    localStorage.setItem('exportTrackingData', JSON.stringify(exportTrackingData));
+    localStorage.setItem('domesticTruckingData', JSON.stringify(domesticTruckingData));
+  }, [allFilesData, importTrackingData, exportTrackingData, domesticTruckingData]);
 
   // Function to add a new record to All Files
-  const addAllFilesRecord = async () => {
+  const addAllFilesRecord = () => {
     if (newCustomer.trim() === '') {
       toast.error('Customer cannot be empty.');
       return;
     }
 
-    const newRecord: Omit<AllFilesRecord, 'id'> = {
+    const newRecord: AllFilesRecord = {
+      id: uuidv4(),
       customer: newCustomer,
       file: '',
       number: '',
@@ -89,24 +96,20 @@ const FreightTracker = () => {
       archived: false,
     };
 
-    try {
-      await addAllFilesItem(newRecord);
-      setNewCustomer('');
-      toast.success('Record added to All Files.');
-    } catch (error) {
-      console.error('Error adding all files record:', error);
-      toast.error('Failed to add record.');
-    }
+    setAllFilesData(prevData => [...prevData, newRecord]);
+    setNewCustomer('');
+    toast.success('Record added to All Files.');
   };
 
   // Function to add a new record to Import Tracking
-  const addImportTrackingRecord = async () => {
+  const addImportTrackingRecord = () => {
     if (newCustomer.trim() === '') {
       toast.error('Customer cannot be empty.');
       return;
     }
 
-    const newRecord: Omit<ImportTrackingRecord, 'id'> = {
+    const newRecord: ImportTrackingRecord = {
+      id: uuidv4(),
       customer: newCustomer,
       booking: '',
       file: '',
@@ -131,24 +134,20 @@ const FreightTracker = () => {
       archived: false,
     };
 
-    try {
-      await addImportItem(newRecord);
-      setNewCustomer('');
-      toast.success('Record added to Import Tracking.');
-    } catch (error) {
-      console.error('Error adding import record:', error);
-      toast.error('Failed to add record.');
-    }
+    setImportTrackingData(prevData => [...prevData, newRecord]);
+    setNewCustomer('');
+    toast.success('Record added to Import Tracking.');
   };
 
   // Function to add a new record to Export Tracking
-  const addExportTrackingRecord = async () => {
+  const addExportTrackingRecord = () => {
     if (newCustomer.trim() === '') {
       toast.error('Customer cannot be empty.');
       return;
     }
 
-    const newRecord: Omit<TrackingRecord, 'id'> = {
+    const newRecord: TrackingRecord = {
+      id: uuidv4(),
       customer: newCustomer,
       ref: '',
       file: '',
@@ -171,29 +170,24 @@ const FreightTracker = () => {
       sslPaid: false,
       insured: false,
       released: false,
-      docsSentToCustomer: false,
       notes: '',
       archived: false,
     };
 
-    try {
-      await addExportItem(newRecord);
-      setNewCustomer('');
-      toast.success('Record added to Export Tracking.');
-    } catch (error) {
-      console.error('Error adding export record:', error);
-      toast.error('Failed to add record.');
-    }
+    setExportTrackingData(prevData => [...prevData, newRecord]);
+    setNewCustomer('');
+    toast.success('Record added to Export Tracking.');
   };
 
   // Function to add a new record to Domestic Trucking
-  const addDomesticTruckingRecord = async () => {
+  const addDomesticTruckingRecord = () => {
     if (newCustomer.trim() === '') {
       toast.error('Customer cannot be empty.');
       return;
     }
 
-    const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
+    const newRecord: DomesticTruckingRecord = {
+      id: uuidv4(),
       customer: newCustomer,
       file: '',
       woSent: false,
@@ -206,13 +200,67 @@ const FreightTracker = () => {
       archived: false,
     };
 
-    try {
-      await addDomesticTruckingItem(newRecord);
-      setNewCustomer('');
-      toast.success('Record added to Domestic Trucking.');
-    } catch (error) {
-      console.error('Error adding domestic trucking record:', error);
-      toast.error('Failed to add record.');
+    setDomesticTruckingData(prevData => [...prevData, newRecord]);
+    setNewCustomer('');
+    toast.success('Record added to Domestic Trucking.');
+  };
+
+  // Generic function to update a record in a dataset
+  const updateRecord = useCallback(
+    (dataset: string, id: string, field: string, value: string | boolean) => {
+      switch (dataset) {
+        case 'allFiles':
+          setAllFilesData(prevData =>
+            prevData.map(item =>
+              item.id === id ? { ...item, [field]: value } : item
+            )
+          );
+          break;
+        case 'importTracking':
+          setImportTrackingData(prevData =>
+            prevData.map(item =>
+              item.id === id ? { ...item, [field]: value } : item
+            )
+          );
+          break;
+        case 'exportTracking':
+          setExportTrackingData(prevData =>
+            prevData.map(item =>
+              item.id === id ? { ...item, [field]: value } : item
+            )
+          );
+          break;
+        case 'domesticTrucking':
+          setDomesticTruckingData(prevData =>
+            prevData.map(item =>
+              item.id === id ? { ...item, [field]: value } : item
+            )
+          );
+          break;
+        default:
+          console.error(`Invalid dataset: ${dataset}`);
+      }
+    },
+    []
+  );
+
+  // Generic function to delete a record from a dataset
+  const deleteRecord = (dataset: string, id: string) => {
+    switch (dataset) {
+      case 'allFiles':
+        setAllFilesData(prevData => prevData.filter(item => item.id !== id));
+        break;
+      case 'importTracking':
+        setImportTrackingData(prevData => prevData.filter(item => item.id !== id));
+        break;
+      case 'exportTracking':
+        setExportTrackingData(prevData => prevData.filter(item => item.id !== id));
+        break;
+      case 'domesticTrucking':
+        setDomesticTruckingData(prevData => prevData.filter(item => item.id !== id));
+        break;
+      default:
+        console.error(`Invalid dataset: ${dataset}`);
     }
   };
 
@@ -221,68 +269,102 @@ const FreightTracker = () => {
     // Add your file opening logic here
   };
 
-  const handleCalendarEventClick = (fileNumber: string, source: string) => {
-    console.log(`Calendar event clicked: ${fileNumber} from ${source}`);
-    // Add your calendar event logic here
-  };
-
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-4 md:px-6 py-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Freight Tracker</h1>
-        
-        {/* Add New Record Section */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <Input
-            type="text"
-            placeholder="Enter customer name"
-            value={newCustomer}
-            onChange={(e) => setNewCustomer(e.target.value)}
-            className="flex-1 min-w-0"
-          />
-          <div className="flex flex-wrap gap-2">
-            {activeTab === 'all-files' && (
-              <Button onClick={addAllFilesRecord} size="sm">Add All Files Record</Button>
-            )}
-            {activeTab === 'import-table' && (
-              <Button onClick={addImportTrackingRecord} size="sm">Add Import Record</Button>
-            )}
-            {activeTab === 'export-table' && (
-              <Button onClick={addExportTrackingRecord} size="sm">Add Export Record</Button>
-            )}
-            {activeTab === 'domestic-trucking' && (
-              <Button onClick={addDomesticTruckingRecord} size="sm">Add Domestic Record</Button>
-            )}
-          </div>
-        </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Freight Tracker</h1>
+
+      {/* Tabs */}
+      <div className="mb-4">
+        <Button
+          variant={activeTab === 'allFiles' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('allFiles')}
+        >
+          All Files
+        </Button>
+        <Button
+          variant={activeTab === 'importTracking' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('importTracking')}
+        >
+          Import Tracking
+        </Button>
+        <Button
+          variant={activeTab === 'exportTracking' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('exportTracking')}
+        >
+          Export Tracking
+        </Button>
+        <Button
+          variant={activeTab === 'domesticTrucking' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('domesticTrucking')}
+        >
+          Domestic Trucking
+        </Button>
       </div>
 
-      <FreightTrackerTabs
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        filteredExportData={exportData || []}
-        filteredImportData={importData || []}
-        filteredAllFilesData={allFilesData || []}
-        filteredDomesticTruckingData={domesticTruckingData || []}
-        selectedRows={selectedRows}
-        setSelectedRows={setSelectedRows}
-        selectedImportRows={selectedImportRows}
-        setSelectedImportRows={setSelectedImportRows}
-        selectedAllFilesRows={selectedAllFilesRows}
-        setSelectedAllFilesRows={setSelectedAllFilesRows}
-        selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-        setSelectedDomesticTruckingRows={setSelectedDomesticTruckingRows}
-        updateRecord={updateRecord}
-        updateImportRecord={updateImportRecord}
-        updateAllFilesRecord={updateAllFilesRecord}
-        updateDomesticTruckingRecord={updateDomesticTruckingRecord}
-        deleteRecord={deleteExportItem}
-        deleteImportRecord={deleteImportItem}
-        deleteAllFilesRecord={deleteAllFilesItem}
-        deleteDomesticTruckingRecord={deleteDomesticTruckingItem}
-        onFileClick={handleFileClick}
-        onCalendarEventClick={handleCalendarEventClick}
-      />
+      {/* Add New Record Section */}
+      <div className="mb-4 flex items-center space-x-2">
+        <Input
+          type="text"
+          placeholder="Enter customer name"
+          value={newCustomer}
+          onChange={(e) => setNewCustomer(e.target.value)}
+        />
+        {activeTab === 'allFiles' && (
+          <Button onClick={addAllFilesRecord}>Add All Files Record</Button>
+        )}
+        {activeTab === 'importTracking' && (
+          <Button onClick={addImportTrackingRecord}>Add Import Record</Button>
+        )}
+        {activeTab === 'exportTracking' && (
+          <Button onClick={addExportTrackingRecord}>Add Export Record</Button>
+        )}
+        {activeTab === 'domesticTrucking' && (
+          <Button onClick={addDomesticTruckingRecord}>Add Domestic Record</Button>
+        )}
+      </div>
+
+      {/* Tables */}
+      {activeTab === 'allFiles' && (
+        <AllFilesTable
+          data={allFilesData}
+          updateRecord={(id, field, value) => updateRecord('allFiles', id, field, value)}
+          deleteRecord={(id) => deleteRecord('allFiles', id)}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          highlightedRowId={highlightedRowId}
+          onFileClick={handleFileClick}
+        />
+      )}
+      {activeTab === 'importTracking' && (
+        <ImportTrackingTable
+          data={importTrackingData}
+          updateRecord={(id, field, value) => updateRecord('importTracking', id, field, value)}
+          deleteRecord={(id) => deleteRecord('importTracking', id)}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          highlightedRowId={highlightedRowId}
+        />
+      )}
+      {activeTab === 'exportTracking' && (
+        <ExportTrackingTable
+          data={exportTrackingData}
+          updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
+          deleteRecord={(id) => deleteRecord('exportTracking', id)}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          highlightedRowId={highlightedRowId}
+        />
+      )}
+      {activeTab === 'domesticTrucking' && (
+        <DomesticTruckingTable
+          data={domesticTruckingData}
+          updateRecord={(id, field, value) => updateRecord('domesticTrucking', id, field, value)}
+          deleteRecord={(id) => deleteRecord('domesticTrucking', id)}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          highlightedRowId={highlightedRowId}
+        />
+      )}
     </div>
   );
 };
