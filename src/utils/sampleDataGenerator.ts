@@ -1,4 +1,3 @@
-
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { TrackingRecord } from '../types/TrackingRecord';
@@ -66,7 +65,9 @@ export const generateImportSampleData = (): Omit<ImportTrackingRecord, 'id'>[] =
       returned: ['No', 'Yes'][index % 2],
       deliveryDate: index % 3 === 0 ? new Date(Date.now() + (index * 5 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0] : '',
       notes: index % 4 === 0 ? `Import notes for file IS${baseNumber}` : '',
-      archived: false
+      archived: false,
+      createdAt: new Date().toISOString(),
+      userId: 'demo-user'
     };
   });
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ExternalLink, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -32,6 +32,7 @@ const ImportTrackingTableRow = ({
   highlightedRowId,
   onFileClick
 }: ImportTrackingTableRowProps) => {
+  const [showUrlInput, setShowUrlInput] = useState(false);
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
@@ -62,6 +63,8 @@ const ImportTrackingTableRow = ({
   const handleBookingClick = () => {
     if (record.bookingUrl) {
       window.open(record.bookingUrl, '_blank');
+    } else {
+      setShowUrlInput(true);
     }
   };
 
@@ -109,20 +112,36 @@ const ImportTrackingTableRow = ({
                 <ExternalLink className="h-3 w-3" />
               </button>
             ) : (
-              <InlineEditCell
-                value={record.booking}
-                onSave={(value) => updateRecord(record.id, 'booking', value as string)}
-                placeholder="Enter booking"
-                className={isEmpty ? "text-gray-400" : ""}
-              />
+              <div className="flex items-center gap-1">
+                <InlineEditCell
+                  value={record.booking}
+                  onSave={(value) => updateRecord(record.id, 'booking', value as string)}
+                  placeholder="Enter booking"
+                  className={isEmpty ? "text-gray-400" : ""}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowUrlInput(true)}
+                  className="h-5 w-5 p-0 hover:bg-blue-100"
+                  title="Add booking URL"
+                >
+                  <Link className="h-3 w-3 text-gray-400 hover:text-blue-600" />
+                </Button>
+              </div>
             )}
           </div>
-          <InlineEditCell
-            value={record.bookingUrl || ''}
-            onSave={(value) => updateRecord(record.id, 'bookingUrl', value as string)}
-            placeholder="Enter booking URL (optional)"
-            className="text-xs text-gray-500"
-          />
+          {(showUrlInput || record.bookingUrl) && (
+            <InlineEditCell
+              value={record.bookingUrl || ''}
+              onSave={(value) => {
+                updateRecord(record.id, 'bookingUrl', value as string);
+                if (!value) setShowUrlInput(false);
+              }}
+              placeholder="Enter booking URL (optional)"
+              className="text-xs text-gray-500"
+            />
+          )}
         </div>
       </td>
       {/* Column 3: File */}

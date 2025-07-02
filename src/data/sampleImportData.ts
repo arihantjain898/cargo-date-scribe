@@ -26,6 +26,7 @@ export const sampleImportData: ImportTrackingRecord[] = [
     deliveryDate: '2025-07-18',
     notes: 'Customs pending',
     archived: false,
+    createdAt: new Date().toISOString(),
     userId: 'demo-user'
   }
 ];
