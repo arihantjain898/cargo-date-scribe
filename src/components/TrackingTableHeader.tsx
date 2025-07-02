@@ -68,9 +68,14 @@ const TrackingTableHeader = ({
             className="h-3 w-3 border"
             {...(isIndeterminate && { 'data-indeterminate': true })}
           />
+          <div className="text-[8px] leading-tight mt-1">Select</div>
         </th>
-        <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">Archive</th>
-        <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
+        <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">
+          <div className="text-[8px] leading-tight">Archive</div>
+        </th>
+        <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">
+          <div className="text-[8px] leading-tight">Delete</div>
+        </th>
       </tr>
     </thead>
   );
