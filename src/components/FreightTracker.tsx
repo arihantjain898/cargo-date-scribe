@@ -25,6 +25,9 @@ const FreightTracker = () => {
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
 
+  // For testing: use a test user ID when no user is authenticated
+  const currentUserId = user?.uid || 'test-user-123';
+
   const {
     exportData,
     importData,
@@ -43,10 +46,10 @@ const FreightTracker = () => {
     deleteImportItem,
     deleteAllFilesItem,
     deleteDomesticTruckingItem
-  } = useFreightTrackerData(user?.uid || '');
+  } = useFreightTrackerData(currentUserId);
 
   console.log('FreightTracker render:', {
-    user: user?.uid,
+    user: user?.uid || 'test-user-123',
     loading,
     exportData: exportData?.length,
     importData: importData?.length,
@@ -55,15 +58,6 @@ const FreightTracker = () => {
   });
 
   const addNewRecord = async (tab: string) => {
-    if (!user?.uid) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to add records.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
     try {
       if (tab === 'allFiles') {
         const newRecord: Omit<AllFilesRecord, 'id'> = {
