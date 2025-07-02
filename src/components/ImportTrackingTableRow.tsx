@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
+import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
@@ -27,6 +27,7 @@ interface ImportTrackingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   isHighlighted?: boolean;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
 const ImportTrackingTableRow = ({
@@ -39,7 +40,8 @@ const ImportTrackingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false
+  isHighlighted = false,
+  onFileClick
 }: ImportTrackingTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
@@ -58,6 +60,12 @@ const ImportTrackingTableRow = ({
     }
   };
 
+  const handleFileClick = () => {
+    if (onFileClick && record.file) {
+      onFileClick(record.file, 'import');
+    }
+  };
+
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
     isArchived ? 'bg-gray-200 opacity-60' : 
@@ -67,12 +75,25 @@ const ImportTrackingTableRow = ({
   return (
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <InlineEditCell
-          value={record.customer}
-          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
-          className="font-bold"
-        />
+        <div className="flex items-center gap-2">
+          <InlineEditCell
+            value={record.customer}
+            onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+            placeholder="Enter customer name"
+            className="font-bold"
+          />
+          {record.file && onFileClick && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleFileClick}
+              className="h-6 w-6 p-0 hover:bg-blue-100"
+              title={`Open ${record.file} in All Files`}
+            >
+              <ExternalLink className="h-3 w-3 text-blue-600" />
+            </Button>
+          )}
+        </div>
       </td>
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell

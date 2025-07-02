@@ -127,6 +127,7 @@ const FreightTrackerTabs = ({
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             highlightedRowId={highlightedRowId}
+            onFileClick={onFileClick}
           />
         </TabsContent>
 
@@ -138,6 +139,7 @@ const FreightTrackerTabs = ({
             selectedRows={selectedImportRows}
             setSelectedRows={setSelectedImportRows}
             highlightedRowId={highlightedRowId}
+            onFileClick={onFileClick}
           />
         </TabsContent>
 
@@ -149,6 +151,7 @@ const FreightTrackerTabs = ({
             selectedRows={selectedDomesticTruckingRows}
             setSelectedRows={setSelectedDomesticTruckingRows}
             highlightedRowId={highlightedRowId}
+            onFileClick={onFileClick}
           />
         </TabsContent>
 
