@@ -23,9 +23,6 @@ const FreightTracker = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('allFiles');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
 
   const {
@@ -47,6 +44,15 @@ const FreightTracker = () => {
     deleteAllFilesItem,
     deleteDomesticTruckingItem
   } = useFreightTrackerData(user?.uid || '');
+
+  console.log('FreightTracker render:', {
+    user: user?.uid,
+    loading,
+    exportData: exportData?.length,
+    importData: importData?.length,
+    allFilesData: allFilesData?.length,
+    domesticTruckingData: domesticTruckingData?.length
+  });
 
   const addNewRecord = async (tab: string) => {
     if (!user?.uid) {
@@ -236,10 +242,26 @@ const FreightTracker = () => {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Freight Tracking</h1>
         <div className="flex items-center space-x-4">
-          <Button onClick={() => setIsExportDialogOpen(true)}><Download className="mr-2 h-4 w-4" /> Export</Button>
+          <ExcelExportDialog
+            activeTab={activeTab}
+            exportData={exportData || []}
+            importData={importData || []}
+            allFilesData={allFilesData || []}
+            domesticTruckingData={domesticTruckingData || []}
+            selectedExportRows={selectedRows}
+            selectedImportRows={selectedRows}
+            selectedAllFilesRows={selectedRows}
+            selectedDomesticTruckingRows={selectedRows}
+          >
+            <Button><Download className="mr-2 h-4 w-4" /> Export</Button>
+          </ExcelExportDialog>
           <Button><Upload className="mr-2 h-4 w-4" /> Import</Button>
-          <Button variant="outline" onClick={() => setIsCalendarOpen(true)}><Calendar className="mr-2 h-4 w-4" /> Calendar</Button>
-          <Button variant="outline" onClick={() => setIsSettingsOpen(true)}><Settings className="mr-2 h-4 w-4" /> Settings</Button>
+          <CalendarView>
+            <Button variant="outline"><Calendar className="mr-2 h-4 w-4" /> Calendar</Button>
+          </CalendarView>
+          <NotificationSettings>
+            <Button variant="outline"><Settings className="mr-2 h-4 w-4" /> Settings</Button>
+          </NotificationSettings>
         </div>
       </div>
 
@@ -310,19 +332,6 @@ const FreightTracker = () => {
           />
         </TabsContent>
       </Tabs>
-
-      <ExcelExportDialog 
-        isOpen={isExportDialogOpen} 
-        onClose={() => setIsExportDialogOpen(false)}
-      />
-      <CalendarView 
-        isOpen={isCalendarOpen} 
-        onClose={() => setIsCalendarOpen(false)}
-      />
-      <NotificationSettings 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)}
-      />
     </div>
   );
 };
