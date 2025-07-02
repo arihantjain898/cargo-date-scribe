@@ -3,10 +3,10 @@ import React from 'react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
-import AllFilesTableRowActions from './AllFilesTableRowActions';
 import AllFilesTableFileCell from './AllFilesTableFileCell';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface AllFilesTableRowProps {
   record: AllFilesRecord;
@@ -236,16 +236,13 @@ const AllFilesTableRow = ({
         />
       </td>
       
-      <AllFilesTableRowActions
-        recordId={record.id}
-        customerName={record.customer}
-        isSelected={isSelected}
-        isArchived={isArchived}
-        onCheckboxChange={handleCheckboxChange}
-        onArchive={onArchive}
-        onUnarchive={onUnarchive}
-        onDelete={deleteRecord}
-      />
+      <td className="p-1 text-center">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={handleCheckboxChange}
+          className="h-3 w-3 border"
+        />
+      </td>
     </tr>
   );
 };
