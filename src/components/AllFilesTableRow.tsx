@@ -19,6 +19,7 @@ interface AllFilesTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   onFileClick?: (fileNumber: string, fileType: string) => void;
+  highlightedRowId?: string | null;
 }
 
 const AllFilesTableRow = ({
@@ -31,10 +32,12 @@ const AllFilesTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  onFileClick
+  onFileClick,
+  highlightedRowId
 }: AllFilesTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived === 'true' || record.archived === true;
+  const isHighlighted = highlightedRowId === record.id;
 
   const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
@@ -50,8 +53,9 @@ const AllFilesTableRow = ({
     }
   };
 
-  // More distinctive alternating colors matching export/import tabs
+  // More distinctive alternating colors matching export/import tabs with highlight support
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
+    isHighlighted ? 'bg-yellow-200 animate-pulse' :
     isArchived ? 'bg-gray-200 opacity-60' : 
     index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
   }`;

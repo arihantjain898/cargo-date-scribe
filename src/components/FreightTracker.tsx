@@ -260,7 +260,7 @@ const FreightTracker = () => {
   };
 
   const handleFileClick = (fileNumber: string, fileType: string) => {
-    console.log('File click:', { fileNumber, fileType });
+    console.log('File click from All Files:', { fileNumber, fileType });
     
     // Create the file identifier by combining type and number (e.g., "IS1000", "ES1001", "DT1002")
     const fileIdentifier = `${fileType}${fileNumber}`;
@@ -304,6 +304,38 @@ const FreightTracker = () => {
       toast({
         title: "No Linked Record Found",
         description: `No ${fileType} record found for file ${fileIdentifier}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleReverseFileClick = (fullFileIdentifier: string) => {
+    console.log('Reverse file click from tracking tab:', { fullFileIdentifier });
+    
+    // Parse the file identifier (e.g., "IS1000" -> fileType: "IS", fileNumber: "1000")
+    const fileType = fullFileIdentifier.substring(0, 2); // First 2 characters
+    const fileNumber = fullFileIdentifier.substring(2); // Remaining characters
+    
+    console.log('Parsed:', { fileType, fileNumber });
+    
+    // Find matching record in All Files table
+    const foundRecord = allFilesData?.find(record => 
+      record.file === fileType && record.number === fileNumber
+    );
+    
+    console.log('Found All Files record:', foundRecord);
+    
+    if (foundRecord) {
+      setActiveTab('allFiles');
+      setHighlightedRowId(foundRecord.id);
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+    } else {
+      toast({
+        title: "No Linked Record Found",
+        description: `No All Files record found for ${fileType} ${fileNumber}`,
         variant: "destructive"
       });
     }
@@ -407,6 +439,7 @@ const FreightTracker = () => {
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             onFileClick={handleFileClick}
+            highlightedRowId={highlightedRowId}
           />
         </TabsContent>
 
@@ -418,7 +451,7 @@ const FreightTracker = () => {
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             highlightedRowId={highlightedRowId}
-            onFileClick={handleFileClick}
+            onFileClick={handleReverseFileClick}
           />
         </TabsContent>
 
@@ -430,7 +463,7 @@ const FreightTracker = () => {
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             highlightedRowId={highlightedRowId}
-            onFileClick={handleFileClick}
+            onFileClick={handleReverseFileClick}
           />
         </TabsContent>
 
@@ -442,7 +475,7 @@ const FreightTracker = () => {
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             highlightedRowId={highlightedRowId}
-            onFileClick={handleFileClick}
+            onFileClick={handleReverseFileClick}
           />
         </TabsContent>
       </Tabs>
