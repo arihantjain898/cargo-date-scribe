@@ -19,6 +19,7 @@ interface AllFilesTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   onFileClick?: (fileNumber: string, fileType: string) => void;
+  highlightedRowId?: string | null;
 }
 
 const AllFilesTable = ({ 
@@ -27,7 +28,8 @@ const AllFilesTable = ({
   deleteRecord, 
   selectedRows, 
   setSelectedRows, 
-  onFileClick 
+  onFileClick,
+  highlightedRowId
 }: AllFilesTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
@@ -40,6 +42,30 @@ const AllFilesTable = ({
       }
     }
   }, [data.length]);
+
+  // Scroll to highlighted row when highlightedRowId changes
+  useEffect(() => {
+    if (highlightedRowId && scrollAreaRef.current) {
+      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      const highlightedRow = scrollAreaRef.current.querySelector(`[data-row-id="${highlightedRowId}"]`);
+      
+      if (viewport && highlightedRow) {
+        const rowElement = highlightedRow as HTMLElement;
+        const viewportElement = viewport as HTMLElement;
+        
+        // Calculate the position to scroll to center the row
+        const rowTop = rowElement.offsetTop;
+        const rowHeight = rowElement.offsetHeight;
+        const viewportHeight = viewportElement.clientHeight;
+        const scrollTop = rowTop - (viewportHeight / 2) + (rowHeight / 2);
+        
+        viewportElement.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [highlightedRowId]);
 
   const handleArchiveRecord = (id: string) => {
     updateRecord(id, 'archived', 'true');
@@ -86,6 +112,7 @@ const AllFilesTable = ({
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                   onFileClick={onFileClick}
+                  highlightedRowId={highlightedRowId}
                 />
               ))}
               <tr>
