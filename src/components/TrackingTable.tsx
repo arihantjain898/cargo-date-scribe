@@ -18,7 +18,7 @@ interface TrackingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onFileClick?: (fileNumber: string, fileType: string) => void;
+  onFileClick?: (fullFileIdentifier: string) => void;
 }
 
 const TrackingTable = ({ 
@@ -28,7 +28,7 @@ const TrackingTable = ({
   selectedRows, 
   setSelectedRows, 
   highlightedRowId,
-  onFileClick 
+  onFileClick
 }: TrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
@@ -41,6 +41,30 @@ const TrackingTable = ({
       }
     }
   }, [data.length]);
+
+  // Scroll to highlighted row when highlightedRowId changes
+  useEffect(() => {
+    if (highlightedRowId && scrollAreaRef.current) {
+      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      const highlightedRow = scrollAreaRef.current.querySelector(`[data-row-id="${highlightedRowId}"]`);
+      
+      if (viewport && highlightedRow) {
+        const rowElement = highlightedRow as HTMLElement;
+        const viewportElement = viewport as HTMLElement;
+        
+        // Calculate the position to scroll to center the row
+        const rowTop = rowElement.offsetTop;
+        const rowHeight = rowElement.offsetHeight;
+        const viewportHeight = viewportElement.clientHeight;
+        const scrollTop = rowTop - (viewportHeight / 2) + (rowHeight / 2);
+        
+        viewportElement.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [highlightedRowId]);
 
   const handleArchiveRecord = (id: string) => {
     updateRecord(id, 'archived', true);
@@ -55,7 +79,7 @@ const TrackingTable = ({
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <div className="p-4 border-b flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Export Checklist</h2>
+        <h2 className="text-lg font-semibold">Export Tracking</h2>
         <div className="flex gap-2">
           <Button
             variant={showArchived ? "default" : "outline"}
@@ -72,7 +96,7 @@ const TrackingTable = ({
       <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
         <div className="min-w-[2400px]">
           <table className="w-full border-collapse text-xs">
-            <TrackingTableHeader />
+            <TrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
             <tbody>
               {filteredData.map((record, index) => (
                 <TrackingTableRow
@@ -86,12 +110,12 @@ const TrackingTable = ({
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
-                  isHighlighted={highlightedRowId === record.id}
+                  highlightedRowId={highlightedRowId}
                   onFileClick={onFileClick}
                 />
               ))}
               <tr>
-                <td colSpan={26} className="h-12"></td>
+                <td colSpan={25} className="h-16"></td>
               </tr>
             </tbody>
           </table>

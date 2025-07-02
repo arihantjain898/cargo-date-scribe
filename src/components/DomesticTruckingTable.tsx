@@ -18,7 +18,7 @@ interface DomesticTruckingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onFileClick?: (fileNumber: string, fileType: string) => void;
+  onFileClick?: (fullFileIdentifier: string) => void;
 }
 
 const DomesticTruckingTable = ({ 
@@ -28,7 +28,7 @@ const DomesticTruckingTable = ({
   selectedRows, 
   setSelectedRows, 
   highlightedRowId,
-  onFileClick 
+  onFileClick
 }: DomesticTruckingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
@@ -41,6 +41,30 @@ const DomesticTruckingTable = ({
       }
     }
   }, [data.length]);
+
+  // Scroll to highlighted row when highlightedRowId changes
+  useEffect(() => {
+    if (highlightedRowId && scrollAreaRef.current) {
+      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      const highlightedRow = scrollAreaRef.current.querySelector(`[data-row-id="${highlightedRowId}"]`);
+      
+      if (viewport && highlightedRow) {
+        const rowElement = highlightedRow as HTMLElement;
+        const viewportElement = viewport as HTMLElement;
+        
+        // Calculate the position to scroll to center the row
+        const rowTop = rowElement.offsetTop;
+        const rowHeight = rowElement.offsetHeight;
+        const viewportHeight = viewportElement.clientHeight;
+        const scrollTop = rowTop - (viewportHeight / 2) + (rowHeight / 2);
+        
+        viewportElement.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [highlightedRowId]);
 
   const handleArchiveRecord = (id: string) => {
     updateRecord(id, 'archived', true);
@@ -72,7 +96,7 @@ const DomesticTruckingTable = ({
       <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1200px]">
           <table className="w-full border-collapse text-xs">
-            <DomesticTruckingTableHeader />
+            <DomesticTruckingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
             <tbody>
               {filteredData.map((record, index) => (
                 <DomesticTruckingTableRow
@@ -86,12 +110,12 @@ const DomesticTruckingTable = ({
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
-                  isHighlighted={highlightedRowId === record.id}
+                  highlightedRowId={highlightedRowId}
                   onFileClick={onFileClick}
                 />
               ))}
               <tr>
-                <td colSpan={12} className="h-12"></td>
+                <td colSpan={11} className="h-16"></td>
               </tr>
             </tbody>
           </table>

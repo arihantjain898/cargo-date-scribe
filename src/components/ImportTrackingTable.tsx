@@ -6,17 +6,6 @@ import { Archive, ArchiveRestore } from 'lucide-react';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import ImportTrackingTableHeader from './ImportTrackingTableHeader';
 import ImportTrackingTableRow from './ImportTrackingTableRow';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 
 interface ImportTrackingTableProps {
   data: ImportTrackingRecord[];
@@ -29,7 +18,7 @@ interface ImportTrackingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onFileClick?: (fileNumber: string, fileType: string) => void;
+  onFileClick?: (fullFileIdentifier: string) => void;
 }
 
 const ImportTrackingTable = ({ 
@@ -39,7 +28,7 @@ const ImportTrackingTable = ({
   selectedRows, 
   setSelectedRows, 
   highlightedRowId,
-  onFileClick 
+  onFileClick
 }: ImportTrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
@@ -52,6 +41,30 @@ const ImportTrackingTable = ({
       }
     }
   }, [data.length]);
+
+  // Scroll to highlighted row when highlightedRowId changes
+  useEffect(() => {
+    if (highlightedRowId && scrollAreaRef.current) {
+      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      const highlightedRow = scrollAreaRef.current.querySelector(`[data-row-id="${highlightedRowId}"]`);
+      
+      if (viewport && highlightedRow) {
+        const rowElement = highlightedRow as HTMLElement;
+        const viewportElement = viewport as HTMLElement;
+        
+        // Calculate the position to scroll to center the row
+        const rowTop = rowElement.offsetTop;
+        const rowHeight = rowElement.offsetHeight;
+        const viewportHeight = viewportElement.clientHeight;
+        const scrollTop = rowTop - (viewportHeight / 2) + (rowHeight / 2);
+        
+        viewportElement.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [highlightedRowId]);
 
   const handleArchiveRecord = (id: string) => {
     updateRecord(id, 'archived', true);
@@ -66,7 +79,7 @@ const ImportTrackingTable = ({
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <div className="p-4 border-b flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Import Checklist</h2>
+        <h2 className="text-lg font-semibold">Import Tracking</h2>
         <div className="flex gap-2">
           <Button
             variant={showArchived ? "default" : "outline"}
@@ -81,9 +94,9 @@ const ImportTrackingTable = ({
       </div>
       
       <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
-        <div className="min-w-[2000px]">
+        <div className="min-w-[1800px]">
           <table className="w-full border-collapse text-xs">
-            <ImportTrackingTableHeader />
+            <ImportTrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
             <tbody>
               {filteredData.map((record, index) => (
                 <ImportTrackingTableRow
@@ -97,12 +110,12 @@ const ImportTrackingTable = ({
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
-                  isHighlighted={highlightedRowId === record.id}
+                  highlightedRowId={highlightedRowId}
                   onFileClick={onFileClick}
                 />
               ))}
               <tr>
-                <td colSpan={24} className="h-12"></td>
+                <td colSpan={21} className="h-16"></td>
               </tr>
             </tbody>
           </table>
