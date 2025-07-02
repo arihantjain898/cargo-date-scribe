@@ -15,7 +15,7 @@ interface CalendarViewProps {
   data: TrackingRecord[];
   importData?: ImportTrackingRecord[];
   domesticData?: DomesticTruckingRecord[];
-  onCalendarEventClick?: (fileNumber: string, source: string) => void;
+  onCalendarEventClick?: (fileNumber: string, source: string, targetTab?: string) => void;
 }
 
 interface CalendarEvent {
@@ -38,15 +38,15 @@ interface EventDetailModalProps {
   event: CalendarEvent | null;
   isOpen: boolean;
   onClose: () => void;
-  onEventClick?: (fileNumber: string, source: string) => void;
+  onEventClick?: (fileNumber: string, source: string, targetTab?: string) => void;
 }
 
 const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailModalProps) => {
   if (!event) return null;
 
-  const handleEventClick = () => {
+  const handleEventClick = (targetTab?: string) => {
     if (onEventClick) {
-      onEventClick(event.file, event.source);
+      onEventClick(event.file, event.source, targetTab);
       onClose();
     }
   };
@@ -82,7 +82,7 @@ const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailM
             </div>
             <div>
               <div className="font-medium text-gray-600">File #</div>
-              <div className="text-gray-900 cursor-pointer text-blue-600 hover:underline" onClick={handleEventClick}>
+              <div className="text-gray-900 cursor-pointer text-blue-600 hover:underline" onClick={() => handleEventClick()}>
                 {event.file}
               </div>
             </div>
@@ -132,12 +132,21 @@ const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailM
           </div>
           
           {onEventClick && (
-            <Button 
-              onClick={handleEventClick}
-              className="w-full mt-4"
-            >
-              Go to {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic Trucking'} Table
-            </Button>
+            <div className="flex gap-2 mt-4">
+              <Button 
+                onClick={() => handleEventClick()}
+                className="flex-1"
+              >
+                Go to {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic Trucking'} Table
+              </Button>
+              <Button 
+                onClick={() => handleEventClick('allFiles')}
+                variant="outline"
+                className="flex-1"
+              >
+                Go to All Files
+              </Button>
+            </div>
           )}
         </div>
       </DialogContent>
@@ -367,6 +376,12 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
     setIsEventModalOpen(true);
+  };
+
+  const handleModalEventClick = (fileNumber: string, source: string, targetTab?: string) => {
+    if (onCalendarEventClick) {
+      onCalendarEventClick(fileNumber, source, targetTab);
+    }
   };
 
   const getFilteredEventsForUpcoming = () => {
@@ -662,7 +677,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         event={selectedEvent}
         isOpen={isEventModalOpen}
         onClose={() => setIsEventModalOpen(false)}
-        onEventClick={onCalendarEventClick}
+        onEventClick={handleModalEventClick}
       />
     </div>
   );

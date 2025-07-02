@@ -353,16 +353,51 @@ const FreightTracker = () => {
     }
   };
 
-  const handleCalendarEventClick = (fileNumber: string, source: string) => {
-    setHighlightedRowId(fileNumber);
-    if (source === 'export') {
-      setActiveTab('exportTracking');
-    } else if (source === 'import') {
-      setActiveTab('importTracking');
-    } else if (source === 'domestic') {
-      setActiveTab('domesticTrucking');
+  const handleCalendarEventClick = (fileNumber: string, source: string, targetTab?: string) => {
+    console.log('Calendar event click:', { fileNumber, source, targetTab });
+    
+    if (targetTab === 'allFiles') {
+      // Parse the file identifier (e.g., "IS1000" -> fileType: "IS", fileNumber: "1000")
+      const fileType = fileNumber.substring(0, 2); // First 2 characters
+      const fileNumberOnly = fileNumber.substring(2); // Remaining characters
+      
+      console.log('Parsed for All Files:', { fileType, fileNumberOnly });
+      console.log('Searching in all files data:', allFilesData?.map(r => ({ id: r.id, file: r.file, number: r.number })));
+      
+      // Find matching record in All Files table
+      const foundRecord = allFilesData?.find(record => 
+        record.file === fileType && record.number === fileNumberOnly
+      );
+      
+      console.log('Found All Files record:', foundRecord);
+      
+      if (foundRecord) {
+        setActiveTab('allFiles');
+        setHighlightedRowId(foundRecord.id);
+        console.log('Setting highlighted row ID:', foundRecord.id);
+        // Clear highlight after 3 seconds
+        setTimeout(() => {
+          setHighlightedRowId(null);
+        }, 3000);
+      } else {
+        toast({
+          title: "No Linked Record Found",
+          description: `No All Files record found for ${fileType} ${fileNumberOnly}`,
+          variant: "destructive"
+        });
+      }
+    } else {
+      // Original logic for linking to tracking tabs
+      setHighlightedRowId(fileNumber);
+      if (source === 'export') {
+        setActiveTab('exportTracking');
+      } else if (source === 'import') {
+        setActiveTab('importTracking');
+      } else if (source === 'domestic') {
+        setActiveTab('domesticTrucking');
+      }
+      setShowCalendar(false);
     }
-    setShowCalendar(false);
   };
 
   if (loading) {
