@@ -5,17 +5,17 @@ export interface TrackingRecord {
   ref: string;
   file: string;
   workOrder: string;
-  dropDone: boolean;
+  dropDone: string;
   dropDate: string;
-  returnNeeded: boolean;
+  returnNeeded: string;
   returnDate: string;
   docsSent: boolean;
   docsReceived: boolean;
   aesMblVgmSent: boolean;
   docCutoffDate: string;
-  titlesDispatched: boolean;
+  titlesDispatched: string;
   validatedFwd: boolean;
-  titlesReturned: boolean;
+  titlesReturned: string;
   sslDraftInvRec: boolean;
   draftInvApproved: boolean;
   transphereInvSent: boolean;
@@ -25,4 +25,6 @@ export interface TrackingRecord {
   released: boolean;
   docsSentToCustomer: boolean;
   notes: string;
+  archived?: boolean;
+  userId?: string;
 }

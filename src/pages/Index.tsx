@@ -1,8 +1,14 @@
 
 import FreightTracker from '../components/FreightTracker';
+// import FirebaseAuthWrapper from '../components/FirebaseAuthWrapper';
 
 const Index = () => {
-  return <FreightTracker />;
+  console.log("Index component rendering");
+  return (
+    <div>
+      <FreightTracker />
+    </div>
+  );
 };
 
 export default Index;

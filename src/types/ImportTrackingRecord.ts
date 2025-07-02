@@ -2,7 +2,7 @@
 export interface ImportTrackingRecord {
   id: string;
   customer: string;
-  reference: string;
+  booking: string;
   file: string;
   etaFinalPod: string;
   bond: string;
@@ -18,6 +18,10 @@ export interface ImportTrackingRecord {
   invoiceSent: boolean;
   paymentReceived: boolean;
   workOrderSetup: boolean;
+  delivered: string;
+  returned: string;
   deliveryDate: string;
   notes: string;
+  archived?: boolean;
+  userId?: string;
 }

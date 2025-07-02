@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface InlineEditCellProps {
   value: string | boolean;
@@ -10,6 +11,7 @@ interface InlineEditCellProps {
   isDate?: boolean;
   placeholder?: string;
   className?: string;
+  options?: string[];
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -18,7 +20,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isBoolean = false,
   isDate = false,
   placeholder = "Click to edit",
-  className = ""
+  className = "",
+  options = []
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -68,12 +71,22 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   const handleClick = () => {
     if (isBoolean) {
       onSave(!value);
+    } else if (options.length > 0) {
+      // Cycle through options
+      const currentIndex = options.indexOf(String(value));
+      const nextIndex = (currentIndex + 1) % options.length;
+      onSave(options[nextIndex]);
     } else {
       setIsEditing(true);
     }
   };
 
-  if (isEditing && !isBoolean) {
+  const handleSelectChange = (newValue: string) => {
+    onSave(newValue);
+    setIsEditing(false);
+  };
+
+  if (isEditing && !isBoolean && options.length === 0) {
     return (
       <div className="w-full min-h-[24px] p-1">
         {isDate ? (
@@ -101,12 +114,39 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     );
   }
 
+  if (isEditing && options.length > 0) {
+    return (
+      <div className="w-full min-h-[24px] p-1">
+        <Select value={String(value)} onValueChange={handleSelectChange}>
+          <SelectTrigger className="w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option} value={option} className="text-xs">
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  }
+
   const displayValue = isBoolean 
     ? (value ? 'Yes' : 'No')
     : (String(value) || placeholder);
 
-  const displayClasses = isBoolean
+  const getStatusColor = (val: string) => {
+    if (val === 'Yes' || val === 'Done') return 'bg-green-100 text-green-800 hover:bg-green-200';
+    if (val === 'Pending') return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+    if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200'; // N/A counts as complete
+    return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+  };
+
+  const displayClasses = isBoolean || options.length > 0
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${
+        options.length > 0 ? getStatusColor(String(value)) :
         value 
           ? 'bg-green-100 text-green-800 hover:bg-green-200' 
           : 'bg-gray-100 text-gray-800 hover:bg-gray-200'

@@ -1,683 +1,496 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Edit3, Plus, Bell, Search, Download, Upload, Package, Truck, FileText, Trash2, Home } from 'lucide-react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import TrackingTable from './TrackingTable';
-import ImportTrackingTable from './ImportTrackingTable';
-import AllFilesTable from './AllFilesTable';
-import DomesticTruckingTable from './DomesticTruckingTable';
+import { Download, Upload, Calendar, Settings, Plus, Database } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
+import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
+import ExcelExportDialog from './ExcelExportDialog';
 import CalendarView from './CalendarView';
 import NotificationSettings from './NotificationSettings';
-import ExcelExportDialog from './ExcelExportDialog';
-import ExcelImportDialog from './ExcelImportDialog';
-import { TrackingRecord } from '../types/TrackingRecord';
-import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import AllFilesTable from './AllFilesTable';
+import ImportTrackingTable from './ImportTrackingTable';
+import TrackingTable from './TrackingTable';
+import DomesticTruckingTable from './DomesticTruckingTable';
 import { AllFilesRecord } from '../types/AllFilesRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { TrackingRecord } from '../types/TrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
-import { useExcelImport } from '../hooks/useExcelImport';
-import { useSearch, useImportSearch } from '../hooks/useSearch';
-import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
-import { useDomesticTruckingSearch } from '../hooks/useDomesticTruckingSearch';
-import { useNotifications } from '../hooks/useNotifications';
-import { useFirestore } from '../hooks/useFirestore';
+import { 
+  generateAllFilesSampleData, 
+  generateImportSampleData, 
+  generateExportSampleData, 
+  generateDomesticSampleData 
+} from '../utils/sampleDataGenerator';
 
 const FreightTracker = () => {
-  // Get active tab from localStorage or default to 'all-files' (now first tab)
-  const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('freight-tracker-active-tab') || 'all-files';
+  const { user } = useFirebaseAuth();
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('allFiles');
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  // For testing: use a test user ID when no user is authenticated
+  const currentUserId = user?.uid || 'test-user-123';
+
+  const {
+    exportData,
+    importData,
+    allFilesData,
+    domesticTruckingData,
+    loading,
+    addExportItem,
+    addImportItem,
+    addAllFilesItem,
+    addDomesticTruckingItem,
+    updateRecord,
+    updateImportRecord,
+    updateAllFilesRecord,
+    updateDomesticTruckingRecord,
+    deleteExportItem,
+    deleteImportItem,
+    deleteAllFilesItem,
+    deleteDomesticTruckingItem
+  } = useFreightTrackerData(currentUserId);
+
+  console.log('FreightTracker render:', {
+    user: user?.uid || 'test-user-123',
+    loading,
+    exportData: exportData?.length,
+    importData: importData?.length,
+    allFilesData: allFilesData?.length,
+    domesticTruckingData: domesticTruckingData?.length,
+    highlightedRowId,
+    activeTab
   });
 
-  // Persist active tab to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('freight-tracker-active-tab', activeTab);
-  }, [activeTab]);
+  const loadSampleData = async () => {
+    try {
+      const allFilesRecords = generateAllFilesSampleData();
+      const importRecords = generateImportSampleData();
+      const exportRecords = generateExportSampleData();
+      const domesticRecords = generateDomesticSampleData();
 
-  // Use Firebase for data persistence
-  const currentUserId = 'demo-user';
-  const {
-    data: exportData,
-    loading: exportLoading,
-    addItem: addExportItem,
-    updateItem: updateExportItem,
-    deleteItem: deleteExportItem
-  } = useFirestore<TrackingRecord>('export_tracking', currentUserId);
+      // Add all sample data
+      for (const record of allFilesRecords) {
+        await addAllFilesItem(record);
+      }
+      for (const record of importRecords) {
+        await addImportItem(record);
+      }
+      for (const record of exportRecords) {
+        await addExportItem(record);
+      }
+      for (const record of domesticRecords) {
+        await addDomesticTruckingItem(record);
+      }
 
-  const {
-    data: importData,
-    loading: importLoading,
-    addItem: addImportItem,
-    updateItem: updateImportItem,
-    deleteItem: deleteImportItem
-  } = useFirestore<ImportTrackingRecord>('import_tracking', currentUserId);
-
-  const {
-    data: allFilesData,
-    loading: allFilesLoading,
-    addItem: addAllFilesItem,
-    updateItem: updateAllFilesItem,
-    deleteItem: deleteAllFilesItem
-  } = useFirestore<AllFilesRecord>('all_files', currentUserId);
-
-  const {
-    data: domesticTruckingData,
-    loading: domesticTruckingLoading,
-    addItem: addDomesticTruckingItem,
-    updateItem: updateDomesticTruckingItem,
-    deleteItem: deleteDomesticTruckingItem
-  } = useFirestore<DomesticTruckingRecord>('domestic_trucking', currentUserId);
-
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
-  const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
-  const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
-  const [sampleDataAdded, setSampleDataAdded] = useState(false);
-
-  const { notifications, addNotification } = useNotifications();
-  const { fileInputRef, importFromExcel } = useExcelImport(() => {}, () => {}, () => {}, () => {});
-  
-  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
-  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
-  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
-  const { searchTerm: domesticTruckingSearchTerm, setSearchTerm: setDomesticTruckingSearchTerm, filteredData: filteredDomesticTruckingData } = useDomesticTruckingSearch(domesticTruckingData);
-
-  // Welcome notification on mount
-  useEffect(() => {
-    if (!exportLoading && !importLoading && !allFilesLoading && !domesticTruckingLoading) {
-      addNotification(
-        'Welcome to Freight Tracker',
-        'Your data is synced with Firebase. All changes will persist.',
-        'success'
-      );
-    }
-  }, [addNotification, exportLoading, importLoading, allFilesLoading, domesticTruckingLoading]);
-
-  // Get current search term and setter based on active tab
-  const getCurrentSearchProps = () => {
-    switch (activeTab) {
-      case 'export-table':
-        return { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm };
-      case 'import-table':
-        return { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm };
-      case 'all-files':
-        return { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm };
-      case 'domestic-trucking':
-        return { searchTerm: domesticTruckingSearchTerm, setSearchTerm: setDomesticTruckingSearchTerm };
-      default:
-        return { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm };
+      toast({
+        title: "Sample Data Loaded",
+        description: "30 All Files records and 30 linked tracking records have been added.",
+      });
+    } catch (error) {
+      console.error('Error loading sample data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load sample data. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
-  const { searchTerm, setSearchTerm } = getCurrentSearchProps();
-
-  const getImportDataType = (): 'export' | 'import' | 'all-files' | 'domestic-trucking' => {
-    switch (activeTab) {
-      case 'export-table':
-        return 'export';
-      case 'import-table':
-        return 'import';
-      case 'all-files':
-        return 'all-files';
-      case 'domestic-trucking':
-        return 'domestic-trucking';
-      default:
-        return 'all-files';
+  const addNewRecord = async (tab: string) => {
+    try {
+      if (tab === 'allFiles') {
+        const newRecord: Omit<AllFilesRecord, 'id'> = {
+          customer: '',
+          file: '',
+          number: '',
+          originPort: '',
+          originState: '',
+          destinationPort: '',
+          destinationCountry: '',
+          container20: '',
+          container40: '',
+          roro: '',
+          lcl: '',
+          air: '',
+          truck: '',
+          ssl: '',
+          nvo: '',
+          comments: '',
+          salesContact: '',
+          archived: false
+        };
+        await addAllFilesItem(newRecord);
+      } else if (tab === 'importTracking') {
+        const newRecord: Omit<ImportTrackingRecord, 'id'> = {
+          customer: '',
+          booking: '',
+          file: '',
+          etaFinalPod: '',
+          bond: '',
+          poa: false,
+          isf: false,
+          packingListCommercialInvoice: false,
+          billOfLading: false,
+          arrivalNotice: false,
+          isfFiled: false,
+          entryFiled: false,
+          blRelease: false,
+          customsRelease: false,
+          invoiceSent: false,
+          paymentReceived: false,
+          workOrderSetup: false,
+          delivered: 'No',
+          returned: 'No',
+          deliveryDate: '',
+          notes: '',
+          archived: false
+        };
+        await addImportItem(newRecord);
+      } else if (tab === 'exportTracking') {
+        const newRecord: Omit<TrackingRecord, 'id'> = {
+          customer: '',
+          ref: '',
+          file: '',
+          workOrder: '',
+          dropDone: 'No',
+          dropDate: '',
+          returnNeeded: 'No',
+          returnDate: '',
+          docsSent: false,
+          docsReceived: false,
+          docCutoffDate: '',
+          aesMblVgmSent: false,
+          titlesDispatched: 'N/A',
+          validatedFwd: false,
+          titlesReturned: 'N/A',
+          sslDraftInvRec: false,
+          draftInvApproved: false,
+          transphereInvSent: false,
+          paymentRec: false,
+          sslPaid: false,
+          insured: false,
+          released: false,
+          docsSentToCustomer: false,
+          notes: '',
+          archived: false
+        };
+        await addExportItem(newRecord);
+      } else if (tab === 'domesticTrucking') {
+        const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
+          customer: '',
+          file: '',
+          woSent: false,
+          insurance: false,
+          pickDate: '',
+          delivered: '',
+          paymentReceived: false,
+          paymentMade: false,
+          notes: '',
+          archived: false
+        };
+        await addDomesticTruckingItem(newRecord);
+      }
+      
+      toast({
+        title: "Record Added",
+        description: "New record has been added successfully.",
+      });
+    } catch (error) {
+      console.error('Error adding record:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add record. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
-  const updateRecord = async (
+  const handleUpdateRecord = async (
+    tab: string,
     id: string,
-    field: keyof TrackingRecord,
+    field: string,
     value: string | boolean
   ) => {
-    console.log('Updating export record:', id, field, value);
+    try {
+      if (tab === 'allFiles') {
+        await updateAllFilesRecord(id, field as keyof AllFilesRecord, value as string);
+      } else if (tab === 'importTracking') {
+        await updateImportRecord(id, field as keyof ImportTrackingRecord, value);
+      } else if (tab === 'exportTracking') {
+        await updateRecord(id, field as keyof TrackingRecord, value);
+      } else if (tab === 'domesticTrucking') {
+        await updateDomesticTruckingRecord(id, field as keyof DomesticTruckingRecord, value);
+      }
+    } catch (error) {
+      console.error('Error updating record:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update record. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteRecord = async (tab: string, id: string) => {
+    try {
+      if (tab === 'allFiles') {
+        await deleteAllFilesItem(id);
+      } else if (tab === 'importTracking') {
+        await deleteImportItem(id);
+      } else if (tab === 'exportTracking') {
+        await deleteExportItem(id);
+      } else if (tab === 'domesticTrucking') {
+        await deleteDomesticTruckingItem(id);
+      }
+      setSelectedRows(prev => prev.filter(rowId => rowId !== id));
+      toast({
+        title: "Record Deleted",
+        description: "Record has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error('Error deleting record:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete record. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleFileClick = (fileNumber: string, fileType: string) => {
+    console.log('File click from All Files:', { fileNumber, fileType });
     
-    try {
-      await updateExportItem(id, { [field]: value } as Partial<TrackingRecord>);
-      console.log('Successfully updated export record in Firebase');
-    } catch (error) {
-      console.error('Error updating export record:', error);
-      addNotification('Error', 'Failed to save changes', 'error');
-    }
-  };
-
-  const updateImportRecord = async (
-    id: string,
-    field: keyof ImportTrackingRecord,
-    value: string | boolean
-  ) => {
-    try {
-      await updateImportItem(id, { [field]: value } as Partial<ImportTrackingRecord>);
-    } catch (error) {
-      console.error('Error updating import record:', error);
-      addNotification('Error', 'Failed to save changes', 'error');
-    }
-  };
-
-  const updateAllFilesRecord = async (
-    id: string,
-    field: keyof AllFilesRecord,
-    value: string
-  ) => {
-    try {
-      await updateAllFilesItem(id, { [field]: value } as Partial<AllFilesRecord>);
-    } catch (error) {
-      console.error('Error updating all files record:', error);
-      addNotification('Error', 'Failed to save changes', 'error');
-    }
-  };
-
-  const updateDomesticTruckingRecord = async (
-    id: string,
-    field: keyof DomesticTruckingRecord,
-    value: string | boolean
-  ) => {
-    try {
-      await updateDomesticTruckingItem(id, { [field]: value } as Partial<DomesticTruckingRecord>);
-    } catch (error) {
-      console.error('Error updating domestic trucking record:', error);
-      addNotification('Error', 'Failed to save changes', 'error');
-    }
-  };
-
-  const deleteRecord = async (id: string) => {
-    setSelectedRows(prev => prev.filter(rowId => rowId !== id));
-
-    try {
-      await deleteExportItem(id);
-      addNotification('Success', 'Record deleted successfully', 'success');
-    } catch (error) {
-      console.error('Error deleting export record:', error);
-      addNotification('Error', 'Failed to delete record', 'error');
-    }
-  };
-
-  const deleteImportRecord = async (id: string) => {
-    setSelectedImportRows(prev => prev.filter(rowId => rowId !== id));
-
-    try {
-      await deleteImportItem(id);
-      addNotification('Success', 'Record deleted successfully', 'success');
-    } catch (error) {
-      console.error('Error deleting import record:', error);
-      addNotification('Error', 'Failed to delete record', 'error');
-    }
-  };
-
-  const deleteAllFilesRecord = async (id: string) => {
-    setSelectedAllFilesRows(prev => prev.filter(rowId => rowId !== id));
-
-    try {
-      await deleteAllFilesItem(id);
-      addNotification('Success', 'Record deleted successfully', 'success');
-    } catch (error) {
-      console.error('Error deleting all files record:', error);
-      addNotification('Error', 'Failed to delete record', 'error');
-    }
-  };
-
-  const deleteDomesticTruckingRecord = async (id: string) => {
-    setSelectedDomesticTruckingRows(prev => prev.filter(rowId => rowId !== id));
-
-    try {
-      await deleteDomesticTruckingItem(id);
-      addNotification('Success', 'Record deleted successfully', 'success');
-    } catch (error) {
-      console.error('Error deleting domestic trucking record:', error);
-      addNotification('Error', 'Failed to delete record', 'error');
-    }
-  };
-
-  const deleteBulkExportRecords = async () => {
-    if (selectedRows.length === 0) return;
+    // Create the file identifier by combining type and number (e.g., "IS1000", "ES1001", "DT1002")
+    const fileIdentifier = `${fileType}${fileNumber}`;
+    console.log('Looking for file identifier:', fileIdentifier);
     
-    try {
-      await Promise.all(selectedRows.map(id => deleteExportItem(id)));
-      setSelectedRows([]);
-      addNotification('Success', `Deleted ${selectedRows.length} export records`, 'success');
-    } catch (error) {
-      console.error('Error deleting export records:', error);
-      addNotification('Error', 'Failed to delete some records', 'error');
-    }
-  };
-
-  const deleteBulkImportRecords = async () => {
-    if (selectedImportRows.length === 0) return;
+    // Find matching record in the appropriate tab based on file type
+    let targetTab = 'allFiles';
+    let foundRecord = null;
     
-    try {
-      await Promise.all(selectedImportRows.map(id => deleteImportItem(id)));
-      setSelectedImportRows([]);
-      addNotification('Success', `Deleted ${selectedImportRows.length} import records`, 'success');
-    } catch (error) {
-      console.error('Error deleting import records:', error);
-      addNotification('Error', 'Failed to delete some records', 'error');
+    if (fileType === 'IS' || fileType === 'IA') {
+      // Import tracking
+      console.log('Searching in import data:', importData?.map(r => ({ id: r.id, file: r.file })));
+      foundRecord = importData?.find(record => record.file === fileIdentifier);
+      if (foundRecord) {
+        targetTab = 'importTracking';
+        console.log('Found import record:', foundRecord.id);
+        setHighlightedRowId(foundRecord.id);
+      }
+    } else if (fileType === 'ES' || fileType === 'EA') {
+      // Export tracking
+      console.log('Searching in export data:', exportData?.map(r => ({ id: r.id, file: r.file })));
+      foundRecord = exportData?.find(record => record.file === fileIdentifier);
+      if (foundRecord) {
+        targetTab = 'exportTracking';
+        console.log('Found export record:', foundRecord.id);
+        setHighlightedRowId(foundRecord.id);
+      }
+    } else if (fileType === 'DT' || fileType === 'ET') {
+      // Domestic trucking
+      console.log('Searching in domestic data:', domesticTruckingData?.map(r => ({ id: r.id, file: r.file })));
+      foundRecord = domesticTruckingData?.find(record => record.file === fileIdentifier);
+      if (foundRecord) {
+        targetTab = 'domesticTrucking';
+        console.log('Found domestic record:', foundRecord.id);
+        setHighlightedRowId(foundRecord.id);
+      }
     }
-  };
-
-  const deleteBulkAllFilesRecords = async () => {
-    if (selectedAllFilesRows.length === 0) return;
     
-    try {
-      await Promise.all(selectedAllFilesRows.map(id => deleteAllFilesItem(id)));
-      setSelectedAllFilesRows([]);
-      addNotification('Success', `Deleted ${selectedAllFilesRows.length} all files records`, 'success');
-    } catch (error) {
-      console.error('Error deleting all files records:', error);
-      addNotification('Error', 'Failed to delete some records', 'error');
-    }
-  };
-
-  const deleteBulkDomesticTruckingRecords = async () => {
-    if (selectedDomesticTruckingRows.length === 0) return;
+    console.log('Found record:', foundRecord, 'Target tab:', targetTab);
     
-    try {
-      await Promise.all(selectedDomesticTruckingRows.map(id => deleteDomesticTruckingItem(id)));
-      setSelectedDomesticTruckingRows([]);
-      addNotification('Success', `Deleted ${selectedDomesticTruckingRows.length} domestic trucking records`, 'success');
-    } catch (error) {
-      console.error('Error deleting domestic trucking records:', error);
-      addNotification('Error', 'Failed to delete some records', 'error');
+    if (foundRecord) {
+      setActiveTab(targetTab);
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+    } else {
+      console.log('No record found for:', fileIdentifier);
+      toast({
+        title: "No Linked Record Found",
+        description: `No ${fileType} record found for file ${fileIdentifier}`,
+        variant: "destructive"
+      });
     }
   };
 
-  const addNewRecord = async () => {
-    console.log('=== STARTING TO ADD NEW EXPORT RECORD ===');
+  const handleReverseFileClick = (fullFileIdentifier: string) => {
+    console.log('Reverse file click from tracking tab:', { fullFileIdentifier });
     
-    const newRecord: Omit<TrackingRecord, 'id'> = {
-      customer: "",
-      ref: "",
-      file: "",
-      workOrder: "",
-      dropDone: false,
-      dropDate: "",
-      returnNeeded: false,
-      returnDate: "",
-      docsSent: false,
-      docsReceived: false,
-      aesMblVgmSent: false,
-      docCutoffDate: "",
-      titlesDispatched: false,
-      validatedFwd: false,
-      titlesReturned: false,
-      sslDraftInvRec: false,
-      draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: false,
-      sslPaid: false,
-      insured: false,
-      released: false,
-      docsSentToCustomer: false,
-      notes: ""
-    };
-
-    console.log('New record to add:', newRecord);
-    console.log('Current user ID:', currentUserId);
-    console.log('addExportItem function:', addExportItem);
-
-    try {
-      const id = await addExportItem(newRecord);
-      console.log('=== SUCCESSFULLY ADDED EXPORT RECORD ===', id);
-      addNotification('Success', 'New export record added successfully', 'success');
-    } catch (error) {
-      console.error('=== ERROR ADDING EXPORT RECORD ===', error);
-      addNotification('Error', `Failed to add record: ${error}`, 'error');
-    }
-  };
-
-  const addNewImportRecord = async () => {
-    console.log('=== STARTING TO ADD NEW IMPORT RECORD ===');
+    // Parse the file identifier (e.g., "IS1000" -> fileType: "IS", fileNumber: "1000")
+    const fileType = fullFileIdentifier.substring(0, 2); // First 2 characters
+    const fileNumber = fullFileIdentifier.substring(2); // Remaining characters
     
-    const newRecord: Omit<ImportTrackingRecord, 'id'> = {
-      customer: "",
-      reference: "",
-      file: "",
-      etaFinalPod: "",
-      bond: "",
-      poa: false,
-      isf: false,
-      packingListCommercialInvoice: false,
-      billOfLading: false,
-      arrivalNotice: false,
-      isfFiled: false,
-      entryFiled: false,
-      blRelease: false,
-      customsRelease: false,
-      invoiceSent: false,
-      paymentReceived: false,
-      workOrderSetup: false,
-      deliveryDate: "",
-      notes: ""
-    };
-
-    console.log('New import record to add:', newRecord);
-    console.log('Current user ID:', currentUserId);
-
-    try {
-      const id = await addImportItem(newRecord);
-      console.log('=== SUCCESSFULLY ADDED IMPORT RECORD ===', id);
-      addNotification('Success', 'New import record added successfully', 'success');
-    } catch (error) {
-      console.error('=== ERROR ADDING IMPORT RECORD ===', error);
-      addNotification('Error', `Failed to add record: ${error}`, 'error');
-    }
-  };
-
-  const addNewAllFilesRecord = async () => {
-    console.log('=== STARTING TO ADD NEW ALL FILES RECORD ===');
+    console.log('Parsed:', { fileType, fileNumber });
+    console.log('Searching in all files data:', allFilesData?.map(r => ({ id: r.id, file: r.file, number: r.number })));
     
-    const newRecord: Omit<AllFilesRecord, 'id'> = {
-      file: "ES",
-      number: "",
-      customer: "",
-      originPort: "",
-      originState: "",
-      destinationPort: "",
-      destinationCountry: "",
-      container20: "",
-      container40: "",
-      roro: "",
-      lcl: "",
-      air: "",
-      truck: "",
-      ssl: "",
-      nvo: "",
-      comments: "",
-      salesContact: ""
-    };
-
-    console.log('New all files record to add:', newRecord);
-    console.log('Current user ID:', currentUserId);
-
-    try {
-      const id = await addAllFilesItem(newRecord);
-      console.log('=== SUCCESSFULLY ADDED ALL FILES RECORD ===', id);
-      addNotification('Success', 'New all files record added successfully', 'success');
-    } catch (error) {
-      console.error('=== ERROR ADDING ALL FILES RECORD ===', error);
-      addNotification('Error', `Failed to add record: ${error}`, 'error');
-    }
-  };
-
-  const addNewDomesticTruckingRecord = async () => {
-    console.log('=== STARTING TO ADD NEW DOMESTIC TRUCKING RECORD ===');
+    // Find matching record in All Files table
+    const foundRecord = allFilesData?.find(record => 
+      record.file === fileType && record.number === fileNumber
+    );
     
-    const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
-      customer: "",
-      file: "",
-      woSent: false,
-      insurance: false,
-      pickDate: "",
-      delivered: "",
-      paymentReceived: false,
-      paymentMade: false,
-      notes: ""
-    };
-
-    console.log('New domestic trucking record to add:', newRecord);
-    console.log('Current user ID:', currentUserId);
-
-    try {
-      const id = await addDomesticTruckingItem(newRecord);
-      console.log('=== SUCCESSFULLY ADDED DOMESTIC TRUCKING RECORD ===', id);
-      addNotification('Success', 'New domestic trucking record added successfully', 'success');
-    } catch (error) {
-      console.error('=== ERROR ADDING DOMESTIC TRUCKING RECORD ===', error);
-      addNotification('Error', `Failed to add record: ${error}`, 'error');
-    }
-  };
-
-  const handleAddRecord = () => {
-    console.log('=== ADD RECORD BUTTON CLICKED ===');
-    console.log('Active tab:', activeTab);
-    console.log('Export data length:', exportData.length);
-    console.log('Import data length:', importData.length);
-    console.log('All files data length:', allFilesData.length);
-    console.log('Domestic trucking data length:', domesticTruckingData.length);
+    console.log('Found All Files record:', foundRecord);
     
-    switch (activeTab) {
-      case 'export-table':
-        addNewRecord();
-        break;
-      case 'import-table':
-        addNewImportRecord();
-        break;
-      case 'all-files':
-        addNewAllFilesRecord();
-        break;
-      case 'domestic-trucking':
-        addNewDomesticTruckingRecord();
-        break;
-      default:
-        console.log('Unknown tab, defaulting to export');
-        addNewRecord();
+    if (foundRecord) {
+      setActiveTab('allFiles');
+      setHighlightedRowId(foundRecord.id);
+      console.log('Setting highlighted row ID:', foundRecord.id);
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+    } else {
+      toast({
+        title: "No Linked Record Found",
+        description: `No All Files record found for ${fileType} ${fileNumber}`,
+        variant: "destructive"
+      });
     }
   };
 
-  const getSearchPlaceholder = () => {
-    switch (activeTab) {
-      case 'export-table':
-        return 'Search by customer, ref, file, or work order...';
-      case 'import-table':
-        return 'Search by reference, file, bond, or notes...';
-      case 'all-files':
-        return 'Search by customer, file, port, or destination...';
-      case 'domestic-trucking':
-        return 'Search by customer, file, or notes...';
-      default:
-        return 'Search...';
+  const handleCalendarEventClick = (fileNumber: string, source: string) => {
+    setHighlightedRowId(fileNumber);
+    if (source === 'export') {
+      setActiveTab('exportTracking');
+    } else if (source === 'import') {
+      setActiveTab('importTracking');
+    } else if (source === 'domestic') {
+      setActiveTab('domesticTrucking');
     }
+    setShowCalendar(false);
   };
 
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  if (exportLoading || importLoading || allFilesLoading || domesticTruckingLoading) {
+  if (loading) {
     return (
-      <div className="w-full min-h-screen bg-gray-50 p-2 md:p-6 flex items-center justify-center">
+      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
       </div>
     );
   }
 
+  if (showCalendar) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">Calendar View</h1>
+          <Button onClick={() => setShowCalendar(false)}>
+            Back to Tables
+          </Button>
+        </div>
+        <CalendarView
+          data={exportData || []}
+          importData={importData || []}
+          domesticData={domesticTruckingData || []}
+          onCalendarEventClick={handleCalendarEventClick}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full min-h-screen bg-gray-50 p-2 md:p-6">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden">
-          <div className="bg-white border-b border-gray-200 p-4 md:p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 gap-4">
-              <div>
-                <h1 className="text-xl md:text-2xl font-semibold text-gray-900 mb-1">Freight Forwarding Tracker</h1>
-                <p className="text-sm md:text-base text-gray-600">Comprehensive shipment tracking and management system</p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                <ExcelExportDialog 
-                  activeTab={activeTab}
-                  exportData={filteredExportData} 
-                  importData={filteredImportData}
-                  allFilesData={filteredAllFilesData}
-                  domesticTruckingData={filteredDomesticTruckingData}
-                  selectedExportRows={selectedRows}
-                  selectedImportRows={selectedImportRows}
-                  selectedAllFilesRows={selectedAllFilesRows}
-                  selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-                >
-                  <Button variant="outline" size="sm" className="text-xs md:text-sm">
-                    <Download className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                    Export Excel
-                  </Button>
-                </ExcelExportDialog>
-
-                <ExcelImportDialog
-                  activeTab={activeTab}
-                  onImportClick={handleImportClick}
-                >
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="text-xs md:text-sm"
-                  >
-                    <Upload className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                    Import Excel
-                  </Button>
-                </ExcelImportDialog>
-
-                {/* Conditional bulk delete button */}
-                {((activeTab === 'export-table' && selectedRows.length > 0) ||
-                  (activeTab === 'import-table' && selectedImportRows.length > 0) ||
-                  (activeTab === 'all-files' && selectedAllFilesRows.length > 0) ||
-                  (activeTab === 'domestic-trucking' && selectedDomesticTruckingRows.length > 0)) && (
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
-                    className="text-xs md:text-sm"
-                    onClick={() => {
-                      if (activeTab === 'export-table') deleteBulkExportRecords();
-                      else if (activeTab === 'import-table') deleteBulkImportRecords();
-                      else if (activeTab === 'all-files') deleteBulkAllFilesRecords();
-                      else if (activeTab === 'domestic-trucking') deleteBulkDomesticTruckingRecords();
-                    }}
-                  >
-                    <Trash2 className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                    Delete Selected ({
-                      activeTab === 'export-table' ? selectedRows.length :
-                      activeTab === 'import-table' ? selectedImportRows.length :
-                      activeTab === 'all-files' ? selectedAllFilesRows.length :
-                      selectedDomesticTruckingRows.length
-                    })
-                  </Button>
-                )}
-
-                <NotificationSettings>
-                  <Button variant="outline" size="sm" className="text-xs md:text-sm">
-                    <Bell className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                    Notifications
-                  </Button>
-                </NotificationSettings>
-                
-                <Button 
-                  onClick={handleAddRecord} 
-                  size="sm"
-                  className="text-xs md:text-sm"
-                >
-                  <Plus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Add Record
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder={getSearchPlaceholder()}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 text-sm"
-                />
-              </div>
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={(e) => importFromExcel(e, getImportDataType())}
-              className="hidden"
-            />
-          </div>
-
-          <div className="flex-1 overflow-hidden">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-              <TabsList className="mx-4 md:mx-6 mt-4 bg-gray-100 p-1 rounded-lg w-fit">
-                <TabsTrigger 
-                  value="all-files" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <FileText className="w-3 h-3 md:w-4 md:h-4" />
-                  All Files
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="export-table" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <Package className="w-3 h-3 md:w-4 md:h-4" />
-                  Export Checklist
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="import-table" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <Truck className="w-3 h-3 md:w-4 md:h-4" />
-                  Import Checklist
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="domestic-trucking" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <Home className="w-3 h-3 md:w-4 md:h-4" />
-                  Domestic Trucking
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="calendar" 
-                  className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm px-3 md:px-4 py-2 rounded-md text-sm"
-                >
-                  <Calendar className="w-3 h-3 md:w-4 md:h-4" />
-                  Calendar View
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="all-files" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <AllFilesTable 
-                  data={filteredAllFilesData} 
-                  updateRecord={updateAllFilesRecord} 
-                  deleteRecord={deleteAllFilesRecord}
-                  selectedRows={selectedAllFilesRows}
-                  setSelectedRows={setSelectedAllFilesRows}
-                />
-              </TabsContent>
-
-              <TabsContent value="export-table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <TrackingTable 
-                  data={filteredExportData} 
-                  updateRecord={updateRecord} 
-                  deleteRecord={deleteRecord}
-                  selectedRows={selectedRows}
-                  setSelectedRows={setSelectedRows}
-                />
-              </TabsContent>
-
-              <TabsContent value="import-table" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <ImportTrackingTable 
-                  data={filteredImportData} 
-                  updateRecord={updateImportRecord} 
-                  deleteRecord={deleteImportRecord}
-                  selectedRows={selectedImportRows}
-                  setSelectedRows={setSelectedImportRows}
-                />
-              </TabsContent>
-
-              <TabsContent value="domestic-trucking" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <DomesticTruckingTable 
-                  data={filteredDomesticTruckingData} 
-                  updateRecord={updateDomesticTruckingRecord} 
-                  deleteRecord={deleteDomesticTruckingRecord}
-                  selectedRows={selectedDomesticTruckingRows}
-                  setSelectedRows={setSelectedDomesticTruckingRows}
-                />
-              </TabsContent>
-
-              <TabsContent value="calendar" className="flex-1 px-4 md:px-6 pb-4 md:pb-6 mt-4">
-                <CalendarView 
-                  data={filteredExportData} 
-                  importData={filteredImportData}
-                  domesticData={filteredDomesticTruckingData}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">Freight Tracking</h1>
+        <div className="flex items-center space-x-4">
+          <ExcelExportDialog
+            activeTab={activeTab}
+            exportData={exportData || []}
+            importData={importData || []}
+            allFilesData={allFilesData || []}
+            domesticTruckingData={domesticTruckingData || []}
+            selectedExportRows={selectedRows}
+            selectedImportRows={selectedRows}
+            selectedAllFilesRows={selectedRows}
+            selectedDomesticTruckingRows={selectedRows}
+          >
+            <Button><Download className="mr-2 h-4 w-4" /> Export</Button>
+          </ExcelExportDialog>
+          <Button><Upload className="mr-2 h-4 w-4" /> Import</Button>
+          <Button variant="outline" onClick={() => setShowCalendar(true)}>
+            <Calendar className="mr-2 h-4 w-4" /> Calendar
+          </Button>
+          <Button variant="outline" onClick={loadSampleData}>
+            <Database className="mr-2 h-4 w-4" /> Load Sample Data
+          </Button>
+          <NotificationSettings>
+            <Button variant="outline"><Settings className="mr-2 h-4 w-4" /> Settings</Button>
+          </NotificationSettings>
         </div>
       </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="allFiles">All Files</TabsTrigger>
+          <TabsTrigger value="importTracking">Import Tracking</TabsTrigger>
+          <TabsTrigger value="exportTracking">Export Tracking</TabsTrigger>
+          <TabsTrigger value="domesticTrucking">Domestic Trucking</TabsTrigger>
+        </TabsList>
+        
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-lg font-semibold">
+            {activeTab === 'allFiles' && 'All Files'}
+            {activeTab === 'importTracking' && 'Import Tracking'}
+            {activeTab === 'exportTracking' && 'Export Tracking'}
+            {activeTab === 'domesticTrucking' && 'Domestic Trucking'}
+          </h2>
+          <Button size="sm" onClick={() => addNewRecord(activeTab)}>
+            <Plus className="mr-2 h-4 w-4" /> Add Record
+          </Button>
+        </div>
+
+        <TabsContent value="allFiles">
+          <AllFilesTable
+            data={allFilesData || []}
+            updateRecord={(id, field, value) => handleUpdateRecord('allFiles', id, field, value)}
+            deleteRecord={(id) => handleDeleteRecord('allFiles', id)}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            onFileClick={handleFileClick}
+            highlightedRowId={highlightedRowId}
+          />
+        </TabsContent>
+
+        <TabsContent value="importTracking">
+          <ImportTrackingTable
+            data={importData || []}
+            updateRecord={(id, field, value) => handleUpdateRecord('importTracking', id, field, value)}
+            deleteRecord={(id) => handleDeleteRecord('importTracking', id)}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            highlightedRowId={highlightedRowId}
+            onFileClick={handleReverseFileClick}
+          />
+        </TabsContent>
+
+        <TabsContent value="exportTracking">
+          <TrackingTable
+            data={exportData || []}
+            updateRecord={(id, field, value) => handleUpdateRecord('exportTracking', id, field, value)}
+            deleteRecord={(id) => handleDeleteRecord('exportTracking', id)}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            highlightedRowId={highlightedRowId}
+            onFileClick={handleReverseFileClick}
+          />
+        </TabsContent>
+
+        <TabsContent value="domesticTrucking">
+          <DomesticTruckingTable
+            data={domesticTruckingData || []}
+            updateRecord={(id, field, value) => handleUpdateRecord('domesticTrucking', id, field, value)}
+            deleteRecord={(id) => handleDeleteRecord('domesticTrucking', id)}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            highlightedRowId={highlightedRowId}
+            onFileClick={handleReverseFileClick}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
