@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,8 +27,8 @@ interface DomesticTruckingTableRowProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
-  isHighlighted?: boolean;
-  onFileClick?: (fileNumber: string, fileType: string) => void;
+  highlightedRowId?: string | null;
+  onFileClick?: (fullFileIdentifier: string) => void;
 }
 
 const DomesticTruckingTableRow = ({
@@ -40,11 +41,12 @@ const DomesticTruckingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false,
+  highlightedRowId,
   onFileClick
 }: DomesticTruckingTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
+  const isHighlighted = highlightedRowId === record.id;
 
   // Check if all boolean fields are true (completed)
   const isCompleted = record.woSent && record.insurance && record.paymentReceived && record.paymentMade;
@@ -62,7 +64,7 @@ const DomesticTruckingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      onFileClick(record.file, 'all-files');
+      onFileClick(record.file);
     }
   };
 

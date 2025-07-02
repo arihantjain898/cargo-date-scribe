@@ -26,8 +26,8 @@ interface ImportTrackingTableRowProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
-  isHighlighted?: boolean;
-  onFileClick?: (fileNumber: string, fileType: string) => void;
+  highlightedRowId?: string | null;
+  onFileClick?: (fullFileIdentifier: string) => void;
 }
 
 const ImportTrackingTableRow = ({
@@ -40,20 +40,21 @@ const ImportTrackingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false,
+  highlightedRowId,
   onFileClick
 }: ImportTrackingTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
+  const isHighlighted = highlightedRowId === record.id;
 
   // Check if all boolean fields are true (completed)
   const isCompleted = record.poa && record.isf && record.packingListCommercialInvoice && 
-                     record.billOfLading && record.arrivalNotice && record.isfFiled && 
-                     record.entryFiled && record.blRelease && record.customsRelease && 
-                     record.invoiceSent && record.paymentReceived && record.workOrderSetup;
+    record.billOfLading && record.arrivalNotice && record.isfFiled && record.entryFiled && 
+    record.blRelease && record.customsRelease && record.invoiceSent && record.paymentReceived && 
+    record.workOrderSetup && record.delivered === 'Yes';
 
   // Check if record is empty (has no meaningful data)
-  const isEmpty = !record.customer && !record.booking && !record.file && !record.etaFinalPod;
+  const isEmpty = !record.customer && !record.file;
 
   const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
@@ -65,10 +66,11 @@ const ImportTrackingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      onFileClick(record.file, 'all-files');
+      onFileClick(record.file);
     }
   };
 
+  // More distinctive alternating colors matching export tabs with highlight support
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
     isArchived ? 'bg-gray-200 opacity-60' : 
@@ -105,7 +107,7 @@ const ImportTrackingTableRow = ({
           className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -117,11 +119,11 @@ const ImportTrackingTableRow = ({
         <InlineEditCell
           value={record.etaFinalPod}
           onSave={(value) => updateRecord(record.id, 'etaFinalPod', value as string)}
-          placeholder="Enter ETA"
-          className={isEmpty ? "text-gray-400" : ""}
+          isDate={true}
+          placeholder="Select ETA"
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.bond}
           onSave={(value) => updateRecord(record.id, 'bond', value as string)}
@@ -149,14 +151,14 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.billOfLading}
           onSave={(value) => updateRecord(record.id, 'billOfLading', value as boolean)}
           isBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.arrivalNotice}
           onSave={(value) => updateRecord(record.id, 'arrivalNotice', value as boolean)}
@@ -177,7 +179,7 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.blRelease}
           onSave={(value) => updateRecord(record.id, 'blRelease', value as boolean)}
@@ -212,19 +214,19 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.delivered}
           onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
-          options={['No', 'Yes']}
+          options={['No', 'Yes', 'Partial']}
           placeholder="Select status"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.returned}
           onSave={(value) => updateRecord(record.id, 'returned', value as string)}
-          options={['No', 'Yes']}
+          options={['No', 'Yes', 'Partial']}
           placeholder="Select status"
         />
       </td>

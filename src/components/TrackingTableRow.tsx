@@ -1,7 +1,7 @@
 import React from 'react';
+import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import InlineEditCell from './InlineEditCell';
 import {
@@ -26,54 +26,57 @@ interface TrackingTableRowProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
-  isHighlighted?: boolean;
-  onFileClick?: (fileNumber: string, fileType: string) => void;
+  highlightedRowId?: string | null;
+  onFileClick?: (fullFileIdentifier: string) => void;
 }
 
-const TrackingTableRow = ({ 
-  record, 
-  index, 
-  updateRecord, 
-  deleteRecord, 
-  onArchive, 
+const TrackingTableRow = ({
+  record,
+  index,
+  updateRecord,
+  deleteRecord,
+  onArchive,
   onUnarchive,
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false,
+  highlightedRowId,
   onFileClick
 }: TrackingTableRowProps) => {
+  const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
-  
-  // Check if record is completed (all boolean fields are true)
-  const isCompleted = record.docsSent && record.docsReceived && record.aesMblVgmSent && 
-                     record.validatedFwd && record.sslDraftInvRec && record.draftInvApproved && 
-                     record.transphereInvSent && record.paymentRec && record.sslPaid && 
-                     record.insured && record.released;
+  const isHighlighted = highlightedRowId === record.id;
 
-  // Check if record is empty (has no meaningful data)
-  const isEmpty = !record.customer && !record.ref && !record.file && !record.workOrder;
-  
-  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
-    isArchived ? 'bg-gray-200 opacity-60' : 
-    isHighlighted ? 'bg-yellow-200 border-yellow-400' :
-    isCompleted ? 'bg-green-50 border-2 border-green-500' :
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
-  }`;
-
-  const handleSelectRow = (id: string, checked: boolean) => {
+  const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
-      setSelectedRows(prev => [...prev, id]);
+      setSelectedRows(prev => [...prev, record.id]);
     } else {
-      setSelectedRows(prev => prev.filter(rowId => rowId !== id));
+      setSelectedRows(prev => prev.filter(id => id !== record.id));
     }
   };
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      onFileClick(record.file, 'all-files');
+      onFileClick(record.file);
     }
   };
+
+  // Check if all boolean fields are true (completed)
+  const isCompleted = record.dropDone === 'Yes' && record.returnNeeded === 'Yes' && 
+    record.docsReceived && record.aesMblVgmSent && record.validatedFwd && 
+    record.sslDraftInvRec && record.draftInvApproved && record.transphereInvSent && 
+    record.paymentRec && record.sslPaid && record.insured && record.released && 
+    record.docsSentToCustomer;
+
+  // Check if record is empty (has no meaningful data)
+  const isEmpty = !record.customer && !record.file;
+
+  // More distinctive alternating colors matching import tabs with highlight support
+  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
+    isHighlighted ? 'bg-yellow-200 animate-pulse' :
+    isArchived ? 'bg-gray-200 opacity-60' : 
+    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
+  } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -101,11 +104,11 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.ref}
           onSave={(value) => updateRecord(record.id, 'ref', value as string)}
-          placeholder="Enter reference"
+          placeholder="Enter ref"
           className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -113,20 +116,19 @@ const TrackingTableRow = ({
           className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.workOrder}
           onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
-          placeholder="Enter booking#"
-          className={isEmpty ? "text-gray-400" : ""}
+          placeholder="Enter work order"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.dropDone}
           onSave={(value) => updateRecord(record.id, 'dropDone', value as string)}
+          options={['No', 'Yes', 'N/A']}
           placeholder="Select status"
-          options={['No', 'Pending', 'Yes']}
         />
       </td>
       <td className="border-r border-gray-500 p-1">
@@ -137,12 +139,12 @@ const TrackingTableRow = ({
           placeholder="Select drop date"
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.returnNeeded}
           onSave={(value) => updateRecord(record.id, 'returnNeeded', value as string)}
+          options={['No', 'Yes', 'N/A']}
           placeholder="Select status"
-          options={['No', 'Pending', 'Yes']}
         />
       </td>
       <td className="border-r-4 border-black p-1">
@@ -182,12 +184,12 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.titlesDispatched}
           onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as string)}
+          options={['N/A', 'Pending', 'Completed']}
           placeholder="Select status"
-          options={['N/A', 'Yes', 'No']}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -197,12 +199,12 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.titlesReturned}
           onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
+          options={['N/A', 'Pending', 'Completed']}
           placeholder="Select status"
-          options={['N/A', 'Yes', 'No']}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -219,7 +221,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.transphereInvSent}
           onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
@@ -247,10 +249,17 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.released}
           onSave={(value) => updateRecord(record.id, 'released', value as boolean)}
+          isBoolean={true}
+        />
+      </td>
+      <td className="border-r-4 border-black p-1 text-center">
+        <InlineEditCell
+          value={record.docsSentToCustomer}
+          onSave={(value) => updateRecord(record.id, 'docsSentToCustomer', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -263,8 +272,8 @@ const TrackingTableRow = ({
       </td>
       <td className="p-1 text-center border-r border-gray-500">
         <Checkbox
-          checked={selectedRows.includes(record.id)}
-          onCheckedChange={(checked) => handleSelectRow(record.id, Boolean(checked))}
+          checked={isSelected}
+          onCheckedChange={handleCheckboxChange}
           className="h-3 w-3 border"
         />
       </td>
