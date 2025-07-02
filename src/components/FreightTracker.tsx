@@ -1,7 +1,27 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Calendar, Settings, Plus, Database } from 'lucide-react';
+import { 
+  Download, 
+  Calendar, 
+  Settings, 
+  Plus, 
+  Database, 
+  Archive, 
+  Trash2 
+} from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
@@ -261,6 +281,46 @@ const FreightTracker = () => {
     }
   };
 
+  const handleBulkArchive = async () => {
+    try {
+      for (const id of selectedRows) {
+        await handleUpdateRecord(activeTab, id, 'archived', true);
+      }
+      setSelectedRows([]);
+      toast({
+        title: "Records Archived",
+        description: `${selectedRows.length} records have been archived successfully.`,
+      });
+    } catch (error) {
+      console.error('Error archiving records:', error);
+      toast({
+        title: "Error",
+        description: "Failed to archive records. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      for (const id of selectedRows) {
+        await handleDeleteRecord(activeTab, id);
+      }
+      setSelectedRows([]);
+      toast({
+        title: "Records Deleted",
+        description: `${selectedRows.length} records have been deleted successfully.`,
+      });
+    } catch (error) {
+      console.error('Error deleting records:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete records. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleFileClick = (fileNumber: string, fileType: string) => {
     console.log('File click from All Files:', { fileNumber, fileType });
     
@@ -403,6 +463,46 @@ const FreightTracker = () => {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Freight Tracking</h1>
         <div className="flex items-center space-x-4">
+          {selectedRows.length > 0 && (
+            <>
+              <Button
+                variant="outline"
+                onClick={handleBulkArchive}
+                className="flex items-center gap-2"
+              >
+                <Archive className="h-4 w-4" />
+                Archive ({selectedRows.length})
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete ({selectedRows.length})
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete {selectedRows.length} selected record{selectedRows.length > 1 ? 's' : ''}.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleBulkDelete}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          )}
           <ExcelExportDialog
             activeTab={activeTab}
             exportData={exportData || []}

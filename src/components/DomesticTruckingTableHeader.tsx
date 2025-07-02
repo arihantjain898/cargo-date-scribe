@@ -1,7 +1,30 @@
 
 import React from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 
-const DomesticTruckingTableHeader = () => {
+interface DomesticTruckingTableHeaderProps {
+  selectedRows: string[];
+  data: DomesticTruckingRecord[];
+  setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+const DomesticTruckingTableHeader = ({
+  selectedRows,
+  data,
+  setSelectedRows
+}: DomesticTruckingTableHeaderProps) => {
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedRows(data.map(record => record.id));
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
+  const isAllSelected = data.length > 0 && selectedRows.length === data.length;
+  const isIndeterminate = selectedRows.length > 0 && selectedRows.length < data.length;
+
   return (
     <thead className="sticky top-0 bg-white z-30 shadow-sm">
       <tr className="border-b-4 border-black bg-white">
@@ -23,7 +46,16 @@ const DomesticTruckingTableHeader = () => {
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[120px]">Payment Rec'd?</th>
         <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[120px]">Payment Made?</th>
         <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[200px]">Notes</th>
-        <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
+        <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">
+          <Checkbox
+            checked={isAllSelected}
+            onCheckedChange={handleSelectAll}
+            className="h-3 w-3 border"
+            ref={(el) => {
+              if (el) el.indeterminate = isIndeterminate;
+            }}
+          />
+        </th>
         <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">Archive</th>
         <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
       </tr>
