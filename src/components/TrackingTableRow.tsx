@@ -246,14 +246,14 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsSentToCustomer}
           onSave={(value) => updateRecord(record.id, 'docsSentToCustomer', value as boolean)}
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
