@@ -69,6 +69,7 @@ const ImportTrackingTableRow = ({
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
+      {/* Column 1: Customer */}
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
         <div className="flex items-center gap-2">
           <InlineEditCell
@@ -89,6 +90,7 @@ const ImportTrackingTableRow = ({
           </Button>
         </div>
       </td>
+      {/* Column 2: Booking */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.booking}
@@ -97,7 +99,8 @@ const ImportTrackingTableRow = ({
           className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      {/* Column 3: File */}
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -105,6 +108,7 @@ const ImportTrackingTableRow = ({
           className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
+      {/* Column 4: ETA Final POD */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.etaFinalPod}
@@ -113,13 +117,15 @@ const ImportTrackingTableRow = ({
           placeholder="Select ETA"
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      {/* Column 5: Bond */}
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.bond}
           onSave={(value) => updateRecord(record.id, 'bond', value as string)}
           placeholder="Enter bond"
         />
       </td>
+      {/* Column 6: POA */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.poa}
@@ -127,6 +133,7 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
+      {/* Column 7: ISF */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.isf}
@@ -134,6 +141,7 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
+      {/* Column 8: Packing List/Commercial Invoice */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.packingListCommercialInvoice}
@@ -141,20 +149,23 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      {/* Column 9: Bill of Lading */}
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.billOfLading}
           onSave={(value) => updateRecord(record.id, 'billOfLading', value as boolean)}
           isBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1 text-center">
+      {/* Column 10: Arrival Notice */}
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.arrivalNotice}
           onSave={(value) => updateRecord(record.id, 'arrivalNotice', value as boolean)}
           isBoolean={true}
         />
       </td>
+      {/* Column 11: ISF Filed */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.isfFiled}
@@ -162,6 +173,7 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
+      {/* Column 12: Entry Filed */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.entryFiled}
@@ -169,13 +181,15 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1 text-center">
+      {/* Column 13: BL Release */}
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.blRelease}
           onSave={(value) => updateRecord(record.id, 'blRelease', value as boolean)}
           isBoolean={true}
         />
       </td>
+      {/* Column 14: Customs Release */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.customsRelease}
@@ -183,6 +197,7 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
+      {/* Column 15: Invoice Sent */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.invoiceSent}
@@ -190,6 +205,7 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
+      {/* Column 16: Payment Received */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.paymentReceived}
@@ -197,6 +213,7 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
+      {/* Column 17: Work Order Setup */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.workOrderSetup}
@@ -204,6 +221,7 @@ const ImportTrackingTableRow = ({
           isBoolean={true}
         />
       </td>
+      {/* Column 18: Delivered */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.delivered}
@@ -212,6 +230,7 @@ const ImportTrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
+      {/* Column 19: Returned */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.returned}
@@ -220,6 +239,7 @@ const ImportTrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
+      {/* Column 20: Delivery Date */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.deliveryDate}
@@ -228,6 +248,7 @@ const ImportTrackingTableRow = ({
           placeholder="Select delivery date"
         />
       </td>
+      {/* Column 21: Notes */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
@@ -235,6 +256,7 @@ const ImportTrackingTableRow = ({
           placeholder="Enter notes"
         />
       </td>
+      {/* Column 22: Select - CHECKBOX */}
       <td className="p-1 text-center">
         <Checkbox
           checked={isSelected}
