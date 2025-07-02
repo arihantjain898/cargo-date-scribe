@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -60,6 +59,14 @@ const ImportTrackingTableRow = ({
     }
   };
 
+  const handleBookingClick = () => {
+    if (record.booking) {
+      // Open booking number as a Google search or you can customize this URL
+      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(record.booking)}`;
+      window.open(searchUrl, '_blank');
+    }
+  };
+
   // More distinctive alternating colors matching export tabs with highlight support
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
@@ -92,12 +99,24 @@ const ImportTrackingTableRow = ({
       </td>
       {/* Column 2: Booking */}
       <td className="border-r border-gray-500 p-1">
-        <InlineEditCell
-          value={record.booking}
-          onSave={(value) => updateRecord(record.id, 'booking', value as string)}
-          placeholder="Enter booking"
-          className={isEmpty ? "text-gray-400" : ""}
-        />
+        <div className="flex items-center gap-2">
+          <InlineEditCell
+            value={record.booking}
+            onSave={(value) => updateRecord(record.id, 'booking', value as string)}
+            placeholder="Enter booking"
+            className={isEmpty ? "text-gray-400" : ""}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBookingClick}
+            className="h-6 w-6 p-0 hover:bg-blue-100"
+            title={`Search for booking: ${record.booking || 'booking number'}`}
+            disabled={!record.booking}
+          >
+            <ExternalLink className={`h-3 w-3 ${record.booking ? 'text-blue-600' : 'text-gray-400'}`} />
+          </Button>
+        </div>
       </td>
       {/* Column 3: File */}
       <td className="border-r border-gray-500 p-1">
