@@ -14,7 +14,7 @@ const AllFilesTableFileCell = ({
   onSave,
   className
 }: AllFilesTableFileCellProps) => {
-  const fileOptions = ['EA', 'ES', 'IS', 'IA', 'DT', 'ET'];
+  const fileOptions = ['IA', 'IS', 'EA', 'ES', 'ET', 'DT'];
 
   return (
     <Select value={fileValue} onValueChange={onSave}>

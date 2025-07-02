@@ -60,7 +60,9 @@ const FreightTracker = () => {
     exportData: exportData?.length,
     importData: importData?.length,
     allFilesData: allFilesData?.length,
-    domesticTruckingData: domesticTruckingData?.length
+    domesticTruckingData: domesticTruckingData?.length,
+    highlightedRowId,
+    activeTab
   });
 
   const loadSampleData = async () => {
@@ -264,6 +266,7 @@ const FreightTracker = () => {
     
     // Create the file identifier by combining type and number (e.g., "IS1000", "ES1001", "DT1002")
     const fileIdentifier = `${fileType}${fileNumber}`;
+    console.log('Looking for file identifier:', fileIdentifier);
     
     // Find matching record in the appropriate tab based on file type
     let targetTab = 'allFiles';
@@ -271,23 +274,29 @@ const FreightTracker = () => {
     
     if (fileType === 'IS' || fileType === 'IA') {
       // Import tracking
+      console.log('Searching in import data:', importData?.map(r => ({ id: r.id, file: r.file })));
       foundRecord = importData?.find(record => record.file === fileIdentifier);
       if (foundRecord) {
         targetTab = 'importTracking';
+        console.log('Found import record:', foundRecord.id);
         setHighlightedRowId(foundRecord.id);
       }
     } else if (fileType === 'ES' || fileType === 'EA') {
       // Export tracking
+      console.log('Searching in export data:', exportData?.map(r => ({ id: r.id, file: r.file })));
       foundRecord = exportData?.find(record => record.file === fileIdentifier);
       if (foundRecord) {
         targetTab = 'exportTracking';
+        console.log('Found export record:', foundRecord.id);
         setHighlightedRowId(foundRecord.id);
       }
     } else if (fileType === 'DT' || fileType === 'ET') {
       // Domestic trucking
+      console.log('Searching in domestic data:', domesticTruckingData?.map(r => ({ id: r.id, file: r.file })));
       foundRecord = domesticTruckingData?.find(record => record.file === fileIdentifier);
       if (foundRecord) {
         targetTab = 'domesticTrucking';
+        console.log('Found domestic record:', foundRecord.id);
         setHighlightedRowId(foundRecord.id);
       }
     }
@@ -301,6 +310,7 @@ const FreightTracker = () => {
         setHighlightedRowId(null);
       }, 3000);
     } else {
+      console.log('No record found for:', fileIdentifier);
       toast({
         title: "No Linked Record Found",
         description: `No ${fileType} record found for file ${fileIdentifier}`,
@@ -317,6 +327,7 @@ const FreightTracker = () => {
     const fileNumber = fullFileIdentifier.substring(2); // Remaining characters
     
     console.log('Parsed:', { fileType, fileNumber });
+    console.log('Searching in all files data:', allFilesData?.map(r => ({ id: r.id, file: r.file, number: r.number })));
     
     // Find matching record in All Files table
     const foundRecord = allFilesData?.find(record => 
@@ -328,6 +339,7 @@ const FreightTracker = () => {
     if (foundRecord) {
       setActiveTab('allFiles');
       setHighlightedRowId(foundRecord.id);
+      console.log('Setting highlighted row ID:', foundRecord.id);
       // Clear highlight after 3 seconds
       setTimeout(() => {
         setHighlightedRowId(null);
