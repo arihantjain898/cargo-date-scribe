@@ -55,8 +55,7 @@ const TrackingTableRow = ({
   const isCompleted = record.dropDone === 'Yes' && record.returnNeeded === 'Yes' && 
     record.docsReceived && record.aesMblVgmSent && record.validatedFwd && 
     record.sslDraftInvRec && record.draftInvApproved && record.transphereInvSent && 
-    record.paymentRec && record.sslPaid && record.insured && record.released && 
-    record.docsSentToCustomer;
+    record.paymentRec && record.sslPaid && record.insured && record.released;
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
@@ -268,15 +267,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 23: Docs Sent To Customer */}
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.docsSentToCustomer}
-          onSave={(value) => updateRecord(record.id, 'docsSentToCustomer', value as boolean)}
-          isBoolean={true}
-        />
-      </td>
-      {/* Column 24: Notes */}
+      {/* Column 23: Notes - FREE TEXT FIELD */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.notes}
@@ -284,7 +275,7 @@ const TrackingTableRow = ({
           placeholder="Enter notes"
         />
       </td>
-      {/* Column 25: Select */}
+      {/* Column 24: Select - CHECKBOX */}
       <td className="p-1 text-center">
         <Checkbox
           checked={isSelected}
