@@ -66,9 +66,7 @@ const TrackingTableHeader = ({
             checked={isAllSelected}
             onCheckedChange={handleSelectAll}
             className="h-3 w-3 border"
-            ref={(el) => {
-              if (el) el.indeterminate = isIndeterminate;
-            }}
+            {...(isIndeterminate && { 'data-indeterminate': true })}
           />
         </th>
         <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">Archive</th>
