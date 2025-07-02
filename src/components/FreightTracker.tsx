@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,6 +23,7 @@ const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('allFiles');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const {
     exportData,
@@ -229,10 +229,41 @@ const FreightTracker = () => {
     setActiveTab('allFiles');
   };
 
+  const handleCalendarEventClick = (fileNumber: string, source: string) => {
+    setHighlightedRowId(fileNumber);
+    if (source === 'export') {
+      setActiveTab('exportTracking');
+    } else if (source === 'import') {
+      setActiveTab('importTracking');
+    } else if (source === 'domestic') {
+      setActiveTab('domesticTrucking');
+    }
+    setShowCalendar(false);
+  };
+
   if (loading) {
     return (
       <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (showCalendar) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">Calendar View</h1>
+          <Button onClick={() => setShowCalendar(false)}>
+            Back to Tables
+          </Button>
+        </div>
+        <CalendarView
+          data={exportData || []}
+          importData={importData || []}
+          domesticData={domesticTruckingData || []}
+          onCalendarEventClick={handleCalendarEventClick}
+        />
       </div>
     );
   }
@@ -256,9 +287,9 @@ const FreightTracker = () => {
             <Button><Download className="mr-2 h-4 w-4" /> Export</Button>
           </ExcelExportDialog>
           <Button><Upload className="mr-2 h-4 w-4" /> Import</Button>
-          <CalendarView>
-            <Button variant="outline"><Calendar className="mr-2 h-4 w-4" /> Calendar</Button>
-          </CalendarView>
+          <Button variant="outline" onClick={() => setShowCalendar(true)}>
+            <Calendar className="mr-2 h-4 w-4" /> Calendar
+          </Button>
           <NotificationSettings>
             <Button variant="outline"><Settings className="mr-2 h-4 w-4" /> Settings</Button>
           </NotificationSettings>
