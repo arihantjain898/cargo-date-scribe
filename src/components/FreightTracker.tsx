@@ -51,31 +51,63 @@ const FreightTracker = () => {
     // Load data from local storage on component mount
     const storedAllFilesData = localStorage.getItem('allFilesData');
     if (storedAllFilesData) {
-      setAllFilesData(JSON.parse(storedAllFilesData));
+      try {
+        const parsedData = JSON.parse(storedAllFilesData);
+        setAllFilesData(Array.isArray(parsedData) ? parsedData : []);
+      } catch (error) {
+        console.error('Error parsing allFilesData:', error);
+        setAllFilesData([]);
+      }
     }
 
     const storedImportTrackingData = localStorage.getItem('importTrackingData');
     if (storedImportTrackingData) {
-      setImportTrackingData(JSON.parse(storedImportTrackingData));
+      try {
+        const parsedData = JSON.parse(storedImportTrackingData);
+        setImportTrackingData(Array.isArray(parsedData) ? parsedData : []);
+      } catch (error) {
+        console.error('Error parsing importTrackingData:', error);
+        setImportTrackingData([]);
+      }
     }
 
     const storedExportTrackingData = localStorage.getItem('exportTrackingData');
     if (storedExportTrackingData) {
-      setExportTrackingData(JSON.parse(storedExportTrackingData));
+      try {
+        const parsedData = JSON.parse(storedExportTrackingData);
+        setExportTrackingData(Array.isArray(parsedData) ? parsedData : []);
+      } catch (error) {
+        console.error('Error parsing exportTrackingData:', error);
+        setExportTrackingData([]);
+      }
     }
 
     const storedDomesticTruckingData = localStorage.getItem('domesticTruckingData');
     if (storedDomesticTruckingData) {
-      setDomesticTruckingData(JSON.parse(storedDomesticTruckingData));
+      try {
+        const parsedData = JSON.parse(storedDomesticTruckingData);
+        setDomesticTruckingData(Array.isArray(parsedData) ? parsedData : []);
+      } catch (error) {
+        console.error('Error parsing domesticTruckingData:', error);
+        setDomesticTruckingData([]);
+      }
     }
   }, []);
 
   useEffect(() => {
     // Save data to local storage whenever data changes
-    localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
-    localStorage.setItem('importTrackingData', JSON.stringify(importTrackingData));
-    localStorage.setItem('exportTrackingData', JSON.stringify(exportTrackingData));
-    localStorage.setItem('domesticTruckingData', JSON.stringify(domesticTruckingData));
+    if (allFilesData && Array.isArray(allFilesData)) {
+      localStorage.setItem('allFilesData', JSON.stringify(allFilesData));
+    }
+    if (importTrackingData && Array.isArray(importTrackingData)) {
+      localStorage.setItem('importTrackingData', JSON.stringify(importTrackingData));
+    }
+    if (exportTrackingData && Array.isArray(exportTrackingData)) {
+      localStorage.setItem('exportTrackingData', JSON.stringify(exportTrackingData));
+    }
+    if (domesticTruckingData && Array.isArray(domesticTruckingData)) {
+      localStorage.setItem('domesticTruckingData', JSON.stringify(domesticTruckingData));
+    }
   }, [allFilesData, importTrackingData, exportTrackingData, domesticTruckingData]);
 
   const addNewRecord = (tab: string) => {
@@ -103,7 +135,7 @@ const FreightTracker = () => {
         salesContact: '',
         archived: false
       };
-      setAllFilesData(prev => [...prev, newRecord]);
+      setAllFilesData(prev => Array.isArray(prev) ? [...prev, newRecord] : [newRecord]);
     } else if (tab === 'importTracking') {
       const newRecord: ImportTrackingRecord = {
         id: newId,
@@ -130,7 +162,7 @@ const FreightTracker = () => {
         notes: '',
         archived: false
       };
-      setImportTrackingData(prev => [...prev, newRecord]);
+      setImportTrackingData(prev => Array.isArray(prev) ? [...prev, newRecord] : [newRecord]);
     } else if (tab === 'exportTracking') {
       const newRecord: TrackingRecord = {
         id: newId,
@@ -160,7 +192,7 @@ const FreightTracker = () => {
         notes: '',
         archived: false
       };
-      setExportTrackingData(prev => [...prev, newRecord]);
+      setExportTrackingData(prev => Array.isArray(prev) ? [...prev, newRecord] : [newRecord]);
     } else if (tab === 'domesticTrucking') {
       const newRecord: DomesticTruckingRecord = {
         id: newId,
@@ -175,7 +207,7 @@ const FreightTracker = () => {
         notes: '',
         archived: false
       };
-      setDomesticTruckingData(prev => [...prev, newRecord]);
+      setDomesticTruckingData(prev => Array.isArray(prev) ? [...prev, newRecord] : [newRecord]);
     }
     
     toast({
@@ -192,43 +224,43 @@ const FreightTracker = () => {
   ) => {
     if (tab === 'allFiles') {
       setAllFilesData(prev =>
-        prev.map(record =>
+        Array.isArray(prev) ? prev.map(record =>
           record.id === id ? { ...record, [field]: value } : record
-        )
+        ) : []
       );
     } else if (tab === 'importTracking') {
       setImportTrackingData(prev =>
-        prev.map(record =>
+        Array.isArray(prev) ? prev.map(record =>
           record.id === id ? { ...record, [field]: value } : record
-        )
+        ) : []
       );
     } else if (tab === 'exportTracking') {
       setExportTrackingData(prev =>
-        prev.map(record =>
+        Array.isArray(prev) ? prev.map(record =>
           record.id === id ? { ...record, [field]: value } : record
-        )
+        ) : []
       );
     } else if (tab === 'domesticTrucking') {
       setDomesticTruckingData(prev =>
-        prev.map(record =>
+        Array.isArray(prev) ? prev.map(record =>
           record.id === id ? { ...record, [field]: value } : record
-        )
+        ) : []
       );
     }
   };
 
   const deleteRecord = (tab: string, id: string) => {
     if (tab === 'allFiles') {
-      setAllFilesData(prev => prev.filter(record => record.id !== id));
+      setAllFilesData(prev => Array.isArray(prev) ? prev.filter(record => record.id !== id) : []);
       setSelectedRows(prev => prev.filter(rowId => rowId !== id));
     } else if (tab === 'importTracking') {
-      setImportTrackingData(prev => prev.filter(record => record.id !== id));
+      setImportTrackingData(prev => Array.isArray(prev) ? prev.filter(record => record.id !== id) : []);
       setSelectedRows(prev => prev.filter(rowId => rowId !== id));
     } else if (tab === 'exportTracking') {
-      setExportTrackingData(prev => prev.filter(record => record.id !== id));
+      setExportTrackingData(prev => Array.isArray(prev) ? prev.filter(record => record.id !== id) : []);
       setSelectedRows(prev => prev.filter(rowId => rowId !== id));
     } else if (tab === 'domesticTrucking') {
-      setDomesticTruckingData(prev => prev.filter(record => record.id !== id));
+      setDomesticTruckingData(prev => Array.isArray(prev) ? prev.filter(record => record.id !== id) : []);
       setSelectedRows(prev => prev.filter(rowId => rowId !== id));
     }
   };
@@ -272,7 +304,7 @@ const FreightTracker = () => {
 
         {activeTab === 'allFiles' && (
           <AllFilesTable
-            data={allFilesData}
+            data={allFilesData || []}
             updateRecord={(id, field, value) => updateRecord('allFiles', id, field, value)}
             deleteRecord={(id) => deleteRecord('allFiles', id)}
             selectedRows={selectedRows}
@@ -282,7 +314,7 @@ const FreightTracker = () => {
         )}
         {activeTab === 'importTracking' && (
           <ImportTrackingTable
-            data={importTrackingData}
+            data={importTrackingData || []}
             updateRecord={(id, field, value) => updateRecord('importTracking', id, field, value)}
             deleteRecord={(id) => deleteRecord('importTracking', id)}
             selectedRows={selectedRows}
@@ -293,7 +325,7 @@ const FreightTracker = () => {
         )}
         {activeTab === 'exportTracking' && (
           <TrackingTable
-            data={exportTrackingData}
+            data={exportTrackingData || []}
             updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
             deleteRecord={(id) => deleteRecord('exportTracking', id)}
             selectedRows={selectedRows}
@@ -304,7 +336,7 @@ const FreightTracker = () => {
         )}
         {activeTab === 'domesticTrucking' && (
           <DomesticTruckingTable
-            data={domesticTruckingData}
+            data={domesticTruckingData || []}
             updateRecord={(id, field, value) => updateRecord('domesticTrucking', id, field, value)}
             deleteRecord={(id) => deleteRecord('domesticTrucking', id)}
             selectedRows={selectedRows}
