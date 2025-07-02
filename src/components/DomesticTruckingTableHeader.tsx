@@ -34,7 +34,7 @@ const DomesticTruckingTableHeader = ({
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Schedule</th>
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Payment</th>
         <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-yellow-200 min-w-[200px]">Notes</th>
-        <th colSpan={3} className="bg-red-200 p-2 text-center font-bold text-gray-900">Actions</th>
+        <th className="bg-red-200 p-2 text-center font-bold text-gray-900">Actions</th>
       </tr>
       <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
         <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[120px] sticky left-0 z-40">Customer</th>
@@ -46,7 +46,7 @@ const DomesticTruckingTableHeader = ({
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[120px]">Payment Rec'd?</th>
         <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[120px]">Payment Made?</th>
         <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[200px]">Notes</th>
-        <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">
+        <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-10">
           <Checkbox
             checked={isAllSelected}
             onCheckedChange={handleSelectAll}
@@ -54,12 +54,6 @@ const DomesticTruckingTableHeader = ({
             {...(isIndeterminate && { 'data-indeterminate': true })}
           />
           <div className="text-[8px] leading-tight mt-1">Select</div>
-        </th>
-        <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">
-          <div className="text-[8px] leading-tight">Archive</div>
-        </th>
-        <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">
-          <div className="text-[8px] leading-tight">Delete</div>
         </th>
       </tr>
     </thead>

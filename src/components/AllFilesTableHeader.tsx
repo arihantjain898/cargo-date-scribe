@@ -18,6 +18,9 @@ const AllFilesTableHeader = ({ selectedRows, data, setSelectedRows }: AllFilesTa
     }
   };
 
+  const isAllSelected = data.length > 0 && selectedRows.length === data.length;
+  const isIndeterminate = selectedRows.length > 0 && selectedRows.length < data.length;
+
   return (
     <thead className="sticky top-0 bg-white z-30 shadow-sm">
       <tr className="border-b-4 border-black bg-white">
@@ -29,7 +32,7 @@ const AllFilesTableHeader = ({ selectedRows, data, setSelectedRows }: AllFilesTa
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">Service Providers</th>
         <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-yellow-200 min-w-[100px]">Comments</th>
         <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Sales Contact</th>
-        <th colSpan={3} className="bg-red-200 p-2 text-center font-bold text-gray-900">Actions</th>
+        <th className="bg-red-200 p-2 text-center font-bold text-gray-900">Actions</th>
       </tr>
       <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
         <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[120px] sticky left-0 z-40">Customer</th>
@@ -49,9 +52,15 @@ const AllFilesTableHeader = ({ selectedRows, data, setSelectedRows }: AllFilesTa
         <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[80px]">NVO</th>
         <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[100px]">Comments</th>
         <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[100px]">Sales Contact</th>
-        <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-10">Select</th>
-        <th className="bg-gray-300 border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 w-12">Archive</th>
-        <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">Delete</th>
+        <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-10">
+          <Checkbox
+            checked={isAllSelected}
+            onCheckedChange={handleSelectAll}
+            className="h-3 w-3 border"
+            {...(isIndeterminate && { 'data-indeterminate': true })}
+          />
+          <div className="text-[8px] leading-tight mt-1">Select</div>
+        </th>
       </tr>
     </thead>
   );
