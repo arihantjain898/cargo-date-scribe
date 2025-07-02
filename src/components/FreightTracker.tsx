@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Upload, Calendar, Settings, Plus, Database } from 'lucide-react';
+import { Download, Calendar, Settings, Plus, Database } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
@@ -416,7 +416,6 @@ const FreightTracker = () => {
           >
             <Button><Download className="mr-2 h-4 w-4" /> Export</Button>
           </ExcelExportDialog>
-          <Button><Upload className="mr-2 h-4 w-4" /> Import</Button>
           <Button variant="outline" onClick={() => setShowCalendar(true)}>
             <Calendar className="mr-2 h-4 w-4" /> Calendar
           </Button>
