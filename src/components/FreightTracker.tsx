@@ -23,8 +23,15 @@ import {
 
 import AllFilesTable from './AllFilesTable';
 import ImportTrackingTable from './ImportTrackingTable';
-import ExportTrackingTable from './ExportTrackingTable';
+import TrackingTable from './TrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
+import { AllFilesRecord } from '../types/AllFilesRecord';
+import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
+import { TrackingRecord } from '../types/TrackingRecord';
+import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
+
+// Simple ID generator to replace uuid
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState('allFiles');
@@ -343,16 +350,18 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onFileClick={handleFileClick}
         />
       )}
       {activeTab === 'exportTracking' && (
-        <ExportTrackingTable
+        <TrackingTable
           data={exportTrackingData}
           updateRecord={(id, field, value) => updateRecord('exportTracking', id, field, value)}
           deleteRecord={(id) => deleteRecord('exportTracking', id)}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onFileClick={handleFileClick}
         />
       )}
       {activeTab === 'domesticTrucking' && (
@@ -363,6 +372,7 @@ const FreightTracker = () => {
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           highlightedRowId={highlightedRowId}
+          onFileClick={handleFileClick}
         />
       )}
     </div>

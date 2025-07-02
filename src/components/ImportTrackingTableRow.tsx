@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -62,7 +63,7 @@ const ImportTrackingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      onFileClick(record.file, 'import');
+      onFileClick(record.file, 'all-files');
     }
   };
 

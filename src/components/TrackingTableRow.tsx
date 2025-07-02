@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -68,7 +69,7 @@ const TrackingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      onFileClick(record.file, 'export');
+      onFileClick(record.file, 'all-files');
     }
   };
 
