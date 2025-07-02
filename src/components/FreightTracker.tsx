@@ -353,8 +353,9 @@ const FreightTracker = () => {
     }
   };
 
-  const handleCalendarEventClick = (fileNumber: string, source: string) => {
-    setHighlightedRowId(fileNumber);
+  const handleCalendarEventClick = (recordId: string, source: string) => {
+    console.log('Calendar event click:', { recordId, source });
+    setHighlightedRowId(recordId);
     if (source === 'export') {
       setActiveTab('exportTracking');
     } else if (source === 'import') {
@@ -363,6 +364,11 @@ const FreightTracker = () => {
       setActiveTab('domesticTrucking');
     }
     setShowCalendar(false);
+    
+    // Clear highlight after 3 seconds
+    setTimeout(() => {
+      setHighlightedRowId(null);
+    }, 3000);
   };
 
   if (loading) {

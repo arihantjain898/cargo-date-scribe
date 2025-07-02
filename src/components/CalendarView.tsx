@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +16,7 @@ interface CalendarViewProps {
   data: TrackingRecord[];
   importData?: ImportTrackingRecord[];
   domesticData?: DomesticTruckingRecord[];
-  onCalendarEventClick?: (fileNumber: string, source: string) => void;
+  onCalendarEventClick?: (fileId: string, source: string) => void;
 }
 
 interface CalendarEvent {
@@ -25,6 +26,7 @@ interface CalendarEvent {
   ref: string;
   file: string;
   source: 'export' | 'import' | 'domestic';
+  recordId: string;
   workOrder?: string;
   originPort?: string;
   destinationPort?: string;
@@ -38,7 +40,7 @@ interface EventDetailModalProps {
   event: CalendarEvent | null;
   isOpen: boolean;
   onClose: () => void;
-  onEventClick?: (fileNumber: string, source: string) => void;
+  onEventClick?: (fileId: string, source: string) => void;
 }
 
 const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailModalProps) => {
@@ -46,7 +48,7 @@ const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailM
 
   const handleEventClick = () => {
     if (onEventClick) {
-      onEventClick(event.file, event.source);
+      onEventClick(event.recordId, event.source);
       onClose();
     }
   };
@@ -220,6 +222,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           ref: record.ref,
           file: record.file,
           source: 'export',
+          recordId: record.id,
           workOrder: record.workOrder,
           notes: record.notes
         });
@@ -233,6 +236,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           ref: record.ref,
           file: record.file,
           source: 'export',
+          recordId: record.id,
           workOrder: record.workOrder,
           notes: record.notes
         });
@@ -246,6 +250,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           ref: record.ref,
           file: record.file,
           source: 'export',
+          recordId: record.id,
           workOrder: record.workOrder,
           notes: record.notes
         });
@@ -262,6 +267,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           ref: record.booking,
           file: record.file,
           source: 'import',
+          recordId: record.id,
           bond: record.bond,
           notes: record.notes
         });
@@ -275,6 +281,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           ref: record.booking,
           file: record.file,
           source: 'import',
+          recordId: record.id,
           bond: record.bond,
           notes: record.notes
         });
@@ -291,6 +298,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           ref: record.customer,
           file: record.file,
           source: 'domestic',
+          recordId: record.id,
           notes: record.notes
         });
       }
@@ -303,6 +311,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           ref: record.customer,
           file: record.file,
           source: 'domestic',
+          recordId: record.id,
           notes: record.notes
         });
       }
