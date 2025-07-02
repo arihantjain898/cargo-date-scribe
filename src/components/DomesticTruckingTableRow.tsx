@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Trash2, Archive, ArchiveRestore } from 'lucide-react';
+import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
@@ -28,6 +27,7 @@ interface DomesticTruckingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   isHighlighted?: boolean;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
 const DomesticTruckingTableRow = ({
@@ -40,7 +40,8 @@ const DomesticTruckingTableRow = ({
   selectedRows,
   setSelectedRows,
   showArchived,
-  isHighlighted = false
+  isHighlighted = false,
+  onFileClick
 }: DomesticTruckingTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived;
@@ -56,6 +57,12 @@ const DomesticTruckingTableRow = ({
     }
   };
 
+  const handleFileClick = () => {
+    if (onFileClick && record.file) {
+      onFileClick(record.file, 'domestic');
+    }
+  };
+
   // More distinctive alternating colors matching export/import tabs
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
@@ -66,12 +73,25 @@ const DomesticTruckingTableRow = ({
   return (
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <InlineEditCell
-          value={record.customer}
-          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer name"
-          className="font-bold"
-        />
+        <div className="flex items-center gap-2">
+          <InlineEditCell
+            value={record.customer}
+            onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+            placeholder="Enter customer name"
+            className="font-bold"
+          />
+          {record.file && onFileClick && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleFileClick}
+              className="h-6 w-6 p-0 hover:bg-blue-100"
+              title={`Open ${record.file} in All Files`}
+            >
+              <ExternalLink className="h-3 w-3 text-blue-600" />
+            </Button>
+          )}
+        </div>
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell

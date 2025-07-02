@@ -29,9 +29,18 @@ interface ImportTrackingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
-const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, setSelectedRows, highlightedRowId }: ImportTrackingTableProps) => {
+const ImportTrackingTable = ({ 
+  data, 
+  updateRecord, 
+  deleteRecord, 
+  selectedRows, 
+  setSelectedRows, 
+  highlightedRowId,
+  onFileClick 
+}: ImportTrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
 
@@ -89,6 +98,7 @@ const ImportTrackingTable = ({ data, updateRecord, deleteRecord, selectedRows, s
                   setSelectedRows={setSelectedRows}
                   showArchived={showArchived}
                   isHighlighted={highlightedRowId === record.id}
+                  onFileClick={onFileClick}
                 />
               ))}
               <tr>
