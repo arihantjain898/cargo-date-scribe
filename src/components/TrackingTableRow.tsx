@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -66,6 +65,14 @@ const TrackingTableRow = ({
     isArchived ? 'bg-gray-200 opacity-60' : 
     index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
   } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
+
+  // Helper function to get text styling based on content (copied from AllFilesTableRow)
+  const getTextStyling = (value: string, placeholder?: string) => {
+    if (!value || value.trim() === '') {
+      return 'text-gray-400 italic';
+    }
+    return 'text-gray-900 font-medium';
+  };
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -203,7 +210,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 15: Titles Returned */}
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.titlesReturned}
           onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
@@ -228,7 +235,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 18: Transphere Inv Sent */}
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.transphereInvSent}
           onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
@@ -267,15 +274,16 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 23: Notes - FREE TEXT FIELD */}
-      <td className="border-r border-gray-500 p-1">
+      {/* Column 23: Notes - FREE TEXT FIELD (copied styling from AllFilesTableRow) */}
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
           placeholder="Enter notes"
+          className={getTextStyling(record.notes)}
         />
       </td>
-      {/* Column 24: Select - CHECKBOX */}
+      {/* Column 24: Select - CHECKBOX (copied styling from AllFilesTableRow) */}
       <td className="p-1 text-center">
         <Checkbox
           checked={isSelected}
