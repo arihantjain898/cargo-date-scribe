@@ -32,7 +32,7 @@ export const useFirestore = <T>(collectionName: string, userId?: string) => {
     const q = query(
       collectionRef, 
       where('userId', '==', userId),
-      orderBy('createdAt', 'asc')
+      orderBy('createdAt', 'desc')
     );
 
     const unsubscribe = onSnapshot(q, 

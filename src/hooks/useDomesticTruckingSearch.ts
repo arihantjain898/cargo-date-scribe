@@ -10,9 +10,9 @@ export const useDomesticTruckingSearch = (data: DomesticTruckingRecord[]) => {
 
     const lowercaseSearch = searchTerm.toLowerCase();
     return data.filter(record =>
-      (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
-      (record.file || '').toLowerCase().includes(lowercaseSearch) ||
-      (record.notes || '').toLowerCase().includes(lowercaseSearch)
+      record.customer.toLowerCase().includes(lowercaseSearch) ||
+      record.file.toLowerCase().includes(lowercaseSearch) ||
+      record.notes.toLowerCase().includes(lowercaseSearch)
     );
   }, [data, searchTerm]);
 

@@ -8,10 +8,10 @@ export const useSearch = (data: TrackingRecord[]) => {
 
   const filteredData = useMemo(() => 
     data.filter(record => 
-      (record.customer || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.ref || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.file || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.workOrder || '').toLowerCase().includes(searchTerm.toLowerCase())
+      record.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.ref.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.file.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.workOrder.toLowerCase().includes(searchTerm.toLowerCase())
     ), [data, searchTerm]
   );
 
@@ -23,10 +23,10 @@ export const useImportSearch = (data: ImportTrackingRecord[]) => {
 
   const filteredData = useMemo(() => 
     data.filter(record => 
-      (record.booking || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.file || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.bond || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.notes || '').toLowerCase().includes(searchTerm.toLowerCase())
+      record.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.file.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.bond.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.notes.toLowerCase().includes(searchTerm.toLowerCase())
     ), [data, searchTerm]
   );
 
