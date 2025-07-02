@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -267,8 +266,8 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 23: Notes - GRAY SHADED */}
-      <td className="border-r-4 border-black p-1 bg-gray-200">
+      {/* Column 23: Notes - NO SPECIAL SHADING */}
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
