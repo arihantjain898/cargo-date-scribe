@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -5,6 +6,7 @@ import { Download, Upload, Calendar, Settings, Plus, Trash2, Archive, ArchiveRes
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 import ExcelExportDialog from './ExcelExportDialog';
 import CalendarView from './CalendarView';
 import NotificationSettings from './NotificationSettings';
@@ -275,7 +277,6 @@ const FreightTracker = () => {
             deleteRecord={(id) => deleteRecord('allFiles', id)}
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
-            highlightedRowId={highlightedRowId}
             onFileClick={handleFileClick}
           />
         )}
@@ -314,9 +315,18 @@ const FreightTracker = () => {
         )}
       </Tabs>
 
-      <ExcelExportDialog isOpen={isExportDialogOpen} onClose={() => setIsExportDialogOpen(false)} />
-      <CalendarView isOpen={isCalendarOpen} onClose={() => setIsCalendarOpen(false)} />
-      <NotificationSettings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <ExcelExportDialog 
+        open={isExportDialogOpen} 
+        onOpenChange={setIsExportDialogOpen}
+      />
+      <CalendarView 
+        open={isCalendarOpen} 
+        onOpenChange={setIsCalendarOpen}
+      />
+      <NotificationSettings 
+        open={isSettingsOpen} 
+        onOpenChange={setIsSettingsOpen}
+      />
     </div>
   );
 };
