@@ -100,7 +100,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 3: File */}
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -109,7 +109,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 4: Work Order */}
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.workOrder}
           onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
@@ -260,14 +260,14 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 22: Released */}
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.released}
           onSave={(value) => updateRecord(record.id, 'released', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 23: Notes - GRAY SHADED */}
+      {/* Column 23: Notes (moved from Final Steps) */}
       <td className="border-r-4 border-black p-1 bg-gray-200">
         <InlineEditCell
           value={record.notes}
@@ -275,7 +275,15 @@ const TrackingTableRow = ({
           placeholder="Enter notes"
         />
       </td>
-      {/* Column 24: Select - CHECKBOX */}
+      {/* Column 24: Notes - GRAY SHADED */}
+      <td className="border-r-4 border-black p-1 bg-gray-200">
+        <InlineEditCell
+          value={record.notes}
+          onSave={(value) => updateRecord(record.id, 'notes', value as string)}
+          placeholder="Enter notes"
+        />
+      </td>
+      {/* Column 25: Select - CHECKBOX */}
       <td className="p-1 text-center">
         <Checkbox
           checked={isSelected}
