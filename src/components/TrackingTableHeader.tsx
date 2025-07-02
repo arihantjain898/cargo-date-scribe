@@ -35,7 +35,7 @@ const TrackingTableHeader = ({
         <th colSpan={7} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Processing</th>
         <th colSpan={4} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Final Steps</th>
         <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-gray-200 w-[200px]">Notes</th>
-        <th className="bg-red-200 p-2 text-center font-bold text-gray-900">Actions</th>
+        <th className="bg-red-200 p-2 text-center font-bold text-gray-900">Select</th>
       </tr>
       <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
         <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 w-[120px] sticky left-0 z-40">Customer</th>
