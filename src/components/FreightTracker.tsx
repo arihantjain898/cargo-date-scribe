@@ -1,9 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Calendar, Settings, Plus, Database, Archive, Trash2 } from 'lucide-react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Download, Calendar, Settings, Plus, Database } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
@@ -263,54 +261,6 @@ const FreightTracker = () => {
     }
   };
 
-  const handleBulkArchive = async () => {
-    try {
-      for (const id of selectedRows) {
-        if (activeTab === 'allFiles') {
-          await updateAllFilesRecord(id, 'archived', 'true');
-        } else if (activeTab === 'importTracking') {
-          await updateImportRecord(id, 'archived', true);
-        } else if (activeTab === 'exportTracking') {
-          await updateRecord(id, 'archived', true);
-        } else if (activeTab === 'domesticTrucking') {
-          await updateDomesticTruckingRecord(id, 'archived', true);
-        }
-      }
-      setSelectedRows([]);
-      toast({
-        title: "Records Archived",
-        description: `${selectedRows.length} records have been archived successfully.`,
-      });
-    } catch (error) {
-      console.error('Error archiving records:', error);
-      toast({
-        title: "Error",
-        description: "Failed to archive records. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleBulkDelete = async () => {
-    try {
-      for (const id of selectedRows) {
-        await handleDeleteRecord(activeTab, id);
-      }
-      setSelectedRows([]);
-      toast({
-        title: "Records Deleted",
-        description: `${selectedRows.length} records have been deleted successfully.`,
-      });
-    } catch (error) {
-      console.error('Error deleting records:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete records. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
   const handleFileClick = (fileNumber: string, fileType: string) => {
     console.log('File click from All Files:', { fileNumber, fileType });
     
@@ -493,39 +443,9 @@ const FreightTracker = () => {
             {activeTab === 'exportTracking' && 'Export Tracking'}
             {activeTab === 'domesticTrucking' && 'Domestic Trucking'}
           </h2>
-          <div className="flex items-center space-x-2">
-            {selectedRows.length > 0 && (
-              <>
-                <Button size="sm" variant="outline" onClick={handleBulkArchive}>
-                  <Archive className="mr-2 h-4 w-4" /> Archive ({selectedRows.length})
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button size="sm" variant="destructive">
-                      <Trash2 className="mr-2 h-4 w-4" /> Delete ({selectedRows.length})
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Selected Records</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete {selectedRows.length} selected record{selectedRows.length > 1 ? 's' : ''}? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleBulkDelete} className="bg-red-600 hover:bg-red-700">
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            )}
-            <Button size="sm" onClick={() => addNewRecord(activeTab)}>
-              <Plus className="mr-2 h-4 w-4" /> Add Record
-            </Button>
-          </div>
+          <Button size="sm" onClick={() => addNewRecord(activeTab)}>
+            <Plus className="mr-2 h-4 w-4" /> Add Record
+          </Button>
         </div>
 
         <TabsContent value="allFiles">
