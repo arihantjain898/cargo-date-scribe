@@ -100,7 +100,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 3: File */}
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -109,7 +109,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 4: Work Order */}
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.workOrder}
           onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
