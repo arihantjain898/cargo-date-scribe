@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
@@ -60,10 +60,8 @@ const ImportTrackingTableRow = ({
   };
 
   const handleBookingClick = () => {
-    if (record.booking) {
-      // Open booking number as a Google search or you can customize this URL
-      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(record.booking)}`;
-      window.open(searchUrl, '_blank');
+    if (record.bookingUrl) {
+      window.open(record.bookingUrl, '_blank');
     }
   };
 
@@ -99,23 +97,32 @@ const ImportTrackingTableRow = ({
       </td>
       {/* Column 2: Booking */}
       <td className="border-r border-gray-500 p-1">
-        <div className="flex items-center gap-2">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            {record.bookingUrl ? (
+              <button
+                onClick={handleBookingClick}
+                className="text-blue-600 hover:text-blue-800 underline text-left flex items-center gap-1"
+                title={`Go to: ${record.bookingUrl}`}
+              >
+                {record.booking || 'Enter booking'}
+                <ExternalLink className="h-3 w-3" />
+              </button>
+            ) : (
+              <InlineEditCell
+                value={record.booking}
+                onSave={(value) => updateRecord(record.id, 'booking', value as string)}
+                placeholder="Enter booking"
+                className={isEmpty ? "text-gray-400" : ""}
+              />
+            )}
+          </div>
           <InlineEditCell
-            value={record.booking}
-            onSave={(value) => updateRecord(record.id, 'booking', value as string)}
-            placeholder="Enter booking"
-            className={isEmpty ? "text-gray-400" : ""}
+            value={record.bookingUrl || ''}
+            onSave={(value) => updateRecord(record.id, 'bookingUrl', value as string)}
+            placeholder="Enter booking URL (optional)"
+            className="text-xs text-gray-500"
           />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleBookingClick}
-            className="h-6 w-6 p-0 hover:bg-blue-100"
-            title={`Search for booking: ${record.booking || 'booking number'}`}
-            disabled={!record.booking}
-          >
-            <ExternalLink className={`h-3 w-3 ${record.booking ? 'text-blue-600' : 'text-gray-400'}`} />
-          </Button>
         </div>
       </td>
       {/* Column 3: File */}

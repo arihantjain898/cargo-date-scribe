@@ -3,6 +3,7 @@ export interface ImportTrackingRecord {
   id: string;
   customer: string;
   booking: string;
+  bookingUrl?: string; // Optional URL for the booking number
   file: string;
   etaFinalPod: string;
   bond: string;
@@ -22,6 +23,7 @@ export interface ImportTrackingRecord {
   returned: string;
   deliveryDate: string;
   notes: string;
-  archived?: boolean;
-  userId?: string;
+  archived: boolean;
+  createdAt: string;
+  userId: string;
 }
