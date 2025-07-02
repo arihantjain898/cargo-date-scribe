@@ -5,6 +5,8 @@ import { getContainerVolumeColor } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
 import AllFilesTableRowActions from './AllFilesTableRowActions';
 import AllFilesTableFileCell from './AllFilesTableFileCell';
+import { ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface AllFilesTableRowProps {
   record: AllFilesRecord;
@@ -42,6 +44,12 @@ const AllFilesTableRow = ({
     }
   };
 
+  const handleFileClick = () => {
+    if (onFileClick && record.number && record.file) {
+      onFileClick(record.number, record.file);
+    }
+  };
+
   // More distinctive alternating colors matching export/import tabs
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isArchived ? 'bg-gray-200 opacity-60' : 
@@ -59,12 +67,25 @@ const AllFilesTableRow = ({
   return (
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <InlineEditCell
-          value={record.customer}
-          onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-          placeholder="Enter customer"
-          className={getTextStyling(record.customer)}
-        />
+        <div className="flex items-center gap-2">
+          <InlineEditCell
+            value={record.customer}
+            onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+            placeholder="Enter customer"
+            className={getTextStyling(record.customer)}
+          />
+          {record.number && record.file && onFileClick && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleFileClick}
+              className="h-6 w-6 p-0 hover:bg-blue-100"
+              title={`Open ${record.file} ${record.number} in checklist`}
+            >
+              <ExternalLink className="h-3 w-3 text-blue-600" />
+            </Button>
+          )}
+        </div>
       </td>
       
       <td className="border-r border-gray-500 p-1">
@@ -72,7 +93,6 @@ const AllFilesTableRow = ({
           fileValue={record.file}
           numberValue={record.number}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
-          onFileClick={onFileClick}
           className={getTextStyling(record.file)}
         />
       </td>

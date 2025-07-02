@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Upload, Calendar, Settings, Plus } from 'lucide-react';
+import { Download, Upload, Calendar, Settings, Plus, Database } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
@@ -16,6 +16,12 @@ import { AllFilesRecord } from '../types/AllFilesRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
+import { 
+  generateAllFilesSampleData, 
+  generateImportSampleData, 
+  generateExportSampleData, 
+  generateDomesticSampleData 
+} from '../utils/sampleDataGenerator';
 
 const FreightTracker = () => {
   const { user } = useFirebaseAuth();
@@ -56,6 +62,41 @@ const FreightTracker = () => {
     allFilesData: allFilesData?.length,
     domesticTruckingData: domesticTruckingData?.length
   });
+
+  const loadSampleData = async () => {
+    try {
+      const allFilesRecords = generateAllFilesSampleData();
+      const importRecords = generateImportSampleData();
+      const exportRecords = generateExportSampleData();
+      const domesticRecords = generateDomesticSampleData();
+
+      // Add all sample data
+      for (const record of allFilesRecords) {
+        await addAllFilesItem(record);
+      }
+      for (const record of importRecords) {
+        await addImportItem(record);
+      }
+      for (const record of exportRecords) {
+        await addExportItem(record);
+      }
+      for (const record of domesticRecords) {
+        await addDomesticTruckingItem(record);
+      }
+
+      toast({
+        title: "Sample Data Loaded",
+        description: "30 All Files records and 30 linked tracking records have been added.",
+      });
+    } catch (error) {
+      console.error('Error loading sample data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load sample data. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const addNewRecord = async (tab: string) => {
     try {
@@ -219,8 +260,53 @@ const FreightTracker = () => {
   };
 
   const handleFileClick = (fileNumber: string, fileType: string) => {
-    setHighlightedRowId(fileNumber);
-    setActiveTab('allFiles');
+    console.log('File click:', { fileNumber, fileType });
+    
+    // Create the file identifier by combining type and number (e.g., "IS1000", "ES1001", "DT1002")
+    const fileIdentifier = `${fileType}${fileNumber}`;
+    
+    // Find matching record in the appropriate tab based on file type
+    let targetTab = 'allFiles';
+    let foundRecord = null;
+    
+    if (fileType === 'IS' || fileType === 'IA') {
+      // Import tracking
+      foundRecord = importData?.find(record => record.file === fileIdentifier);
+      if (foundRecord) {
+        targetTab = 'importTracking';
+        setHighlightedRowId(foundRecord.id);
+      }
+    } else if (fileType === 'ES' || fileType === 'EA') {
+      // Export tracking
+      foundRecord = exportData?.find(record => record.file === fileIdentifier);
+      if (foundRecord) {
+        targetTab = 'exportTracking';
+        setHighlightedRowId(foundRecord.id);
+      }
+    } else if (fileType === 'DT' || fileType === 'ET') {
+      // Domestic trucking
+      foundRecord = domesticTruckingData?.find(record => record.file === fileIdentifier);
+      if (foundRecord) {
+        targetTab = 'domesticTrucking';
+        setHighlightedRowId(foundRecord.id);
+      }
+    }
+    
+    console.log('Found record:', foundRecord, 'Target tab:', targetTab);
+    
+    if (foundRecord) {
+      setActiveTab(targetTab);
+      // Clear highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedRowId(null);
+      }, 3000);
+    } else {
+      toast({
+        title: "No Linked Record Found",
+        description: `No ${fileType} record found for file ${fileIdentifier}`,
+        variant: "destructive"
+      });
+    }
   };
 
   const handleCalendarEventClick = (fileNumber: string, source: string) => {
@@ -283,6 +369,9 @@ const FreightTracker = () => {
           <Button><Upload className="mr-2 h-4 w-4" /> Import</Button>
           <Button variant="outline" onClick={() => setShowCalendar(true)}>
             <Calendar className="mr-2 h-4 w-4" /> Calendar
+          </Button>
+          <Button variant="outline" onClick={loadSampleData}>
+            <Database className="mr-2 h-4 w-4" /> Load Sample Data
           </Button>
           <NotificationSettings>
             <Button variant="outline"><Settings className="mr-2 h-4 w-4" /> Settings</Button>
