@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,9 +9,7 @@ import {
   Plus, 
   Database, 
   Archive, 
-  Trash2,
-  ArchiveRestore,
-  X
+  Trash2 
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -302,26 +301,6 @@ const FreightTracker = () => {
     }
   };
 
-  const handleBulkUnarchive = async () => {
-    try {
-      for (const id of selectedRows) {
-        await handleUpdateRecord(activeTab, id, 'archived', false);
-      }
-      setSelectedRows([]);
-      toast({
-        title: "Records Unarchived",
-        description: `${selectedRows.length} records have been unarchived successfully.`,
-      });
-    } catch (error) {
-      console.error('Error unarchiving records:', error);
-      toast({
-        title: "Error",
-        description: "Failed to unarchive records. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
   const handleBulkDelete = async () => {
     try {
       for (const id of selectedRows) {
@@ -341,31 +320,6 @@ const FreightTracker = () => {
       });
     }
   };
-
-  const handleUnselectAll = () => {
-    setSelectedRows([]);
-    toast({
-      title: "Selection Cleared",
-      description: "All selected rows have been unselected.",
-    });
-  };
-
-  // Check if selected rows are archived to show appropriate buttons
-  const getSelectedRowsArchiveStatus = () => {
-    let currentData: any[] = [];
-    if (activeTab === 'allFiles') currentData = allFilesData || [];
-    else if (activeTab === 'importTracking') currentData = importData || [];
-    else if (activeTab === 'exportTracking') currentData = exportData || [];
-    else if (activeTab === 'domesticTrucking') currentData = domesticTruckingData || [];
-
-    const selectedRecords = currentData.filter(record => selectedRows.includes(record.id));
-    const archivedCount = selectedRecords.filter(record => record.archived).length;
-    const unarchivedCount = selectedRecords.length - archivedCount;
-
-    return { archivedCount, unarchivedCount };
-  };
-
-  const { archivedCount, unarchivedCount } = getSelectedRowsArchiveStatus();
 
   const handleFileClick = (fileNumber: string, fileType: string) => {
     console.log('File click from All Files:', { fileNumber, fileType });
@@ -509,6 +463,46 @@ const FreightTracker = () => {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Freight Tracking</h1>
         <div className="flex items-center space-x-4">
+          {selectedRows.length > 0 && (
+            <>
+              <Button
+                variant="outline"
+                onClick={handleBulkArchive}
+                className="flex items-center gap-2"
+              >
+                <Archive className="h-4 w-4" />
+                Archive ({selectedRows.length})
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete ({selectedRows.length})
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete {selectedRows.length} selected record{selectedRows.length > 1 ? 's' : ''}.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleBulkDelete}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          )}
           <ExcelExportDialog
             activeTab={activeTab}
             exportData={exportData || []}
@@ -549,79 +543,9 @@ const FreightTracker = () => {
             {activeTab === 'exportTracking' && 'Export Tracking'}
             {activeTab === 'domesticTrucking' && 'Domestic Trucking'}
           </h2>
-          <div className="flex items-center space-x-2">
-            <Button size="sm" onClick={() => addNewRecord(activeTab)}>
-              <Plus className="mr-2 h-4 w-4" /> Add Record
-            </Button>
-            
-            {selectedRows.length > 0 && (
-              <>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleUnselectAll}
-                  className="flex items-center gap-2"
-                >
-                  <X className="h-4 w-4" />
-                  Unselect All
-                </Button>
-                
-                {unarchivedCount > 0 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleBulkArchive}
-                    className="flex items-center gap-2"
-                  >
-                    <Archive className="h-4 w-4" />
-                    Archive ({unarchivedCount})
-                  </Button>
-                )}
-                
-                {archivedCount > 0 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleBulkUnarchive}
-                    className="flex items-center gap-2"
-                  >
-                    <ArchiveRestore className="h-4 w-4" />
-                    Unarchive ({archivedCount})
-                  </Button>
-                )}
-                
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="flex items-center gap-2"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Delete ({selectedRows.length})
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete {selectedRows.length} selected record{selectedRows.length > 1 ? 's' : ''}.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleBulkDelete}
-                        className="bg-red-600 hover:bg-red-700"
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            )}
-          </div>
+          <Button size="sm" onClick={() => addNewRecord(activeTab)}>
+            <Plus className="mr-2 h-4 w-4" /> Add Record
+          </Button>
         </div>
 
         <TabsContent value="allFiles">
