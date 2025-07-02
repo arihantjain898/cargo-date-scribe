@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Trash2, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -53,6 +52,9 @@ const ImportTrackingTableRow = ({
                      record.entryFiled && record.blRelease && record.customsRelease && 
                      record.invoiceSent && record.paymentReceived && record.workOrderSetup;
 
+  // Check if record is empty (has no meaningful data)
+  const isEmpty = !record.customer && !record.booking && !record.file && !record.etaFinalPod;
+
   const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
       setSelectedRows(prev => [...prev, record.id]);
@@ -81,19 +83,18 @@ const ImportTrackingTableRow = ({
             value={record.customer}
             onSave={(value) => updateRecord(record.id, 'customer', value as string)}
             placeholder="Enter customer name"
-            className="font-bold"
+            className={isEmpty ? "text-gray-400" : "font-bold"}
           />
-          {record.file && onFileClick && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleFileClick}
-              className="h-6 w-6 p-0 hover:bg-blue-100"
-              title={`Open ${record.file} in All Files`}
-            >
-              <ExternalLink className="h-3 w-3 text-blue-600" />
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleFileClick}
+            className="h-6 w-6 p-0 hover:bg-blue-100"
+            title={`Open ${record.file || 'file'} in All Files`}
+            disabled={!record.file}
+          >
+            <ExternalLink className={`h-3 w-3 ${record.file ? 'text-blue-600' : 'text-gray-400'}`} />
+          </Button>
         </div>
       </td>
       <td className="border-r border-gray-500 p-1">
@@ -101,6 +102,7 @@ const ImportTrackingTableRow = ({
           value={record.booking}
           onSave={(value) => updateRecord(record.id, 'booking', value as string)}
           placeholder="Enter booking"
+          className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
       <td className="border-r border-gray-500 p-1">
@@ -108,6 +110,7 @@ const ImportTrackingTableRow = ({
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
           placeholder="Enter file"
+          className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
       <td className="border-r-4 border-black p-1">
@@ -115,6 +118,7 @@ const ImportTrackingTableRow = ({
           value={record.etaFinalPod}
           onSave={(value) => updateRecord(record.id, 'etaFinalPod', value as string)}
           placeholder="Enter ETA"
+          className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
       <td className="border-r border-gray-500 p-1">
