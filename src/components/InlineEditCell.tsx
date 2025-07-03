@@ -13,7 +13,7 @@ interface InlineEditCellProps {
   className?: string;
   options?: string[];
   isThreeStateBoolean?: boolean;
-  isPoaColumn?: boolean; // New prop for POA column
+  isPoaColumn?: boolean;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -74,7 +74,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   const handleClick = () => {
     if (isPoaColumn) {
-      // POA column cycling: Select Value -> Pending -> Yes -> No -> Pending (skip Select Value after first use)
+      // POA column cycling logic
       if (value === 'Select Value') {
         onSave('Pending');
       } else if (value === 'Pending') {
@@ -96,9 +96,9 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (isBoolean) {
       onSave(!value);
     } else if (options.length > 0) {
-      // Cycle through options
+      // Cycle through options for any column with options (including Bond)
       const currentIndex = options.indexOf(String(value));
-      const nextIndex = (currentIndex + 1) % options.length;
+      const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % options.length;
       onSave(options[nextIndex]);
     } else {
       setIsEditing(true);
@@ -138,24 +138,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     );
   }
 
-  if (isEditing && options.length > 0 && !isPoaColumn) {
-    return (
-      <div className="w-full min-h-[24px] p-1">
-        <Select value={String(value)} onValueChange={handleSelectChange}>
-          <SelectTrigger className="w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map((option) => (
-              <SelectItem key={option} value={option} className="text-xs">
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    );
-  }
+  // Remove the separate select editing mode since we want all options to cycle on click
+  // if (isEditing && options.length > 0 && !isPoaColumn) { ... }
 
   const getPoaDisplay = () => {
     if (value === 'Select Value') {
@@ -192,7 +176,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   const getStatusColor = (val: string) => {
     if (val === 'Yes' || val === 'Done') return 'bg-green-100 text-green-800 hover:bg-green-200';
     if (val === 'Pending') return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-    if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200'; // N/A counts as complete
+    if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200';
     return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   };
 
