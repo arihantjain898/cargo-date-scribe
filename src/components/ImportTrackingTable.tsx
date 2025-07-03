@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -42,7 +41,6 @@ const ImportTrackingTable = ({
     }
   }, [data.length]);
 
-  // Scroll to highlighted row when highlightedRowId changes
   useEffect(() => {
     if (highlightedRowId && scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -52,7 +50,6 @@ const ImportTrackingTable = ({
         const rowElement = highlightedRow as HTMLElement;
         const viewportElement = viewport as HTMLElement;
         
-        // Calculate the position to scroll to center the row
         const rowTop = rowElement.offsetTop;
         const rowHeight = rowElement.offsetHeight;
         const viewportHeight = viewportElement.clientHeight;
@@ -93,7 +90,7 @@ const ImportTrackingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[70vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1800px]">
           <table className="w-full border-collapse text-xs">
             <ImportTrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />

@@ -38,6 +38,8 @@ const FreightTracker: React.FC = () => {
   const [showArchivedAllFiles, setShowArchivedAllFiles] = useState(false);
   const [showArchivedDomesticTrucking, setShowArchivedDomesticTrucking] = useState(false);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('allfiles');
+  const [mainActiveTab, setMainActiveTab] = useState('tracking');
 
   // Selected rows state for bulk operations
   const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
@@ -165,44 +167,36 @@ const FreightTracker: React.FC = () => {
     const firstLetter = fileType?.charAt(0)?.toUpperCase();
     console.log('First letter:', firstLetter, 'Full fileType:', fileType);
     
+    // Create search strings for matching
+    const searchStrings = [
+      `${fileType}${fileNumber}`.toLowerCase(),
+      `${fileType.toLowerCase()}${fileNumber}`,
+      fileNumber.toLowerCase(),
+      `${firstLetter?.toLowerCase()}${fileNumber}`,
+      `${firstLetter?.toLowerCase()}s${fileNumber}`,
+      `${firstLetter?.toLowerCase()}t${fileNumber}`
+    ];
+    
     switch (firstLetter) {
       case 'E':
         targetTab = 'export';
-        // Try multiple matching patterns for export records
         targetRecord = exportData.find(record => {
           const recordFile = record.file?.toLowerCase() || '';
-          const searchFile = `${fileType}${fileNumber}`.toLowerCase();
-          console.log('Checking export record:', recordFile, 'against:', searchFile);
-          return recordFile === searchFile || 
-                 recordFile === `e${fileNumber}` ||
-                 recordFile === `et${fileNumber}` ||
-                 recordFile === fileNumber.toLowerCase();
+          return searchStrings.some(search => recordFile === search);
         });
         break;
       case 'I':
         targetTab = 'import';
-        // Try multiple matching patterns for import records
         targetRecord = importData.find(record => {
           const recordFile = record.file?.toLowerCase() || '';
-          const searchFile = `${fileType}${fileNumber}`.toLowerCase();
-          console.log('Checking import record:', recordFile, 'against:', searchFile);
-          return recordFile === searchFile || 
-                 recordFile === `i${fileNumber}` ||
-                 recordFile === `is${fileNumber}` ||
-                 recordFile === fileNumber.toLowerCase();
+          return searchStrings.some(search => recordFile === search);
         });
         break;
       case 'D':
         targetTab = 'domestic';
-        // Try multiple matching patterns for domestic records
         targetRecord = domesticTruckingData.find(record => {
           const recordFile = record.file?.toLowerCase() || '';
-          const searchFile = `${fileType}${fileNumber}`.toLowerCase();
-          console.log('Checking domestic record:', recordFile, 'against:', searchFile);
-          return recordFile === searchFile || 
-                 recordFile === `d${fileNumber}` ||
-                 recordFile === `dt${fileNumber}` ||
-                 recordFile === fileNumber.toLowerCase();
+          return searchStrings.some(search => recordFile === search);
         });
         break;
       default:
@@ -210,7 +204,6 @@ const FreightTracker: React.FC = () => {
         targetRecord = allFilesData.find(record => {
           const recordNumber = record.number?.toLowerCase() || '';
           const recordFile = record.file?.toLowerCase() || '';
-          console.log('Checking allFiles record number:', recordNumber, 'file:', recordFile, 'against number:', fileNumber.toLowerCase());
           return recordNumber === fileNumber.toLowerCase() || 
                  recordFile === fileType.toLowerCase();
         });
@@ -219,31 +212,24 @@ const FreightTracker: React.FC = () => {
     console.log('Target tab:', targetTab, 'Target record found:', !!targetRecord, targetRecord?.id);
     
     if (targetRecord) {
-      // Use a timeout to ensure the tab switch happens first
+      // Switch to the appropriate tab
+      setActiveTab(targetTab);
+      
+      // Set the highlighted row ID after a small delay to ensure tab is switched
       setTimeout(() => {
-        // Switch to the appropriate tab by triggering a click on the tab trigger
-        const tabTrigger = document.querySelector(`[data-state="inactive"][value="${targetTab}"]`) as HTMLElement;
-        if (tabTrigger) {
-          console.log('Clicking tab trigger for:', targetTab);
-          tabTrigger.click();
-        }
+        console.log('Setting highlighted row ID:', targetRecord.id);
+        setHighlightedRowId(targetRecord.id);
         
-        // Set the highlighted row ID after a small delay to ensure tab is switched
+        // Clear highlight after 3 seconds
         setTimeout(() => {
-          console.log('Setting highlighted row ID:', targetRecord.id);
-          setHighlightedRowId(targetRecord.id);
-          
-          // Clear highlight after 3 seconds
-          setTimeout(() => {
-            setHighlightedRowId(null);
-          }, 3000);
-        }, 100);
-        
-        toast({
-          title: "Record Found",
-          description: `Switched to ${targetTab} tab and highlighted matching record`,
-        });
-      }, 50);
+          setHighlightedRowId(null);
+        }, 3000);
+      }, 200);
+      
+      toast({
+        title: "Record Found",
+        description: `Switched to ${targetTab} tab and highlighted matching record`,
+      });
     } else {
       toast({
         title: "Record Not Found",
@@ -271,10 +257,7 @@ const FreightTracker: React.FC = () => {
     }
     
     // Switch to the appropriate tab
-    const tabTrigger = document.querySelector(`[value="${targetTab}"]`) as HTMLElement;
-    if (tabTrigger) {
-      tabTrigger.click();
-    }
+    setActiveTab(targetTab);
     
     setHighlightedRowId(fileId);
     setTimeout(() => {
@@ -287,14 +270,14 @@ const FreightTracker: React.FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen px-2 py-4 max-w-[98vw]">
-      <Tabs defaultValue="tracking" className="w-full">
+    <div className="w-full min-h-screen px-4 py-6 max-w-[95vw] mx-auto">
+      <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
           <TabsTrigger value="calendar">Calendar View</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="tracking">
+        <TabsContent value="tracking" className="max-h-[85vh] overflow-hidden">
           <FreightTrackerTabs
             exportData={exportData}
             importData={importData}
@@ -322,10 +305,12 @@ const FreightTracker: React.FC = () => {
             setSelectedAllFilesRows={setSelectedAllFilesRows}
             highlightedRowId={highlightedRowId}
             onFileClick={handleFileClick}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
           />
         </TabsContent>
 
-        <TabsContent value="calendar">
+        <TabsContent value="calendar" className="max-h-[85vh] overflow-hidden">
           <CalendarView
             data={exportData}
             importData={importData}

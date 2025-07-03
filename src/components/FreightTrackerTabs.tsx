@@ -49,6 +49,8 @@ interface FreightTrackerTabsProps {
   setSelectedAllFilesRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
   onFileClick: (fileNumber: string, fileType: string) => void;
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
 }
 
 const FreightTrackerTabs = ({
@@ -77,7 +79,9 @@ const FreightTrackerTabs = ({
   selectedAllFilesRows,
   setSelectedAllFilesRows,
   highlightedRowId,
-  onFileClick
+  onFileClick,
+  activeTab,
+  setActiveTab
 }: FreightTrackerTabsProps) => {
   // Helper functions for bulk operations
   const handleBulkArchive = (recordIds: string[], updateFunction: any, setSelected: any) => {
@@ -192,7 +196,7 @@ const FreightTrackerTabs = ({
   };
 
   return (
-    <Tabs defaultValue="allfiles" className="w-full">
+    <Tabs value={activeTab || "allfiles"} onValueChange={setActiveTab} className="w-full">
       <div className="flex justify-between items-center mb-4">
         <TabsList className="grid grid-cols-4 w-auto">
           <TabsTrigger value="allfiles">All Files</TabsTrigger>
