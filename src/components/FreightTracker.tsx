@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
@@ -104,20 +103,20 @@ const FreightTracker: React.FC = () => {
       file: '',
       etaFinalPod: '',
       bond: 'Continuous',
-      poa: false,
-      isf: false,
-      packingListCommercialInvoice: false,
-      billOfLading: false,
-      arrivalNotice: false,
-      isfFiled: false,
-      entryFiled: false,
-      blRelease: false,
-      customsRelease: false,
-      invoiceSent: false,
-      paymentReceived: false,
-      workOrderSetup: false,
-      delivered: '',
-      returned: '',
+      poa: 'Select',
+      isf: 'Select',
+      packingListCommercialInvoice: 'Select',
+      billOfLading: 'Select',
+      arrivalNotice: 'Select',
+      isfFiled: 'Select',
+      entryFiled: 'Select',
+      blRelease: 'Select',
+      customsRelease: 'Select',
+      invoiceSent: 'Select',
+      paymentReceived: 'Select',
+      workOrderSetup: 'Select',
+      delivered: 'Select',
+      returned: 'Select',
       deliveryDate: '',
       notes: '',
       archived: false,
@@ -125,7 +124,7 @@ const FreightTracker: React.FC = () => {
       userId: currentUserId
     };
     
-    addImportItem(newRecord);
+    addImportItem();
   };
 
   const addNewDomesticRecord = () => {

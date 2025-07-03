@@ -43,9 +43,10 @@ export const useFreightTrackerData = (currentUserId: string) => {
 
   // Wrapper for adding import items with proper defaults
   const addImportItem = async () => {
-    const newImportRecord: Partial<ImportTrackingRecord> = {
+    const newImportRecord: Omit<ImportTrackingRecord, 'id'> = {
       customer: '',
       booking: '',
+      bookingUrl: '',
       file: '',
       etaFinalPod: '',
       bond: 'Continuous',
