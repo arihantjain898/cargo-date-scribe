@@ -386,7 +386,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     }));
   };
 
-  const renderEventsByTypeAndCustomer = (events: CalendarEvent[]) => {
+  const renderEventsBySource = (events: CalendarEvent[]) => {
     if (events.length === 0) {
       return (
         <div className="text-center py-8">
@@ -396,47 +396,120 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
       );
     }
 
+    // Group events by source
+    const importEvents = events.filter(e => e.source === 'import');
+    const exportEvents = events.filter(e => e.source === 'export');
+    const domesticEvents = events.filter(e => e.source === 'domestic');
+
     return (
-      <div className="space-y-3">
-        {events.map((event) => (
-          <div 
-            key={event.uniqueId} 
-            className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow cursor-pointer"
-            onClick={() => handleEventClick(event)}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge 
-                    variant="outline" 
-                    className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                  >
-                    {getEventTypeLabel(event.type)}
-                  </Badge>
-                  <Badge 
-                    variant="outline" 
-                    className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
-                  >
-                    {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic'}
-                  </Badge>
-                </div>
-                
-                <div className="space-y-1">
-                  <div className="font-semibold text-gray-900">{event.customer}</div>
-                  <div className="text-sm text-gray-600 space-y-0.5">
-                    {event.source === 'import' && event.booking && (
-                      <div><span className="font-medium">Booking:</span> {event.booking}</div>
-                    )}
-                    {event.source === 'export' && event.ref && (
-                      <div><span className="font-medium">Ref:</span> {event.ref}</div>
-                    )}
-                    <div><span className="font-medium">File:</span> {event.file}</div>
+      <div className="grid grid-cols-3 gap-4 h-full">
+        {/* Import Events */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 pb-2 border-b">
+            <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300 text-xs font-medium">
+              Import
+            </Badge>
+            <span className="text-xs text-gray-500">({importEvents.length})</span>
+          </div>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {importEvents.length === 0 ? (
+              <p className="text-gray-400 text-xs text-center py-4">No import events</p>
+            ) : (
+              importEvents.map((event) => (
+                <div 
+                  key={event.uniqueId} 
+                  className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <div className="space-y-1">
+                    <Badge 
+                      variant="outline" 
+                      className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
+                    >
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                    <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
+                    <div className="text-xs text-gray-600 truncate">
+                      {event.booking && `Booking: ${event.booking}`}
+                    </div>
+                    <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
                   </div>
                 </div>
-              </div>
-            </div>
+              ))
+            )}
           </div>
-        ))}
+        </div>
+
+        {/* Export Events */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 pb-2 border-b">
+            <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 text-xs font-medium">
+              Export
+            </Badge>
+            <span className="text-xs text-gray-500">({exportEvents.length})</span>
+          </div>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {exportEvents.length === 0 ? (
+              <p className="text-gray-400 text-xs text-center py-4">No export events</p>
+            ) : (
+              exportEvents.map((event) => (
+                <div 
+                  key={event.uniqueId} 
+                  className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <div className="space-y-1">
+                    <Badge 
+                      variant="outline" 
+                      className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
+                    >
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                    <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
+                    <div className="text-xs text-gray-600 truncate">
+                      {event.ref && `Ref: ${event.ref}`}
+                    </div>
+                    <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Domestic Events */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 pb-2 border-b">
+            <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs font-medium">
+              Domestic
+            </Badge>
+            <span className="text-xs text-gray-500">({domesticEvents.length})</span>
+          </div>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {domesticEvents.length === 0 ? (
+              <p className="text-gray-400 text-xs text-center py-4">No domestic events</p>
+            ) : (
+              domesticEvents.map((event) => (
+                <div 
+                  key={event.uniqueId} 
+                  className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <div className="space-y-1">
+                    <Badge 
+                      variant="outline" 
+                      className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
+                    >
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                    <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
+                    <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
     );
   };
@@ -538,7 +611,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </CardHeader>
             <CardContent className="p-3 pt-0 flex-1">
               <ScrollArea className="h-full">
-                {selectedDate ? renderEventsByTypeAndCustomer(getEventsForDate(selectedDate, calendarFilter)) : (
+                {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-3">📅</div>
                     <p className="text-gray-500">Select a date to view events</p>
