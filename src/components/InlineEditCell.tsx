@@ -12,6 +12,7 @@ interface InlineEditCellProps {
   placeholder?: string;
   className?: string;
   options?: string[];
+  isThreeStateBoolean?: boolean; // New prop for three-state boolean
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -21,7 +22,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isDate = false,
   placeholder = "Click to edit",
   className = "",
-  options = []
+  options = [],
+  isThreeStateBoolean = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -44,7 +46,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   }, [isEditing, isDate]);
 
   const handleSave = () => {
-    if (isBoolean) {
+    if (isBoolean || isThreeStateBoolean) {
       onSave(editValue === 'true');
     } else {
       onSave(editValue);
@@ -69,7 +71,16 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const handleClick = () => {
-    if (isBoolean) {
+    if (isThreeStateBoolean) {
+      // Cycle through: unset -> true -> false -> unset
+      if (value === '') {
+        onSave(true);
+      } else if (value === true) {
+        onSave(false);
+      } else {
+        onSave('');
+      }
+    } else if (isBoolean) {
       onSave(!value);
     } else if (options.length > 0) {
       // Cycle through options
@@ -86,7 +97,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     setIsEditing(false);
   };
 
-  if (isEditing && !isBoolean && options.length === 0) {
+  if (isEditing && !isBoolean && !isThreeStateBoolean && options.length === 0) {
     return (
       <div className="w-full min-h-[24px] p-1">
         {isDate ? (
@@ -133,7 +144,19 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     );
   }
 
-  const displayValue = isBoolean 
+  const getThreeStateBooleanDisplay = () => {
+    if (value === '' || value === null || value === undefined) {
+      return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
+    } else if (value === true) {
+      return { text: 'Yes', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
+    } else {
+      return { text: 'No', color: 'bg-red-100 text-red-800 hover:bg-red-200' };
+    }
+  };
+
+  const displayValue = isThreeStateBoolean 
+    ? getThreeStateBooleanDisplay().text
+    : isBoolean 
     ? (value ? 'Yes' : 'No')
     : (String(value) || placeholder);
 
@@ -144,7 +167,9 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   };
 
-  const displayClasses = isBoolean || options.length > 0
+  const displayClasses = isThreeStateBoolean
+    ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getThreeStateBooleanDisplay().color}`
+    : (isBoolean || options.length > 0)
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${
         options.length > 0 ? getStatusColor(String(value)) :
         value 
