@@ -167,7 +167,8 @@ const ImportTrackingTableRow = ({
         <InlineEditCell
           value={record.bond}
           onSave={(value) => updateRecord(record.id, 'bond', value as string)}
-          placeholder="Enter bond"
+          options={['Continuous', 'Single Entry']}
+          placeholder="Select bond type"
         />
       </td>
       {/* Column 6: POA */}
