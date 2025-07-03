@@ -175,7 +175,7 @@ const ImportTrackingTableRow = ({
         <InlineEditCell
           value={record.poa}
           onSave={(value) => updateRecord(record.id, 'poa', value as boolean | null)}
-          isBoolean={true}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 7: ISF */}
