@@ -120,8 +120,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   if (isEditing && !isBoolean && !isThreeStateBoolean && !isPoaColumn && !isBondColumn && options.length === 0) {
-    const textInputWidth = isNotesColumn ? 'min-w-[160px]' : isTextColumn ? 'min-w-[90px]' : '';
-    const textareaWidth = isNotesColumn ? 'min-w-[160px]' : 'min-w-[90px]';
+    const textInputWidth = isNotesColumn ? 'min-w-[160px]' : isTextColumn ? 'min-w-[100px]' : '';
+    const textareaWidth = isNotesColumn ? 'min-w-[160px]' : 'min-w-[100px]';
     
     return (
       <div className={`w-full min-h-[24px] p-1 ${textInputWidth}`}>
