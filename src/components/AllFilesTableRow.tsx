@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
@@ -240,6 +239,7 @@ const AllFilesTableRow = ({
           placeholder="Enter comments"
           className={getTextStyling(record.comments)}
           isTextColumn={true}
+          isNotesColumn={true}
         />
       </td>
       

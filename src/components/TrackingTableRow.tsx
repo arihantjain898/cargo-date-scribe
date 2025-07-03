@@ -282,6 +282,7 @@ const TrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
           placeholder="Enter notes"
           isTextColumn={true}
+          isNotesColumn={true}
         />
       </td>
       {/* Column 24: Select - CHECKBOX */}

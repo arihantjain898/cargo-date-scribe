@@ -14,6 +14,7 @@ interface InlineEditCellProps {
   isPoaColumn?: boolean;
   isBondColumn?: boolean;
   isTextColumn?: boolean;
+  isNotesColumn?: boolean;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -27,7 +28,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isThreeStateBoolean = false,
   isPoaColumn = false,
   isBondColumn = false,
-  isTextColumn = false
+  isTextColumn = false,
+  isNotesColumn = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -118,8 +120,11 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   if (isEditing && !isBoolean && !isThreeStateBoolean && !isPoaColumn && !isBondColumn && options.length === 0) {
+    const textInputWidth = isNotesColumn ? 'min-w-[160px]' : isTextColumn ? 'min-w-[90px]' : '';
+    const textareaWidth = isNotesColumn ? 'min-w-[160px]' : 'min-w-[90px]';
+    
     return (
-      <div className={`w-full min-h-[24px] p-1 ${isTextColumn ? 'min-w-[180px]' : ''}`}>
+      <div className={`w-full min-h-[24px] p-1 ${textInputWidth}`}>
         {isDate || isTextColumn ? (
           <Input
             ref={inputRef}
@@ -128,7 +133,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className={`w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 ${isTextColumn ? 'min-w-[160px]' : ''}`}
+            className={`w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 ${textInputWidth}`}
             placeholder={placeholder}
           />
         ) : (
@@ -138,7 +143,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className="w-full min-h-[60px] text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 resize-none min-w-[160px]"
+            className={`w-full min-h-[60px] text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 resize-none ${textareaWidth}`}
             placeholder={placeholder}
           />
         )}

@@ -301,6 +301,7 @@ const ImportTrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
           placeholder="Enter notes"
           isTextColumn={true}
+          isNotesColumn={true}
         />
       </td>
       <td className="p-1 text-center">
