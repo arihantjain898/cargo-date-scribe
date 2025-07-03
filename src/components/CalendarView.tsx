@@ -352,24 +352,48 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     }
   };
 
-  const getFilteredEventsForUpcoming = () => {
+  const getUpcomingEventsGroupedByDate = () => {
     const events = calendarFilter === 'all' ? allEvents :
                   calendarFilter === 'export' ? exportEvents : 
                   calendarFilter === 'import' ? importEvents : domesticEvents;
     
-    // Remove duplicates and filter upcoming events
-    const uniqueEvents = events.filter((event, index, self) => 
-      new Date(event.date + 'T00:00:00') >= new Date() &&
-      self.findIndex(e => 
-        e.recordId === event.recordId && 
-        e.type === event.type && 
-        e.date === event.date
-      ) === index
-    );
+    // Get events for the next 7 days only
+    const today = new Date();
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
     
-    return uniqueEvents
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(0, 12);
+    // Remove duplicates and filter to next week
+    const uniqueEvents = events.filter((event, index, self) => {
+      const eventDate = new Date(event.date + 'T00:00:00');
+      return eventDate >= today && eventDate <= nextWeek &&
+        self.findIndex(e => 
+          e.recordId === event.recordId && 
+          e.type === event.type && 
+          e.date === event.date
+        ) === index;
+    });
+    
+    // Group by date
+    const groupedEvents = uniqueEvents.reduce((acc, event) => {
+      const date = event.date;
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(event);
+      return acc;
+    }, {} as Record<string, CalendarEvent[]>);
+    
+    // Sort dates
+    const sortedDates = Object.keys(groupedEvents).sort();
+    
+    return sortedDates.map(date => ({
+      date,
+      events: groupedEvents[date].sort((a, b) => {
+        // Sort by source order: import, export, domestic
+        const sourceOrder = { import: 0, export: 1, domestic: 2 };
+        return sourceOrder[a.source] - sourceOrder[b.source];
+      })
+    }));
   };
 
   const renderEventsBySource = (events: CalendarEvent[]) => {
@@ -389,20 +413,22 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           {importEvts.length > 0 ? importEvts.map((event, index) => (
             <div 
               key={`import-${event.recordId}-${event.type}-${index}`} 
-              className="p-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer h-full"
+              className="p-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer"
               onClick={() => handleEventClick(event)}
             >
               <div className="space-y-2">
-                <div className="font-semibold text-gray-900 text-sm">{event.customer}</div>
+                <div className="font-semibold text-gray-900 text-sm leading-tight">{event.customer}</div>
                 <Badge 
                   variant="outline" 
                   className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
-                <div className="space-y-1 text-xs text-gray-600">
-                  <div><span className="font-medium">Booking:</span> {event.booking}</div>
-                  <div><span className="font-medium">File:</span> {event.file}</div>
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                  <div><span className="font-medium">Booking:</span></div>
+                  <div className="truncate">{event.booking}</div>
+                  <div><span className="font-medium">File:</span></div>
+                  <div className="truncate">{event.file}</div>
                 </div>
               </div>
             </div>
@@ -422,20 +448,22 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           {exportEvts.length > 0 ? exportEvts.map((event, index) => (
             <div 
               key={`export-${event.recordId}-${event.type}-${index}`} 
-              className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer h-full"
+              className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
               onClick={() => handleEventClick(event)}
             >
               <div className="space-y-2">
-                <div className="font-semibold text-gray-900 text-sm">{event.customer}</div>
+                <div className="font-semibold text-gray-900 text-sm leading-tight">{event.customer}</div>
                 <Badge 
                   variant="outline" 
                   className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
-                <div className="space-y-1 text-xs text-gray-600">
-                  <div><span className="font-medium">Ref:</span> {event.ref}</div>
-                  <div><span className="font-medium">File:</span> {event.file}</div>
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                  <div><span className="font-medium">Ref:</span></div>
+                  <div className="truncate">{event.ref}</div>
+                  <div><span className="font-medium">File:</span></div>
+                  <div className="truncate">{event.file}</div>
                 </div>
               </div>
             </div>
@@ -455,19 +483,20 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           {domesticEvts.length > 0 ? domesticEvts.map((event, index) => (
             <div 
               key={`domestic-${event.recordId}-${event.type}-${index}`} 
-              className="p-3 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer h-full"
+              className="p-3 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer"
               onClick={() => handleEventClick(event)}
             >
               <div className="space-y-2">
-                <div className="font-semibold text-gray-900 text-sm">{event.customer}</div>
+                <div className="font-semibold text-gray-900 text-sm leading-tight">{event.customer}</div>
                 <Badge 
                   variant="outline" 
                   className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
-                <div className="space-y-1 text-xs text-gray-600">
-                  <div><span className="font-medium">File:</span> {event.file}</div>
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                  <div><span className="font-medium">File:</span></div>
+                  <div className="truncate col-span-1">{event.file}</div>
                 </div>
               </div>
             </div>
@@ -482,7 +511,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   };
 
   return (
-    <ScrollArea className="h-full">
+    <div className="h-full overflow-auto">
       <div className="p-4 space-y-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card className="lg:col-span-1 shadow-sm border border-gray-200">
@@ -577,14 +606,14 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 pt-0">
-              <ScrollArea className="h-64">
+              <div className="max-h-64 overflow-y-auto">
                 {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-3">📅</div>
                     <p className="text-gray-500">Select a date to view events</p>
                   </div>
                 )}
-              </ScrollArea>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -592,58 +621,60 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         <Card className="shadow-sm border border-gray-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-900">
-              Upcoming Events
+              Upcoming Events (Next 7 Days)
             </CardTitle>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <ScrollArea className="h-48">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-                {getFilteredEventsForUpcoming().map((event, index) => (
-                  <div 
-                    key={`upcoming-${event.recordId}-${event.type}-${index}`} 
-                    className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
-                    onClick={() => handleEventClick(event)}
-                  >
-                    <div className="space-y-2">
-                      <div className="font-semibold text-gray-900 text-xs">{event.customer}</div>
-                      <div className="flex items-center gap-1 flex-wrap">
-                        <Badge 
-                          variant="outline" 
-                          className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                        >
-                          {getEventTypeLabel(event.type)}
-                        </Badge>
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs font-medium ${
-                            event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 
-                            event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' :
-                            'bg-yellow-100 text-yellow-700 border-yellow-300'
-                          }`}
-                        >
-                          {event.source === 'export' ? 'EXP' : event.source === 'import' ? 'IMP' : 'D-TRK'}
-                        </Badge>
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        {event.source === 'import' && event.booking ? event.booking : 
-                         event.source === 'export' ? event.ref : ''} • {event.file}
-                      </div>
-                      <span className="text-xs text-gray-500 bg-gray-100 px-1 py-0.5 rounded">
-                        {new Date(event.date).toLocaleDateString()}
-                      </span>
+            <div className="space-y-4">
+              {getUpcomingEventsGroupedByDate().map(({ date, events }) => (
+                <div key={date} className="space-y-2">
+                  <div className="flex items-center gap-2 border-b border-gray-200 pb-1">
+                    <div className="text-sm font-semibold text-gray-700">
+                      {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
                     </div>
+                    <div className="h-px flex-1 bg-gray-200"></div>
                   </div>
-                ))}
-              </div>
-              {getFilteredEventsForUpcoming().length === 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {events.map((event, index) => (
+                      <div 
+                        key={`upcoming-${event.recordId}-${event.type}-${index}`} 
+                        className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                        onClick={() => handleEventClick(event)}
+                      >
+                        <div className="space-y-1">
+                          <div className="font-semibold text-gray-900 text-xs leading-tight">{event.customer}</div>
+                          <div className="flex items-center gap-1">
+                            <Badge 
+                              variant="outline" 
+                              className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                            >
+                              {getEventTypeLabel(event.type)}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-gray-600 truncate">
+                            {event.source === 'import' && event.booking ? `${event.booking} • ${event.file}` : 
+                             event.source === 'export' ? `${event.ref} • ${event.file}` : 
+                             event.file}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {getUpcomingEventsGroupedByDate().length === 0 && (
                 <div className="text-center py-8">
                   <div className="text-4xl mb-3">✅</div>
                   <p className="text-gray-500">
-                    No upcoming events
+                    No upcoming events in the next 7 days
                   </p>
                 </div>
               )}
-            </ScrollArea>
+            </div>
           </CardContent>
         </Card>
 
@@ -654,7 +685,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           onEventClick={onCalendarEventClick}
         />
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 
