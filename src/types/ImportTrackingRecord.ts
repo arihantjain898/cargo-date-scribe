@@ -7,18 +7,18 @@ export interface ImportTrackingRecord {
   file: string;
   etaFinalPod: string;
   bond: string;
-  poa: boolean;
-  isf: boolean;
-  packingListCommercialInvoice: boolean;
-  billOfLading: boolean;
-  arrivalNotice: boolean;
-  isfFiled: boolean;
-  entryFiled: boolean;
-  blRelease: boolean;
-  customsRelease: boolean;
-  invoiceSent: boolean;
-  paymentReceived: boolean;
-  workOrderSetup: boolean;
+  poa: boolean | null; // Allow null for unset state
+  isf: boolean | null; // Allow null for unset state
+  packingListCommercialInvoice: boolean | null; // Allow null for unset state
+  billOfLading: boolean | null; // Allow null for unset state
+  arrivalNotice: boolean | null; // Allow null for unset state
+  isfFiled: boolean | null; // Allow null for unset state
+  entryFiled: boolean | null; // Allow null for unset state
+  blRelease: boolean | null; // Allow null for unset state
+  customsRelease: boolean | null; // Allow null for unset state
+  invoiceSent: boolean | null; // Allow null for unset state
+  paymentReceived: boolean | null; // Allow null for unset state
+  workOrderSetup: boolean | null; // Allow null for unset state
   delivered: string;
   returned: string;
   deliveryDate: string;

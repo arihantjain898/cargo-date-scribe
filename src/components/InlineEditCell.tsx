@@ -72,13 +72,13 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   const handleClick = () => {
     if (isThreeStateBoolean) {
-      // Cycle through: unset -> true -> false -> unset
-      if (value === '') {
+      // Cycle through: null -> true -> false -> null
+      if (value === null || value === '' || value === undefined) {
         onSave(true);
       } else if (value === true) {
         onSave(false);
       } else {
-        onSave('');
+        onSave(null);
       }
     } else if (isBoolean) {
       onSave(!value);
@@ -145,8 +145,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   }
 
   const getThreeStateBooleanDisplay = () => {
-    if (value === '' || value === null || value === undefined) {
-      return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
+    if (value === null || value === '' || value === undefined) {
+      return { text: 'Select Option', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (value === true) {
       return { text: 'Yes', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
     } else {
