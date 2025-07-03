@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface InlineEditCellProps {
-  value: string | boolean;
-  onSave: (value: string | boolean) => void;
+  value: string | boolean | null;
+  onSave: (value: string | boolean | null) => void;
   isBoolean?: boolean;
   isDate?: boolean;
   placeholder?: string;
@@ -26,12 +26,12 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isThreeStateBoolean = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(String(value));
+  const [editValue, setEditValue] = useState(String(value || ''));
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setEditValue(String(value));
+    setEditValue(String(value || ''));
   }, [value]);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const handleCancel = () => {
-    setEditValue(String(value));
+    setEditValue(String(value || ''));
     setIsEditing(false);
   };
 
@@ -158,7 +158,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     ? getThreeStateBooleanDisplay().text
     : isBoolean 
     ? (value ? 'Yes' : 'No')
-    : (String(value) || placeholder);
+    : (String(value || '') || placeholder);
 
   const getStatusColor = (val: string) => {
     if (val === 'Yes' || val === 'Done') return 'bg-green-100 text-green-800 hover:bg-green-200';
