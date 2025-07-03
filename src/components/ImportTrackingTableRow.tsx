@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ExternalLink, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -91,6 +90,7 @@ const ImportTrackingTableRow = ({
             onSave={(value) => updateRecord(record.id, 'customer', value as string)}
             placeholder="Enter customer name"
             className={isEmpty ? "text-gray-400" : "font-bold"}
+            isTextColumn={true}
           />
           <Button
             variant="ghost"
@@ -124,7 +124,7 @@ const ImportTrackingTableRow = ({
                   onSave={(value) => updateRecord(record.id, 'booking', value as string)}
                   placeholder="Enter booking"
                   className={isEmpty ? "text-gray-400" : ""}
-                  isBookingColumn={true}
+                  isTextColumn={true}
                 />
                 <Button
                   variant="ghost"
@@ -147,6 +147,7 @@ const ImportTrackingTableRow = ({
               }}
               placeholder="Enter booking URL (optional)"
               className="text-xs text-gray-500"
+              isTextColumn={true}
             />
           )}
         </div>
@@ -157,6 +158,7 @@ const ImportTrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
           placeholder="Enter file"
           className={isEmpty ? "text-gray-400" : ""}
+          isTextColumn={true}
         />
       </td>
       <td className="border-r-4 border-black p-1">
@@ -298,6 +300,7 @@ const ImportTrackingTableRow = ({
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
           placeholder="Enter notes"
+          isTextColumn={true}
         />
       </td>
       <td className="p-1 text-center">

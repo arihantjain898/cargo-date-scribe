@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,7 @@ interface InlineEditCellProps {
   isThreeStateBoolean?: boolean;
   isPoaColumn?: boolean;
   isBondColumn?: boolean;
-  isBookingColumn?: boolean;
+  isTextColumn?: boolean;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -28,7 +27,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isThreeStateBoolean = false,
   isPoaColumn = false,
   isBondColumn = false,
-  isBookingColumn = false
+  isTextColumn = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -41,7 +40,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   useEffect(() => {
     if (isEditing) {
-      if (isDate || isBookingColumn) {
+      if (isDate || isTextColumn) {
         inputRef.current?.focus();
         if (!isDate) {
           inputRef.current?.select();
@@ -51,7 +50,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
         textareaRef.current?.select();
       }
     }
-  }, [isEditing, isDate, isBookingColumn]);
+  }, [isEditing, isDate, isTextColumn]);
 
   const handleSave = () => {
     if (isBoolean || isThreeStateBoolean) {
@@ -120,8 +119,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   if (isEditing && !isBoolean && !isThreeStateBoolean && !isPoaColumn && !isBondColumn && options.length === 0) {
     return (
-      <div className={`w-full min-h-[24px] p-1 ${isBookingColumn ? 'min-w-[200px]' : ''}`}>
-        {isDate || isBookingColumn ? (
+      <div className={`w-full min-h-[24px] p-1 ${isTextColumn ? 'min-w-[250px]' : ''}`}>
+        {isDate || isTextColumn ? (
           <Input
             ref={inputRef}
             type={isDate ? "date" : "text"}
@@ -129,7 +128,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className={`w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 ${isBookingColumn ? 'min-w-[180px]' : ''}`}
+            className={`w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 ${isTextColumn ? 'min-w-[230px]' : ''}`}
             placeholder={placeholder}
           />
         ) : (

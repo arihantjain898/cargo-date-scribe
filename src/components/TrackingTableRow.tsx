@@ -81,6 +81,7 @@ const TrackingTableRow = ({
             onSave={(value) => updateRecord(record.id, 'customer', value as string)}
             placeholder="Enter customer name"
             className={isEmpty ? "text-gray-400" : "font-bold"}
+            isTextColumn={true}
           />
           <Button
             variant="ghost"
@@ -101,6 +102,7 @@ const TrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'ref', value as string)}
           placeholder="Enter ref"
           className={isEmpty ? "text-gray-400" : ""}
+          isTextColumn={true}
         />
       </td>
       {/* Column 3: File */}
@@ -110,6 +112,7 @@ const TrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
           placeholder="Enter file"
           className={isEmpty ? "text-gray-400" : ""}
+          isTextColumn={true}
         />
       </td>
       {/* Column 4: Work Order */}
@@ -118,6 +121,7 @@ const TrackingTableRow = ({
           value={record.workOrder}
           onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
           placeholder="Enter work order"
+          isTextColumn={true}
         />
       </td>
       {/* Column 5: Drop Done */}
@@ -277,6 +281,7 @@ const TrackingTableRow = ({
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
           placeholder="Enter notes"
+          isTextColumn={true}
         />
       </td>
       {/* Column 24: Select - CHECKBOX */}
