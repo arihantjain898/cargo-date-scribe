@@ -5,10 +5,9 @@ import { TrackingRecord } from '@/types/TrackingRecord';
 import { ImportTrackingRecord } from '@/types/ImportTrackingRecord';
 import { AllFilesRecord } from '@/types/AllFilesRecord';
 import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
-import ImportTrackingTable from '@/components/ImportTrackingTable';
+import FreightTrackerTabs from '@/components/FreightTrackerTabs';
+import CalendarView from '@/components/CalendarView';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from '@/components/ui/button';
-import { PlusIcon } from 'lucide-react';
 
 const FreightTracker: React.FC = () => {
   const currentUserId = 'test-user-123'; // Mock user ID
@@ -37,6 +36,30 @@ const FreightTracker: React.FC = () => {
   const [showArchivedAllFiles, setShowArchivedAllFiles] = useState(false);
   const [showArchivedDomesticTrucking, setShowArchivedDomesticTrucking] = useState(false);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
+
+  // Selected rows state for bulk operations
+  const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
+  const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
+  const [selectedDomesticRows, setSelectedDomesticRows] = useState<string[]>([]);
+  const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
+
+  const addNewExportRecord = () => {
+    const newRecord: Omit<TrackingRecord, 'id'> = {
+      customer: '',
+      ref: '',
+      file: '',
+      workOrder: '',
+      dropDate: '',
+      returnDate: '',
+      docCutoffDate: '',
+      notes: '',
+      archived: false,
+      createdAt: new Date().toISOString(),
+      userId: currentUserId
+    };
+    
+    addExportItem(newRecord);
+  };
 
   const addNewImportRecord = () => {
     const newRecord: Omit<ImportTrackingRecord, 'id'> = {
@@ -70,8 +93,45 @@ const FreightTracker: React.FC = () => {
     addImportItem(newRecord);
   };
 
+  const addNewDomesticRecord = () => {
+    const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
+      customer: '',
+      file: '',
+      pickDate: '',
+      delivered: '',
+      notes: '',
+      archived: false,
+      createdAt: new Date().toISOString(),
+      userId: currentUserId
+    };
+    
+    addDomesticTruckingItem(newRecord);
+  };
+
+  const addNewAllFilesRecord = () => {
+    const newRecord: Omit<AllFilesRecord, 'id'> = {
+      fileNumber: '',
+      fileType: 'Export',
+      customer: '',
+      notes: '',
+      archived: false,
+      createdAt: new Date().toISOString(),
+      userId: currentUserId
+    };
+    
+    addAllFilesItem(newRecord);
+  };
+
   const handleFileClick = useCallback((fullFileIdentifier: string) => {
     setHighlightedRowId(fullFileIdentifier);
+    setTimeout(() => {
+      setHighlightedRowId(null);
+    }, 3000);
+  }, []);
+
+  const handleCalendarEventClick = useCallback((fileId: string, source: string) => {
+    console.log('Calendar event clicked:', fileId, source);
+    setHighlightedRowId(fileId);
     setTimeout(() => {
       setHighlightedRowId(null);
     }, 3000);
@@ -83,23 +143,49 @@ const FreightTracker: React.FC = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <Tabs defaultValue="import">
+      <Tabs defaultValue="tracking" className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="import">Import Tracking</TabsTrigger>
+          <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
+          <TabsTrigger value="calendar">Calendar View</TabsTrigger>
         </TabsList>
-        <TabsContent value="import">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Import Tracking</h2>
-            <Button onClick={addNewImportRecord}><PlusIcon className="mr-2 h-4 w-4" />Add New Import Record</Button>
-          </div>
-          <ImportTrackingTable
-            data={importData}
-            updateRecord={updateImportRecord}
-            deleteRecord={deleteImportItem}
-            selectedRows={[]}
-            setSelectedRows={() => {}}
+        
+        <TabsContent value="tracking">
+          <FreightTrackerTabs
+            exportData={exportData}
+            importData={importData}
+            domesticData={domesticTruckingData}
+            allFilesData={allFilesData}
+            updateExportRecord={updateRecord}
+            updateImportRecord={updateImportRecord}
+            updateDomesticRecord={updateDomesticTruckingRecord}
+            updateAllFilesRecord={updateAllFilesRecord}
+            deleteExportRecord={deleteExportItem}
+            deleteImportRecord={deleteImportItem}
+            deleteDomesticRecord={deleteDomesticTruckingItem}
+            deleteAllFilesRecord={deleteAllFilesItem}
+            addExportRecord={addNewExportRecord}
+            addImportRecord={addNewImportRecord}
+            addDomesticRecord={addNewDomesticRecord}
+            addAllFilesRecord={addNewAllFilesRecord}
+            selectedExportRows={selectedExportRows}
+            setSelectedExportRows={setSelectedExportRows}
+            selectedImportRows={selectedImportRows}
+            setSelectedImportRows={setSelectedImportRows}
+            selectedDomesticRows={selectedDomesticRows}
+            setSelectedDomesticRows={setSelectedDomesticRows}
+            selectedAllFilesRows={selectedAllFilesRows}
+            setSelectedAllFilesRows={setSelectedAllFilesRows}
             highlightedRowId={highlightedRowId}
             onFileClick={handleFileClick}
+          />
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <CalendarView
+            data={exportData}
+            importData={importData}
+            domesticData={domesticTruckingData}
+            onCalendarEventClick={handleCalendarEventClick}
           />
         </TabsContent>
       </Tabs>
