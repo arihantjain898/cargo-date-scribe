@@ -124,6 +124,7 @@ const ImportTrackingTableRow = ({
                   onSave={(value) => updateRecord(record.id, 'booking', value as string)}
                   placeholder="Enter booking"
                   className={isEmpty ? "text-gray-400" : ""}
+                  isBookingColumn={true}
                 />
                 <Button
                   variant="ghost"

@@ -14,6 +14,7 @@ interface InlineEditCellProps {
   isThreeStateBoolean?: boolean;
   isPoaColumn?: boolean;
   isBondColumn?: boolean;
+  isBookingColumn?: boolean;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -26,7 +27,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   options = [],
   isThreeStateBoolean = false,
   isPoaColumn = false,
-  isBondColumn = false
+  isBondColumn = false,
+  isBookingColumn = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -39,14 +41,17 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   useEffect(() => {
     if (isEditing) {
-      if (isDate) {
+      if (isDate || isBookingColumn) {
         inputRef.current?.focus();
+        if (!isDate) {
+          inputRef.current?.select();
+        }
       } else {
         textareaRef.current?.focus();
         textareaRef.current?.select();
       }
     }
-  }, [isEditing, isDate]);
+  }, [isEditing, isDate, isBookingColumn]);
 
   const handleSave = () => {
     if (isBoolean || isThreeStateBoolean) {
@@ -115,16 +120,17 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   if (isEditing && !isBoolean && !isThreeStateBoolean && !isPoaColumn && !isBondColumn && options.length === 0) {
     return (
-      <div className="w-full min-h-[24px] p-1">
-        {isDate ? (
+      <div className={`w-full min-h-[24px] p-1 ${isBookingColumn ? 'min-w-[200px]' : ''}`}>
+        {isDate || isBookingColumn ? (
           <Input
             ref={inputRef}
-            type="date"
+            type={isDate ? "date" : "text"}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className="w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500"
+            className={`w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 ${isBookingColumn ? 'min-w-[180px]' : ''}`}
+            placeholder={placeholder}
           />
         ) : (
           <Textarea
