@@ -1,11 +1,12 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useFirebaseAuth';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
 import { ImportTrackingRecord } from '@/types/ImportTrackingRecord';
 import { AllFilesRecord } from '@/types/AllFilesRecord';
 import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
-import ExportTrackingTable from '@/components/ExportTrackingTable';
+import TrackingTable from '@/components/TrackingTable';
 import ImportTrackingTable from '@/components/ImportTrackingTable';
 import AllFilesTable from '@/components/AllFilesTable';
 import DomesticTruckingTable from '@/components/DomesticTruckingTable';
@@ -45,7 +46,6 @@ const FreightTracker: React.FC = () => {
   const addNewExportRecord = () => {
     const newRecord: Omit<TrackingRecord, 'id'> = {
       customer: '',
-      poNumber: '',
       style: '',
       article: '',
       container: '',
@@ -105,7 +105,7 @@ const FreightTracker: React.FC = () => {
 
   const addNewAllFilesRecord = () => {
     const newRecord: Omit<AllFilesRecord, 'id'> = {
-      fileName: '',
+      fileNumber: '',
       fileType: '',
       customer: '',
       notes: '',
@@ -119,7 +119,7 @@ const FreightTracker: React.FC = () => {
   const addNewDomesticTruckingRecord = () => {
     const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
       customer: '',
-      puNumber: '',
+      pickupNumber: '',
       deliveryNumber: '',
       trailerNumber: '',
       driverName: '',
@@ -154,7 +154,7 @@ const FreightTracker: React.FC = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <Tabs defaultvalue="import">
+      <Tabs defaultValue="import">
         <TabsList className="mb-4">
           <TabsTrigger value="export">Export Tracking</TabsTrigger>
           <TabsTrigger value="import">Import Tracking</TabsTrigger>
@@ -181,13 +181,14 @@ const FreightTracker: React.FC = () => {
             <h2 className="text-2xl font-bold">Export Tracking</h2>
             <Button onClick={addNewExportRecord}><PlusIcon className="mr-2 h-4 w-4" />Add New Export Record</Button>
           </div>
-          <ExportTrackingTable
+          <TrackingTable
             data={exportData}
             updateRecord={updateRecord}
             deleteRecord={deleteExportItem}
-            showArchived={showArchivedExport}
-            setShowArchived={setShowArchivedExport}
+            selectedRows={[]}
+            setSelectedRows={() => {}}
             highlightedRowId={highlightedRowId}
+            onFileClick={handleFileClick}
           />
         </TabsContent>
         <TabsContent value="allFiles">
@@ -199,9 +200,10 @@ const FreightTracker: React.FC = () => {
             data={allFilesData}
             updateRecord={updateAllFilesRecord}
             deleteRecord={deleteAllFilesItem}
-            showArchived={showArchivedAllFiles}
-            setShowArchived={setShowArchivedAllFiles}
+            selectedRows={[]}
+            setSelectedRows={() => {}}
             highlightedRowId={highlightedRowId}
+            onFileClick={(fileNumber: string, fileType: string) => handleFileClick(`${fileNumber}-${fileType}`)}
           />
         </TabsContent>
         <TabsContent value="domesticTrucking">
@@ -213,9 +215,10 @@ const FreightTracker: React.FC = () => {
             data={domesticTruckingData}
             updateRecord={updateDomesticTruckingRecord}
             deleteRecord={deleteDomesticTruckingItem}
-            showArchived={showArchivedDomesticTrucking}
-            setShowArchived={setShowArchivedDomesticTrucking}
+            selectedRows={[]}
+            setSelectedRows={() => {}}
             highlightedRowId={highlightedRowId}
+            onFileClick={handleFileClick}
           />
         </TabsContent>
       </Tabs>
