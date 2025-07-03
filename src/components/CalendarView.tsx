@@ -28,7 +28,7 @@ interface CalendarEvent {
   source: 'export' | 'import' | 'domestic';
   recordId: string;
   booking?: string;
-  uniqueId: string; // Added for better deduplication
+  uniqueId: string;
 }
 
 interface EventDetailModalProps {
@@ -300,13 +300,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                   eventSource === 'import' ? importEvents :
                   eventSource === 'domestic' ? domesticEvents : allEvents;
     
-    // Filter events for the specific date and remove duplicates using uniqueId
-    const filteredEvents = events.filter(event => event.date === dateString);
-    const uniqueEvents = filteredEvents.filter((event, index, self) => 
-      self.findIndex(e => e.uniqueId === event.uniqueId) === index
-    );
-    
-    return uniqueEvents;
+    return events.filter(event => event.date === dateString);
   };
 
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
@@ -317,12 +311,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                            calendarFilter === 'export' ? exportEvents : 
                            calendarFilter === 'import' ? importEvents : domesticEvents;
     
-    // Remove duplicates before processing
-    const uniqueEvents = eventsToProcess.filter((event, index, self) => 
-      self.findIndex(e => e.uniqueId === event.uniqueId) === index
-    );
-    
-    uniqueEvents.forEach(event => {
+    eventsToProcess.forEach(event => {
       const date = event.date;
       if (!dates.has(date)) {
         dates.set(date, { export: 0, import: 0, domestic: 0 });
@@ -371,15 +360,13 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     const nextWeek = new Date();
     nextWeek.setDate(today.getDate() + 7);
     
-    // Remove duplicates and filter to next week
-    const uniqueEvents = events.filter((event, index, self) => {
+    const upcomingEvents = events.filter(event => {
       const eventDate = new Date(event.date + 'T00:00:00');
-      return eventDate >= today && eventDate <= nextWeek &&
-        self.findIndex(e => e.uniqueId === event.uniqueId) === index;
+      return eventDate >= today && eventDate <= nextWeek;
     });
     
     // Group by date
-    const groupedEvents = uniqueEvents.reduce((acc, event) => {
+    const groupedEvents = upcomingEvents.reduce((acc, event) => {
       const date = event.date;
       if (!acc[date]) {
         acc[date] = [];
@@ -394,118 +381,78 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     return sortedDates.map(date => ({
       date,
       events: groupedEvents[date].sort((a, b) => {
-        // Sort by source order: import, export, domestic
         const sourceOrder = { import: 0, export: 1, domestic: 2 };
         return sourceOrder[a.source] - sourceOrder[b.source];
       })
     }));
   };
 
-  const renderEventsBySource = (events: CalendarEvent[]) => {
-    // Organize events by source in the correct order: Import, Export, Domestic
-    const importEvts = events.filter(e => e.source === 'import');
-    const exportEvts = events.filter(e => e.source === 'export');
-    const domesticEvts = events.filter(e => e.source === 'domestic');
+  const renderEventsByTypeAndCustomer = (events: CalendarEvent[]) => {
+    if (events.length === 0) {
+      return (
+        <div className="text-center py-8">
+          <div className="text-4xl mb-3">📅</div>
+          <p className="text-gray-500">No events for this date</p>
+        </div>
+      );
+    }
+
+    // Group events by type first
+    const eventsByType = events.reduce((acc, event) => {
+      const key = `${event.type}-${event.source}`;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(event);
+      return acc;
+    }, {} as Record<string, CalendarEvent[]>);
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {/* Import Events - First */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
-            <h4 className="font-medium text-indigo-700 text-sm">Import Events</h4>
-          </div>
-          {importEvts.length > 0 ? importEvts.map((event) => (
-            <div 
-              key={event.uniqueId} 
-              className="p-2 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer"
-              onClick={() => handleEventClick(event)}
-            >
-              <div className="space-y-1">
-                <div className="font-semibold text-gray-900 text-sm leading-tight">{event.customer}</div>
+      <div className="space-y-4">
+        {Object.entries(eventsByType).map(([typeKey, typeEvents]) => {
+          const sampleEvent = typeEvents[0];
+          return (
+            <div key={typeKey} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+              <div className="flex items-center gap-2 mb-3">
                 <Badge 
                   variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
+                  className={`${getEventTypeColor(sampleEvent.type, sampleEvent.source)} text-sm font-medium`}
                 >
-                  {getEventTypeLabel(event.type)}
+                  {getEventTypeLabel(sampleEvent.type)}
                 </Badge>
-                <div className="text-xs text-gray-600 space-y-0.5">
-                  <div><span className="font-medium">Booking:</span> {event.booking}</div>
-                  <div><span className="font-medium">File:</span> {event.file}</div>
-                </div>
-              </div>
-            </div>
-          )) : (
-            <div className="text-center py-4 text-gray-500 text-sm bg-gray-50 rounded-lg">
-              No import events
-            </div>
-          )}
-        </div>
-
-        {/* Export Events - Second */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
-            <h4 className="font-medium text-slate-700 text-sm">Export Events</h4>
-          </div>
-          {exportEvts.length > 0 ? exportEvts.map((event) => (
-            <div 
-              key={event.uniqueId} 
-              className="p-2 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
-              onClick={() => handleEventClick(event)}
-            >
-              <div className="space-y-1">
-                <div className="font-semibold text-gray-900 text-sm leading-tight">{event.customer}</div>
                 <Badge 
                   variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
+                  className={`text-sm font-medium ${sampleEvent.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : sampleEvent.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
                 >
-                  {getEventTypeLabel(event.type)}
+                  {sampleEvent.source === 'export' ? 'Export' : sampleEvent.source === 'import' ? 'Import' : 'Domestic'}
                 </Badge>
-                <div className="text-xs text-gray-600 space-y-0.5">
-                  <div><span className="font-medium">Ref:</span> {event.ref}</div>
-                  <div><span className="font-medium">File:</span> {event.file}</div>
-                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {typeEvents.map((event) => (
+                  <div 
+                    key={event.uniqueId} 
+                    className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                    onClick={() => handleEventClick(event)}
+                  >
+                    <div className="space-y-1">
+                      <div className="font-semibold text-gray-900 text-sm leading-tight">{event.customer}</div>
+                      <div className="text-xs text-gray-600 space-y-0.5">
+                        {event.source === 'import' && event.booking && (
+                          <div><span className="font-medium">Booking:</span> {event.booking}</div>
+                        )}
+                        {event.source === 'export' && event.ref && (
+                          <div><span className="font-medium">Ref:</span> {event.ref}</div>
+                        )}
+                        <div><span className="font-medium">File:</span> {event.file}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          )) : (
-            <div className="text-center py-4 text-gray-500 text-sm bg-gray-50 rounded-lg">
-              No export events
-            </div>
-          )}
-        </div>
-
-        {/* Domestic Events - Third */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-            <h4 className="font-medium text-yellow-700 text-sm">Domestic Trucking Events</h4>
-          </div>
-          {domesticEvts.length > 0 ? domesticEvts.map((event) => (
-            <div 
-              key={event.uniqueId} 
-              className="p-2 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer"
-              onClick={() => handleEventClick(event)}
-            >
-              <div className="space-y-1">
-                <div className="font-semibold text-gray-900 text-sm leading-tight">{event.customer}</div>
-                <Badge 
-                  variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
-                >
-                  {getEventTypeLabel(event.type)}
-                </Badge>
-                <div className="text-xs text-gray-600">
-                  <div><span className="font-medium">File:</span> {event.file}</div>
-                </div>
-              </div>
-            </div>
-          )) : (
-            <div className="text-center py-4 text-gray-500 text-sm bg-gray-50 rounded-lg">
-              No domestic events
-            </div>
-          )}
-        </div>
+          );
+        })}
       </div>
     );
   };
@@ -607,7 +554,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </CardHeader>
             <CardContent className="p-3 pt-0 flex-1">
               <ScrollArea className="h-full">
-                {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
+                {selectedDate ? renderEventsByTypeAndCustomer(getEventsForDate(selectedDate, calendarFilter)) : (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-3">📅</div>
                     <p className="text-gray-500">Select a date to view events</p>
@@ -626,20 +573,17 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           </CardHeader>
           <CardContent className="p-3 pt-0">
             <ScrollArea className="h-64">
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
                 {getUpcomingEventsGroupedByDate().map(({ date, events }) => (
-                  <div key={date} className="space-y-2">
-                    <div className="flex items-center gap-2 border-b border-gray-200 pb-1">
-                      <div className="text-sm font-semibold text-gray-700">
-                        {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { 
-                          weekday: 'short', 
-                          month: 'short', 
-                          day: 'numeric' 
-                        })}
-                      </div>
-                      <div className="h-px flex-1 bg-gray-200"></div>
+                  <div key={date} className="space-y-2 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                    <div className="text-sm font-semibold text-gray-700 text-center border-b border-gray-200 pb-2">
+                      {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                    <div className="space-y-2">
                       {events.map((event) => (
                         <div 
                           key={event.uniqueId} 
@@ -647,18 +591,16 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                           onClick={() => handleEventClick(event)}
                         >
                           <div className="space-y-1">
-                            <div className="font-semibold text-gray-900 text-xs leading-tight">{event.customer}</div>
-                            <div className="flex items-center gap-1">
-                              <Badge 
-                                variant="outline" 
-                                className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                              >
-                                {getEventTypeLabel(event.type)}
-                              </Badge>
-                            </div>
+                            <div className="font-semibold text-gray-900 text-xs leading-tight truncate">{event.customer}</div>
+                            <Badge 
+                              variant="outline" 
+                              className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
+                            >
+                              {getEventTypeLabel(event.type)}
+                            </Badge>
                             <div className="text-xs text-gray-600 truncate">
-                              {event.source === 'import' && event.booking ? `${event.booking} • ${event.file}` : 
-                               event.source === 'export' ? `${event.ref} • ${event.file}` : 
+                              {event.source === 'import' && event.booking ? event.booking : 
+                               event.source === 'export' ? event.ref : 
                                event.file}
                             </div>
                           </div>
@@ -668,7 +610,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                   </div>
                 ))}
                 {getUpcomingEventsGroupedByDate().length === 0 && (
-                  <div className="text-center py-8">
+                  <div className="col-span-full text-center py-8">
                     <div className="text-4xl mb-3">✅</div>
                     <p className="text-gray-500">
                       No upcoming events in the next 7 days

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
@@ -39,8 +38,23 @@ const FreightTracker: React.FC = () => {
   const [showArchivedAllFiles, setShowArchivedAllFiles] = useState(false);
   const [showArchivedDomesticTrucking, setShowArchivedDomesticTrucking] = useState(false);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('allfiles');
-  const [mainActiveTab, setMainActiveTab] = useState('tracking');
+  
+  // Initialize activeTab and mainActiveTab from localStorage
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('freightTracker_activeTab') || 'allfiles';
+  });
+  const [mainActiveTab, setMainActiveTab] = useState(() => {
+    return localStorage.getItem('freightTracker_mainActiveTab') || 'tracking';
+  });
+
+  // Save tab states to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('freightTracker_activeTab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    localStorage.setItem('freightTracker_mainActiveTab', mainActiveTab);
+  }, [mainActiveTab]);
 
   // Selected rows state for bulk operations
   const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
