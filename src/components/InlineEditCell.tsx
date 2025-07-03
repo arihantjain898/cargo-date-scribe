@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -110,10 +111,18 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (isBoolean) {
       onSave(!value);
     } else if (options.length > 0) {
-      // Cycle through options for any column with options
+      // Cycle through options for any column with options, but skip "Select" if it's not the current value
       const currentIndex = options.indexOf(String(value));
-      const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % options.length;
-      onSave(options[nextIndex]);
+      if (String(value) === 'Select') {
+        // If current value is "Select", move to first real option
+        onSave(options[0]);
+      } else {
+        // Cycle through real options only (skip "Select")
+        const realOptions = options.filter(opt => opt !== 'Select');
+        const currentRealIndex = realOptions.indexOf(String(value));
+        const nextIndex = currentRealIndex === -1 ? 0 : (currentRealIndex + 1) % realOptions.length;
+        onSave(realOptions[nextIndex]);
+      }
     } else {
       setIsEditing(true);
     }
@@ -196,6 +205,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     : (String(value) || placeholder);
 
   const getStatusColor = (val: string) => {
+    if (val === 'Select') return 'bg-gray-100 text-gray-500 hover:bg-gray-200';
     if (val === 'Yes' || val === 'Done') return 'bg-green-100 text-green-800 hover:bg-green-200';
     if (val === 'Pending') return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
     if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200';
