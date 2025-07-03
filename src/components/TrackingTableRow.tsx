@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -220,7 +221,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 16: SSL Draft Inv Rec */}
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.sslDraftInvRec}
           onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as boolean)}
@@ -236,7 +237,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 18: Transphere Inv Sent */}
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.transphereInvSent}
           onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
@@ -244,7 +245,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 19: Payment Rec */}
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.paymentRec}
           onSave={(value) => updateRecord(record.id, 'paymentRec', value as boolean)}
@@ -275,7 +276,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 23: Notes - NO SPECIAL SHADING */}
+      {/* Column 23: Notes */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
@@ -285,7 +286,7 @@ const TrackingTableRow = ({
           isNotesColumn={true}
         />
       </td>
-      {/* Column 24: Select - CHECKBOX */}
+      {/* Column 24: Select */}
       <td className="p-1 text-center">
         <Checkbox
           checked={isSelected}
