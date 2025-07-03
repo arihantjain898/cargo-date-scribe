@@ -40,26 +40,30 @@ const FreightTracker: React.FC = () => {
   const addNewExportRecord = () => {
     const newRecord: Omit<TrackingRecord, 'id'> = {
       customer: '',
-      style: '',
-      article: '',
-      container: '',
-      eta: '',
-      actualArrival: '',
-      thirtyDays: false,
-      sixtyDays: false,
-      ninetyDays: false,
-      demurrage: '',
-      origin: '',
-      destination: '',
-      forwarder: '',
-      trackingNumber: '',
-      trucker: '',
-      driver: '',
-      deliveryDate: '',
-      pod: '',
+      ref: '',
+      file: '',
+      workOrder: '',
+      dropDone: '',
+      dropDate: '',
+      returnNeeded: '',
+      returnDate: '',
+      docsSent: false,
+      docsReceived: false,
+      aesMblVgmSent: false,
+      docCutoffDate: '',
+      titlesDispatched: '',
+      validatedFwd: false,
+      titlesReturned: '',
+      sslDraftInvRec: false,
+      draftInvApproved: false,
+      transphereInvSent: false,
+      paymentRec: false,
+      sslPaid: false,
+      insured: false,
+      released: false,
+      docsSentToCustomer: false,
       notes: '',
       archived: false,
-      createdAt: new Date().toISOString(),
       userId: currentUserId
     };
     addExportItem(newRecord);
@@ -99,11 +103,24 @@ const FreightTracker: React.FC = () => {
 
   const addNewAllFilesRecord = () => {
     const newRecord: Omit<AllFilesRecord, 'id'> = {
-      fileType: '',
       customer: '',
-      notes: '',
+      file: '',
+      number: '',
+      originPort: '',
+      originState: '',
+      destinationPort: '',
+      destinationCountry: '',
+      container20: '',
+      container40: '',
+      roro: '',
+      lcl: '',
+      air: '',
+      truck: '',
+      ssl: '',
+      nvo: '',
+      comments: '',
+      salesContact: '',
       archived: false,
-      createdAt: new Date().toISOString(),
       userId: currentUserId
     };
     addAllFilesItem(newRecord);
@@ -112,22 +129,15 @@ const FreightTracker: React.FC = () => {
   const addNewDomesticTruckingRecord = () => {
     const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
       customer: '',
-      deliveryNumber: '',
-      trailerNumber: '',
-      driverName: '',
-      driverCell: '',
-      checkIn: '',
-      checkOut: '',
-      weight: '',
-      pallets: '',
-      staging: '',
-      seal: '',
-      startTime: '',
-      endTime: '',
-      temp: '',
+      file: '',
+      woSent: false,
+      insurance: false,
+      pickDate: '',
+      delivered: '',
+      paymentReceived: false,
+      paymentMade: false,
       notes: '',
       archived: false,
-      createdAt: new Date().toISOString(),
       userId: currentUserId
     };
     addDomesticTruckingItem(newRecord);
@@ -184,6 +194,8 @@ const FreightTracker: React.FC = () => {
             data={allFilesData}
             updateRecord={updateAllFilesRecord}
             deleteRecord={deleteAllFilesItem}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
             highlightedRowId={highlightedRowId}
           />
         </TabsContent>
@@ -196,6 +208,8 @@ const FreightTracker: React.FC = () => {
             data={domesticTruckingData}
             updateRecord={updateDomesticTruckingRecord}
             deleteRecord={deleteDomesticTruckingItem}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
             highlightedRowId={highlightedRowId}
           />
         </TabsContent>
