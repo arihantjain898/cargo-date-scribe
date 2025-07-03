@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -18,7 +17,7 @@ interface DomesticTruckingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onFileClick?: (fullFileIdentifier: string) => void;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
 const DomesticTruckingTable = ({ 

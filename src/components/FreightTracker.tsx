@@ -159,11 +159,47 @@ const FreightTracker: React.FC = () => {
   const handleFileClick = useCallback((fileNumber: string, fileType: string) => {
     console.log('File clicked - fileNumber:', fileNumber, 'fileType:', fileType);
     
-    // Determine target tab based on file type first letter
-    let targetTab = 'allfiles';
     let targetRecord = null;
+    let targetTab = 'allfiles';
     
-    // Check first letter of file type to determine tab
+    // Check if we're doing reverse linking (from other tabs to All Files)
+    if (activeTab !== 'allfiles') {
+      console.log('Reverse linking from', activeTab, 'to All Files');
+      // Find matching record in All Files where file column matches fileType and number column matches fileNumber
+      targetRecord = allFilesData.find(record => {
+        const recordFile = record.file?.toLowerCase() || '';
+        const recordNumber = record.number?.toLowerCase() || '';
+        
+        return recordFile === fileType.toLowerCase() && recordNumber === fileNumber.toLowerCase();
+      });
+      
+      if (targetRecord) {
+        setActiveTab('allfiles');
+        setTimeout(() => {
+          console.log('Setting highlighted row ID for All Files:', targetRecord.id);
+          setHighlightedRowId(targetRecord.id);
+          setTimeout(() => {
+            setHighlightedRowId(null);
+          }, 3000);
+        }, 200);
+        
+        toast({
+          title: "Record Found",
+          description: `Found matching record in All Files tab`,
+        });
+        return;
+      } else {
+        toast({
+          title: "Record Not Found",
+          description: `No matching record found in All Files for ${fileType}${fileNumber}`,
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    
+    // Original forward linking (from All Files to other tabs)
+    // Determine target tab based on file type first letter
     const firstLetter = fileType?.charAt(0)?.toUpperCase();
     console.log('First letter:', firstLetter, 'Full fileType:', fileType);
     
@@ -237,7 +273,7 @@ const FreightTracker: React.FC = () => {
         variant: "destructive"
       });
     }
-  }, [exportData, importData, domesticTruckingData, allFilesData, toast]);
+  }, [exportData, importData, domesticTruckingData, allFilesData, toast, activeTab]);
 
   const handleCalendarEventClick = useCallback((fileId: string, source: string) => {
     console.log('Calendar event clicked:', fileId, source);
@@ -270,14 +306,14 @@ const FreightTracker: React.FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen px-4 py-6 max-w-[95vw] mx-auto">
+    <div className="w-full min-h-screen px-2 py-4 max-w-[90vw] mx-auto">
       <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full">
-        <TabsList className="mb-6">
+        <TabsList className="mb-4">
           <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
           <TabsTrigger value="calendar">Calendar View</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="tracking" className="max-h-[85vh] overflow-hidden">
+        <TabsContent value="tracking" className="max-h-[88vh] overflow-hidden">
           <FreightTrackerTabs
             exportData={exportData}
             importData={importData}
@@ -310,7 +346,7 @@ const FreightTracker: React.FC = () => {
           />
         </TabsContent>
 
-        <TabsContent value="calendar" className="max-h-[85vh] overflow-hidden">
+        <TabsContent value="calendar" className="max-h-[88vh] overflow-hidden">
           <CalendarView
             data={exportData}
             importData={importData}

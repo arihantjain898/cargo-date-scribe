@@ -17,7 +17,7 @@ interface DomesticTruckingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   highlightedRowId?: string | null;
-  onFileClick?: (fullFileIdentifier: string) => void;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
 const DomesticTruckingTableRow = ({
@@ -53,7 +53,17 @@ const DomesticTruckingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      onFileClick(record.file);
+      // Parse the file to extract file type and number for reverse linking
+      const fileMatch = record.file.match(/^([A-Za-z]{1,2})(\d+)$/);
+      if (fileMatch) {
+        const [, fileType, fileNumber] = fileMatch;
+        console.log('Domestic row clicked - parsed fileType:', fileType, 'fileNumber:', fileNumber);
+        onFileClick(fileNumber, fileType);
+      } else {
+        console.log('Domestic row clicked - could not parse file:', record.file);
+        // Fallback: treat the whole file as fileNumber with empty fileType
+        onFileClick(record.file, '');
+      }
     }
   };
 
@@ -157,3 +167,4 @@ const DomesticTruckingTableRow = ({
 };
 
 export default DomesticTruckingTableRow;
+
