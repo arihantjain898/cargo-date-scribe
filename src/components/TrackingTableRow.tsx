@@ -155,7 +155,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsSent}
-          onSave={(value) => updateRecord(record.id, 'docsSent', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'docsSent', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -163,7 +163,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsReceived}
-          onSave={(value) => updateRecord(record.id, 'docsReceived', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'docsReceived', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -180,7 +180,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.aesMblVgmSent}
-          onSave={(value) => updateRecord(record.id, 'aesMblVgmSent', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'aesMblVgmSent', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -197,7 +197,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.validatedFwd}
-          onSave={(value) => updateRecord(record.id, 'validatedFwd', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'validatedFwd', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -214,7 +214,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.sslDraftInvRec}
-          onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -222,7 +222,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.draftInvApproved}
-          onSave={(value) => updateRecord(record.id, 'draftInvApproved', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'draftInvApproved', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -230,7 +230,7 @@ const TrackingTableRow = ({
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.transphereInvSent}
-          onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -238,7 +238,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.paymentRec}
-          onSave={(value) => updateRecord(record.id, 'paymentRec', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'paymentRec', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -246,7 +246,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.sslPaid}
-          onSave={(value) => updateRecord(record.id, 'sslPaid', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'sslPaid', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -254,7 +254,7 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.insured}
-          onSave={(value) => updateRecord(record.id, 'insured', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'insured', value as boolean)}
           isBoolean={true}
         />
       </td>
@@ -262,7 +262,7 @@ const TrackingTableRow = ({
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.released}
-          onSave={(value) => updateRecord(record.id, 'released', value as boolean | null)}
+          onSave={(value) => updateRecord(record.id, 'released', value as boolean)}
           isBoolean={true}
         />
       </td>
