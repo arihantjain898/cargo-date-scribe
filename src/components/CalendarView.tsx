@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -397,62 +396,47 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
       );
     }
 
-    // Group events by type first
-    const eventsByType = events.reduce((acc, event) => {
-      const key = `${event.type}-${event.source}`;
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(event);
-      return acc;
-    }, {} as Record<string, CalendarEvent[]>);
-
     return (
-      <div className="space-y-4">
-        {Object.entries(eventsByType).map(([typeKey, typeEvents]) => {
-          const sampleEvent = typeEvents[0];
-          return (
-            <div key={typeKey} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-              <div className="flex items-center gap-2 mb-3">
-                <Badge 
-                  variant="outline" 
-                  className={`${getEventTypeColor(sampleEvent.type, sampleEvent.source)} text-sm font-medium`}
-                >
-                  {getEventTypeLabel(sampleEvent.type)}
-                </Badge>
-                <Badge 
-                  variant="outline" 
-                  className={`text-sm font-medium ${sampleEvent.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : sampleEvent.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
-                >
-                  {sampleEvent.source === 'export' ? 'Export' : sampleEvent.source === 'import' ? 'Import' : 'Domestic'}
-                </Badge>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                {typeEvents.map((event) => (
-                  <div 
-                    key={event.uniqueId} 
-                    className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
-                    onClick={() => handleEventClick(event)}
+      <div className="space-y-3">
+        {events.map((event) => (
+          <div 
+            key={event.uniqueId} 
+            className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow cursor-pointer"
+            onClick={() => handleEventClick(event)}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge 
+                    variant="outline" 
+                    className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
                   >
-                    <div className="space-y-1">
-                      <div className="font-semibold text-gray-900 text-sm leading-tight">{event.customer}</div>
-                      <div className="text-xs text-gray-600 space-y-0.5">
-                        {event.source === 'import' && event.booking && (
-                          <div><span className="font-medium">Booking:</span> {event.booking}</div>
-                        )}
-                        {event.source === 'export' && event.ref && (
-                          <div><span className="font-medium">Ref:</span> {event.ref}</div>
-                        )}
-                        <div><span className="font-medium">File:</span> {event.file}</div>
-                      </div>
-                    </div>
+                    {getEventTypeLabel(event.type)}
+                  </Badge>
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
+                  >
+                    {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic'}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-1">
+                  <div className="font-semibold text-gray-900">{event.customer}</div>
+                  <div className="text-sm text-gray-600 space-y-0.5">
+                    {event.source === 'import' && event.booking && (
+                      <div><span className="font-medium">Booking:</span> {event.booking}</div>
+                    )}
+                    {event.source === 'export' && event.ref && (
+                      <div><span className="font-medium">Ref:</span> {event.ref}</div>
+                    )}
+                    <div><span className="font-medium">File:</span> {event.file}</div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     );
   };
@@ -573,9 +557,9 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           </CardHeader>
           <CardContent className="p-3 pt-0">
             <ScrollArea className="h-64">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+              <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
                 {getUpcomingEventsGroupedByDate().map(({ date, events }) => (
-                  <div key={date} className="space-y-2 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                  <div key={date} className="flex-shrink-0 w-64 space-y-2 border border-gray-200 rounded-lg p-3 bg-gray-50">
                     <div className="text-sm font-semibold text-gray-700 text-center border-b border-gray-200 pb-2">
                       {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { 
                         weekday: 'short', 
@@ -610,7 +594,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                   </div>
                 ))}
                 {getUpcomingEventsGroupedByDate().length === 0 && (
-                  <div className="col-span-full text-center py-8">
+                  <div className="w-full text-center py-8">
                     <div className="text-4xl mb-3">✅</div>
                     <p className="text-gray-500">
                       No upcoming events in the next 7 days
