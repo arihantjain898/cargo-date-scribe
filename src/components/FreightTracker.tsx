@@ -54,7 +54,6 @@ const FreightTracker: React.FC = () => {
       docCutoffDate: '',
       notes: '',
       archived: false,
-      createdAt: new Date().toISOString(),
       userId: currentUserId
     };
     
@@ -86,7 +85,6 @@ const FreightTracker: React.FC = () => {
       deliveryDate: '',
       notes: '',
       archived: false,
-      createdAt: new Date().toISOString(),
       userId: currentUserId
     };
     
@@ -101,7 +99,6 @@ const FreightTracker: React.FC = () => {
       delivered: '',
       notes: '',
       archived: false,
-      createdAt: new Date().toISOString(),
       userId: currentUserId
     };
     
@@ -110,12 +107,11 @@ const FreightTracker: React.FC = () => {
 
   const addNewAllFilesRecord = () => {
     const newRecord: Omit<AllFilesRecord, 'id'> = {
-      fileNumber: '',
+      file: '',
       fileType: 'Export',
       customer: '',
       notes: '',
       archived: false,
-      createdAt: new Date().toISOString(),
       userId: currentUserId
     };
     
