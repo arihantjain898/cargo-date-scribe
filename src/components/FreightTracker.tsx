@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/hooks/useFirebaseAuth';
+import { useFirebaseAuth } from '@/hooks/useFirebaseAuth';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
 import { ImportTrackingRecord } from '@/types/ImportTrackingRecord';
@@ -15,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 
 const FreightTracker: React.FC = () => {
-  const { currentUser } = useAuth();
+  const { currentUser } = useFirebaseAuth();
   const currentUserId = currentUser?.uid || '';
   const {
     exportData,
@@ -105,10 +104,23 @@ const FreightTracker: React.FC = () => {
 
   const addNewAllFilesRecord = () => {
     const newRecord: Omit<AllFilesRecord, 'id'> = {
-      fileNumber: '',
-      fileType: '',
       customer: '',
-      notes: '',
+      file: '',
+      number: '',
+      originPort: '',
+      originState: '',
+      destinationPort: '',
+      destinationCountry: '',
+      container20: '',
+      container40: '',
+      roro: '',
+      lcl: '',
+      air: '',
+      truck: '',
+      ssl: '',
+      nvo: '',
+      comments: '',
+      salesContact: '',
       archived: false,
       createdAt: new Date().toISOString(),
       userId: currentUserId
@@ -119,7 +131,6 @@ const FreightTracker: React.FC = () => {
   const addNewDomesticTruckingRecord = () => {
     const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
       customer: '',
-      pickupNumber: '',
       deliveryNumber: '',
       trailerNumber: '',
       driverName: '',
