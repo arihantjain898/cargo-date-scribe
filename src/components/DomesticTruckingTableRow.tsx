@@ -83,6 +83,7 @@ const DomesticTruckingTableRow = ({
             onSave={(value) => updateRecord(record.id, 'customer', value as string)}
             placeholder="Enter customer name"
             className={isEmpty ? "text-gray-400" : "font-bold"}
+            isTextColumn={true}
           />
           <Button
             variant="ghost"
@@ -102,6 +103,7 @@ const DomesticTruckingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
           placeholder="Enter file"
           className={isEmpty ? "text-gray-400" : ""}
+          isTextColumn={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -153,6 +155,7 @@ const DomesticTruckingTableRow = ({
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
           placeholder="Enter notes"
+          isTextColumn={true}
         />
       </td>
       <td className="p-1 text-center">
@@ -167,4 +170,3 @@ const DomesticTruckingTableRow = ({
 };
 
 export default DomesticTruckingTableRow;
-

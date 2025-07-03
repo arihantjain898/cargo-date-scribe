@@ -119,7 +119,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   if (isEditing && !isBoolean && !isThreeStateBoolean && !isPoaColumn && !isBondColumn && options.length === 0) {
     return (
-      <div className={`w-full min-h-[24px] p-1 ${isTextColumn ? 'min-w-[250px]' : ''}`}>
+      <div className={`w-full min-h-[24px] p-1 ${isTextColumn ? 'min-w-[180px]' : ''}`}>
         {isDate || isTextColumn ? (
           <Input
             ref={inputRef}
@@ -128,7 +128,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className={`w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 ${isTextColumn ? 'min-w-[230px]' : ''}`}
+            className={`w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 ${isTextColumn ? 'min-w-[160px]' : ''}`}
             placeholder={placeholder}
           />
         ) : (
@@ -138,7 +138,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className="w-full min-h-[60px] text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 resize-none"
+            className="w-full min-h-[60px] text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 resize-none min-w-[160px]"
             placeholder={placeholder}
           />
         )}

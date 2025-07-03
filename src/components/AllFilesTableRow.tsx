@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
@@ -77,6 +78,7 @@ const AllFilesTableRow = ({
             onSave={(value) => updateRecord(record.id, 'customer', value as string)}
             placeholder="Enter customer"
             className={getTextStyling(record.customer)}
+            isTextColumn={true}
           />
           {record.number && record.file && onFileClick && (
             <Button
@@ -107,6 +109,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'number', value as string)}
           placeholder="Enter number"
           className={getTextStyling(record.number)}
+          isTextColumn={true}
         />
       </td>
       
@@ -116,6 +119,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'originPort', value as string)}
           placeholder="Enter origin port"
           className={getTextStyling(record.originPort)}
+          isTextColumn={true}
         />
       </td>
       
@@ -125,6 +129,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'originState', value as string)}
           placeholder="Enter origin state"
           className={getTextStyling(record.originState)}
+          isTextColumn={true}
         />
       </td>
       
@@ -134,6 +139,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'destinationPort', value as string)}
           placeholder="Enter destination port"
           className={getTextStyling(record.destinationPort)}
+          isTextColumn={true}
         />
       </td>
       
@@ -143,6 +149,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'destinationCountry', value as string)}
           placeholder="Enter destination country"
           className={getTextStyling(record.destinationCountry)}
+          isTextColumn={true}
         />
       </td>
       
@@ -152,6 +159,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'container20', value as string)}
           placeholder="20'"
           className="font-medium"
+          isTextColumn={true}
         />
       </td>
       
@@ -161,6 +169,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'container40', value as string)}
           placeholder="40'"
           className="font-medium"
+          isTextColumn={true}
         />
       </td>
       
@@ -170,6 +179,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'roro', value as string)}
           placeholder="RoRo"
           className="font-medium"
+          isTextColumn={true}
         />
       </td>
       
@@ -179,6 +189,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'lcl', value as string)}
           placeholder="LCL"
           className="font-medium"
+          isTextColumn={true}
         />
       </td>
       
@@ -188,6 +199,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'air', value as string)}
           placeholder="Air"
           className="font-medium"
+          isTextColumn={true}
         />
       </td>
       
@@ -197,6 +209,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'truck', value as string)}
           placeholder="Truck"
           className="font-medium"
+          isTextColumn={true}
         />
       </td>
       
@@ -206,6 +219,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'ssl', value as string)}
           placeholder="SSL or Trucker"
           className={getTextStyling(record.ssl)}
+          isTextColumn={true}
         />
       </td>
       
@@ -215,6 +229,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'nvo', value as string)}
           placeholder="NVO"
           className={getTextStyling(record.nvo)}
+          isTextColumn={true}
         />
       </td>
       
@@ -224,6 +239,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'comments', value as string)}
           placeholder="Enter comments"
           className={getTextStyling(record.comments)}
+          isTextColumn={true}
         />
       </td>
       
@@ -233,6 +249,7 @@ const AllFilesTableRow = ({
           onSave={(value) => updateRecord(record.id, 'salesContact', value as string)}
           placeholder="Enter sales contact"
           className={getTextStyling(record.salesContact)}
+          isTextColumn={true}
         />
       </td>
       
