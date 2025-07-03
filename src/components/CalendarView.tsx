@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -389,9 +390,9 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   const renderEventsBySource = (events: CalendarEvent[]) => {
     if (events.length === 0) {
       return (
-        <div className="text-center py-4">
-          <div className="text-2xl mb-2">📅</div>
-          <p className="text-gray-500 text-sm">No events for this date</p>
+        <div className="text-center py-8">
+          <div className="text-4xl mb-3">📅</div>
+          <p className="text-gray-500">No events for this date</p>
         </div>
       );
     }
@@ -402,26 +403,26 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     const domesticEvents = events.filter(e => e.source === 'domestic');
 
     return (
-      <div className="grid grid-cols-3 gap-2 h-full">
+      <div className="grid grid-cols-3 gap-3 h-full">
         {/* Import Events */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-1 pb-1 border-b">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 pb-2 border-b">
             <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300 text-xs font-medium">
               Import
             </Badge>
             <span className="text-xs text-gray-500">({importEvents.length})</span>
           </div>
-          <div className="space-y-1 max-h-64 overflow-y-auto">
+          <div className="space-y-2 max-h-80 overflow-y-auto">
             {importEvents.length === 0 ? (
-              <p className="text-gray-400 text-xs text-center py-2">No import events</p>
+              <p className="text-gray-400 text-xs text-center py-4">No import events</p>
             ) : (
               importEvents.map((event) => (
                 <div 
                   key={event.uniqueId} 
-                  className="p-1.5 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                  className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
                   onClick={() => handleEventClick(event)}
                 >
-                  <div className="space-y-0.5">
+                  <div className="space-y-1">
                     <Badge 
                       variant="outline" 
                       className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
@@ -430,9 +431,9 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                     </Badge>
                     <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
                     <div className="text-xs text-gray-600 truncate">
-                      {event.booking && `${event.booking}`}
+                      {event.booking && `Booking: ${event.booking}`}
                     </div>
-                    <div className="text-xs text-gray-600 truncate">{event.file}</div>
+                    <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
                   </div>
                 </div>
               ))
@@ -441,24 +442,24 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         </div>
 
         {/* Export Events */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-1 pb-1 border-b">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 pb-2 border-b">
             <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 text-xs font-medium">
               Export
             </Badge>
             <span className="text-xs text-gray-500">({exportEvents.length})</span>
           </div>
-          <div className="space-y-1 max-h-64 overflow-y-auto">
+          <div className="space-y-2 max-h-80 overflow-y-auto">
             {exportEvents.length === 0 ? (
-              <p className="text-gray-400 text-xs text-center py-2">No export events</p>
+              <p className="text-gray-400 text-xs text-center py-4">No export events</p>
             ) : (
               exportEvents.map((event) => (
                 <div 
                   key={event.uniqueId} 
-                  className="p-1.5 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                  className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
                   onClick={() => handleEventClick(event)}
                 >
-                  <div className="space-y-0.5">
+                  <div className="space-y-1">
                     <Badge 
                       variant="outline" 
                       className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
@@ -467,9 +468,9 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                     </Badge>
                     <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
                     <div className="text-xs text-gray-600 truncate">
-                      {event.ref && `${event.ref}`}
+                      {event.ref && `Ref: ${event.ref}`}
                     </div>
-                    <div className="text-xs text-gray-600 truncate">{event.file}</div>
+                    <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
                   </div>
                 </div>
               ))
@@ -478,24 +479,24 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         </div>
 
         {/* Domestic Events */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-1 pb-1 border-b">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 pb-2 border-b">
             <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs font-medium">
               Domestic
             </Badge>
             <span className="text-xs text-gray-500">({domesticEvents.length})</span>
           </div>
-          <div className="space-y-1 max-h-64 overflow-y-auto">
+          <div className="space-y-2 max-h-80 overflow-y-auto">
             {domesticEvents.length === 0 ? (
-              <p className="text-gray-400 text-xs text-center py-2">No domestic events</p>
+              <p className="text-gray-400 text-xs text-center py-4">No domestic events</p>
             ) : (
               domesticEvents.map((event) => (
                 <div 
                   key={event.uniqueId} 
-                  className="p-1.5 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                  className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
                   onClick={() => handleEventClick(event)}
                 >
-                  <div className="space-y-0.5">
+                  <div className="space-y-1">
                     <Badge 
                       variant="outline" 
                       className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
@@ -503,7 +504,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                       {getEventTypeLabel(event.type)}
                     </Badge>
                     <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
-                    <div className="text-xs text-gray-600 truncate">{event.file}</div>
+                    <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
                   </div>
                 </div>
               ))
@@ -515,11 +516,11 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   };
 
   return (
-    <div className="h-full flex flex-col p-2">
-      <div className="space-y-3 flex-1 flex flex-col">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 flex-1">
-          <Card className="lg:col-span-2 shadow-sm border border-gray-200 flex flex-col">
-            <CardHeader className="pb-2 px-3 pt-3">
+    <div className="h-full flex flex-col">
+      <div className="p-4 space-y-4 flex-1 flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1">
+          <Card className="lg:col-span-1 shadow-sm border border-gray-200 flex flex-col">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-900 flex items-center justify-between">
                 Calendar Overview
                 <div className="flex items-center gap-1">
@@ -553,38 +554,44 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                     onClick={() => setCalendarFilter('domestic')}
                     className="text-xs px-2 py-1 h-6"
                   >
-                    D-Truck
+                    D-Trucking
                   </Button>
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-3 pb-3 pt-0 flex-1 flex flex-col">
+            <CardContent className="p-3 pt-0 flex-1 flex flex-col">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}
                 modifiers={modifiers}
                 modifiersStyles={modifiersStyles}
-                className="rounded-md border border-gray-200 bg-white p-1 mb-2 text-sm"
+                className="rounded-md border border-gray-200 bg-white p-2 mb-3"
               />
               
               {/* Compact Legend */}
               <div className="space-y-1 text-xs flex-1">
                 <h4 className="font-medium text-gray-800 text-xs">Event Types:</h4>
-                <div className="grid grid-cols-1 gap-1">
-                  <div className="flex flex-wrap gap-1">
-                    <div className="text-xs font-semibold text-gray-600">Import:</div>
-                    <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs">ETA</Badge>
-                    <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs">Delivery</Badge>
+                <div className="grid grid-cols-2 gap-1">
+                  <div>
+                    <div className="font-semibold text-gray-600 mb-1 text-xs">Import:</div>
+                    <div className="space-y-1">
+                      <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs block w-fit">ETA</Badge>
+                      <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs block w-fit">Delivery</Badge>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    <div className="text-xs font-semibold text-gray-600">Export:</div>
-                    <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs">Drop</Badge>
-                    <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs">Return</Badge>
-                    <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs">Cutoff</Badge>
+                  <div>
+                    <div className="font-semibold text-gray-600 mb-1 text-xs">Export:</div>
+                    <div className="space-y-1">
+                      <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs block w-fit">Drop</Badge>
+                      <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs block w-fit">Return</Badge>
+                      <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs block w-fit">Cutoff</Badge>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    <div className="text-xs font-semibold text-gray-600">Domestic:</div>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-600 mb-1 text-xs">Domestic:</div>
+                  <div className="flex gap-1">
                     <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick</Badge>
                     <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
                   </div>
@@ -597,13 +604,13 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-3 shadow-sm border border-gray-200 flex flex-col">
-            <CardHeader className="pb-2 px-3 pt-3">
+          <Card className="lg:col-span-2 shadow-sm border border-gray-200 flex flex-col">
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-900">
                 {selectedDate ? `Events for ${selectedDate.toLocaleDateString()}` : 'Select a date'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-3 pb-3 pt-0 flex-1">
+            <CardContent className="p-3 pt-0 flex-1">
               <ScrollArea className="h-full">
                 {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
                   <div className="text-center py-8">
@@ -617,32 +624,32 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         </div>
 
         <Card className="shadow-sm border border-gray-200">
-          <CardHeader className="pb-2 px-3 pt-3">
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-900">
               Upcoming Events (Next 7 Days)
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-3 pb-3 pt-0">
-            <ScrollArea className="h-48">
-              <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+          <CardContent className="p-3 pt-0">
+            <ScrollArea className="h-64">
+              <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
                 {getUpcomingEventsGroupedByDate().map(({ date, events }) => (
-                  <div key={date} className="flex-shrink-0 w-56 space-y-2 border border-gray-200 rounded-lg p-2 bg-gray-50">
-                    <div className="text-sm font-semibold text-gray-700 text-center border-b border-gray-200 pb-1">
+                  <div key={date} className="flex-shrink-0 w-64 space-y-2 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                    <div className="text-sm font-semibold text-gray-700 text-center border-b border-gray-200 pb-2">
                       {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { 
                         weekday: 'short', 
                         month: 'short', 
                         day: 'numeric' 
                       })}
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {events.map((event) => (
                         <div 
                           key={event.uniqueId} 
-                          className="p-1.5 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                          className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
                           onClick={() => handleEventClick(event)}
                         >
-                          <div className="space-y-0.5">
-                            <div className="flex items-center gap-1 mb-0.5">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1 mb-1">
                               <Badge 
                                 variant="outline" 
                                 className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
@@ -669,9 +676,9 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                   </div>
                 ))}
                 {getUpcomingEventsGroupedByDate().length === 0 && (
-                  <div className="w-full text-center py-6">
-                    <div className="text-3xl mb-2">✅</div>
-                    <p className="text-gray-500 text-sm">
+                  <div className="w-full text-center py-8">
+                    <div className="text-4xl mb-3">✅</div>
+                    <p className="text-gray-500">
                       No upcoming events in the next 7 days
                     </p>
                   </div>
