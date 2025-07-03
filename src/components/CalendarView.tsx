@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -290,7 +291,18 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     const events = eventSource === 'export' ? exportEvents : 
                   eventSource === 'import' ? importEvents :
                   eventSource === 'domestic' ? domesticEvents : allEvents;
-    return events.filter(event => event.date === dateString);
+    
+    // Remove duplicates based on recordId + type + date combination
+    const uniqueEvents = events.filter((event, index, self) => 
+      event.date === dateString && 
+      self.findIndex(e => 
+        e.recordId === event.recordId && 
+        e.type === event.type && 
+        e.date === event.date
+      ) === index
+    );
+    
+    return uniqueEvents;
   };
 
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
@@ -345,8 +357,17 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                   calendarFilter === 'export' ? exportEvents : 
                   calendarFilter === 'import' ? importEvents : domesticEvents;
     
-    return events
-      .filter(event => new Date(event.date + 'T00:00:00') >= new Date())
+    // Remove duplicates and filter upcoming events
+    const uniqueEvents = events.filter((event, index, self) => 
+      new Date(event.date + 'T00:00:00') >= new Date() &&
+      self.findIndex(e => 
+        e.recordId === event.recordId && 
+        e.type === event.type && 
+        e.date === event.date
+      ) === index
+    );
+    
+    return uniqueEvents
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(0, 12);
   };
@@ -367,25 +388,21 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           </div>
           {importEvts.length > 0 ? importEvts.map((event, index) => (
             <div 
-              key={`import-${index}`} 
-              className="p-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer"
+              key={`import-${event.recordId}-${event.type}-${index}`} 
+              className="p-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer h-full"
               onClick={() => handleEventClick(event)}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="space-y-2">
+                <div className="font-semibold text-gray-900 text-sm">{event.customer}</div>
                 <Badge 
                   variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs`}
+                  className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
-              </div>
-              <div className="space-y-1 text-sm">
-                <div className="font-medium text-gray-900">{event.customer}</div>
-                <div className="text-xs text-gray-600">
-                  <span className="font-medium">Booking:</span> {event.booking}
-                </div>
-                <div className="text-xs text-gray-600">
-                  <span className="font-medium">File:</span> {event.file}
+                <div className="space-y-1 text-xs text-gray-600">
+                  <div><span className="font-medium">Booking:</span> {event.booking}</div>
+                  <div><span className="font-medium">File:</span> {event.file}</div>
                 </div>
               </div>
             </div>
@@ -404,25 +421,21 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           </div>
           {exportEvts.length > 0 ? exportEvts.map((event, index) => (
             <div 
-              key={`export-${index}`} 
-              className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
+              key={`export-${event.recordId}-${event.type}-${index}`} 
+              className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer h-full"
               onClick={() => handleEventClick(event)}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="space-y-2">
+                <div className="font-semibold text-gray-900 text-sm">{event.customer}</div>
                 <Badge 
                   variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs`}
+                  className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
-              </div>
-              <div className="space-y-1 text-sm">
-                <div className="font-medium text-gray-900">{event.customer}</div>
-                <div className="text-xs text-gray-600">
-                  <span className="font-medium">Ref:</span> {event.ref}
-                </div>
-                <div className="text-xs text-gray-600">
-                  <span className="font-medium">File:</span> {event.file}
+                <div className="space-y-1 text-xs text-gray-600">
+                  <div><span className="font-medium">Ref:</span> {event.ref}</div>
+                  <div><span className="font-medium">File:</span> {event.file}</div>
                 </div>
               </div>
             </div>
@@ -441,22 +454,20 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           </div>
           {domesticEvts.length > 0 ? domesticEvts.map((event, index) => (
             <div 
-              key={`domestic-${index}`} 
-              className="p-3 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer"
+              key={`domestic-${event.recordId}-${event.type}-${index}`} 
+              className="p-3 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer h-full"
               onClick={() => handleEventClick(event)}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="space-y-2">
+                <div className="font-semibold text-gray-900 text-sm">{event.customer}</div>
                 <Badge 
                   variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs`}
+                  className={`${getEventTypeColor(event.type, event.source)} text-xs w-full justify-center`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
-              </div>
-              <div className="space-y-1 text-sm">
-                <div className="font-medium text-gray-900">{event.customer}</div>
-                <div className="text-xs text-gray-600">
-                  <span className="font-medium">File:</span> {event.file}
+                <div className="space-y-1 text-xs text-gray-600">
+                  <div><span className="font-medium">File:</span> {event.file}</div>
                 </div>
               </div>
             </div>
@@ -471,179 +482,179 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   };
 
   return (
-    <div className="p-4 space-y-4 h-full overflow-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-1 shadow-sm border border-gray-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-900 flex items-center justify-between">
-              Calendar Overview
-              <div className="flex items-center gap-1">
-                <Button
-                  variant={calendarFilter === 'all' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCalendarFilter('all')}
-                  className="text-xs px-2 py-1 h-6"
-                >
-                  All
-                </Button>
-                <Button
-                  variant={calendarFilter === 'import' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCalendarFilter('import')}
-                  className="text-xs px-2 py-1 h-6"
-                >
-                  Import
-                </Button>
-                <Button
-                  variant={calendarFilter === 'export' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCalendarFilter('export')}
-                  className="text-xs px-2 py-1 h-6"
-                >
-                  Export
-                </Button>
-                <Button
-                  variant={calendarFilter === 'domestic' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setCalendarFilter('domestic')}
-                  className="text-xs px-2 py-1 h-6"
-                >
-                  D-Trucking
-                </Button>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-3 pt-0">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              modifiers={modifiers}
-              modifiersStyles={modifiersStyles}
-              className="rounded-md border border-gray-200 bg-white p-2 mb-3"
-            />
-            
-            {/* Compact Legend */}
-            <div className="space-y-1 text-xs">
-              <h4 className="font-medium text-gray-800 text-xs">Event Types:</h4>
-              <div className="grid grid-cols-2 gap-1">
-                <div>
-                  <div className="font-semibold text-gray-600 mb-1 text-xs">Import:</div>
-                  <div className="space-y-1">
-                    <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs block w-fit">ETA</Badge>
-                    <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs block w-fit">Delivery</Badge>
+    <ScrollArea className="h-full">
+      <div className="p-4 space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card className="lg:col-span-1 shadow-sm border border-gray-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-900 flex items-center justify-between">
+                Calendar Overview
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant={calendarFilter === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCalendarFilter('all')}
+                    className="text-xs px-2 py-1 h-6"
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={calendarFilter === 'import' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCalendarFilter('import')}
+                    className="text-xs px-2 py-1 h-6"
+                  >
+                    Import
+                  </Button>
+                  <Button
+                    variant={calendarFilter === 'export' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCalendarFilter('export')}
+                    className="text-xs px-2 py-1 h-6"
+                  >
+                    Export
+                  </Button>
+                  <Button
+                    variant={calendarFilter === 'domestic' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCalendarFilter('domestic')}
+                    className="text-xs px-2 py-1 h-6"
+                  >
+                    D-Trucking
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 pt-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                modifiers={modifiers}
+                modifiersStyles={modifiersStyles}
+                className="rounded-md border border-gray-200 bg-white p-2 mb-3"
+              />
+              
+              {/* Compact Legend */}
+              <div className="space-y-1 text-xs">
+                <h4 className="font-medium text-gray-800 text-xs">Event Types:</h4>
+                <div className="grid grid-cols-2 gap-1">
+                  <div>
+                    <div className="font-semibold text-gray-600 mb-1 text-xs">Import:</div>
+                    <div className="space-y-1">
+                      <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs block w-fit">ETA</Badge>
+                      <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs block w-fit">Delivery</Badge>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-600 mb-1 text-xs">Export:</div>
+                    <div className="space-y-1">
+                      <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs block w-fit">Drop</Badge>
+                      <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs block w-fit">Return</Badge>
+                      <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs block w-fit">Cutoff</Badge>
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-600 mb-1 text-xs">Export:</div>
-                  <div className="space-y-1">
-                    <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs block w-fit">Drop</Badge>
-                    <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs block w-fit">Return</Badge>
-                    <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs block w-fit">Cutoff</Badge>
+                  <div className="font-semibold text-gray-600 mb-1 text-xs">Domestic:</div>
+                  <div className="flex gap-1">
+                    <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick</Badge>
+                    <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
                   </div>
                 </div>
-              </div>
-              <div>
-                <div className="font-semibold text-gray-600 mb-1 text-xs">Domestic:</div>
-                <div className="flex gap-1">
-                  <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick</Badge>
-                  <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                  <span className="text-gray-500 text-xs">Days with events</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-3 h-3 bg-blue-600 rounded"></div>
-                <span className="text-gray-500 text-xs">Days with events</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="lg:col-span-2 shadow-sm border border-gray-200">
+          <Card className="lg:col-span-2 shadow-sm border border-gray-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-900">
+                {selectedDate ? `Events for ${selectedDate.toLocaleDateString()}` : 'Select a date'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 pt-0">
+              <ScrollArea className="h-64">
+                {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-3">📅</div>
+                    <p className="text-gray-500">Select a date to view events</p>
+                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="shadow-sm border border-gray-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-900">
-              {selectedDate ? `Events for ${selectedDate.toLocaleDateString()}` : 'Select a date'}
+              Upcoming Events
             </CardTitle>
           </CardHeader>
           <CardContent className="p-3 pt-0">
-            <ScrollArea className="h-64">
-              {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
+            <ScrollArea className="h-48">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                {getFilteredEventsForUpcoming().map((event, index) => (
+                  <div 
+                    key={`upcoming-${event.recordId}-${event.type}-${index}`} 
+                    className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                    onClick={() => handleEventClick(event)}
+                  >
+                    <div className="space-y-2">
+                      <div className="font-semibold text-gray-900 text-xs">{event.customer}</div>
+                      <div className="flex items-center gap-1 flex-wrap">
+                        <Badge 
+                          variant="outline" 
+                          className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                        >
+                          {getEventTypeLabel(event.type)}
+                        </Badge>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs font-medium ${
+                            event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 
+                            event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' :
+                            'bg-yellow-100 text-yellow-700 border-yellow-300'
+                          }`}
+                        >
+                          {event.source === 'export' ? 'EXP' : event.source === 'import' ? 'IMP' : 'D-TRK'}
+                        </Badge>
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        {event.source === 'import' && event.booking ? event.booking : 
+                         event.source === 'export' ? event.ref : ''} • {event.file}
+                      </div>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-1 py-0.5 rounded">
+                        {new Date(event.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {getFilteredEventsForUpcoming().length === 0 && (
                 <div className="text-center py-8">
-                  <div className="text-4xl mb-3">📅</div>
-                  <p className="text-gray-500">Select a date to view events</p>
+                  <div className="text-4xl mb-3">✅</div>
+                  <p className="text-gray-500">
+                    No upcoming events
+                  </p>
                 </div>
               )}
             </ScrollArea>
           </CardContent>
         </Card>
+
+        <EventDetailModal
+          event={selectedEvent}
+          isOpen={isEventModalOpen}
+          onClose={() => setIsEventModalOpen(false)}
+          onEventClick={onCalendarEventClick}
+        />
       </div>
-
-      <Card className="shadow-sm border border-gray-200">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-gray-900">
-            Upcoming Events
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-3 pt-0">
-          <ScrollArea className="h-48">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-              {getFilteredEventsForUpcoming().map((event, index) => (
-                <div 
-                  key={index} 
-                  className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
-                  onClick={() => handleEventClick(event)}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1 flex-wrap">
-                      <Badge 
-                        variant="outline" 
-                        className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                      >
-                        {getEventTypeLabel(event.type)}
-                      </Badge>
-                      <Badge 
-                        variant="outline" 
-                        className={`text-xs font-medium ${
-                          event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : 
-                          event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' :
-                          'bg-yellow-100 text-yellow-700 border-yellow-300'
-                        }`}
-                      >
-                        {event.source === 'export' ? 'EXP' : event.source === 'import' ? 'IMP' : 'D-TRK'}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="font-medium text-gray-900 text-xs">{event.customer}</div>
-                    <div className="text-xs text-gray-600">
-                      {event.source === 'import' && event.booking ? event.booking : 
-                       event.source === 'export' ? event.ref : ''} • {event.file}
-                    </div>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-1 py-0.5 rounded">
-                      {new Date(event.date).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {getFilteredEventsForUpcoming().length === 0 && (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-3">✅</div>
-                <p className="text-gray-500">
-                  No upcoming events
-                </p>
-              </div>
-            )}
-          </ScrollArea>
-        </CardContent>
-      </Card>
-
-      <EventDetailModal
-        event={selectedEvent}
-        isOpen={isEventModalOpen}
-        onClose={() => setIsEventModalOpen(false)}
-        onEventClick={onCalendarEventClick}
-      />
-    </div>
+    </ScrollArea>
   );
 };
 
