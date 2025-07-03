@@ -162,16 +162,16 @@ const ImportTrackingTableRow = ({
           placeholder="Select ETA"
         />
       </td>
-      {/* Column 5: Bond */}
+      {/* Column 5: Bond - NOW WITH CYCLING FUNCTIONALITY */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
-          value={record.bond}
+          value={record.bond || 'Continuous'}
           onSave={(value) => updateRecord(record.id, 'bond', value as string)}
-          options={['Continuous', 'Single Entry']}
+          isBondColumn={true}
           placeholder="Select bond type"
         />
       </td>
-      {/* Column 6: POA */}
+      {/* Columns 6-21: Keep existing code for all other columns the same */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.poa === null || record.poa === undefined ? 'Select Value' : 
@@ -189,7 +189,6 @@ const ImportTrackingTableRow = ({
           isPoaColumn={true}
         />
       </td>
-      {/* Columns 7-21: Keep existing code for all other columns the same */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.isf === null || record.isf === undefined ? '' : record.isf}

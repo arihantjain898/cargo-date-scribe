@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface InlineEditCellProps {
   value: string | boolean;
@@ -14,6 +13,7 @@ interface InlineEditCellProps {
   options?: string[];
   isThreeStateBoolean?: boolean;
   isPoaColumn?: boolean;
+  isBondColumn?: boolean;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -25,7 +25,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   className = "",
   options = [],
   isThreeStateBoolean = false,
-  isPoaColumn = false
+  isPoaColumn = false,
+  isBondColumn = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -73,7 +74,14 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const handleClick = () => {
-    if (isPoaColumn) {
+    if (isBondColumn) {
+      // Bond column cycling logic - only between Continuous and Single Entry
+      if (value === 'Continuous') {
+        onSave('Single Entry');
+      } else {
+        onSave('Continuous');
+      }
+    } else if (isPoaColumn) {
       // POA column cycling logic
       if (value === 'Select Value') {
         onSave('Pending');
@@ -96,7 +104,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (isBoolean) {
       onSave(!value);
     } else if (options.length > 0) {
-      // Cycle through options for any column with options (including Bond)
+      // Cycle through options for any column with options
       const currentIndex = options.indexOf(String(value));
       const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % options.length;
       onSave(options[nextIndex]);
@@ -105,12 +113,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
-  const handleSelectChange = (newValue: string) => {
-    onSave(newValue);
-    setIsEditing(false);
-  };
-
-  if (isEditing && !isBoolean && !isThreeStateBoolean && !isPoaColumn && options.length === 0) {
+  if (isEditing && !isBoolean && !isThreeStateBoolean && !isPoaColumn && !isBondColumn && options.length === 0) {
     return (
       <div className="w-full min-h-[24px] p-1">
         {isDate ? (
@@ -138,9 +141,6 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     );
   }
 
-  // Remove the separate select editing mode since we want all options to cycle on click
-  // if (isEditing && options.length > 0 && !isPoaColumn) { ... }
-
   const getPoaDisplay = () => {
     if (value === 'Select Value') {
       return { text: 'Select Value', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
@@ -155,6 +155,16 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
+  const getBondDisplay = () => {
+    if (value === 'Continuous') {
+      return { text: 'Continuous', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' };
+    } else if (value === 'Single Entry') {
+      return { text: 'Single Entry', color: 'bg-purple-100 text-purple-800 hover:bg-purple-200' };
+    } else {
+      return { text: 'Continuous', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' };
+    }
+  };
+
   const getThreeStateBooleanDisplay = () => {
     if (value === '' || value === null || value === undefined) {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
@@ -165,7 +175,9 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
-  const displayValue = isPoaColumn
+  const displayValue = isBondColumn
+    ? getBondDisplay().text
+    : isPoaColumn
     ? getPoaDisplay().text
     : isThreeStateBoolean 
     ? getThreeStateBooleanDisplay().text
@@ -180,7 +192,9 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   };
 
-  const displayClasses = isPoaColumn
+  const displayClasses = isBondColumn
+    ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getBondDisplay().color}`
+    : isPoaColumn
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getPoaDisplay().color}`
     : isThreeStateBoolean
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getThreeStateBooleanDisplay().color}`
