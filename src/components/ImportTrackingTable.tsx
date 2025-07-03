@@ -113,7 +113,7 @@ const ImportTrackingTable = ({
                 />
               ))}
               <tr>
-                <td colSpan={19} className="h-4"></td>
+                <td colSpan={19} className="h-16"></td>
               </tr>
             </tbody>
           </table>
