@@ -91,7 +91,7 @@ const ImportTrackingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[75vh] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[72vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1800px]">
           <table className="w-full border-collapse text-xs">
             <ImportTrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
