@@ -12,7 +12,7 @@ interface InlineEditCellProps {
   placeholder?: string;
   className?: string;
   options?: string[];
-  isThreeStateBoolean?: boolean; // New prop for three-state boolean
+  isThreeStateBoolean?: boolean;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -145,6 +145,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   }
 
   const getThreeStateBooleanDisplay = () => {
+    console.log('Three state boolean value:', value, 'type:', typeof value);
     if (value === null || value === '' || value === undefined) {
       return { text: 'Select Option', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (value === true) {
@@ -163,7 +164,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   const getStatusColor = (val: string) => {
     if (val === 'Yes' || val === 'Done') return 'bg-green-100 text-green-800 hover:bg-green-200';
     if (val === 'Pending') return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-    if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200'; // N/A counts as complete
+    if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200';
     return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   };
 
