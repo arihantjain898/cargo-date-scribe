@@ -229,7 +229,14 @@ const FreightTrackerTabs = ({
           selectedRows={selectedAllFilesRows}
           setSelectedRows={setSelectedAllFilesRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={onFileClick}
+          onFileClick={(fullFileIdentifier: string) => {
+            // Parse the full file identifier to extract fileType and fileNumber
+            const match = fullFileIdentifier.match(/^([A-Za-z]+)(.+)$/);
+            if (match) {
+              const [, fileType, fileNumber] = match;
+              onFileClick(fileNumber, fileType);
+            }
+          }}
         />
       </TabsContent>
 
@@ -256,7 +263,14 @@ const FreightTrackerTabs = ({
           selectedRows={selectedImportRows}
           setSelectedRows={setSelectedImportRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={onFileClick}
+          onFileClick={(fullFileIdentifier: string) => {
+            // Parse the full file identifier to extract fileType and fileNumber
+            const match = fullFileIdentifier.match(/^([A-Za-z]+)(.+)$/);
+            if (match) {
+              const [, fileType, fileNumber] = match;
+              onFileClick(fileNumber, fileType);
+            }
+          }}
         />
       </TabsContent>
 
@@ -283,7 +297,14 @@ const FreightTrackerTabs = ({
           selectedRows={selectedExportRows}
           setSelectedRows={setSelectedExportRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={onFileClick}
+          onFileClick={(fullFileIdentifier: string) => {
+            // Parse the full file identifier to extract fileType and fileNumber
+            const match = fullFileIdentifier.match(/^([A-Za-z]+)(.+)$/);
+            if (match) {
+              const [, fileType, fileNumber] = match;
+              onFileClick(fileNumber, fileType);
+            }
+          }}
         />
       </TabsContent>
 
@@ -310,7 +331,14 @@ const FreightTrackerTabs = ({
           selectedRows={selectedDomesticRows}
           setSelectedRows={setSelectedDomesticRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={onFileClick}
+          onFileClick={(fullFileIdentifier: string) => {
+            // Parse the full file identifier to extract fileType and fileNumber
+            const match = fullFileIdentifier.match(/^([A-Za-z]+)(.+)$/);
+            if (match) {
+              const [, fileType, fileNumber] = match;
+              onFileClick(fileNumber, fileType);
+            }
+          }}
         />
       </TabsContent>
     </Tabs>

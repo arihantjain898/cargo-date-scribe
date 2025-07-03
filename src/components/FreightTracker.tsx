@@ -284,7 +284,7 @@ const FreightTracker: React.FC = () => {
     
     // Determine which tab to switch to based on source
     let targetTab = 'allfiles';
-    let targetData = allFilesData;
+    let targetData: any[] = allFilesData;
     
     switch (source) {
       case 'export':
