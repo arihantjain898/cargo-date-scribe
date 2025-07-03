@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -89,8 +88,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
         onSave('Continuous');
       }
     } else if (isPoaColumn) {
-      // POA column cycling logic
-      if (value === 'Select Value') {
+      // POA column cycling logic - skip "Select" after first selection
+      if (value === 'Select') {
         onSave('Pending');
       } else if (value === 'Pending') {
         onSave('Yes');
@@ -100,13 +99,15 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
         onSave('Pending');
       }
     } else if (isThreeStateBoolean) {
-      // Cycle through: unset -> true -> false -> unset
-      if (value === '') {
-        onSave(true);
-      } else if (value === true) {
-        onSave(false);
+      // Cycle through: Select -> Pending -> Yes -> No -> Pending (skip Select after first use)
+      if (value === 'Select') {
+        onSave('Pending');
+      } else if (value === 'Pending') {
+        onSave('Yes');
+      } else if (value === 'Yes') {
+        onSave('No');
       } else {
-        onSave('');
+        onSave('Pending');
       }
     } else if (isBoolean) {
       onSave(!value);
@@ -161,8 +162,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   }
 
   const getPoaDisplay = () => {
-    if (value === 'Select Value') {
-      return { text: 'Select Value', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+    if (value === 'Select') {
+      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (value === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
     } else if (value === 'Yes') {
@@ -170,7 +171,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (value === 'No') {
       return { text: 'No', color: 'bg-red-100 text-red-800 hover:bg-red-200' };
     } else {
-      return { text: 'Select Value', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     }
   };
 
@@ -185,12 +186,16 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const getThreeStateBooleanDisplay = () => {
-    if (value === '' || value === null || value === undefined) {
+    if (value === 'Select') {
+      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+    } else if (value === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
-    } else if (value === true) {
+    } else if (value === 'Yes') {
       return { text: 'Yes', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
-    } else {
+    } else if (value === 'No') {
       return { text: 'No', color: 'bg-red-100 text-red-800 hover:bg-red-200' };
+    } else {
+      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     }
   };
 
