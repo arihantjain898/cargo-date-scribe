@@ -36,40 +36,34 @@ export const generateAllFilesSampleData = (): Omit<AllFilesRecord, 'id'>[] => {
   });
 };
 
-export const generateImportSampleData = (): Omit<ImportTrackingRecord, 'id'>[] => {
-  const customers = ['ABC Corp', 'XYZ Ltd', 'Global Traders', 'Marine Solutions', 'Import Kings', 'Logistics Pro', 'Freight Forward', 'Ocean Express', 'Continental Cargo', 'Trade Masters'];
-  
-  return Array.from({ length: 10 }, (_, index) => {
-    const baseNumber = String(1000 + index * 3).padStart(4, '0'); // Use numbers that match some all_files records
-    const randomBool = () => Math.random() > 0.5;
-    
-    return {
-      customer: customers[index],
-      booking: `BK${baseNumber}`,
-      file: `IS${baseNumber}`,
-      etaFinalPod: new Date(Date.now() + (index * 7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
-      bond: ['Continuous', 'Single Entry', 'Term'][index % 3],
-      poa: randomBool(),
-      isf: randomBool(),
-      packingListCommercialInvoice: randomBool(),
-      billOfLading: randomBool(),
-      arrivalNotice: randomBool(),
-      isfFiled: randomBool(),
-      entryFiled: randomBool(),
-      blRelease: randomBool(),
-      customsRelease: randomBool(),
-      invoiceSent: randomBool(),
-      paymentReceived: randomBool(),
-      workOrderSetup: randomBool(),
-      delivered: ['No', 'Yes', 'Pending'][index % 3],
-      returned: ['No', 'Yes'][index % 2],
-      deliveryDate: index % 3 === 0 ? new Date(Date.now() + (index * 5 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0] : '',
-      notes: index % 4 === 0 ? `Import notes for file IS${baseNumber}` : '',
-      archived: false,
-      createdAt: new Date().toISOString(),
-      userId: 'demo-user'
-    };
-  });
+export const generateImportRecords = (count: number = 10, userId: string): Omit<ImportTrackingRecord, 'id'>[] => {
+  return Array.from({ length: count }, (_, index) => ({
+    customer: `Customer ${index + 1}`,
+    booking: `BK${String(index + 1).padStart(4, '0')}`,
+    bookingUrl: Math.random() > 0.5 ? `https://booking-system.com/track/${index + 1}` : '',
+    file: `IS${index + 1}`,
+    etaFinalPod: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    bond: Math.random() > 0.5 ? 'Continuous' : 'Single Entry',
+    poa: 'Select',
+    isf: 'Select', 
+    packingListCommercialInvoice: 'Select',
+    billOfLading: 'Select',
+    arrivalNotice: 'Select',
+    isfFiled: 'Select',
+    entryFiled: 'Select',
+    blRelease: 'Select',
+    customsRelease: 'Select',
+    invoiceSent: 'Select',
+    paymentReceived: 'Select',
+    workOrderSetup: 'Select',
+    delivered: 'Select',
+    returned: 'Select',
+    deliveryDate: Math.random() > 0.5 ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : '',
+    notes: Math.random() > 0.7 ? `Note for record ${index + 1}` : '',
+    archived: false,
+    createdAt: new Date().toISOString(),
+    userId
+  }));
 };
 
 export const generateExportSampleData = (): Omit<TrackingRecord, 'id'>[] => {

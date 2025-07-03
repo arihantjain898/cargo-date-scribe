@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ExternalLink, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -172,7 +171,7 @@ const ImportTrackingTableRow = ({
       </td>
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
-          value={record.bond || 'Continuous'}
+          value={record.bond || 'Select'}
           onSave={(value) => updateRecord(record.id, 'bond', value as string)}
           isBondColumn={true}
           placeholder="Select bond type"
@@ -264,17 +263,17 @@ const ImportTrackingTableRow = ({
       </td>
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
-          value={record.delivered}
+          value={record.delivered || 'Select'}
           onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
-          options={['No', 'Yes', 'Partial']}
+          options={['Select', 'Pending', 'Yes', 'No']}
           placeholder="Select status"
         />
       </td>
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
-          value={record.returned}
+          value={record.returned || 'Select'}
           onSave={(value) => updateRecord(record.id, 'returned', value as string)}
-          options={['No', 'Yes', 'Partial']}
+          options={['Select', 'Pending', 'Yes', 'No']}
           placeholder="Select status"
         />
       </td>

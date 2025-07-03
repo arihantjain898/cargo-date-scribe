@@ -81,8 +81,10 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   const handleClick = () => {
     if (isBondColumn) {
-      // Bond column cycling logic - only between Continuous and Single Entry
-      if (value === 'Continuous') {
+      // Bond column cycling logic - start with Select, then Continuous and Single Entry
+      if (value === 'Select') {
+        onSave('Continuous');
+      } else if (value === 'Continuous') {
         onSave('Single Entry');
       } else {
         onSave('Continuous');
@@ -112,17 +114,18 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (isBoolean) {
       onSave(!value);
     } else if (options.length > 0) {
-      // Cycle through options for any column with options, but skip "Select" if it's not the current value
-      const currentIndex = options.indexOf(String(value));
+      // For delivered and returned columns with options, cycle through Select -> Pending -> Yes -> No
       if (String(value) === 'Select') {
-        // If current value is "Select", move to first real option
-        onSave(options[0]);
+        onSave('Pending');
+      } else if (String(value) === 'Pending') {
+        onSave('Yes');
+      } else if (String(value) === 'Yes') {
+        onSave('No');
+      } else if (String(value) === 'No') {
+        onSave('Pending');
       } else {
-        // Cycle through real options only (skip "Select")
-        const realOptions = options.filter(opt => opt !== 'Select');
-        const currentRealIndex = realOptions.indexOf(String(value));
-        const nextIndex = currentRealIndex === -1 ? 0 : (currentRealIndex + 1) % realOptions.length;
-        onSave(realOptions[nextIndex]);
+        // Default to Pending if value is not recognized
+        onSave('Pending');
       }
     } else {
       setIsEditing(true);
@@ -176,12 +179,14 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const getBondDisplay = () => {
-    if (value === 'Continuous') {
+    if (value === 'Select') {
+      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+    } else if (value === 'Continuous') {
       return { text: 'Continuous', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' };
     } else if (value === 'Single Entry') {
       return { text: 'Single Entry', color: 'bg-purple-100 text-purple-800 hover:bg-purple-200' };
     } else {
-      return { text: 'Continuous', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' };
+      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     }
   };
 
@@ -213,6 +218,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     if (val === 'Select') return 'bg-gray-100 text-gray-500 hover:bg-gray-200';
     if (val === 'Yes' || val === 'Done') return 'bg-green-100 text-green-800 hover:bg-green-200';
     if (val === 'Pending') return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+    if (val === 'No') return 'bg-red-100 text-red-800 hover:bg-red-200';
     if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200';
     return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   };

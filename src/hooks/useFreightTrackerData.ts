@@ -49,7 +49,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
       bookingUrl: '',
       file: '',
       etaFinalPod: '',
-      bond: 'Continuous',
+      bond: 'Select',
       poa: 'Select',
       isf: 'Select',
       packingListCommercialInvoice: 'Select',
