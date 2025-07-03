@@ -131,12 +131,12 @@ const ImportTrackingTableRow = ({
               </div>
             )}
           </div>
-          {(showUrlInput || record.bookingUrl) && (
+          {showUrlInput && (
             <InlineEditCell
               value={record.bookingUrl || ''}
               onSave={(value) => {
                 updateRecord(record.id, 'bookingUrl', value as string);
-                if (!value) setShowUrlInput(false);
+                setShowUrlInput(false);
               }}
               placeholder="Enter booking URL (optional)"
               className="text-xs text-gray-500"

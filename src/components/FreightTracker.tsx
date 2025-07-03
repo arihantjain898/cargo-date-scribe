@@ -230,6 +230,37 @@ const FreightTracker = () => {
     }
   };
 
+  const addNewImportRecord = () => {
+    const newRecord: Omit<ImportTrackingRecord, 'id'> = {
+      customer: '',
+      booking: '',
+      file: '',
+      etaFinalPod: '',
+      bond: '',
+      poa: false,
+      isf: false,
+      packingListCommercialInvoice: false,
+      billOfLading: false,
+      arrivalNotice: false,
+      isfFiled: false,
+      entryFiled: false,
+      blRelease: false,
+      customsRelease: false,
+      invoiceSent: false,
+      paymentReceived: false,
+      workOrderSetup: false,
+      delivered: '',
+      returned: '',
+      deliveryDate: '',
+      notes: '',
+      archived: false,
+      createdAt: new Date().toISOString(),
+      userId: currentUserId
+    };
+    
+    addImportItem(newRecord);
+  };
+
   const handleUpdateRecord = async (
     tab: string,
     id: string,
