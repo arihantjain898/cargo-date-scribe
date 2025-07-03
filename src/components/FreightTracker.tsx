@@ -7,7 +7,7 @@ import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
 import FreightTrackerTabs from '@/components/FreightTrackerTabs';
 import CalendarView from '@/components/CalendarView';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 const FreightTracker: React.FC = () => {
   const currentUserId = 'test-user-123'; // Mock user ID
@@ -160,82 +160,94 @@ const FreightTracker: React.FC = () => {
     // Determine target tab based on file type first letter
     let targetTab = 'allfiles';
     let targetRecord = null;
-    let fileToMatch = `${fileType}${fileNumber}` || `${fileNumber}${fileType}`;
     
     // Check first letter of file type to determine tab
     const firstLetter = fileType?.charAt(0)?.toUpperCase();
-    console.log('First letter:', firstLetter);
+    console.log('First letter:', firstLetter, 'Full fileType:', fileType);
     
     switch (firstLetter) {
       case 'E':
         targetTab = 'export';
         // Try multiple matching patterns for export records
-        targetRecord = exportData.find(record => 
-          record.file === fileToMatch || 
-          record.file === `E${fileNumber}` ||
-          record.file === `ET${fileNumber}` ||
-          record.file === fileNumber ||
-          record.file === `${fileNumber}E` ||
-          record.file === `${fileNumber}ET`
-        );
+        targetRecord = exportData.find(record => {
+          const recordFile = record.file?.toLowerCase() || '';
+          const searchFile = `${fileType}${fileNumber}`.toLowerCase();
+          console.log('Checking export record:', recordFile, 'against:', searchFile);
+          return recordFile === searchFile || 
+                 recordFile === `e${fileNumber}` ||
+                 recordFile === `et${fileNumber}` ||
+                 recordFile === fileNumber.toLowerCase();
+        });
         break;
       case 'I':
         targetTab = 'import';
         // Try multiple matching patterns for import records
-        targetRecord = importData.find(record => 
-          record.file === fileToMatch || 
-          record.file === `I${fileNumber}` ||
-          record.file === `IS${fileNumber}` ||
-          record.file === fileNumber ||
-          record.file === `${fileNumber}I` ||
-          record.file === `${fileNumber}IS`
-        );
+        targetRecord = importData.find(record => {
+          const recordFile = record.file?.toLowerCase() || '';
+          const searchFile = `${fileType}${fileNumber}`.toLowerCase();
+          console.log('Checking import record:', recordFile, 'against:', searchFile);
+          return recordFile === searchFile || 
+                 recordFile === `i${fileNumber}` ||
+                 recordFile === `is${fileNumber}` ||
+                 recordFile === fileNumber.toLowerCase();
+        });
         break;
       case 'D':
         targetTab = 'domestic';
         // Try multiple matching patterns for domestic records
-        targetRecord = domesticTruckingData.find(record => 
-          record.file === fileToMatch || 
-          record.file === `D${fileNumber}` ||
-          record.file === `DT${fileNumber}` ||
-          record.file === fileNumber ||
-          record.file === `${fileNumber}D` ||
-          record.file === `${fileNumber}DT`
-        );
+        targetRecord = domesticTruckingData.find(record => {
+          const recordFile = record.file?.toLowerCase() || '';
+          const searchFile = `${fileType}${fileNumber}`.toLowerCase();
+          console.log('Checking domestic record:', recordFile, 'against:', searchFile);
+          return recordFile === searchFile || 
+                 recordFile === `d${fileNumber}` ||
+                 recordFile === `dt${fileNumber}` ||
+                 recordFile === fileNumber.toLowerCase();
+        });
         break;
       default:
         // Stay on all files tab, try to find by number
-        targetRecord = allFilesData.find(record => 
-          record.number === fileNumber || 
-          record.file === fileType
-        );
+        targetRecord = allFilesData.find(record => {
+          const recordNumber = record.number?.toLowerCase() || '';
+          const recordFile = record.file?.toLowerCase() || '';
+          console.log('Checking allFiles record number:', recordNumber, 'file:', recordFile, 'against number:', fileNumber.toLowerCase());
+          return recordNumber === fileNumber.toLowerCase() || 
+                 recordFile === fileType.toLowerCase();
+        });
     }
     
-    console.log('Target tab:', targetTab, 'Target record:', targetRecord);
+    console.log('Target tab:', targetTab, 'Target record found:', !!targetRecord, targetRecord?.id);
     
     if (targetRecord) {
-      // Switch to the appropriate tab
-      const tabTrigger = document.querySelector(`[value="${targetTab}"]`) as HTMLElement;
-      if (tabTrigger) {
-        tabTrigger.click();
-      }
-      
-      // Set the highlighted row ID
-      setHighlightedRowId(targetRecord.id);
-      
-      // Clear highlight after 3 seconds
+      // Use a timeout to ensure the tab switch happens first
       setTimeout(() => {
-        setHighlightedRowId(null);
-      }, 3000);
-      
-      toast({
-        title: "Record Found",
-        description: `Switched to ${targetTab} tab and highlighted matching record`,
-      });
+        // Switch to the appropriate tab by triggering a click on the tab trigger
+        const tabTrigger = document.querySelector(`[data-state="inactive"][value="${targetTab}"]`) as HTMLElement;
+        if (tabTrigger) {
+          console.log('Clicking tab trigger for:', targetTab);
+          tabTrigger.click();
+        }
+        
+        // Set the highlighted row ID after a small delay to ensure tab is switched
+        setTimeout(() => {
+          console.log('Setting highlighted row ID:', targetRecord.id);
+          setHighlightedRowId(targetRecord.id);
+          
+          // Clear highlight after 3 seconds
+          setTimeout(() => {
+            setHighlightedRowId(null);
+          }, 3000);
+        }, 100);
+        
+        toast({
+          title: "Record Found",
+          description: `Switched to ${targetTab} tab and highlighted matching record`,
+        });
+      }, 50);
     } else {
       toast({
         title: "Record Not Found",
-        description: `No matching record found for ${fileToMatch} in ${targetTab} tab`,
+        description: `No matching record found for ${fileType}${fileNumber} in ${targetTab} tab`,
         variant: "destructive"
       });
     }
@@ -275,7 +287,7 @@ const FreightTracker: React.FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen px-4 py-6">
+    <div className="w-full min-h-screen px-2 py-4 max-w-[98vw]">
       <Tabs defaultValue="tracking" className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>

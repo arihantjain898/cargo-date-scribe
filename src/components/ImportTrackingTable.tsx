@@ -18,7 +18,7 @@ interface ImportTrackingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onFileClick?: (fullFileIdentifier: string) => void;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
 const ImportTrackingTable = ({ 
