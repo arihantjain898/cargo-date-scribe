@@ -8,6 +8,7 @@ import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
 import ImportTrackingTable from '@/components/ImportTrackingTable';
 import AllFilesTable from '@/components/AllFilesTable';
 import DomesticTruckingTable from '@/components/DomesticTruckingTable';
+import TrackingTable from '@/components/TrackingTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
@@ -39,6 +40,10 @@ const FreightTracker: React.FC = () => {
   const [showArchivedAllFiles, setShowArchivedAllFiles] = useState(false);
   const [showArchivedDomesticTrucking, setShowArchivedDomesticTrucking] = useState(false);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
+  const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
+  const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
+  const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
+  const [selectedDomesticRows, setSelectedDomesticRows] = useState<string[]>([]);
 
   const addNewExportRecord = () => {
     const newRecord: Omit<TrackingRecord, 'id'> = {
@@ -64,6 +69,7 @@ const FreightTracker: React.FC = () => {
       sslPaid: null,
       insured: null,
       released: null,
+      docsSentToCustomer: null,
       notes: '',
       archived: false,
       userId: currentUserId
@@ -95,6 +101,7 @@ const FreightTracker: React.FC = () => {
       returned: '',
       deliveryDate: '',
       notes: '',
+      createdAt: new Date().toISOString(),
       archived: false,
       userId: currentUserId
     };
@@ -105,7 +112,22 @@ const FreightTracker: React.FC = () => {
   const addNewAllFilesRecord = () => {
     const newRecord: Omit<AllFilesRecord, 'id'> = {
       customer: '',
-      notes: '',
+      file: '',
+      number: '',
+      originPort: '',
+      originState: '',
+      destinationPort: '',
+      destinationCountry: '',
+      container20: '',
+      container40: '',
+      roro: '',
+      lcl: '',
+      air: '',
+      truck: '',
+      ssl: '',
+      nvo: '',
+      comments: '',
+      salesContact: '',
       archived: false,
       userId: currentUserId
     };
@@ -115,19 +137,13 @@ const FreightTracker: React.FC = () => {
   const addNewDomesticTruckingRecord = () => {
     const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
       customer: '',
-      deliveryNumber: '',
-      trailerNumber: '',
-      driverName: '',
-      driverCell: '',
-      checkIn: '',
-      checkOut: '',
-      weight: '',
-      pallets: '',
-      staging: '',
-      seal: '',
-      startTime: '',
-      endTime: '',
-      temp: '',
+      file: '',
+      woSent: null,
+      insurance: null,
+      pickDate: '',
+      delivered: '',
+      paymentReceived: null,
+      paymentMade: null,
       notes: '',
       archived: false,
       userId: currentUserId
@@ -148,12 +164,30 @@ const FreightTracker: React.FC = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <Tabs defaultValue="import">
+      <Tabs defaultValue="export">
         <TabsList className="mb-4">
+          <TabsTrigger value="export">Export Tracking</TabsTrigger>
           <TabsTrigger value="import">Import Tracking</TabsTrigger>
           <TabsTrigger value="allFiles">All Files</TabsTrigger>
           <TabsTrigger value="domesticTrucking">Domestic Trucking</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="export">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Export Tracking</h2>
+            <Button onClick={addNewExportRecord}><PlusIcon className="mr-2 h-4 w-4" />Add New Export Record</Button>
+          </div>
+          <TrackingTable
+            data={exportData}
+            updateRecord={updateRecord}
+            deleteRecord={deleteExportItem}
+            selectedRows={selectedExportRows}
+            setSelectedRows={setSelectedExportRows}
+            highlightedRowId={highlightedRowId}
+            onFileClick={handleFileClick}
+          />
+        </TabsContent>
+        
         <TabsContent value="import">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Import Tracking</h2>
@@ -163,12 +197,13 @@ const FreightTracker: React.FC = () => {
             data={importData}
             updateRecord={updateImportRecord}
             deleteRecord={deleteImportItem}
-            selectedRows={[]}
-            setSelectedRows={() => {}}
+            selectedRows={selectedImportRows}
+            setSelectedRows={setSelectedImportRows}
             highlightedRowId={highlightedRowId}
             onFileClick={handleFileClick}
           />
         </TabsContent>
+        
         <TabsContent value="allFiles">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">All Files</h2>
@@ -178,10 +213,13 @@ const FreightTracker: React.FC = () => {
             data={allFilesData}
             updateRecord={updateAllFilesRecord}
             deleteRecord={deleteAllFilesItem}
+            selectedRows={selectedAllFilesRows}
+            setSelectedRows={setSelectedAllFilesRows}
             highlightedRowId={highlightedRowId}
             onFileClick={(fileNumber: string, fileType: string) => handleFileClick(`${fileNumber}-${fileType}`)}
           />
         </TabsContent>
+        
         <TabsContent value="domesticTrucking">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Domestic Trucking</h2>
@@ -191,8 +229,8 @@ const FreightTracker: React.FC = () => {
             data={domesticTruckingData}
             updateRecord={updateDomesticTruckingRecord}
             deleteRecord={deleteDomesticTruckingItem}
-            selectedRows={[]}
-            setSelectedRows={() => {}}
+            selectedRows={selectedDomesticRows}
+            setSelectedRows={setSelectedDomesticRows}
             highlightedRowId={highlightedRowId}
             onFileClick={handleFileClick}
           />
