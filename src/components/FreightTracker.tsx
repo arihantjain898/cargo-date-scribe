@@ -277,55 +277,71 @@ const FreightTracker: React.FC = () => {
   }, [exportData, importData, domesticTruckingData, allFilesData, toast, activeTab]);
 
   const handleCalendarEventClick = useCallback((recordId: string, source: string) => {
-    console.log('FreightTracker: Calendar event clicked:', recordId, source);
+    console.log('FreightTracker: Calendar event clicked with recordId:', recordId, 'source:', source);
     
     // Switch to the tracking tables tab first
     setMainActiveTab('tracking');
     
     // Determine which tab to switch to based on source
     let targetTab = 'allfiles';
+    let targetData = allFilesData;
+    
     switch (source) {
       case 'export':
         targetTab = 'export';
+        targetData = exportData;
         break;
       case 'import':
         targetTab = 'import';
+        targetData = importData;
         break;
       case 'domestic':
         targetTab = 'domestic';
+        targetData = domesticTruckingData;
         break;
     }
     
-    console.log('FreightTracker: Switching to tab:', targetTab, 'for recordId:', recordId);
+    // Find the record to ensure it exists
+    const targetRecord = targetData.find(record => record.id === recordId);
     
-    // Switch to the appropriate tab
-    setTimeout(() => {
-      setActiveTab(targetTab);
-      
-      // Set the highlighted row ID after a small delay to ensure tab is switched
+    console.log('FreightTracker: Target tab:', targetTab, 'Target record found:', !!targetRecord, recordId);
+    
+    if (targetRecord) {
+      // Switch to the appropriate tab
       setTimeout(() => {
-        console.log('FreightTracker: Setting highlighted row ID:', recordId);
-        setHighlightedRowId(recordId);
+        setActiveTab(targetTab);
         
-        // Clear highlight after 3 seconds
+        // Set the highlighted row ID after a delay to ensure tab is switched
         setTimeout(() => {
-          setHighlightedRowId(null);
-        }, 3000);
-      }, 300);
-    }, 100);
-    
-    toast({
-      title: "Navigating to Record",
-      description: `Switching to ${targetTab} tab and highlighting record`,
-    });
-  }, [toast]);
+          console.log('FreightTracker: Setting highlighted row ID:', recordId);
+          setHighlightedRowId(recordId);
+          
+          // Clear highlight after 3 seconds
+          setTimeout(() => {
+            setHighlightedRowId(null);
+          }, 3000);
+        }, 300);
+      }, 100);
+      
+      toast({
+        title: "Navigating to Record",
+        description: `Switching to ${targetTab} tab and highlighting record`,
+      });
+    } else {
+      toast({
+        title: "Record Not Found",
+        description: `Could not find record with ID ${recordId} in ${targetTab} tab`,
+        variant: "destructive"
+      });
+    }
+  }, [toast, exportData, importData, domesticTruckingData, allFilesData]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="w-full h-screen px-2 py-4 max-w-[85vw] mx-auto flex flex-col">
+    <div className="w-full h-[92vh] px-2 py-4 max-w-[85vw] mx-auto flex flex-col">
       <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full flex flex-col flex-1">
         <TabsList className="mb-4">
           <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
