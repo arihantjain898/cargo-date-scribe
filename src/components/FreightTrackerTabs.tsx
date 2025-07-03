@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -192,36 +193,36 @@ const FreightTrackerTabs = ({
   };
 
   return (
-    <Tabs defaultValue="allfiles" className="w-full">
+    <Tabs defaultValue="export" className="w-full">
       <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="allfiles">All Files</TabsTrigger>
-        <TabsTrigger value="import">Import Tracking</TabsTrigger>
         <TabsTrigger value="export">Export Tracking</TabsTrigger>
+        <TabsTrigger value="import">Import Tracking</TabsTrigger>
         <TabsTrigger value="domestic">Domestic Trucking</TabsTrigger>
+        <TabsTrigger value="allfiles">All Files</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="allfiles" className="space-y-4">
+      <TabsContent value="export" className="space-y-4">
         <div className="flex items-center gap-4">
-          <Button onClick={addAllFilesRecord} className="flex items-center gap-2">
+          <Button onClick={addExportRecord} className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Add Record
           </Button>
           {renderBulkActions(
-            selectedAllFilesRows,
-            allFilesData,
-            updateAllFilesRecord,
-            deleteAllFilesRecord,
-            setSelectedAllFilesRows
+            selectedExportRows,
+            exportData,
+            updateExportRecord,
+            deleteExportRecord,
+            setSelectedExportRows
           )}
         </div>
-        <AllFilesTable
-          data={allFilesData}
-          updateRecord={updateAllFilesRecord}
-          deleteRecord={deleteAllFilesRecord}
-          selectedRows={selectedAllFilesRows}
-          setSelectedRows={setSelectedAllFilesRows}
+        <TrackingTable
+          data={exportData}
+          updateRecord={updateExportRecord}
+          deleteRecord={deleteExportRecord}
+          selectedRows={selectedExportRows}
+          setSelectedRows={setSelectedExportRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={(fileNumber: string, fileType: string) => onFileClick(`${fileNumber}-${fileType}`)}
+          onFileClick={onFileClick}
         />
       </TabsContent>
 
@@ -250,31 +251,6 @@ const FreightTrackerTabs = ({
         />
       </TabsContent>
 
-      <TabsContent value="export" className="space-y-4">
-        <div className="flex items-center gap-4">
-          <Button onClick={addExportRecord} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Record
-          </Button>
-          {renderBulkActions(
-            selectedExportRows,
-            exportData,
-            updateExportRecord,
-            deleteExportRecord,
-            setSelectedExportRows
-          )}
-        </div>
-        <TrackingTable
-          data={exportData}
-          updateRecord={updateExportRecord}
-          deleteRecord={deleteExportRecord}
-          selectedRows={selectedExportRows}
-          setSelectedRows={setSelectedExportRows}
-          highlightedRowId={highlightedRowId}
-          onFileClick={onFileClick}
-        />
-      </TabsContent>
-
       <TabsContent value="domestic" className="space-y-4">
         <div className="flex items-center gap-4">
           <Button onClick={addDomesticRecord} className="flex items-center gap-2">
@@ -297,6 +273,31 @@ const FreightTrackerTabs = ({
           setSelectedRows={setSelectedDomesticRows}
           highlightedRowId={highlightedRowId}
           onFileClick={onFileClick}
+        />
+      </TabsContent>
+
+      <TabsContent value="allfiles" className="space-y-4">
+        <div className="flex items-center gap-4">
+          <Button onClick={addAllFilesRecord} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Record
+          </Button>
+          {renderBulkActions(
+            selectedAllFilesRows,
+            allFilesData,
+            updateAllFilesRecord,
+            deleteAllFilesRecord,
+            setSelectedAllFilesRows
+          )}
+        </div>
+        <AllFilesTable
+          data={allFilesData}
+          updateRecord={updateAllFilesRecord}
+          deleteRecord={deleteAllFilesRecord}
+          selectedRows={selectedAllFilesRows}
+          setSelectedRows={setSelectedAllFilesRows}
+          highlightedRowId={highlightedRowId}
+          onFileClick={(fileNumber: string, fileType: string) => onFileClick(`${fileNumber}-${fileType}`)}
         />
       </TabsContent>
     </Tabs>
