@@ -46,6 +46,7 @@ const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailM
   if (!event) return null;
 
   const handleEventClick = () => {
+    console.log('EventDetailModal: Clicking event', event.recordId, event.source);
     if (onEventClick) {
       onEventClick(event.recordId, event.source);
       onClose();
@@ -373,6 +374,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   };
 
   const handleEventClick = (event: CalendarEvent) => {
+    console.log('CalendarView: Event clicked', event.recordId, event.source);
     setSelectedEvent(event);
     setIsEventModalOpen(true);
   };

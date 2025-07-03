@@ -276,7 +276,7 @@ const FreightTracker: React.FC = () => {
   }, [exportData, importData, domesticTruckingData, allFilesData, toast, activeTab]);
 
   const handleCalendarEventClick = useCallback((fileId: string, source: string) => {
-    console.log('Calendar event clicked:', fileId, source);
+    console.log('FreightTracker: Calendar event clicked:', fileId, source);
     
     // Switch to the tracking tables tab first
     setMainActiveTab('tracking');
@@ -295,21 +295,29 @@ const FreightTracker: React.FC = () => {
         break;
     }
     
+    console.log('FreightTracker: Switching to tab:', targetTab, 'for fileId:', fileId);
+    
     // Switch to the appropriate tab
     setTimeout(() => {
       setActiveTab(targetTab);
       
       // Set the highlighted row ID after a small delay to ensure tab is switched
       setTimeout(() => {
+        console.log('FreightTracker: Setting highlighted row ID:', fileId);
         setHighlightedRowId(fileId);
         
         // Clear highlight after 3 seconds
         setTimeout(() => {
           setHighlightedRowId(null);
         }, 3000);
-      }, 200);
+      }, 300);
     }, 100);
-  }, []);
+    
+    toast({
+      title: "Navigating to Record",
+      description: `Switching to ${targetTab} tab and highlighting record`,
+    });
+  }, [toast]);
 
   if (loading) {
     return <div>Loading...</div>;
