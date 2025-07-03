@@ -12,7 +12,8 @@ interface InlineEditCellProps {
   placeholder?: string;
   className?: string;
   options?: string[];
-  isThreeStateBoolean?: boolean; // New prop for three-state boolean
+  isThreeStateBoolean?: boolean;
+  isPoaColumn?: boolean; // New prop for POA column
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -23,7 +24,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   placeholder = "Click to edit",
   className = "",
   options = [],
-  isThreeStateBoolean = false
+  isThreeStateBoolean = false,
+  isPoaColumn = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -71,7 +73,18 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const handleClick = () => {
-    if (isThreeStateBoolean) {
+    if (isPoaColumn) {
+      // POA column cycling: Select Value -> Pending -> Yes -> No -> Pending (skip Select Value after first use)
+      if (value === '' || value === 'Select Value') {
+        onSave('Pending');
+      } else if (value === 'Pending') {
+        onSave('Yes');
+      } else if (value === 'Yes') {
+        onSave('No');
+      } else {
+        onSave('Pending');
+      }
+    } else if (isThreeStateBoolean) {
       // Cycle through: unset -> true -> false -> unset
       if (value === '') {
         onSave(true);
@@ -97,7 +110,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     setIsEditing(false);
   };
 
-  if (isEditing && !isBoolean && !isThreeStateBoolean && options.length === 0) {
+  if (isEditing && !isBoolean && !isThreeStateBoolean && !isPoaColumn && options.length === 0) {
     return (
       <div className="w-full min-h-[24px] p-1">
         {isDate ? (
@@ -125,7 +138,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     );
   }
 
-  if (isEditing && options.length > 0) {
+  if (isEditing && options.length > 0 && !isPoaColumn) {
     return (
       <div className="w-full min-h-[24px] p-1">
         <Select value={String(value)} onValueChange={handleSelectChange}>
@@ -144,6 +157,20 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     );
   }
 
+  const getPoaDisplay = () => {
+    if (value === '' || value === 'Select Value') {
+      return { text: 'Select Value', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+    } else if (value === 'Pending') {
+      return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
+    } else if (value === 'Yes') {
+      return { text: 'Yes', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
+    } else if (value === 'No') {
+      return { text: 'No', color: 'bg-red-100 text-red-800 hover:bg-red-200' };
+    } else {
+      return { text: 'Select Value', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+    }
+  };
+
   const getThreeStateBooleanDisplay = () => {
     if (value === '' || value === null || value === undefined) {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
@@ -154,7 +181,9 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
-  const displayValue = isThreeStateBoolean 
+  const displayValue = isPoaColumn
+    ? getPoaDisplay().text
+    : isThreeStateBoolean 
     ? getThreeStateBooleanDisplay().text
     : isBoolean 
     ? (value ? 'Yes' : 'No')
@@ -167,7 +196,9 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   };
 
-  const displayClasses = isThreeStateBoolean
+  const displayClasses = isPoaColumn
+    ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getPoaDisplay().color}`
+    : isThreeStateBoolean
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getThreeStateBooleanDisplay().color}`
     : (isBoolean || options.length > 0)
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${

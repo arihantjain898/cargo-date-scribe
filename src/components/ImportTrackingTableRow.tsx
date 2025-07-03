@@ -173,9 +173,19 @@ const ImportTrackingTableRow = ({
       {/* Column 6: POA */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.poa === null || record.poa === undefined ? '' : record.poa}
-          onSave={(value) => updateRecord(record.id, 'poa', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.poa === null || record.poa === undefined ? 'Select Value' : 
+                 record.poa === true ? 'Yes' : 
+                 record.poa === false ? 'No' : 'Select Value'}
+          onSave={(value) => {
+            if (value === 'Yes') {
+              updateRecord(record.id, 'poa', true);
+            } else if (value === 'No') {
+              updateRecord(record.id, 'poa', false);
+            } else {
+              updateRecord(record.id, 'poa', null);
+            }
+          }}
+          isPoaColumn={true}
         />
       </td>
       {/* Column 7: ISF */}
