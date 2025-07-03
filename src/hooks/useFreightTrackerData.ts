@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
@@ -21,7 +20,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
   const {
     data: importData,
     loading: importLoading,
-    addItem: addImportItem,
+    addItem: addImportItemBase,
     updateItem: updateImportItem,
     deleteItem: deleteImportItem
   } = useFirestore<ImportTrackingRecord>('import_tracking', currentUserId);
@@ -41,6 +40,38 @@ export const useFreightTrackerData = (currentUserId: string) => {
     updateItem: updateDomesticTruckingItem,
     deleteItem: deleteDomesticTruckingItem
   } = useFirestore<DomesticTruckingRecord>('domestic_trucking', currentUserId);
+
+  // Wrapper for adding import items with proper defaults
+  const addImportItem = async () => {
+    const newImportRecord: Partial<ImportTrackingRecord> = {
+      customer: '',
+      booking: '',
+      file: '',
+      etaFinalPod: '',
+      bond: 'Continuous',
+      poa: 'Select',
+      isf: 'Select',
+      packingListCommercialInvoice: 'Select',
+      billOfLading: 'Select',
+      arrivalNotice: 'Select',
+      isfFiled: 'Select',
+      entryFiled: 'Select',
+      blRelease: 'Select',
+      customsRelease: 'Select',
+      invoiceSent: 'Select',
+      paymentReceived: 'Select',
+      workOrderSetup: 'Select',
+      delivered: 'Select',
+      returned: 'Select',
+      deliveryDate: '',
+      notes: '',
+      archived: false,
+      createdAt: new Date().toISOString(),
+      userId: currentUserId
+    };
+    
+    return await addImportItemBase(newImportRecord);
+  };
 
   const updateRecord = async (
     id: string,
