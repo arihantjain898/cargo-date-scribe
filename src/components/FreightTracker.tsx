@@ -5,13 +5,9 @@ import { TrackingRecord } from '@/types/TrackingRecord';
 import { ImportTrackingRecord } from '@/types/ImportTrackingRecord';
 import { AllFilesRecord } from '@/types/AllFilesRecord';
 import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
-import ImportTrackingTable from '@/components/ImportTrackingTable';
-import AllFilesTable from '@/components/AllFilesTable';
-import DomesticTruckingTable from '@/components/DomesticTruckingTable';
-import TrackingTable from '@/components/TrackingTable';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from '@/components/ui/button';
-import { PlusIcon } from 'lucide-react';
+import FreightTrackerTabs from '@/components/FreightTrackerTabs';
+import CalendarView from '@/components/CalendarView';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const FreightTracker: React.FC = () => {
   const currentUserId = 'demo-user'; // Simplified for demo
@@ -35,10 +31,6 @@ const FreightTracker: React.FC = () => {
     deleteDomesticTruckingItem
   } = useFreightTrackerData(currentUserId);
 
-  const [showArchivedExport, setShowArchivedExport] = useState(false);
-  const [showArchivedImport, setShowArchivedImport] = useState(false);
-  const [showArchivedAllFiles, setShowArchivedAllFiles] = useState(false);
-  const [showArchivedDomesticTrucking, setShowArchivedDomesticTrucking] = useState(false);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
@@ -164,75 +156,49 @@ const FreightTracker: React.FC = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <Tabs defaultValue="export">
+      <Tabs defaultValue="tables">
         <TabsList className="mb-4">
-          <TabsTrigger value="export">Export Tracking</TabsTrigger>
-          <TabsTrigger value="import">Import Tracking</TabsTrigger>
-          <TabsTrigger value="allFiles">All Files</TabsTrigger>
-          <TabsTrigger value="domesticTrucking">Domestic Trucking</TabsTrigger>
+          <TabsTrigger value="tables">Tables</TabsTrigger>
+          <TabsTrigger value="calendar">Calendar</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="export">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Export Tracking</h2>
-            <Button onClick={addNewExportRecord}><PlusIcon className="mr-2 h-4 w-4" />Add New Export Record</Button>
-          </div>
-          <TrackingTable
+        <TabsContent value="tables">
+          <FreightTrackerTabs
+            exportData={exportData}
+            importData={importData}
+            domesticData={domesticTruckingData}
+            allFilesData={allFilesData}
+            updateExportRecord={updateRecord}
+            updateImportRecord={updateImportRecord}
+            updateDomesticRecord={updateDomesticTruckingRecord}
+            updateAllFilesRecord={updateAllFilesRecord}
+            deleteExportRecord={deleteExportItem}
+            deleteImportRecord={deleteImportItem}
+            deleteDomesticRecord={deleteDomesticTruckingItem}
+            deleteAllFilesRecord={deleteAllFilesItem}
+            addExportRecord={addNewExportRecord}
+            addImportRecord={addNewImportRecord}
+            addDomesticRecord={addNewDomesticTruckingRecord}
+            addAllFilesRecord={addNewAllFilesRecord}
+            selectedExportRows={selectedExportRows}
+            setSelectedExportRows={setSelectedExportRows}
+            selectedImportRows={selectedImportRows}
+            setSelectedImportRows={setSelectedImportRows}
+            selectedDomesticRows={selectedDomesticRows}
+            setSelectedDomesticRows={setSelectedDomesticRows}
+            selectedAllFilesRows={selectedAllFilesRows}
+            setSelectedAllFilesRows={setSelectedAllFilesRows}
+            highlightedRowId={highlightedRowId}
+            onFileClick={handleFileClick}
+          />
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <CalendarView
             data={exportData}
-            updateRecord={updateRecord}
-            deleteRecord={deleteExportItem}
-            selectedRows={selectedExportRows}
-            setSelectedRows={setSelectedExportRows}
-            highlightedRowId={highlightedRowId}
-            onFileClick={handleFileClick}
-          />
-        </TabsContent>
-        
-        <TabsContent value="import">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Import Tracking</h2>
-            <Button onClick={addNewImportRecord}><PlusIcon className="mr-2 h-4 w-4" />Add New Import Record</Button>
-          </div>
-          <ImportTrackingTable
-            data={importData}
-            updateRecord={updateImportRecord}
-            deleteRecord={deleteImportItem}
-            selectedRows={selectedImportRows}
-            setSelectedRows={setSelectedImportRows}
-            highlightedRowId={highlightedRowId}
-            onFileClick={handleFileClick}
-          />
-        </TabsContent>
-        
-        <TabsContent value="allFiles">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">All Files</h2>
-            <Button onClick={addNewAllFilesRecord}><PlusIcon className="mr-2 h-4 w-4" />Add New File Record</Button>
-          </div>
-          <AllFilesTable
-            data={allFilesData}
-            updateRecord={updateAllFilesRecord}
-            deleteRecord={deleteAllFilesItem}
-            selectedRows={selectedAllFilesRows}
-            setSelectedRows={setSelectedAllFilesRows}
-            highlightedRowId={highlightedRowId}
-            onFileClick={(fileNumber: string, fileType: string) => handleFileClick(`${fileNumber}-${fileType}`)}
-          />
-        </TabsContent>
-        
-        <TabsContent value="domesticTrucking">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Domestic Trucking</h2>
-            <Button onClick={addNewDomesticTruckingRecord}><PlusIcon className="mr-2 h-4 w-4" />Add New Domestic Trucking Record</Button>
-          </div>
-          <DomesticTruckingTable
-            data={domesticTruckingData}
-            updateRecord={updateDomesticTruckingRecord}
-            deleteRecord={deleteDomesticTruckingItem}
-            selectedRows={selectedDomesticRows}
-            setSelectedRows={setSelectedDomesticRows}
-            highlightedRowId={highlightedRowId}
-            onFileClick={handleFileClick}
+            importData={importData}
+            domesticData={domesticTruckingData}
+            onCalendarEventClick={handleFileClick}
           />
         </TabsContent>
       </Tabs>
