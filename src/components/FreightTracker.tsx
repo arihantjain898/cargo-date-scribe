@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
@@ -275,8 +276,8 @@ const FreightTracker: React.FC = () => {
     }
   }, [exportData, importData, domesticTruckingData, allFilesData, toast, activeTab]);
 
-  const handleCalendarEventClick = useCallback((fileId: string, source: string) => {
-    console.log('FreightTracker: Calendar event clicked:', fileId, source);
+  const handleCalendarEventClick = useCallback((recordId: string, source: string) => {
+    console.log('FreightTracker: Calendar event clicked:', recordId, source);
     
     // Switch to the tracking tables tab first
     setMainActiveTab('tracking');
@@ -295,7 +296,7 @@ const FreightTracker: React.FC = () => {
         break;
     }
     
-    console.log('FreightTracker: Switching to tab:', targetTab, 'for fileId:', fileId);
+    console.log('FreightTracker: Switching to tab:', targetTab, 'for recordId:', recordId);
     
     // Switch to the appropriate tab
     setTimeout(() => {
@@ -303,8 +304,8 @@ const FreightTracker: React.FC = () => {
       
       // Set the highlighted row ID after a small delay to ensure tab is switched
       setTimeout(() => {
-        console.log('FreightTracker: Setting highlighted row ID:', fileId);
-        setHighlightedRowId(fileId);
+        console.log('FreightTracker: Setting highlighted row ID:', recordId);
+        setHighlightedRowId(recordId);
         
         // Clear highlight after 3 seconds
         setTimeout(() => {
@@ -324,14 +325,14 @@ const FreightTracker: React.FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen px-2 py-4 max-w-[85vw] mx-auto">
-      <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full">
+    <div className="w-full h-screen px-2 py-4 max-w-[85vw] mx-auto flex flex-col">
+      <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full flex flex-col flex-1">
         <TabsList className="mb-4">
           <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
           <TabsTrigger value="calendar">Calendar View</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="tracking" className="max-h-[92vh] overflow-hidden">
+        <TabsContent value="tracking" className="flex-1 overflow-hidden">
           <FreightTrackerTabs
             exportData={exportData}
             importData={importData}
@@ -364,7 +365,7 @@ const FreightTracker: React.FC = () => {
           />
         </TabsContent>
 
-        <TabsContent value="calendar" className="max-h-[92vh] overflow-hidden">
+        <TabsContent value="calendar" className="flex-1 overflow-hidden">
           <CalendarView
             data={exportData}
             importData={importData}

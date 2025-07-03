@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -396,98 +397,98 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     const domesticEvts = events.filter(e => e.source === 'domestic');
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Import Events - First */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
-            <h4 className="font-semibold text-indigo-700">Import Events</h4>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+            <h4 className="font-medium text-indigo-700 text-sm">Import Events</h4>
           </div>
           {importEvts.length > 0 ? importEvts.map((event, index) => (
             <div 
               key={`import-${index}`} 
-              className="p-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer"
+              className="p-2 border border-indigo-200 rounded bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer"
               onClick={() => handleEventClick(event)}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1">
                 <Badge 
                   variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                  className={`${getEventTypeColor(event.type, event.source)} text-xs`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
               </div>
               <div className="space-y-1">
-                <div className="font-medium text-gray-900 text-sm">{event.customer}</div>
+                <div className="font-medium text-gray-900 text-xs">{event.customer}</div>
                 <div className="text-xs text-gray-600">{event.ref} • {event.file}</div>
               </div>
             </div>
           )) : (
-            <div className="text-center py-4 text-gray-500 text-sm">
+            <div className="text-center py-3 text-gray-500 text-xs">
               No import events
             </div>
           )}
         </div>
 
         {/* Export Events - Second */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
-            <h4 className="font-semibold text-slate-700">Export Events</h4>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
+            <h4 className="font-medium text-slate-700 text-sm">Export Events</h4>
           </div>
           {exportEvts.length > 0 ? exportEvts.map((event, index) => (
             <div 
               key={`export-${index}`} 
-              className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-2 border border-slate-200 rounded bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
               onClick={() => handleEventClick(event)}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1">
                 <Badge 
                   variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                  className={`${getEventTypeColor(event.type, event.source)} text-xs`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
               </div>
               <div className="space-y-1">
-                <div className="font-medium text-gray-900 text-sm">{event.customer}</div>
+                <div className="font-medium text-gray-900 text-xs">{event.customer}</div>
                 <div className="text-xs text-gray-600">{event.ref} • {event.file}</div>
               </div>
             </div>
           )) : (
-            <div className="text-center py-4 text-gray-500 text-sm">
+            <div className="text-center py-3 text-gray-500 text-xs">
               No export events
             </div>
           )}
         </div>
 
         {/* Domestic Events - Third */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <h4 className="font-semibold text-yellow-700">Domestic Trucking Events</h4>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+            <h4 className="font-medium text-yellow-700 text-sm">Domestic Trucking Events</h4>
           </div>
           {domesticEvts.length > 0 ? domesticEvts.map((event, index) => (
             <div 
               key={`domestic-${index}`} 
-              className="p-3 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer"
+              className="p-2 border border-yellow-200 rounded bg-yellow-50 hover:yellow-100 transition-colors cursor-pointer"
               onClick={() => handleEventClick(event)}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1">
                 <Badge 
                   variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                  className={`${getEventTypeColor(event.type, event.source)} text-xs`}
                 >
                   {getEventTypeLabel(event.type)}
                 </Badge>
               </div>
               <div className="space-y-1">
-                <div className="font-medium text-gray-900 text-sm">{event.customer}</div>
+                <div className="font-medium text-gray-900 text-xs">{event.customer}</div>
                 <div className="text-xs text-gray-600">{event.ref} • {event.file}</div>
               </div>
             </div>
           )) : (
-            <div className="text-center py-4 text-gray-500 text-sm">
+            <div className="text-center py-3 text-gray-500 text-xs">
               No domestic events
             </div>
           )}
@@ -497,133 +498,125 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-      <Card className="lg:col-span-1 shadow-sm border border-gray-200">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-medium text-gray-900 flex items-center justify-between">
-            Calendar Overview
-            <div className="flex items-center gap-1">
-              <Button
-                variant={calendarFilter === 'all' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCalendarFilter('all')}
-                className="text-xs px-2 py-1"
-              >
-                All
-              </Button>
-              <Button
-                variant={calendarFilter === 'import' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCalendarFilter('import')}
-                className="text-xs px-2 py-1"
-              >
-                Import
-              </Button>
-              <Button
-                variant={calendarFilter === 'export' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCalendarFilter('export')}
-                className="text-xs px-2 py-1"
-              >
-                Export
-              </Button>
-              <Button
-                variant={calendarFilter === 'domestic' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCalendarFilter('domestic')}
-                className="text-xs px-2 py-1"
-              >
-                D-Trucking
-              </Button>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 pt-0">
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            modifiers={modifiers}
-            modifiersStyles={modifiersStyles}
-            className="rounded-md border border-gray-200 bg-white p-3"
-          />
-          
-          {/* Updated Legend with new order */}
-          <div className="mt-6 space-y-3">
-            <h4 className="font-medium text-gray-800 text-sm">Event Types:</h4>
-            <div className="space-y-2">
-              <div className="text-xs font-semibold text-gray-600 mb-1">Import Events:</div>
-              <div className="space-y-1">
-                <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 justify-start text-xs block w-fit">
-                  ETA Final POD
-                </Badge>
-                <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 justify-start text-xs block w-fit">
-                  Delivery Date
-                </Badge>
+    <div className="h-full flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
+        <Card className="lg:col-span-1 shadow-sm border border-gray-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-medium text-gray-900 flex items-center justify-between">
+              Calendar Overview
+              <div className="flex items-center gap-1">
+                <Button
+                  variant={calendarFilter === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCalendarFilter('all')}
+                  className="text-xs px-2 py-1"
+                >
+                  All
+                </Button>
+                <Button
+                  variant={calendarFilter === 'import' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCalendarFilter('import')}
+                  className="text-xs px-2 py-1"
+                >
+                  Import
+                </Button>
+                <Button
+                  variant={calendarFilter === 'export' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCalendarFilter('export')}
+                  className="text-xs px-2 py-1"
+                >
+                  Export
+                </Button>
+                <Button
+                  variant={calendarFilter === 'domestic' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setCalendarFilter('domestic')}
+                  className="text-xs px-2 py-1"
+                >
+                  D-Trucking
+                </Button>
               </div>
-              <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Export Events:</div>
-              <div className="space-y-1">
-                <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 justify-start text-xs block w-fit">
-                  Drop Date
-                </Badge>
-                <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 justify-start text-xs block w-fit">
-                  Return Date
-                </Badge>
-                <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 justify-start text-xs block w-fit">
-                  Doc Cutoff
-                </Badge>
-              </div>
-              <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Domestic Trucking Events:</div>
-              <div className="space-y-1">
-                <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 justify-start text-xs block w-fit">
-                  Pick Date
-                </Badge>
-                <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 justify-start text-xs block w-fit">
-                  Delivered
-                </Badge>
-              </div>
-              <div className="text-xs text-gray-500 mt-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-4 h-4 bg-blue-600 rounded"></div>
-                  <span>Days with events</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0 flex flex-col h-full">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              modifiers={modifiers}
+              modifiersStyles={modifiersStyles}
+              className="rounded-md border border-gray-200 bg-white p-2 mb-4"
+            />
+            
+            {/* Compact Legend */}
+            <div className="space-y-2 text-xs">
+              <h4 className="font-medium text-gray-800">Event Types:</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <div className="font-semibold text-gray-600 mb-1">Import:</div>
+                  <div className="space-y-1">
+                    <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs block w-fit">ETA</Badge>
+                    <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs block w-fit">Delivery</Badge>
+                  </div>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-600 mb-1">Export:</div>
+                  <div className="space-y-1">
+                    <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs block w-fit">Drop</Badge>
+                    <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs block w-fit">Return</Badge>
+                    <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs block w-fit">Cutoff</Badge>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="lg:col-span-2 shadow-sm border border-gray-200">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-medium text-gray-900">
-            {selectedDate ? `Events for ${selectedDate.toLocaleDateString()}` : 'Select a date'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 pt-0">
-          <ScrollArea className="h-96">
-            {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-3">📅</div>
-                <p className="text-gray-500">Select a date to view events</p>
+              <div>
+                <div className="font-semibold text-gray-600 mb-1">Domestic:</div>
+                <div className="flex gap-1">
+                  <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick</Badge>
+                  <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
+                </div>
               </div>
-            )}
-          </ScrollArea>
-        </CardContent>
-      </Card>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                <span className="text-gray-500">Days with events</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card className="lg:col-span-3 shadow-sm border border-gray-200">
-        <CardHeader className="pb-4">
+        <Card className="lg:col-span-2 shadow-sm border border-gray-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-medium text-gray-900">
+              {selectedDate ? `Events for ${selectedDate.toLocaleDateString()}` : 'Select a date'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <ScrollArea className="h-80">
+              {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-3">📅</div>
+                  <p className="text-gray-500">Select a date to view events</p>
+                </div>
+              )}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="mt-4 shadow-sm border border-gray-200">
+        <CardHeader className="pb-3">
           <CardTitle className="text-lg font-medium text-gray-900">
             Upcoming Events
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 pt-0">
-          <ScrollArea className="h-64">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <CardContent className="p-4 pt-0">
+          <ScrollArea className="h-48">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {getFilteredEventsForUpcoming().map((event, index) => (
                 <div 
                   key={index} 
-                  className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-sm transition-shadow cursor-pointer"
+                  className="p-3 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
                   onClick={() => handleEventClick(event)}
                 >
                   <div className="flex items-center justify-between mb-2">
