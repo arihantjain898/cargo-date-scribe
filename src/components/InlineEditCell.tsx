@@ -75,7 +75,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   const handleClick = () => {
     if (isPoaColumn) {
       // POA column cycling: Select Value -> Pending -> Yes -> No -> Pending (skip Select Value after first use)
-      if (value === '' || value === 'Select Value') {
+      if (value === 'Select Value') {
         onSave('Pending');
       } else if (value === 'Pending') {
         onSave('Yes');
@@ -158,7 +158,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   }
 
   const getPoaDisplay = () => {
-    if (value === '' || value === 'Select Value') {
+    if (value === 'Select Value') {
       return { text: 'Select Value', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (value === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };

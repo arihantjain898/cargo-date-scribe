@@ -181,14 +181,14 @@ const ImportTrackingTableRow = ({
               updateRecord(record.id, 'poa', true);
             } else if (value === 'No') {
               updateRecord(record.id, 'poa', false);
-            } else {
+            } else if (value === 'Pending') {
               updateRecord(record.id, 'poa', null);
             }
           }}
           isPoaColumn={true}
         />
       </td>
-      {/* Column 7: ISF */}
+      {/* Columns 7-21: Keep existing code for all other columns the same */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.isf === null || record.isf === undefined ? '' : record.isf}
@@ -196,7 +196,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 8: Packing List/Commercial Invoice */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.packingListCommercialInvoice === null || record.packingListCommercialInvoice === undefined ? '' : record.packingListCommercialInvoice}
@@ -204,7 +203,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 9: Bill of Lading */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.billOfLading === null || record.billOfLading === undefined ? '' : record.billOfLading}
@@ -212,7 +210,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 10: Arrival Notice */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.arrivalNotice === null || record.arrivalNotice === undefined ? '' : record.arrivalNotice}
@@ -220,7 +217,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 11: ISF Filed */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.isfFiled === null || record.isfFiled === undefined ? '' : record.isfFiled}
@@ -228,7 +224,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 12: Entry Filed */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.entryFiled === null || record.entryFiled === undefined ? '' : record.entryFiled}
@@ -236,7 +231,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 13: BL Release */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.blRelease === null || record.blRelease === undefined ? '' : record.blRelease}
@@ -244,7 +238,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 14: Customs Release */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.customsRelease === null || record.customsRelease === undefined ? '' : record.customsRelease}
@@ -252,7 +245,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 15: Invoice Sent */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.invoiceSent === null || record.invoiceSent === undefined ? '' : record.invoiceSent}
@@ -260,7 +252,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 16: Payment Received */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.paymentReceived === null || record.paymentReceived === undefined ? '' : record.paymentReceived}
@@ -268,7 +259,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 17: Work Order Setup */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.workOrderSetup === null || record.workOrderSetup === undefined ? '' : record.workOrderSetup}
@@ -276,7 +266,6 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      {/* Column 18: Delivered */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.delivered}
@@ -285,7 +274,6 @@ const ImportTrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
-      {/* Column 19: Returned */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.returned}
@@ -294,7 +282,6 @@ const ImportTrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
-      {/* Column 20: Delivery Date */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.deliveryDate}
@@ -303,7 +290,6 @@ const ImportTrackingTableRow = ({
           placeholder="Select delivery date"
         />
       </td>
-      {/* Column 21: Notes */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
@@ -311,7 +297,6 @@ const ImportTrackingTableRow = ({
           placeholder="Enter notes"
         />
       </td>
-      {/* Column 22: Select - CHECKBOX */}
       <td className="p-1 text-center">
         <Checkbox
           checked={isSelected}
