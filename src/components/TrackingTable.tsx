@@ -113,7 +113,7 @@ const TrackingTable = ({
                 />
               ))}
               <tr>
-                <td colSpan={25} className="h-16"></td>
+                <td colSpan={24} className="h-16"></td>
               </tr>
             </tbody>
           </table>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -220,7 +221,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 16: SSL Draft Inv Rec */}
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.sslDraftInvRec}
           onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as boolean)}
@@ -236,7 +237,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 18: Transphere Inv Sent */}
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.transphereInvSent}
           onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
@@ -252,7 +253,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 20: SSL Paid */}
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.sslPaid}
           onSave={(value) => updateRecord(record.id, 'sslPaid', value as boolean)}
@@ -268,7 +269,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 22: Released */}
-      <td className="border-r-4 border-black p-1 text-center">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.released}
           onSave={(value) => updateRecord(record.id, 'released', value as boolean)}
