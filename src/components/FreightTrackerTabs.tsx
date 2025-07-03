@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -49,7 +48,7 @@ interface FreightTrackerTabsProps {
   selectedAllFilesRows: string[];
   setSelectedAllFilesRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onFileClick: (fullFileIdentifier: string) => void;
+  onFileClick: (fileNumber: string, fileType: string) => void;
 }
 
 const FreightTrackerTabs = ({
@@ -194,12 +193,14 @@ const FreightTrackerTabs = ({
 
   return (
     <Tabs defaultValue="allfiles" className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="allfiles">All Files</TabsTrigger>
-        <TabsTrigger value="import">Import Tracking</TabsTrigger>
-        <TabsTrigger value="export">Export Tracking</TabsTrigger>
-        <TabsTrigger value="domestic">Domestic Trucking</TabsTrigger>
-      </TabsList>
+      <div className="flex justify-between items-center mb-4">
+        <TabsList className="grid grid-cols-4 w-auto">
+          <TabsTrigger value="allfiles">All Files</TabsTrigger>
+          <TabsTrigger value="import">Import Tracking</TabsTrigger>
+          <TabsTrigger value="export">Export Tracking</TabsTrigger>
+          <TabsTrigger value="domestic">Domestic Trucking</TabsTrigger>
+        </TabsList>
+      </div>
 
       <TabsContent value="allfiles" className="space-y-4">
         <div className="flex items-center justify-between">
@@ -224,7 +225,7 @@ const FreightTrackerTabs = ({
           selectedRows={selectedAllFilesRows}
           setSelectedRows={setSelectedAllFilesRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={(fileNumber: string, fileType: string) => onFileClick(`${fileNumber}-${fileType}`)}
+          onFileClick={onFileClick}
         />
       </TabsContent>
 

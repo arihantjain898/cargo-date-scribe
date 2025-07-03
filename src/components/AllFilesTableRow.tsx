@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
@@ -49,6 +48,7 @@ const AllFilesTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.number && record.file) {
+      console.log('AllFiles row clicked - number:', record.number, 'file:', record.file);
       onFileClick(record.number, record.file);
     }
   };
@@ -84,7 +84,7 @@ const AllFilesTableRow = ({
               size="sm"
               onClick={handleFileClick}
               className="h-6 w-6 p-0 hover:bg-blue-100"
-              title={`Open ${record.file} ${record.number} in checklist`}
+              title={`Open ${record.file}${record.number} in corresponding tab`}
             >
               <ExternalLink className="h-3 w-3 text-blue-600" />
             </Button>

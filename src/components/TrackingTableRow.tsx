@@ -16,7 +16,7 @@ interface TrackingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   highlightedRowId?: string | null;
-  onFileClick?: (fullFileIdentifier: string) => void;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
 const TrackingTableRow = ({
@@ -46,7 +46,12 @@ const TrackingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      onFileClick(record.file);
+      // Extract number from file (remove letters)
+      const fileNumber = record.file.replace(/[^0-9]/g, '');
+      // Extract letters from file
+      const fileType = record.file.replace(/[0-9]/g, '');
+      console.log('Export row clicked - extracted number:', fileNumber, 'fileType:', fileType);
+      onFileClick(fileNumber, fileType || 'ET');
     }
   };
 

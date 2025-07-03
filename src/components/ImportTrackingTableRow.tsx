@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ExternalLink, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ interface ImportTrackingTableRowProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   highlightedRowId?: string | null;
-  onFileClick?: (fullFileIdentifier: string) => void;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
 const ImportTrackingTableRow = ({
@@ -56,7 +57,12 @@ const ImportTrackingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      onFileClick(record.file);
+      // Extract number from file (remove letters)
+      const fileNumber = record.file.replace(/[^0-9]/g, '');
+      // Extract letters from file
+      const fileType = record.file.replace(/[0-9]/g, '');
+      console.log('Import row clicked - extracted number:', fileNumber, 'fileType:', fileType);
+      onFileClick(fileNumber, fileType || 'IS');
     }
   };
 
@@ -144,7 +150,6 @@ const ImportTrackingTableRow = ({
           )}
         </div>
       </td>
-      {/* Column 3: File */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.file}
@@ -153,7 +158,6 @@ const ImportTrackingTableRow = ({
           className={isEmpty ? "text-gray-400" : ""}
         />
       </td>
-      {/* Column 4: ETA Final POD */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.etaFinalPod}
@@ -162,7 +166,6 @@ const ImportTrackingTableRow = ({
           placeholder="Select ETA"
         />
       </td>
-      {/* Column 5: Bond - NOW WITH CYCLING FUNCTIONALITY */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.bond || 'Continuous'}
@@ -171,7 +174,6 @@ const ImportTrackingTableRow = ({
           placeholder="Select bond type"
         />
       </td>
-      {/* Columns 6-21: Keep existing code for all other columns the same */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.poa === null || record.poa === undefined ? 'Select Value' : 

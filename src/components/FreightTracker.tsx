@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
@@ -8,9 +7,12 @@ import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
 import FreightTrackerTabs from '@/components/FreightTrackerTabs';
 import CalendarView from '@/components/CalendarView';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useToast } from "@/components/ui/use-toast"
 
 const FreightTracker: React.FC = () => {
   const currentUserId = 'test-user-123'; // Mock user ID
+  const { toast } = useToast();
+  
   const {
     exportData,
     importData,
@@ -152,74 +154,92 @@ const FreightTracker: React.FC = () => {
     addAllFilesItem(newRecord);
   };
 
-  const handleFileClick = useCallback((fullFileIdentifier: string) => {
-    console.log('File clicked:', fullFileIdentifier);
+  const handleFileClick = useCallback((fileNumber: string, fileType: string) => {
+    console.log('File clicked - fileNumber:', fileNumber, 'fileType:', fileType);
     
-    // Parse the file identifier to determine the target tab and file
-    const parts = fullFileIdentifier.split('-');
-    if (parts.length >= 2) {
-      const fileNumber = parts[0];
-      const fileType = parts[1];
-      
-      console.log('Looking for file:', fileNumber, 'type:', fileType);
-      
-      // Determine which tab to switch to based on file type or first letter
-      let targetTab = 'allfiles';
-      let targetId = '';
-      
-      if (fileType) {
-        const firstLetter = fileType.charAt(0).toUpperCase();
-        switch (firstLetter) {
-          case 'E':
-            targetTab = 'export';
-            // Find matching export record
-            const exportRecord = exportData.find(record => 
-              record.file === fileNumber || record.file === fullFileIdentifier
-            );
-            if (exportRecord) targetId = exportRecord.id;
-            break;
-          case 'I':
-            targetTab = 'import';
-            // Find matching import record
-            const importRecord = importData.find(record => 
-              record.file === fileNumber || record.file === fullFileIdentifier
-            );
-            if (importRecord) targetId = importRecord.id;
-            break;
-          case 'D':
-            targetTab = 'domestic';
-            // Find matching domestic record
-            const domesticRecord = domesticTruckingData.find(record => 
-              record.file === fileNumber || record.file === fullFileIdentifier
-            );
-            if (domesticRecord) targetId = domesticRecord.id;
-            break;
-          default:
-            // Stay on all files tab, find the record
-            const allFilesRecord = allFilesData.find(record => 
-              record.number === fileNumber || record.file === fileType
-            );
-            if (allFilesRecord) targetId = allFilesRecord.id;
-        }
-      }
-      
-      console.log('Target tab:', targetTab, 'Target ID:', targetId);
-      
-      // Switch to the appropriate tab and highlight the row
+    // Determine target tab based on file type first letter
+    let targetTab = 'allfiles';
+    let targetRecord = null;
+    let fileToMatch = `${fileType}${fileNumber}` || `${fileNumber}${fileType}`;
+    
+    // Check first letter of file type to determine tab
+    const firstLetter = fileType?.charAt(0)?.toUpperCase();
+    console.log('First letter:', firstLetter);
+    
+    switch (firstLetter) {
+      case 'E':
+        targetTab = 'export';
+        // Try multiple matching patterns for export records
+        targetRecord = exportData.find(record => 
+          record.file === fileToMatch || 
+          record.file === `E${fileNumber}` ||
+          record.file === `ET${fileNumber}` ||
+          record.file === fileNumber ||
+          record.file === `${fileNumber}E` ||
+          record.file === `${fileNumber}ET`
+        );
+        break;
+      case 'I':
+        targetTab = 'import';
+        // Try multiple matching patterns for import records
+        targetRecord = importData.find(record => 
+          record.file === fileToMatch || 
+          record.file === `I${fileNumber}` ||
+          record.file === `IS${fileNumber}` ||
+          record.file === fileNumber ||
+          record.file === `${fileNumber}I` ||
+          record.file === `${fileNumber}IS`
+        );
+        break;
+      case 'D':
+        targetTab = 'domestic';
+        // Try multiple matching patterns for domestic records
+        targetRecord = domesticTruckingData.find(record => 
+          record.file === fileToMatch || 
+          record.file === `D${fileNumber}` ||
+          record.file === `DT${fileNumber}` ||
+          record.file === fileNumber ||
+          record.file === `${fileNumber}D` ||
+          record.file === `${fileNumber}DT`
+        );
+        break;
+      default:
+        // Stay on all files tab, try to find by number
+        targetRecord = allFilesData.find(record => 
+          record.number === fileNumber || 
+          record.file === fileType
+        );
+    }
+    
+    console.log('Target tab:', targetTab, 'Target record:', targetRecord);
+    
+    if (targetRecord) {
+      // Switch to the appropriate tab
       const tabTrigger = document.querySelector(`[value="${targetTab}"]`) as HTMLElement;
       if (tabTrigger) {
         tabTrigger.click();
       }
       
       // Set the highlighted row ID
-      setHighlightedRowId(targetId || fullFileIdentifier);
+      setHighlightedRowId(targetRecord.id);
       
       // Clear highlight after 3 seconds
       setTimeout(() => {
         setHighlightedRowId(null);
       }, 3000);
+      
+      toast({
+        title: "Record Found",
+        description: `Switched to ${targetTab} tab and highlighted matching record`,
+      });
+    } else {
+      toast({
+        title: "Record Not Found",
+        description: `No matching record found for ${fileToMatch} in ${targetTab} tab`,
+        variant: "destructive"
+      });
     }
-  }, [exportData, importData, domesticTruckingData, allFilesData]);
+  }, [exportData, importData, domesticTruckingData, allFilesData, toast]);
 
   const handleCalendarEventClick = useCallback((fileId: string, source: string) => {
     console.log('Calendar event clicked:', fileId, source);
@@ -255,9 +275,9 @@ const FreightTracker: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="w-full min-h-screen px-4 py-6">
       <Tabs defaultValue="tracking" className="w-full">
-        <TabsList className="mb-4">
+        <TabsList className="mb-6">
           <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
           <TabsTrigger value="calendar">Calendar View</TabsTrigger>
         </TabsList>
