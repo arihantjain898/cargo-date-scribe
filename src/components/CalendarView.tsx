@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -390,45 +389,13 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   };
 
   const renderEventsBySource = (events: CalendarEvent[]) => {
-    const exportEvts = events.filter(e => e.source === 'export');
     const importEvts = events.filter(e => e.source === 'import');
+    const exportEvts = events.filter(e => e.source === 'export');
     const domesticEvts = events.filter(e => e.source === 'domestic');
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Export Events */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
-            <h4 className="font-semibold text-slate-700">Export Events</h4>
-          </div>
-          {exportEvts.length > 0 ? exportEvts.map((event, index) => (
-            <div 
-              key={`export-${index}`} 
-              className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
-              onClick={() => handleEventClick(event)}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <Badge 
-                  variant="outline" 
-                  className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                >
-                  {getEventTypeLabel(event.type)}
-                </Badge>
-              </div>
-              <div className="space-y-1">
-                <div className="font-medium text-gray-900 text-sm">{event.customer}</div>
-                <div className="text-xs text-gray-600">{event.ref} • {event.file}</div>
-              </div>
-            </div>
-          )) : (
-            <div className="text-center py-4 text-gray-500 text-sm">
-              No export events
-            </div>
-          )}
-        </div>
-
-        {/* Import Events */}
+        {/* Import Events - First */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
@@ -460,7 +427,39 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           )}
         </div>
 
-        {/* Domestic Events */}
+        {/* Export Events - Second */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
+            <h4 className="font-semibold text-slate-700">Export Events</h4>
+          </div>
+          {exportEvts.length > 0 ? exportEvts.map((event, index) => (
+            <div 
+              key={`export-${index}`} 
+              className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
+              onClick={() => handleEventClick(event)}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <Badge 
+                  variant="outline" 
+                  className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                >
+                  {getEventTypeLabel(event.type)}
+                </Badge>
+              </div>
+              <div className="space-y-1">
+                <div className="font-medium text-gray-900 text-sm">{event.customer}</div>
+                <div className="text-xs text-gray-600">{event.ref} • {event.file}</div>
+              </div>
+            </div>
+          )) : (
+            <div className="text-center py-4 text-gray-500 text-sm">
+              No export events
+            </div>
+          )}
+        </div>
+
+        {/* Domestic Events - Third */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
@@ -511,20 +510,20 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                 All
               </Button>
               <Button
-                variant={calendarFilter === 'export' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCalendarFilter('export')}
-                className="text-xs px-2 py-1"
-              >
-                Export
-              </Button>
-              <Button
                 variant={calendarFilter === 'import' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setCalendarFilter('import')}
                 className="text-xs px-2 py-1"
               >
                 Import
+              </Button>
+              <Button
+                variant={calendarFilter === 'export' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCalendarFilter('export')}
+                className="text-xs px-2 py-1"
+              >
+                Export
               </Button>
               <Button
                 variant={calendarFilter === 'domestic' ? 'default' : 'outline'}
@@ -547,11 +546,20 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             className="rounded-md border border-gray-200 bg-white p-3"
           />
           
-          {/* Updated Legend with new colors */}
+          {/* Updated Legend with new order */}
           <div className="mt-6 space-y-3">
             <h4 className="font-medium text-gray-800 text-sm">Event Types:</h4>
             <div className="space-y-2">
-              <div className="text-xs font-semibold text-gray-600 mb-1">Export Events:</div>
+              <div className="text-xs font-semibold text-gray-600 mb-1">Import Events:</div>
+              <div className="space-y-1">
+                <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 justify-start text-xs block w-fit">
+                  ETA Final POD
+                </Badge>
+                <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 justify-start text-xs block w-fit">
+                  Delivery Date
+                </Badge>
+              </div>
+              <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Export Events:</div>
               <div className="space-y-1">
                 <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 justify-start text-xs block w-fit">
                   Drop Date
@@ -561,15 +569,6 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                 </Badge>
                 <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 justify-start text-xs block w-fit">
                   Doc Cutoff
-                </Badge>
-              </div>
-              <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Import Events:</div>
-              <div className="space-y-1">
-                <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 justify-start text-xs block w-fit">
-                  ETA Final POD
-                </Badge>
-                <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 justify-start text-xs block w-fit">
-                  Delivery Date
                 </Badge>
               </div>
               <div className="text-xs font-semibold text-gray-600 mb-1 mt-3">Domestic Trucking Events:</div>

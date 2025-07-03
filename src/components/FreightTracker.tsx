@@ -278,6 +278,9 @@ const FreightTracker: React.FC = () => {
   const handleCalendarEventClick = useCallback((fileId: string, source: string) => {
     console.log('Calendar event clicked:', fileId, source);
     
+    // Switch to the tracking tables tab first
+    setMainActiveTab('tracking');
+    
     // Determine which tab to switch to based on source
     let targetTab = 'allfiles';
     switch (source) {
@@ -293,12 +296,19 @@ const FreightTracker: React.FC = () => {
     }
     
     // Switch to the appropriate tab
-    setActiveTab(targetTab);
-    
-    setHighlightedRowId(fileId);
     setTimeout(() => {
-      setHighlightedRowId(null);
-    }, 3000);
+      setActiveTab(targetTab);
+      
+      // Set the highlighted row ID after a small delay to ensure tab is switched
+      setTimeout(() => {
+        setHighlightedRowId(fileId);
+        
+        // Clear highlight after 3 seconds
+        setTimeout(() => {
+          setHighlightedRowId(null);
+        }, 3000);
+      }, 200);
+    }, 100);
   }, []);
 
   if (loading) {
@@ -306,14 +316,14 @@ const FreightTracker: React.FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen px-2 py-4 max-w-[90vw] mx-auto">
+    <div className="w-full min-h-screen px-2 py-4 max-w-[85vw] mx-auto">
       <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
           <TabsTrigger value="calendar">Calendar View</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="tracking" className="max-h-[88vh] overflow-hidden">
+        <TabsContent value="tracking" className="max-h-[92vh] overflow-hidden">
           <FreightTrackerTabs
             exportData={exportData}
             importData={importData}
@@ -346,7 +356,7 @@ const FreightTracker: React.FC = () => {
           />
         </TabsContent>
 
-        <TabsContent value="calendar" className="max-h-[88vh] overflow-hidden">
+        <TabsContent value="calendar" className="max-h-[92vh] overflow-hidden">
           <CalendarView
             data={exportData}
             importData={importData}
