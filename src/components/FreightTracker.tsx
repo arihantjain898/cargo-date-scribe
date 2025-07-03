@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useFirebaseAuth } from '@/hooks/useFirebaseAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
 import { ImportTrackingRecord } from '@/types/ImportTrackingRecord';
 import { AllFilesRecord } from '@/types/AllFilesRecord';
 import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
-import TrackingTable from '@/components/TrackingTable';
+import ExportTrackingTable from '@/components/ExportTrackingTable';
 import ImportTrackingTable from '@/components/ImportTrackingTable';
 import AllFilesTable from '@/components/AllFilesTable';
 import DomesticTruckingTable from '@/components/DomesticTruckingTable';
@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 
 const FreightTracker: React.FC = () => {
-  const { currentUser } = useFirebaseAuth();
+  const { currentUser } = useAuth();
   const currentUserId = currentUser?.uid || '';
   const {
     exportData,
@@ -45,6 +45,7 @@ const FreightTracker: React.FC = () => {
   const addNewExportRecord = () => {
     const newRecord: Omit<TrackingRecord, 'id'> = {
       customer: '',
+      poNumber: '',
       style: '',
       article: '',
       container: '',
@@ -104,23 +105,10 @@ const FreightTracker: React.FC = () => {
 
   const addNewAllFilesRecord = () => {
     const newRecord: Omit<AllFilesRecord, 'id'> = {
+      fileName: '',
+      fileType: '',
       customer: '',
-      file: '',
-      number: '',
-      originPort: '',
-      originState: '',
-      destinationPort: '',
-      destinationCountry: '',
-      container20: '',
-      container40: '',
-      roro: '',
-      lcl: '',
-      air: '',
-      truck: '',
-      ssl: '',
-      nvo: '',
-      comments: '',
-      salesContact: '',
+      notes: '',
       archived: false,
       createdAt: new Date().toISOString(),
       userId: currentUserId
@@ -131,6 +119,7 @@ const FreightTracker: React.FC = () => {
   const addNewDomesticTruckingRecord = () => {
     const newRecord: Omit<DomesticTruckingRecord, 'id'> = {
       customer: '',
+      puNumber: '',
       deliveryNumber: '',
       trailerNumber: '',
       driverName: '',
@@ -165,7 +154,7 @@ const FreightTracker: React.FC = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <Tabs defaultValue="import">
+      <Tabs defaultvalue="import">
         <TabsList className="mb-4">
           <TabsTrigger value="export">Export Tracking</TabsTrigger>
           <TabsTrigger value="import">Import Tracking</TabsTrigger>
@@ -192,14 +181,13 @@ const FreightTracker: React.FC = () => {
             <h2 className="text-2xl font-bold">Export Tracking</h2>
             <Button onClick={addNewExportRecord}><PlusIcon className="mr-2 h-4 w-4" />Add New Export Record</Button>
           </div>
-          <TrackingTable
+          <ExportTrackingTable
             data={exportData}
             updateRecord={updateRecord}
             deleteRecord={deleteExportItem}
-            selectedRows={[]}
-            setSelectedRows={() => {}}
+            showArchived={showArchivedExport}
+            setShowArchived={setShowArchivedExport}
             highlightedRowId={highlightedRowId}
-            onFileClick={handleFileClick}
           />
         </TabsContent>
         <TabsContent value="allFiles">
@@ -211,10 +199,9 @@ const FreightTracker: React.FC = () => {
             data={allFilesData}
             updateRecord={updateAllFilesRecord}
             deleteRecord={deleteAllFilesItem}
-            selectedRows={[]}
-            setSelectedRows={() => {}}
+            showArchived={showArchivedAllFiles}
+            setShowArchived={setShowArchivedAllFiles}
             highlightedRowId={highlightedRowId}
-            onFileClick={(fileNumber: string, fileType: string) => handleFileClick(`${fileNumber}-${fileType}`)}
           />
         </TabsContent>
         <TabsContent value="domesticTrucking">
@@ -226,10 +213,9 @@ const FreightTracker: React.FC = () => {
             data={domesticTruckingData}
             updateRecord={updateDomesticTruckingRecord}
             deleteRecord={deleteDomesticTruckingItem}
-            selectedRows={[]}
-            setSelectedRows={() => {}}
+            showArchived={showArchivedDomesticTrucking}
+            setShowArchived={setShowArchivedDomesticTrucking}
             highlightedRowId={highlightedRowId}
-            onFileClick={handleFileClick}
           />
         </TabsContent>
       </Tabs>
