@@ -5,14 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface InlineEditCellProps {
-  value: string | boolean;
-  onSave: (value: string | boolean) => void;
+  value: string | boolean | null;
+  onSave: (value: string | boolean | null) => void;
   isBoolean?: boolean;
   isDate?: boolean;
   placeholder?: string;
   className?: string;
   options?: string[];
-  isThreeStateBoolean?: boolean; // New prop for three-state boolean
+  isThreeStateBoolean?: boolean;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -26,12 +26,12 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isThreeStateBoolean = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(String(value));
+  const [editValue, setEditValue] = useState(String(value || ''));
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setEditValue(String(value));
+    setEditValue(String(value || ''));
   }, [value]);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const handleCancel = () => {
-    setEditValue(String(value));
+    setEditValue(String(value || ''));
     setIsEditing(false);
   };
 
@@ -71,17 +71,15 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const handleClick = () => {
-    if (isThreeStateBoolean) {
-      // Cycle through: unset -> true -> false -> unset
-      if (value === '') {
+    if (isThreeStateBoolean || isBoolean) {
+      // Cycle through: null/unset -> true -> false -> null/unset
+      if (value === null || value === undefined) {
         onSave(true);
       } else if (value === true) {
         onSave(false);
       } else {
-        onSave('');
+        onSave(null);
       }
-    } else if (isBoolean) {
-      onSave(!value);
     } else if (options.length > 0) {
       // Cycle through options
       const currentIndex = options.indexOf(String(value));
@@ -144,9 +142,9 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     );
   }
 
-  const getThreeStateBooleanDisplay = () => {
-    if (value === '' || value === null || value === undefined) {
-      return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
+  const getBooleanDisplay = () => {
+    if (value === null || value === undefined) {
+      return { text: 'Select Option', color: 'bg-gray-100 text-gray-500 hover:bg-gray-200' };
     } else if (value === true) {
       return { text: 'Yes', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
     } else {
@@ -154,28 +152,21 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
-  const displayValue = isThreeStateBoolean 
-    ? getThreeStateBooleanDisplay().text
-    : isBoolean 
-    ? (value ? 'Yes' : 'No')
+  const displayValue = (isBoolean || isThreeStateBoolean)
+    ? getBooleanDisplay().text
     : (String(value) || placeholder);
 
   const getStatusColor = (val: string) => {
     if (val === 'Yes' || val === 'Done') return 'bg-green-100 text-green-800 hover:bg-green-200';
     if (val === 'Pending') return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-    if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200'; // N/A counts as complete
+    if (val === 'N/A') return 'bg-green-100 text-green-800 hover:bg-green-200';
     return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
   };
 
-  const displayClasses = isThreeStateBoolean
-    ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getThreeStateBooleanDisplay().color}`
-    : (isBoolean || options.length > 0)
-    ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${
-        options.length > 0 ? getStatusColor(String(value)) :
-        value 
-          ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-      }`
+  const displayClasses = (isBoolean || isThreeStateBoolean)
+    ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getBooleanDisplay().color}`
+    : options.length > 0
+    ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getStatusColor(String(value))}`
     : `w-full min-h-[24px] p-1 text-xs cursor-pointer hover:bg-blue-50 rounded border border-transparent hover:border-blue-200 transition-all duration-200 ${
         value ? 'text-gray-800' : 'text-gray-400 italic'
       } ${isDate && value ? 'text-blue-700 bg-blue-50' : ''}`;

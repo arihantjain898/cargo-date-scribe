@@ -173,97 +173,97 @@ const ImportTrackingTableRow = ({
       {/* Column 6: POA */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.poa === null || record.poa === undefined ? '' : record.poa}
-          onSave={(value) => updateRecord(record.id, 'poa', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.poa}
+          onSave={(value) => updateRecord(record.id, 'poa', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 7: ISF */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.isf === null || record.isf === undefined ? '' : record.isf}
-          onSave={(value) => updateRecord(record.id, 'isf', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.isf}
+          onSave={(value) => updateRecord(record.id, 'isf', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 8: Packing List/Commercial Invoice */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.packingListCommercialInvoice === null || record.packingListCommercialInvoice === undefined ? '' : record.packingListCommercialInvoice}
-          onSave={(value) => updateRecord(record.id, 'packingListCommercialInvoice', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.packingListCommercialInvoice}
+          onSave={(value) => updateRecord(record.id, 'packingListCommercialInvoice', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 9: Bill of Lading */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
-          value={record.billOfLading === null || record.billOfLading === undefined ? '' : record.billOfLading}
-          onSave={(value) => updateRecord(record.id, 'billOfLading', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.billOfLading}
+          onSave={(value) => updateRecord(record.id, 'billOfLading', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 10: Arrival Notice */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.arrivalNotice === null || record.arrivalNotice === undefined ? '' : record.arrivalNotice}
-          onSave={(value) => updateRecord(record.id, 'arrivalNotice', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.arrivalNotice}
+          onSave={(value) => updateRecord(record.id, 'arrivalNotice', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 11: ISF Filed */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.isfFiled === null || record.isfFiled === undefined ? '' : record.isfFiled}
-          onSave={(value) => updateRecord(record.id, 'isfFiled', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.isfFiled}
+          onSave={(value) => updateRecord(record.id, 'isfFiled', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 12: Entry Filed */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.entryFiled === null || record.entryFiled === undefined ? '' : record.entryFiled}
-          onSave={(value) => updateRecord(record.id, 'entryFiled', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.entryFiled}
+          onSave={(value) => updateRecord(record.id, 'entryFiled', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 13: BL Release */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
-          value={record.blRelease === null || record.blRelease === undefined ? '' : record.blRelease}
-          onSave={(value) => updateRecord(record.id, 'blRelease', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.blRelease}
+          onSave={(value) => updateRecord(record.id, 'blRelease', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 14: Customs Release */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.customsRelease === null || record.customsRelease === undefined ? '' : record.customsRelease}
-          onSave={(value) => updateRecord(record.id, 'customsRelease', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.customsRelease}
+          onSave={(value) => updateRecord(record.id, 'customsRelease', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 15: Invoice Sent */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.invoiceSent === null || record.invoiceSent === undefined ? '' : record.invoiceSent}
-          onSave={(value) => updateRecord(record.id, 'invoiceSent', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.invoiceSent}
+          onSave={(value) => updateRecord(record.id, 'invoiceSent', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 16: Payment Received */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.paymentReceived === null || record.paymentReceived === undefined ? '' : record.paymentReceived}
-          onSave={(value) => updateRecord(record.id, 'paymentReceived', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.paymentReceived}
+          onSave={(value) => updateRecord(record.id, 'paymentReceived', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 17: Work Order Setup */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
-          value={record.workOrderSetup === null || record.workOrderSetup === undefined ? '' : record.workOrderSetup}
-          onSave={(value) => updateRecord(record.id, 'workOrderSetup', value as boolean)}
-          isThreeStateBoolean={true}
+          value={record.workOrderSetup}
+          onSave={(value) => updateRecord(record.id, 'workOrderSetup', value as boolean | null)}
+          isBoolean={true}
         />
       </td>
       {/* Column 18: Delivered */}
