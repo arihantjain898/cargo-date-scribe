@@ -18,7 +18,7 @@ interface TrackingTableProps {
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   highlightedRowId?: string | null;
-  onFileClick?: (fullFileIdentifier: string) => void;
+  onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
 const TrackingTable = ({ 
@@ -42,7 +42,6 @@ const TrackingTable = ({
     }
   }, [data.length]);
 
-  // Scroll to highlighted row when highlightedRowId changes
   useEffect(() => {
     if (highlightedRowId && scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -52,7 +51,6 @@ const TrackingTable = ({
         const rowElement = highlightedRow as HTMLElement;
         const viewportElement = viewport as HTMLElement;
         
-        // Calculate the position to scroll to center the row
         const rowTop = rowElement.offsetTop;
         const rowHeight = rowElement.offsetHeight;
         const viewportHeight = viewportElement.clientHeight;
@@ -93,8 +91,8 @@ const TrackingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
-        <div className="min-w-[2400px]">
+      <ScrollArea className="h-[72vh] w-full" ref={scrollAreaRef}>
+        <div className="min-w-[1800px]">
           <table className="w-full border-collapse text-xs">
             <TrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
             <tbody>
@@ -115,7 +113,7 @@ const TrackingTable = ({
                 />
               ))}
               <tr>
-                <td colSpan={24} className="h-16"></td>
+                <td colSpan={27} className="h-16"></td>
               </tr>
             </tbody>
           </table>

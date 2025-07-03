@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -198,11 +199,31 @@ const FreightTrackerTabs = ({
   return (
     <Tabs value={activeTab || "allfiles"} onValueChange={setActiveTab} className="w-full">
       <div className="flex justify-between items-center mb-4">
-        <TabsList className="grid grid-cols-4 w-auto">
-          <TabsTrigger value="allfiles">All Files</TabsTrigger>
-          <TabsTrigger value="import">Import Tracking</TabsTrigger>
-          <TabsTrigger value="export">Export Tracking</TabsTrigger>
-          <TabsTrigger value="domestic">Domestic Trucking</TabsTrigger>
+        <TabsList className="grid grid-cols-4 w-auto bg-gray-100 p-1 rounded-lg">
+          <TabsTrigger 
+            value="allfiles" 
+            className="px-6 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-50"
+          >
+            All Files
+          </TabsTrigger>
+          <TabsTrigger 
+            value="import" 
+            className="px-6 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-50"
+          >
+            Import Tracking
+          </TabsTrigger>
+          <TabsTrigger 
+            value="export" 
+            className="px-6 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-50"
+          >
+            Export Tracking
+          </TabsTrigger>
+          <TabsTrigger 
+            value="domestic" 
+            className="px-6 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-50"
+          >
+            Domestic Trucking
+          </TabsTrigger>
         </TabsList>
       </div>
 
@@ -229,9 +250,7 @@ const FreightTrackerTabs = ({
           selectedRows={selectedAllFilesRows}
           setSelectedRows={setSelectedAllFilesRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={(fileNumber: string, fileType: string) => {
-            onFileClick(fileNumber, fileType);
-          }}
+          onFileClick={onFileClick}
         />
       </TabsContent>
 
@@ -258,9 +277,7 @@ const FreightTrackerTabs = ({
           selectedRows={selectedImportRows}
           setSelectedRows={setSelectedImportRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={(fileNumber: string, fileType: string) => {
-            onFileClick(fileNumber, fileType);
-          }}
+          onFileClick={onFileClick}
         />
       </TabsContent>
 
@@ -287,9 +304,7 @@ const FreightTrackerTabs = ({
           selectedRows={selectedExportRows}
           setSelectedRows={setSelectedExportRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={(fileNumber: string, fileType: string) => {
-            onFileClick(fileNumber, fileType);
-          }}
+          onFileClick={onFileClick}
         />
       </TabsContent>
 
@@ -316,9 +331,7 @@ const FreightTrackerTabs = ({
           selectedRows={selectedDomesticRows}
           setSelectedRows={setSelectedDomesticRows}
           highlightedRowId={highlightedRowId}
-          onFileClick={(fileNumber: string, fileType: string) => {
-            onFileClick(fileNumber, fileType);
-          }}
+          onFileClick={onFileClick}
         />
       </TabsContent>
     </Tabs>
