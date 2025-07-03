@@ -93,7 +93,7 @@ const DomesticTruckingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[75vh] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[82vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1200px]">
           <table className="w-full border-collapse text-xs">
             <DomesticTruckingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
@@ -115,7 +115,7 @@ const DomesticTruckingTable = ({
                 />
               ))}
               <tr>
-                <td colSpan={11} className="h-16"></td>
+                <td colSpan={11} className="h-4"></td>
               </tr>
             </tbody>
           </table>

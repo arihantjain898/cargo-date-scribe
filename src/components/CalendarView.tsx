@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -402,7 +403,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     const domesticEvents = events.filter(e => e.source === 'domestic');
 
     return (
-      <div className="grid grid-cols-3 gap-4 h-full">
+      <div className="grid grid-cols-3 gap-3 h-full">
         {/* Import Events */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 pb-2 border-b">
@@ -411,7 +412,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </Badge>
             <span className="text-xs text-gray-500">({importEvents.length})</span>
           </div>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-2 max-h-80 overflow-y-auto">
             {importEvents.length === 0 ? (
               <p className="text-gray-400 text-xs text-center py-4">No import events</p>
             ) : (
@@ -448,7 +449,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </Badge>
             <span className="text-xs text-gray-500">({exportEvents.length})</span>
           </div>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-2 max-h-80 overflow-y-auto">
             {exportEvents.length === 0 ? (
               <p className="text-gray-400 text-xs text-center py-4">No export events</p>
             ) : (
@@ -485,7 +486,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </Badge>
             <span className="text-xs text-gray-500">({domesticEvents.length})</span>
           </div>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-2 max-h-80 overflow-y-auto">
             {domesticEvents.length === 0 ? (
               <p className="text-gray-400 text-xs text-center py-4">No domestic events</p>
             ) : (
@@ -648,6 +649,14 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                           onClick={() => handleEventClick(event)}
                         >
                           <div className="space-y-1">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Badge 
+                                variant="outline" 
+                                className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
+                              >
+                                {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic'}
+                              </Badge>
+                            </div>
                             <div className="font-semibold text-gray-900 text-xs leading-tight truncate">{event.customer}</div>
                             <Badge 
                               variant="outline" 

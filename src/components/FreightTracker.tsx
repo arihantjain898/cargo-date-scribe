@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
@@ -355,7 +356,7 @@ const FreightTracker: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-[92vh] px-2 py-4 max-w-[95vw] mx-auto flex flex-col">
+    <div className="w-full h-[95vh] px-2 py-4 max-w-[98vw] mx-auto flex flex-col">
       <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full flex flex-col flex-1">
         <TabsList className="mb-4">
           <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
