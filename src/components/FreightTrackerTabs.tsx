@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -199,30 +198,30 @@ const FreightTrackerTabs = ({
   return (
     <Tabs value={activeTab || "allfiles"} onValueChange={setActiveTab} className="w-full">
       <div className="flex justify-between items-center mb-4">
-        <TabsList className="grid grid-cols-4 w-auto bg-gray-100 p-1 rounded-lg">
+        <TabsList className="grid grid-cols-4 w-auto bg-gradient-to-r from-gray-50 to-slate-50 p-1 rounded-xl border border-gray-200 shadow-inner">
           <TabsTrigger 
             value="allfiles" 
-            className="px-6 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-emerald-50 hover:text-emerald-700"
           >
-            All Files
+            📁 All Files
           </TabsTrigger>
           <TabsTrigger 
             value="import" 
-            className="px-6 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-purple-50 hover:text-purple-700"
           >
-            Import Tracking
+            📦 Import
           </TabsTrigger>
           <TabsTrigger 
             value="export" 
-            className="px-6 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-orange-50 hover:text-orange-700"
           >
-            Export Tracking
+            🚢 Export
           </TabsTrigger>
           <TabsTrigger 
             value="domestic" 
-            className="px-6 py-2 text-sm font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-indigo-50 hover:text-indigo-700"
           >
-            Domestic Trucking
+            🚛 Domestic
           </TabsTrigger>
         </TabsList>
       </div>

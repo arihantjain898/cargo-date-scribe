@@ -6,7 +6,10 @@ import { AllFilesRecord } from '@/types/AllFilesRecord';
 import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
 import FreightTrackerTabs from '@/components/FreightTrackerTabs';
 import CalendarView from '@/components/CalendarView';
+import NotificationSettings from '@/components/NotificationSettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Bell } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 const FreightTracker: React.FC = () => {
@@ -356,10 +359,32 @@ const FreightTracker: React.FC = () => {
 
   return (
     <div className="w-full h-[95vh] px-2 py-4 max-w-[98vw] mx-auto flex flex-col">
+      {/* Header with Notification Settings */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold text-gray-900">Freight Forwarding Tracker</h1>
+        <NotificationSettings>
+          <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <Bell className="w-4 h-4" />
+            Notification Settings
+          </Button>
+        </NotificationSettings>
+      </div>
+
       <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full flex flex-col flex-1">
-        <TabsList className="mb-4">
-          <TabsTrigger value="tracking">Tracking Tables</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+        {/* Main tabs with enhanced styling */}
+        <TabsList className="mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-sm">
+          <TabsTrigger 
+            value="tracking" 
+            className="px-8 py-3 text-base font-semibold transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-md data-[state=active]:border-blue-300 hover:bg-blue-100/50"
+          >
+            📊 Tracking Tables
+          </TabsTrigger>
+          <TabsTrigger 
+            value="calendar" 
+            className="px-8 py-3 text-base font-semibold transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-md data-[state=active]:border-blue-300 hover:bg-blue-100/50"
+          >
+            📅 Calendar View
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="tracking" className="flex-1 overflow-hidden">
