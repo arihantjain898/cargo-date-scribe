@@ -554,7 +554,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-6 space-y-6 flex-1 flex flex-col">
+      <div className="p-6 space-y-6 flex-1 flex flex-col overflow-hidden">
         {/* Optimized Header with better spacing */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h2 className="text-2xl font-bold text-gray-900">Calendar Overview</h2>
@@ -594,175 +594,181 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           </div>
         </div>
 
-        {/* Main Content Grid - Optimized Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 flex-1">
-          {/* Calendar Section - More compact */}
-          <Card className="lg:col-span-2 shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-900">
-                Calendar
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                modifiers={modifiers}
-                modifiersStyles={modifiersStyles}
-                className="rounded-lg border border-gray-200 bg-white p-3 mb-6 shadow-sm"
-              />
-              
-              {/* Enhanced Legend with better spacing */}
-              <div className="space-y-4 text-xs">
-                <h4 className="font-semibold text-gray-800 text-sm border-b pb-2">Event Types</h4>
-                <div className="space-y-4">
-                  <div>
-                    <div className="font-medium text-indigo-700 mb-3 text-sm">Import Events:</div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs">ETA Final POD</Badge>
-                      <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs">Delivery Date</Badge>
+        {/* Main Content - Single Row Layout */}
+        <div className="flex gap-6 flex-1 min-h-0">
+          {/* Calendar Section - Fixed width, no extra space */}
+          <div className="w-80 flex-shrink-0">
+            <Card className="h-full shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg font-semibold text-gray-900">
+                  Calendar
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  modifiers={modifiers}
+                  modifiersStyles={modifiersStyles}
+                  className="rounded-lg border border-gray-200 bg-white p-3 mb-6 shadow-sm w-full"
+                />
+                
+                {/* Enhanced Legend with better spacing */}
+                <div className="space-y-4 text-xs">
+                  <h4 className="font-semibold text-gray-800 text-sm border-b pb-2">Event Types</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="font-medium text-indigo-700 mb-3 text-sm">Import Events:</div>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs">ETA Final POD</Badge>
+                        <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs">Delivery Date</Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-700 mb-3 text-sm">Export Events:</div>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs">Drop Date</Badge>
+                        <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs">Return Date</Badge>
+                        <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs">Doc Cutoff</Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-medium text-yellow-700 mb-3 text-sm">Domestic Events:</div>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick Date</Badge>
+                        <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <div className="font-medium text-slate-700 mb-3 text-sm">Export Events:</div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs">Drop Date</Badge>
-                      <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs">Return Date</Badge>
-                      <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs">Doc Cutoff</Badge>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-yellow-700 mb-3 text-sm">Domestic Events:</div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick Date</Badge>
-                      <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
-                    </div>
+                  <div className="flex items-center gap-2 pt-3 border-t">
+                    <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                    <span className="text-gray-500 text-sm">Days with events</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-3 border-t">
-                  <div className="w-3 h-3 bg-blue-600 rounded"></div>
-                  <span className="text-gray-500 text-sm">Days with events</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Events for Selected Date - Much larger space */}
-          <Card className="lg:col-span-3 shadow-lg border-0 bg-white">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-900">
-                {selectedDate ? `Events for ${selectedDate.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}` : 'Select a date to view events'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 pt-0">
-              <ScrollArea className="h-[600px]">
-                {selectedDate ? renderOptimizedEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
-                  <div className="flex items-center justify-center h-full min-h-[500px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <div className="text-center">
-                      <div className="text-6xl mb-4 opacity-50">📅</div>
-                      <p className="text-gray-500 text-lg font-medium">Select a date to view events</p>
-                      <p className="text-gray-400 text-sm mt-2">Click on any date in the calendar to see scheduled events</p>
+          {/* Events for Selected Date - Takes remaining space */}
+          <div className="flex-1 min-w-0">
+            <Card className="h-full shadow-lg border-0 bg-white">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg font-semibold text-gray-900">
+                  {selectedDate ? `Events for ${selectedDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}` : 'Select a date to view events'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 pt-0 h-full">
+                <ScrollArea className="h-full">
+                  {selectedDate ? renderOptimizedEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
+                    <div className="flex items-center justify-center h-full min-h-[500px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                      <div className="text-center">
+                        <div className="text-6xl mb-4 opacity-50">📅</div>
+                        <p className="text-gray-500 text-lg font-medium">Select a date to view events</p>
+                        <p className="text-gray-400 text-sm mt-2">Click on any date in the calendar to see scheduled events</p>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </ScrollArea>
-            </CardContent>
-          </Card>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        {/* Enhanced Weekly View - Show all events with source labels */}
-        <Card className="shadow-lg border-0 bg-white">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold text-gray-900">
-                Weekly View: {getCurrentWeekLabel()}
-              </CardTitle>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentWeekOffset(currentWeekOffset - 1)}
-                  className="px-3"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentWeekOffset(0)}
-                  disabled={currentWeekOffset === 0}
-                  className="text-xs"
-                >
-                  This Week
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentWeekOffset(currentWeekOffset + 1)}
-                  className="px-3"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+        {/* Enhanced Weekly View - Full width, proper height */}
+        <div className="flex-shrink-0">
+          <Card className="shadow-lg border-0 bg-white">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold text-gray-900">
+                  Weekly View: {getCurrentWeekLabel()}
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentWeekOffset(currentWeekOffset - 1)}
+                    className="px-3"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentWeekOffset(0)}
+                    disabled={currentWeekOffset === 0}
+                    className="text-xs"
+                  >
+                    This Week
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentWeekOffset(currentWeekOffset + 1)}
+                    className="px-3"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6 pt-0">
-            <div className="grid grid-cols-7 gap-4">
-              {getWeeklyEventsGroupedByDate().map(({ date, dateObj, events }) => (
-                <div key={date} className="space-y-3">
-                  <div className="text-center p-3 bg-gray-50 rounded-lg border">
-                    <div className="font-semibold text-gray-900 text-sm">
-                      {dateObj.toLocaleDateString('en-US', { weekday: 'short' })}
+            </CardHeader>
+            <CardContent className="p-6 pt-0">
+              <div className="grid grid-cols-7 gap-4">
+                {getWeeklyEventsGroupedByDate().map(({ date, dateObj, events }) => (
+                  <div key={date} className="space-y-3 min-h-0">
+                    <div className="text-center p-3 bg-gray-50 rounded-lg border">
+                      <div className="font-semibold text-gray-900 text-sm">
+                        {dateObj.toLocaleDateString('en-US', { weekday: 'short' })}
+                      </div>
+                      <div className="text-lg font-bold text-gray-700">
+                        {dateObj.getDate()}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {events.length} event{events.length !== 1 ? 's' : ''}
+                      </div>
                     </div>
-                    <div className="text-lg font-bold text-gray-700">
-                      {dateObj.getDate()}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {events.length} event{events.length !== 1 ? 's' : ''}
-                    </div>
-                  </div>
-                  <ScrollArea className="max-h-96">
-                    <div className="space-y-2 pr-2">
-                      {events.map((event) => (
-                        <div 
-                          key={event.uniqueId} 
-                          className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all cursor-pointer text-xs"
-                          onClick={() => handleEventClick(event)}
-                        >
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-1 flex-wrap">
-                              {getSourceBadge(event.source)}
-                              <Badge 
-                                variant="outline" 
-                                className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                              >
-                                {getEventTypeLabel(event.type)}
-                              </Badge>
-                            </div>
-                            <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
-                            <div className="text-gray-600 text-xs">
-                              <div className="truncate">
-                                {event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
-                                 event.source === 'export' && event.ref ? `Ref: ${event.ref}` : 
-                                 `File: ${event.file}`}
+                    <div className="max-h-80 overflow-y-auto">
+                      <div className="space-y-2 pr-2">
+                        {events.map((event) => (
+                          <div 
+                            key={event.uniqueId} 
+                            className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all cursor-pointer text-xs"
+                            onClick={() => handleEventClick(event)}
+                          >
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-1 flex-wrap">
+                                {getSourceBadge(event.source)}
+                                <Badge 
+                                  variant="outline" 
+                                  className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                                >
+                                  {getEventTypeLabel(event.type)}
+                                </Badge>
+                              </div>
+                              <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
+                              <div className="text-gray-600 text-xs">
+                                <div className="truncate">
+                                  {event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
+                                   event.source === 'export' && event.ref ? `Ref: ${event.ref}` : 
+                                   `File: ${event.file}`}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </ScrollArea>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <EventDetailModal
           event={selectedEvent}
