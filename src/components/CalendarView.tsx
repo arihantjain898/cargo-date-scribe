@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -433,23 +434,23 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     const domesticEvents = events.filter(e => e.source === 'domestic');
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Import Events */}
         {importEvents.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300 text-xs font-medium">
+              <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300 text-sm font-medium">
                 Import Events ({importEvents.length})
               </Badge>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {importEvents.map((event) => (
                 <div 
                   key={event.uniqueId} 
-                  className="p-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer shadow-sm"
+                  className="p-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer shadow-sm hover:shadow-md"
                   onClick={() => handleEventClick(event)}
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Badge 
                       variant="outline" 
                       className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
@@ -458,8 +459,8 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                     </Badge>
                     <div className="font-semibold text-gray-900 text-sm truncate">{event.customer}</div>
                     <div className="text-xs text-gray-600 space-y-1">
-                      {event.booking && <div>Booking: {event.booking}</div>}
-                      <div>File: {event.file}</div>
+                      {event.booking && <div><span className="font-medium">Booking:</span> {event.booking}</div>}
+                      <div><span className="font-medium">File:</span> {event.file}</div>
                     </div>
                   </div>
                 </div>
@@ -470,20 +471,20 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
 
         {/* Export Events */}
         {exportEvents.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 text-xs font-medium">
+              <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 text-sm font-medium">
                 Export Events ({exportEvents.length})
               </Badge>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {exportEvents.map((event) => (
                 <div 
                   key={event.uniqueId} 
-                  className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer shadow-sm"
+                  className="p-4 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer shadow-sm hover:shadow-md"
                   onClick={() => handleEventClick(event)}
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Badge 
                       variant="outline" 
                       className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
@@ -492,8 +493,8 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                     </Badge>
                     <div className="font-semibold text-gray-900 text-sm truncate">{event.customer}</div>
                     <div className="text-xs text-gray-600 space-y-1">
-                      {event.ref && <div>Ref: {event.ref}</div>}
-                      <div>File: {event.file}</div>
+                      {event.ref && <div><span className="font-medium">Ref:</span> {event.ref}</div>}
+                      <div><span className="font-medium">File:</span> {event.file}</div>
                     </div>
                   </div>
                 </div>
@@ -504,20 +505,20 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
 
         {/* Domestic Events */}
         {domesticEvents.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs font-medium">
+              <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 text-sm font-medium">
                 Domestic Events ({domesticEvents.length})
               </Badge>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {domesticEvents.map((event) => (
                 <div 
                   key={event.uniqueId} 
-                  className="p-3 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer shadow-sm"
+                  className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer shadow-sm hover:shadow-md"
                   onClick={() => handleEventClick(event)}
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Badge 
                       variant="outline" 
                       className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
@@ -526,7 +527,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                     </Badge>
                     <div className="font-semibold text-gray-900 text-sm truncate">{event.customer}</div>
                     <div className="text-xs text-gray-600">
-                      <div>File: {event.file}</div>
+                      <div><span className="font-medium">File:</span> {event.file}</div>
                     </div>
                   </div>
                 </div>
@@ -536,6 +537,19 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         )}
       </div>
     );
+  };
+
+  const getSourceBadge = (source: string) => {
+    switch (source) {
+      case 'import':
+        return <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300 text-xs">Import</Badge>;
+      case 'export':
+        return <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 text-xs">Export</Badge>;
+      case 'domestic':
+        return <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs">Domestic</Badge>;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -581,9 +595,9 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         </div>
 
         {/* Main Content Grid - Optimized Layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 flex-1">
           {/* Calendar Section - More compact */}
-          <Card className="xl:col-span-1 shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <Card className="lg:col-span-2 shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-semibold text-gray-900">
                 Calendar
@@ -596,46 +610,46 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                 onSelect={setSelectedDate}
                 modifiers={modifiers}
                 modifiersStyles={modifiersStyles}
-                className="rounded-lg border border-gray-200 bg-white p-3 mb-4 shadow-sm"
+                className="rounded-lg border border-gray-200 bg-white p-3 mb-6 shadow-sm"
               />
               
-              {/* Compact Legend */}
-              <div className="space-y-3 text-xs">
+              {/* Enhanced Legend with better spacing */}
+              <div className="space-y-4 text-xs">
                 <h4 className="font-semibold text-gray-800 text-sm border-b pb-2">Event Types</h4>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <div className="font-medium text-indigo-700 mb-2 text-xs">Import:</div>
-                    <div className="flex flex-wrap gap-1">
-                      <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs">ETA</Badge>
-                      <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs">Delivery</Badge>
+                    <div className="font-medium text-indigo-700 mb-3 text-sm">Import Events:</div>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs">ETA Final POD</Badge>
+                      <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs">Delivery Date</Badge>
                     </div>
                   </div>
                   <div>
-                    <div className="font-medium text-slate-700 mb-2 text-xs">Export:</div>
-                    <div className="flex flex-wrap gap-1">
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs">Drop</Badge>
-                      <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs">Return</Badge>
-                      <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs">Cutoff</Badge>
+                    <div className="font-medium text-slate-700 mb-3 text-sm">Export Events:</div>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs">Drop Date</Badge>
+                      <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs">Return Date</Badge>
+                      <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs">Doc Cutoff</Badge>
                     </div>
                   </div>
                   <div>
-                    <div className="font-medium text-yellow-700 mb-2 text-xs">Domestic:</div>
-                    <div className="flex flex-wrap gap-1">
-                      <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick</Badge>
+                    <div className="font-medium text-yellow-700 mb-3 text-sm">Domestic Events:</div>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick Date</Badge>
                       <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 pt-2 border-t">
+                <div className="flex items-center gap-2 pt-3 border-t">
                   <div className="w-3 h-3 bg-blue-600 rounded"></div>
-                  <span className="text-gray-500 text-xs">Days with events</span>
+                  <span className="text-gray-500 text-sm">Days with events</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Events for Selected Date - Much larger space */}
-          <Card className="xl:col-span-3 shadow-lg border-0 bg-white">
+          <Card className="lg:col-span-3 shadow-lg border-0 bg-white">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-semibold text-gray-900">
                 {selectedDate ? `Events for ${selectedDate.toLocaleDateString('en-US', { 
@@ -647,9 +661,9 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 pt-0">
-              <ScrollArea className="h-[500px]">
+              <ScrollArea className="h-[600px]">
                 {selectedDate ? renderOptimizedEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
-                  <div className="flex items-center justify-center h-full min-h-[400px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                  <div className="flex items-center justify-center h-full min-h-[500px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                     <div className="text-center">
                       <div className="text-6xl mb-4 opacity-50">📅</div>
                       <p className="text-gray-500 text-lg font-medium">Select a date to view events</p>
@@ -662,7 +676,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           </Card>
         </div>
 
-        {/* Weekly View - Enhanced with navigation */}
+        {/* Enhanced Weekly View - Show all events with source labels */}
         <Card className="shadow-lg border-0 bg-white">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
@@ -701,7 +715,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
           <CardContent className="p-6 pt-0">
             <div className="grid grid-cols-7 gap-4">
               {getWeeklyEventsGroupedByDate().map(({ date, dateObj, events }) => (
-                <div key={date} className="min-h-[200px] space-y-3">
+                <div key={date} className="space-y-3">
                   <div className="text-center p-3 bg-gray-50 rounded-lg border">
                     <div className="font-semibold text-gray-900 text-sm">
                       {dateObj.toLocaleDateString('en-US', { weekday: 'short' })}
@@ -713,33 +727,37 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                       {events.length} event{events.length !== 1 ? 's' : ''}
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    {events.slice(0, 3).map((event) => (
-                      <div 
-                        key={event.uniqueId} 
-                        className="p-2 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all cursor-pointer text-xs"
-                        onClick={() => handleEventClick(event)}
-                      >
-                        <Badge 
-                          variant="outline" 
-                          className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center mb-1`}
+                  <ScrollArea className="max-h-96">
+                    <div className="space-y-2 pr-2">
+                      {events.map((event) => (
+                        <div 
+                          key={event.uniqueId} 
+                          className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all cursor-pointer text-xs"
+                          onClick={() => handleEventClick(event)}
                         >
-                          {getEventTypeLabel(event.type)}
-                        </Badge>
-                        <div className="font-semibold text-gray-900 truncate">{event.customer}</div>
-                        <div className="text-gray-600 truncate">
-                          {event.source === 'import' && event.booking ? event.booking : 
-                           event.source === 'export' ? event.ref : 
-                           event.file}
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1 flex-wrap">
+                              {getSourceBadge(event.source)}
+                              <Badge 
+                                variant="outline" 
+                                className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                              >
+                                {getEventTypeLabel(event.type)}
+                              </Badge>
+                            </div>
+                            <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
+                            <div className="text-gray-600 text-xs">
+                              <div className="truncate">
+                                {event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
+                                 event.source === 'export' && event.ref ? `Ref: ${event.ref}` : 
+                                 `File: ${event.file}`}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                    {events.length > 3 && (
-                      <div className="text-center p-2 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500">
-                        +{events.length - 3} more
-                      </div>
-                    )}
-                  </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
                 </div>
               ))}
             </div>
