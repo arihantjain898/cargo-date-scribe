@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +9,7 @@ import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CalendarViewProps {
   data: TrackingRecord[];
@@ -178,6 +177,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [calendarFilter, setCalendarFilter] = useState<'all' | 'export' | 'import' | 'domestic'>('all');
+  const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
 
   const { exportEvents, importEvents, domesticEvents, allEvents } = useMemo(() => {
     const exportEventList: CalendarEvent[] = [];
@@ -350,23 +350,26 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     }
   };
 
-  const getUpcomingEventsGroupedByDate = () => {
+  const getWeeklyEventsGroupedByDate = () => {
     const events = calendarFilter === 'all' ? allEvents :
                   calendarFilter === 'export' ? exportEvents : 
                   calendarFilter === 'import' ? importEvents : domesticEvents;
     
-    // Get events for the next 7 days only
+    // Calculate the start of the current week (Sunday) plus offset
     const today = new Date();
-    const nextWeek = new Date();
-    nextWeek.setDate(today.getDate() + 7);
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + (currentWeekOffset * 7));
     
-    const upcomingEvents = events.filter(event => {
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    
+    const weeklyEvents = events.filter(event => {
       const eventDate = new Date(event.date + 'T00:00:00');
-      return eventDate >= today && eventDate <= nextWeek;
+      return eventDate >= startOfWeek && eventDate <= endOfWeek;
     });
     
     // Group by date
-    const groupedEvents = upcomingEvents.reduce((acc, event) => {
+    const groupedEvents = weeklyEvents.reduce((acc, event) => {
       const date = event.date;
       if (!acc[date]) {
         acc[date] = [];
@@ -375,242 +378,255 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
       return acc;
     }, {} as Record<string, CalendarEvent[]>);
     
-    // Sort dates
-    const sortedDates = Object.keys(groupedEvents).sort();
+    // Create array for all 7 days of the week
+    const weekDays = [];
+    for (let i = 0; i < 7; i++) {
+      const currentDate = new Date(startOfWeek);
+      currentDate.setDate(startOfWeek.getDate() + i);
+      const dateString = currentDate.toISOString().split('T')[0];
+      
+      weekDays.push({
+        date: dateString,
+        dateObj: currentDate,
+        events: groupedEvents[dateString] || []
+      });
+    }
     
-    return sortedDates.map(date => ({
-      date,
-      events: groupedEvents[date].sort((a, b) => {
-        const sourceOrder = { import: 0, export: 1, domestic: 2 };
-        return sourceOrder[a.source] - sourceOrder[b.source];
-      })
-    }));
+    return weekDays;
   };
 
-  const renderEventsBySource = (events: CalendarEvent[]) => {
+  const getCurrentWeekLabel = () => {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + (currentWeekOffset * 7));
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    
+    const startMonth = startOfWeek.toLocaleDateString('en-US', { month: 'short' });
+    const endMonth = endOfWeek.toLocaleDateString('en-US', { month: 'short' });
+    const startDay = startOfWeek.getDate();
+    const endDay = endOfWeek.getDate();
+    
+    if (startMonth === endMonth) {
+      return `${startMonth} ${startDay} - ${endDay}`;
+    } else {
+      return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
+    }
+  };
+
+  const renderOptimizedEventsBySource = (events: CalendarEvent[]) => {
     if (events.length === 0) {
       return (
-        <div className="flex items-center justify-center h-full min-h-[300px]">
+        <div className="flex items-center justify-center h-full min-h-[200px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
           <div className="text-center">
-            <div className="text-4xl mb-3">📅</div>
-            <p className="text-gray-500">No events for this date</p>
+            <div className="text-3xl mb-2 opacity-50">📅</div>
+            <p className="text-gray-400 text-sm">No events for this date</p>
           </div>
         </div>
       );
     }
 
-    // Group events by source
+    // Group events by source for better organization
     const importEvents = events.filter(e => e.source === 'import');
     const exportEvents = events.filter(e => e.source === 'export');
     const domesticEvents = events.filter(e => e.source === 'domestic');
 
     return (
-      <div className="grid grid-cols-3 gap-3 h-full min-h-[400px]">
+      <div className="space-y-4">
         {/* Import Events */}
-        <div className="flex flex-col h-full">
-          <div className="flex items-center gap-2 pb-2 border-b mb-2 flex-shrink-0">
-            <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300 text-xs font-medium">
-              Import
-            </Badge>
-            <span className="text-xs text-gray-500">({importEvents.length})</span>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <div className="space-y-2">
-              {importEvents.length === 0 ? (
-                <div className="flex items-center justify-center h-full min-h-[200px]">
-                  <p className="text-gray-400 text-xs text-center">No import events</p>
-                </div>
-              ) : (
-                importEvents.map((event) => (
-                  <div 
-                    key={event.uniqueId} 
-                    className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
-                    onClick={() => handleEventClick(event)}
-                  >
-                    <div className="space-y-1">
-                      <Badge 
-                        variant="outline" 
-                        className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
-                      >
-                        {getEventTypeLabel(event.type)}
-                      </Badge>
-                      <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
-                      <div className="text-xs text-gray-600 truncate">
-                        {event.booking && `Booking: ${event.booking}`}
-                      </div>
-                      <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
+        {importEvents.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-indigo-100 text-indigo-700 border-indigo-300 text-xs font-medium">
+                Import Events ({importEvents.length})
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {importEvents.map((event) => (
+                <div 
+                  key={event.uniqueId} 
+                  className="p-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer shadow-sm"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <div className="space-y-2">
+                    <Badge 
+                      variant="outline" 
+                      className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                    >
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                    <div className="font-semibold text-gray-900 text-sm truncate">{event.customer}</div>
+                    <div className="text-xs text-gray-600 space-y-1">
+                      {event.booking && <div>Booking: {event.booking}</div>}
+                      <div>File: {event.file}</div>
                     </div>
                   </div>
-                ))
-              )}
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Export Events */}
-        <div className="flex flex-col h-full">
-          <div className="flex items-center gap-2 pb-2 border-b mb-2 flex-shrink-0">
-            <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 text-xs font-medium">
-              Export
-            </Badge>
-            <span className="text-xs text-gray-500">({exportEvents.length})</span>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <div className="space-y-2">
-              {exportEvents.length === 0 ? (
-                <div className="flex items-center justify-center h-full min-h-[200px]">
-                  <p className="text-gray-400 text-xs text-center">No export events</p>
-                </div>
-              ) : (
-                exportEvents.map((event) => (
-                  <div 
-                    key={event.uniqueId} 
-                    className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
-                    onClick={() => handleEventClick(event)}
-                  >
-                    <div className="space-y-1">
-                      <Badge 
-                        variant="outline" 
-                        className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
-                      >
-                        {getEventTypeLabel(event.type)}
-                      </Badge>
-                      <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
-                      <div className="text-xs text-gray-600 truncate">
-                        {event.ref && `Ref: ${event.ref}`}
-                      </div>
-                      <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
+        {exportEvents.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 text-xs font-medium">
+                Export Events ({exportEvents.length})
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {exportEvents.map((event) => (
+                <div 
+                  key={event.uniqueId} 
+                  className="p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer shadow-sm"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <div className="space-y-2">
+                    <Badge 
+                      variant="outline" 
+                      className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                    >
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                    <div className="font-semibold text-gray-900 text-sm truncate">{event.customer}</div>
+                    <div className="text-xs text-gray-600 space-y-1">
+                      {event.ref && <div>Ref: {event.ref}</div>}
+                      <div>File: {event.file}</div>
                     </div>
                   </div>
-                ))
-              )}
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Domestic Events */}
-        <div className="flex flex-col h-full">
-          <div className="flex items-center gap-2 pb-2 border-b mb-2 flex-shrink-0">
-            <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs font-medium">
-              Domestic
-            </Badge>
-            <span className="text-xs text-gray-500">({domesticEvents.length})</span>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <div className="space-y-2">
-              {domesticEvents.length === 0 ? (
-                <div className="flex items-center justify-center h-full min-h-[200px]">
-                  <p className="text-gray-400 text-xs text-center">No domestic events</p>
-                </div>
-              ) : (
-                domesticEvents.map((event) => (
-                  <div 
-                    key={event.uniqueId} 
-                    className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
-                    onClick={() => handleEventClick(event)}
-                  >
-                    <div className="space-y-1">
-                      <Badge 
-                        variant="outline" 
-                        className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
-                      >
-                        {getEventTypeLabel(event.type)}
-                      </Badge>
-                      <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
-                      <div className="text-xs text-gray-600 truncate">File: {event.file}</div>
+        {domesticEvents.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs font-medium">
+                Domestic Events ({domesticEvents.length})
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {domesticEvents.map((event) => (
+                <div 
+                  key={event.uniqueId} 
+                  className="p-3 border border-yellow-200 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors cursor-pointer shadow-sm"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <div className="space-y-2">
+                    <Badge 
+                      variant="outline" 
+                      className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                    >
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                    <div className="font-semibold text-gray-900 text-sm truncate">{event.customer}</div>
+                    <div className="text-xs text-gray-600">
+                      <div>File: {event.file}</div>
                     </div>
                   </div>
-                ))
-              )}
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     );
   };
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 space-y-4 flex-1 flex flex-col">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1">
-          <Card className="lg:col-span-1 shadow-sm border border-gray-200 flex flex-col">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-900 flex items-center justify-between">
-                Calendar Overview
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant={calendarFilter === 'all' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCalendarFilter('all')}
-                    className="text-xs px-2 py-1 h-6"
-                  >
-                    All
-                  </Button>
-                  <Button
-                    variant={calendarFilter === 'import' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCalendarFilter('import')}
-                    className="text-xs px-2 py-1 h-6"
-                  >
-                    Import
-                  </Button>
-                  <Button
-                    variant={calendarFilter === 'export' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCalendarFilter('export')}
-                    className="text-xs px-2 py-1 h-6"
-                  >
-                    Export
-                  </Button>
-                  <Button
-                    variant={calendarFilter === 'domestic' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCalendarFilter('domestic')}
-                    className="text-xs px-2 py-1 h-6"
-                  >
-                    D-Trucking
-                  </Button>
-                </div>
+      <div className="p-6 space-y-6 flex-1 flex flex-col">
+        {/* Optimized Header with better spacing */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h2 className="text-2xl font-bold text-gray-900">Calendar Overview</h2>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={calendarFilter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setCalendarFilter('all')}
+              className="text-sm"
+            >
+              All Events
+            </Button>
+            <Button
+              variant={calendarFilter === 'import' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setCalendarFilter('import')}
+              className="text-sm"
+            >
+              Import
+            </Button>
+            <Button
+              variant={calendarFilter === 'export' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setCalendarFilter('export')}
+              className="text-sm"
+            >
+              Export
+            </Button>
+            <Button
+              variant={calendarFilter === 'domestic' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setCalendarFilter('domestic')}
+              className="text-sm"
+            >
+              Domestic
+            </Button>
+          </div>
+        </div>
+
+        {/* Main Content Grid - Optimized Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 flex-1">
+          {/* Calendar Section - More compact */}
+          <Card className="xl:col-span-1 shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-gray-900">
+                Calendar
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-3 pt-0 flex-1 flex flex-col">
+            <CardContent className="p-4 pt-0">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}
                 modifiers={modifiers}
                 modifiersStyles={modifiersStyles}
-                className="rounded-md border border-gray-200 bg-white p-2 mb-3"
+                className="rounded-lg border border-gray-200 bg-white p-3 mb-4 shadow-sm"
               />
               
               {/* Compact Legend */}
-              <div className="space-y-1 text-xs flex-1">
-                <h4 className="font-medium text-gray-800 text-xs">Event Types:</h4>
-                <div className="grid grid-cols-2 gap-1">
+              <div className="space-y-3 text-xs">
+                <h4 className="font-semibold text-gray-800 text-sm border-b pb-2">Event Types</h4>
+                <div className="space-y-3">
                   <div>
-                    <div className="font-semibold text-gray-600 mb-1 text-xs">Import:</div>
-                    <div className="space-y-1">
-                      <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs block w-fit">ETA</Badge>
-                      <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs block w-fit">Delivery</Badge>
+                    <div className="font-medium text-indigo-700 mb-2 text-xs">Import:</div>
+                    <div className="flex flex-wrap gap-1">
+                      <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 text-xs">ETA</Badge>
+                      <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs">Delivery</Badge>
                     </div>
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-600 mb-1 text-xs">Export:</div>
-                    <div className="space-y-1">
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs block w-fit">Drop</Badge>
-                      <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs block w-fit">Return</Badge>
-                      <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs block w-fit">Cutoff</Badge>
+                    <div className="font-medium text-slate-700 mb-2 text-xs">Export:</div>
+                    <div className="flex flex-wrap gap-1">
+                      <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs">Drop</Badge>
+                      <Badge variant="outline" className="bg-teal-100 text-teal-800 border-teal-300 text-xs">Return</Badge>
+                      <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300 text-xs">Cutoff</Badge>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-yellow-700 mb-2 text-xs">Domestic:</div>
+                    <div className="flex flex-wrap gap-1">
+                      <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick</Badge>
+                      <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
                     </div>
                   </div>
                 </div>
-                <div>
-                  <div className="font-semibold text-gray-600 mb-1 text-xs">Domestic:</div>
-                  <div className="flex gap-1">
-                    <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick</Badge>
-                    <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 pt-2 border-t">
                   <div className="w-3 h-3 bg-blue-600 rounded"></div>
                   <span className="text-gray-500 text-xs">Days with events</span>
                 </div>
@@ -618,87 +634,115 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-2 shadow-sm border border-gray-200 flex flex-col">
-            <CardHeader className="pb-2 flex-shrink-0">
-              <CardTitle className="text-sm font-medium text-gray-900">
-                {selectedDate ? `Events for ${selectedDate.toLocaleDateString()}` : 'Select a date'}
+          {/* Events for Selected Date - Much larger space */}
+          <Card className="xl:col-span-3 shadow-lg border-0 bg-white">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-gray-900">
+                {selectedDate ? `Events for ${selectedDate.toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}` : 'Select a date to view events'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-3 pt-0 flex-1 flex flex-col min-h-0">
-              {selectedDate ? renderEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
-                <div className="flex items-center justify-center h-full min-h-[300px]">
-                  <div className="text-center">
-                    <div className="text-4xl mb-3">📅</div>
-                    <p className="text-gray-500">Select a date to view events</p>
+            <CardContent className="p-6 pt-0">
+              <ScrollArea className="h-[500px]">
+                {selectedDate ? renderOptimizedEventsBySource(getEventsForDate(selectedDate, calendarFilter)) : (
+                  <div className="flex items-center justify-center h-full min-h-[400px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                    <div className="text-center">
+                      <div className="text-6xl mb-4 opacity-50">📅</div>
+                      <p className="text-gray-500 text-lg font-medium">Select a date to view events</p>
+                      <p className="text-gray-400 text-sm mt-2">Click on any date in the calendar to see scheduled events</p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="shadow-sm border border-gray-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-900">
-              Upcoming Events (Next 7 Days)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-3 pt-0">
-            <ScrollArea className="h-64">
-              <div className="flex gap-4 pb-2" style={{ width: 'max-content' }}>
-                {getUpcomingEventsGroupedByDate().map(({ date, events }) => (
-                  <div key={date} className="flex-shrink-0 w-64 space-y-2 border border-gray-200 rounded-lg p-3 bg-gray-50">
-                    <div className="text-sm font-semibold text-gray-700 text-center border-b border-gray-200 pb-2">
-                      {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { 
-                        weekday: 'short', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </div>
-                    <div className="space-y-2">
-                      {events.map((event) => (
-                        <div 
-                          key={event.uniqueId} 
-                          className="p-2 border border-gray-200 rounded bg-white hover:shadow-sm transition-shadow cursor-pointer"
-                          onClick={() => handleEventClick(event)}
-                        >
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1 mb-1">
-                              <Badge 
-                                variant="outline" 
-                                className={`text-xs font-medium ${event.source === 'export' ? 'bg-slate-100 text-slate-700 border-slate-300' : event.source === 'import' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'}`}
-                              >
-                                {event.source === 'export' ? 'Export' : event.source === 'import' ? 'Import' : 'Domestic'}
-                              </Badge>
-                            </div>
-                            <div className="font-semibold text-gray-900 text-xs leading-tight truncate">{event.customer}</div>
-                            <Badge 
-                              variant="outline" 
-                              className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center`}
-                            >
-                              {getEventTypeLabel(event.type)}
-                            </Badge>
-                            <div className="text-xs text-gray-600 truncate">
-                              {event.source === 'import' && event.booking ? event.booking : 
-                               event.source === 'export' ? event.ref : 
-                               event.file}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-                {getUpcomingEventsGroupedByDate().length === 0 && (
-                  <div className="w-full text-center py-8">
-                    <div className="text-4xl mb-3">✅</div>
-                    <p className="text-gray-500">
-                      No upcoming events in the next 7 days
-                    </p>
-                  </div>
-                )}
+        {/* Weekly View - Enhanced with navigation */}
+        <Card className="shadow-lg border-0 bg-white">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold text-gray-900">
+                Weekly View: {getCurrentWeekLabel()}
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentWeekOffset(currentWeekOffset - 1)}
+                  className="px-3"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentWeekOffset(0)}
+                  disabled={currentWeekOffset === 0}
+                  className="text-xs"
+                >
+                  This Week
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentWeekOffset(currentWeekOffset + 1)}
+                  className="px-3"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
-            </ScrollArea>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 pt-0">
+            <div className="grid grid-cols-7 gap-4">
+              {getWeeklyEventsGroupedByDate().map(({ date, dateObj, events }) => (
+                <div key={date} className="min-h-[200px] space-y-3">
+                  <div className="text-center p-3 bg-gray-50 rounded-lg border">
+                    <div className="font-semibold text-gray-900 text-sm">
+                      {dateObj.toLocaleDateString('en-US', { weekday: 'short' })}
+                    </div>
+                    <div className="text-lg font-bold text-gray-700">
+                      {dateObj.getDate()}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {events.length} event{events.length !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    {events.slice(0, 3).map((event) => (
+                      <div 
+                        key={event.uniqueId} 
+                        className="p-2 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all cursor-pointer text-xs"
+                        onClick={() => handleEventClick(event)}
+                      >
+                        <Badge 
+                          variant="outline" 
+                          className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium w-full justify-center mb-1`}
+                        >
+                          {getEventTypeLabel(event.type)}
+                        </Badge>
+                        <div className="font-semibold text-gray-900 truncate">{event.customer}</div>
+                        <div className="text-gray-600 truncate">
+                          {event.source === 'import' && event.booking ? event.booking : 
+                           event.source === 'export' ? event.ref : 
+                           event.file}
+                        </div>
+                      </div>
+                    ))}
+                    {events.length > 3 && (
+                      <div className="text-center p-2 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500">
+                        +{events.length - 3} more
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
