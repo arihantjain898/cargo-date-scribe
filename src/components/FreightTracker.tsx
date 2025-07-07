@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@clerk/nextjs';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import FreightTrackerTabs from './FreightTrackerTabs';
-import { useDebounce } from '../hooks/useDebounce';
 
 const FreightTracker = () => {
-  const { userId } = useAuth();
+  const userId = 'demo-user'; // Simplified for demo
   const [exportData, setExportData] = useState<TrackingRecord[]>([]);
   const [importData, setImportData] = useState<ImportTrackingRecord[]>([]);
   const [domesticData, setDomesticData] = useState<DomesticTruckingRecord[]>([]);
@@ -16,7 +14,6 @@ const FreightTracker = () => {
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('allfiles');
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedDomesticRows, setSelectedDomesticRows] = useState<string[]>([]);
@@ -134,7 +131,6 @@ const FreightTracker = () => {
     };
     setExportData(prev => [...prev, newRecord]);
     setHighlightedRowId(newRecord.id);
-    // Automatically clear the highlight after a short delay
     setTimeout(() => setHighlightedRowId(null), 3000);
   };
 
@@ -203,7 +199,7 @@ const FreightTracker = () => {
   const addAllFilesRecord = () => {
     const newRecord: AllFilesRecord = {
       id: crypto.randomUUID(),
-      fileNumber: '',
+      file: '',
       fileType: '',
       customer: '',
       notes: '',
@@ -217,7 +213,6 @@ const FreightTracker = () => {
   };
 
   const handleFileClick = useCallback((fileNumber: string, fileType: string) => {
-    // Logic to handle file click
     console.log('fileNumber:', fileNumber, 'fileType:', fileType);
     setSearchTerm(fileNumber);
     setActiveTab('allfiles');
@@ -225,25 +220,25 @@ const FreightTracker = () => {
 
   const filteredExportData = exportData.filter(record =>
     Object.values(record).some(value =>
-      typeof value === 'string' && value.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
   const filteredImportData = importData.filter(record =>
     Object.values(record).some(value =>
-      typeof value === 'string' && value.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
-    const filteredDomesticTruckingData = domesticData.filter(record =>
+  const filteredDomesticTruckingData = domesticData.filter(record =>
     Object.values(record).some(value =>
-      typeof value === 'string' && value.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
   const filteredAllFilesData = allFilesData.filter(record =>
     Object.values(record).some(value =>
-      typeof value === 'string' && value.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 

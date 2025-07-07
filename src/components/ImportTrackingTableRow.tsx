@@ -37,7 +37,7 @@ const ImportTrackingTableRow = ({
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if all relevant fields are "Yes" for completion - ALL must be Yes, including returned
+  // Check if ALL relevant fields are "Yes" for completion - EVERY field must be "Yes"
   const isCompleted = record.poa === 'Yes' && 
     record.isf === 'Yes' && 
     record.packingListCommercialInvoice === 'Yes' && 
@@ -51,7 +51,7 @@ const ImportTrackingTableRow = ({
     record.paymentReceived === 'Yes' && 
     record.workOrderSetup === 'Yes' && 
     record.delivered === 'Yes' &&
-    record.returned === 'Yes'; // This must also be Yes for completion
+    record.returned === 'Yes'; // This MUST be "Yes" for completion
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
