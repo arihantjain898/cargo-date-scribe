@@ -7,8 +7,10 @@ export interface TrackingRecord {
   workOrder: string;
   dropDate: string;
   dropDateStatus?: 'gray' | 'yellow' | 'green' | 'red';
+  dropDone?: string;
   returnDate: string;
   returnDateStatus?: 'gray' | 'yellow' | 'green' | 'red';
+  returnNeeded?: string;
   docsSent: boolean;
   docsReceived: boolean;
   aesMblVgmSent: boolean;
