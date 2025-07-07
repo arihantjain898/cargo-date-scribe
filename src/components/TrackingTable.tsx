@@ -94,8 +94,8 @@ const TrackingTable = ({
       </div>
       
       <ScrollArea className="h-[69vh] w-full" ref={scrollAreaRef}>
-        <div className="w-full">
-          <table className="w-full border-collapse text-xs">
+        <div className="relative overflow-x-auto">
+          <table className="w-full border-collapse text-xs table-fixed">
             <TrackingTableHeader 
               selectedRows={selectedRows} 
               data={filteredData} 
@@ -121,7 +121,7 @@ const TrackingTable = ({
                 />
               ))}
               <tr>
-                <td colSpan={22} className="h-16"></td>
+                <td colSpan={20} className="h-16"></td>
               </tr>
             </tbody>
           </table>

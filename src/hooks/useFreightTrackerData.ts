@@ -169,6 +169,8 @@ export const useFreightTrackerData = (currentUserId: string) => {
     addImportRecord,
     addAllFilesItem,
     addDomesticTruckingItem,
+    addExportItem: addExportRecord,
+    addImportItem: addImportRecord,
     updateRecord,
     updateImportRecord,
     updateAllFilesRecord,
