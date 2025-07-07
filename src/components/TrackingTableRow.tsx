@@ -74,7 +74,7 @@ const TrackingTableRow = ({
   };
 
   // Check if all boolean fields are true (completed) - handle both boolean and string values
-  const checkCompleted = (val: string | boolean) => val === 'Yes' || val === true;
+  const checkCompleted = (val: string | boolean) => val === 'Yes' || val === true || val === 'N/A';
   const isCompleted = checkCompleted(record.docsReceived) && checkCompleted(record.aesMblVgmSent) && checkCompleted(record.validatedFwd) && 
     checkCompleted(record.sslDraftInvRec) && checkCompleted(record.draftInvApproved) && checkCompleted(record.transphereInvSent) && 
     checkCompleted(record.paymentRec) && checkCompleted(record.sslPaid) && checkCompleted(record.insured) && checkCompleted(record.released);
@@ -218,10 +218,9 @@ const TrackingTableRow = ({
       {/* Column 11: Titles Dispatched */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
-          value={record.titlesDispatched}
+          value={record.titlesDispatched || 'Select'}
           onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as string)}
-          options={['N/A', 'Pending', 'Completed']}
-          placeholder="Select status"
+          isFourStateBoolean={true}
         />
       </td>
       {/* Column 12: Validated Fwd */}
@@ -229,16 +228,15 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.validatedFwd}
           onSave={(value) => updateRecord(record.id, 'validatedFwd', value as string)}
-          isThreeStateBoolean={true}
+          isFourStateBoolean={true}
         />
       </td>
       {/* Column 13: Titles Returned */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
-          value={record.titlesReturned}
+          value={record.titlesReturned || 'Select'}
           onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
-          options={['N/A', 'Pending', 'Completed']}
-          placeholder="Select status"
+          isFourStateBoolean={true}
         />
       </td>
       {/* Column 14: SSL Draft Inv Rec */}
