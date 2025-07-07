@@ -254,7 +254,7 @@ const FreightTracker = () => {
       woSent: false,
       insurance: false,
       pickDate: '',
-      delivered: 'No',
+      delivered: '',
       paymentReceived: false,
       paymentMade: false,
       notes: '',
