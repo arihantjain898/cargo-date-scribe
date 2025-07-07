@@ -73,10 +73,11 @@ const TrackingTableRow = ({
     }
   };
 
-  // Check if all boolean fields are true (completed) - updated for three-state boolean values
-  const isCompleted = record.docsReceived === 'Yes' && record.aesMblVgmSent === 'Yes' && record.validatedFwd === 'Yes' && 
-    record.sslDraftInvRec === 'Yes' && record.draftInvApproved === 'Yes' && record.transphereInvSent === 'Yes' && 
-    record.paymentRec === 'Yes' && record.sslPaid === 'Yes' && record.insured === 'Yes' && record.released === 'Yes';
+  // Check if all boolean fields are true (completed) - handle both boolean and string values
+  const checkCompleted = (val: string | boolean) => val === 'Yes' || val === true;
+  const isCompleted = checkCompleted(record.docsReceived) && checkCompleted(record.aesMblVgmSent) && checkCompleted(record.validatedFwd) && 
+    checkCompleted(record.sslDraftInvRec) && checkCompleted(record.draftInvApproved) && checkCompleted(record.transphereInvSent) && 
+    checkCompleted(record.paymentRec) && checkCompleted(record.sslPaid) && checkCompleted(record.insured) && checkCompleted(record.released);
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;

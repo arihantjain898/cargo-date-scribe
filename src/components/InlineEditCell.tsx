@@ -101,12 +101,15 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
         onSave('Pending');
       }
     } else if (isThreeStateBoolean) {
+      // Handle both boolean and string values for backward compatibility
+      const currentValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+      
       // Cycle through: Select -> Pending -> Yes -> No -> Pending (skip Select after first use)
-      if (value === 'Select') {
+      if (currentValue === 'Select' || currentValue === '' || currentValue === undefined) {
         onSave('Pending');
-      } else if (value === 'Pending') {
+      } else if (currentValue === 'Pending') {
         onSave('Yes');
-      } else if (value === 'Yes') {
+      } else if (currentValue === 'Yes') {
         onSave('No');
       } else {
         onSave('Pending');
@@ -191,13 +194,16 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   };
 
   const getThreeStateBooleanDisplay = () => {
-    if (value === 'Select') {
+    // Handle both string and boolean values for backward compatibility
+    const stringValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+    
+    if (stringValue === 'Select' || stringValue === '' || stringValue === undefined) {
       return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
-    } else if (value === 'Pending') {
+    } else if (stringValue === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
-    } else if (value === 'Yes') {
+    } else if (stringValue === 'Yes') {
       return { text: 'Yes', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
-    } else if (value === 'No') {
+    } else if (stringValue === 'No') {
       return { text: 'No', color: 'bg-red-100 text-red-800 hover:bg-red-200' };
     } else {
       return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
