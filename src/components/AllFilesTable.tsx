@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -96,26 +97,37 @@ const AllFilesTable = ({
       <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1400px]">
           <table className="w-full border-collapse text-xs">
-            <AllFilesTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
+            <thead className="sticky top-0 z-30 bg-white">
+              <AllFilesTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
+              <tr className="h-1">
+                <td colSpan={18} className="border-b-4 border-black bg-white"></td>
+              </tr>
+            </thead>
             <tbody>
               {filteredData.map((record, index) => (
-                <AllFilesTableRow
-                  key={record.id}
-                  record={record}
-                  index={index}
-                  updateRecord={updateRecord}
-                  deleteRecord={deleteRecord}
-                  onArchive={handleArchiveRecord}
-                  onUnarchive={handleUnarchiveRecord}
-                  selectedRows={selectedRows}
-                  setSelectedRows={setSelectedRows}
-                  showArchived={showArchived}
-                  onFileClick={onFileClick}
-                  highlightedRowId={highlightedRowId}
-                />
+                <React.Fragment key={record.id}>
+                  <AllFilesTableRow
+                    record={record}
+                    index={index}
+                    updateRecord={updateRecord}
+                    deleteRecord={deleteRecord}
+                    onArchive={handleArchiveRecord}
+                    onUnarchive={handleUnarchiveRecord}
+                    selectedRows={selectedRows}
+                    setSelectedRows={setSelectedRows}
+                    showArchived={showArchived}
+                    onFileClick={onFileClick}
+                    highlightedRowId={highlightedRowId}
+                  />
+                  {index === 0 && (
+                    <tr className="sticky top-12 z-20 h-1">
+                      <td colSpan={18} className="border-b-4 border-gray-600 bg-white"></td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
               <tr>
-                <td colSpan={21} className="h-16"></td>
+                <td colSpan={18} className="h-16"></td>
               </tr>
             </tbody>
           </table>
