@@ -1,6 +1,6 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useUser } from "@clerk/clerk-react";
 import { Plus, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
@@ -17,22 +17,13 @@ import ExcelExportDialog from './ExcelExportDialog';
 import { useUndoRedo } from '../hooks/useUndoRedo';
 
 const FreightTracker = () => {
-  const { isSignedIn, user, isLoaded } = useUser();
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string>('test-user-123');
   const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
   const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('export');
-
-  useEffect(() => {
-    if (isLoaded && isSignedIn && user) {
-      setCurrentUserId(user.id);
-    } else {
-      setCurrentUserId(null);
-    }
-  }, [isLoaded, isSignedIn, user]);
 
   const {
     exportData,
@@ -54,7 +45,7 @@ const FreightTracker = () => {
     deleteDomesticTruckingItem
   } = useFreightTrackerData(currentUserId || '');
 
-  const { data: undoRedoData, undo, redo, canUndo, canRedo } = useUndoRedo({
+  const { state: undoRedoData, undo, redo, canUndo, canRedo } = useUndoRedo({
     exportData: exportData || [],
     importData: importData || [],
     allFilesData: allFilesData || [],
@@ -145,7 +136,7 @@ const FreightTracker = () => {
       docsSentToCustomer: false,
       notes: '',
       archived: false,
-      userId: currentUser?.uid || ''
+      userId: currentUserId || ''
     };
 
     try {
@@ -180,7 +171,7 @@ const FreightTracker = () => {
       comments: '',
       salesContact: '',
       archived: 'false',
-      userId: currentUser?.uid || ''
+      userId: currentUserId || ''
     };
 
     try {
@@ -202,12 +193,12 @@ const FreightTracker = () => {
       woSent: false,
       insurance: false,
       pickDate: '',
-      delivered: false,
+      delivered: '',
       paymentReceived: false,
-      paymentMade: '',
+      paymentMade: false,
       notes: '',
       archived: false,
-      userId: currentUser?.uid || ''
+      userId: currentUserId || ''
     };
 
     try {
@@ -222,10 +213,6 @@ const FreightTracker = () => {
     }
   };
 
-  if (!isSignedIn) {
-    return <div>Please sign in to access the freight tracker.</div>;
-  }
-
   return (
     <div className="container mx-auto py-6">
       <div className="mb-4 flex items-center justify-between">
@@ -233,7 +220,21 @@ const FreightTracker = () => {
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={undo} disabled={!canUndo}><ArrowLeft className="mr-2 h-4 w-4" />Undo</Button>
           <Button variant="outline" size="sm" onClick={redo} disabled={!canRedo}>Redo<ArrowRight className="ml-2 h-4 w-4" /></Button>
-          <ExcelExportDialog exportData={exportData || []} importData={importData || []} allFilesData={allFilesData || []} domesticTruckingData={domesticTruckingData || []} />
+          <ExcelExportDialog
+            activeTab={activeTab}
+            exportData={exportData || []}
+            importData={importData || []}
+            allFilesData={allFilesData || []}
+            domesticTruckingData={domesticTruckingData || []}
+            selectedExportRows={selectedExportRows}
+            selectedImportRows={selectedImportRows}
+            selectedAllFilesRows={selectedAllFilesRows}
+            selectedDomesticTruckingRows={selectedDomesticTruckingRows}
+          >
+            <Button variant="outline" size="sm">
+              Export to Excel
+            </Button>
+          </ExcelExportDialog>
         </div>
       </div>
 
