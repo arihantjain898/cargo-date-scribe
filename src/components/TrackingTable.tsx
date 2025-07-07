@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -92,7 +93,7 @@ const TrackingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[69vh] w-full" ref={scrollAreaRef}>
         <div className="w-full">
           <table className="w-full border-collapse text-xs">
             <TrackingTableHeader 
@@ -120,7 +121,7 @@ const TrackingTable = ({
                 />
               ))}
               <tr>
-                <td colSpan={25} className="h-16"></td>
+                <td colSpan={28} className="h-16"></td>
               </tr>
             </tbody>
           </table>
