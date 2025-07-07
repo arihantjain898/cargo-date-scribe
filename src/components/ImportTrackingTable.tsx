@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -94,34 +93,23 @@ const ImportTrackingTable = ({
       <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
         <div className="w-full">
           <table className="w-full border-collapse text-xs">
-            <thead className="sticky top-0 z-30 bg-white">
-              <ImportTrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
-              <tr className="h-1">
-                <td colSpan={22} className="border-b-4 border-black bg-white"></td>
-              </tr>
-            </thead>
+            <ImportTrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
             <tbody>
               {filteredData.map((record, index) => (
-                <React.Fragment key={record.id}>
-                  <ImportTrackingTableRow
-                    record={record}
-                    index={index}
-                    updateRecord={updateRecord}
-                    deleteRecord={deleteRecord}
-                    onArchive={handleArchiveRecord}
-                    onUnarchive={handleUnarchiveRecord}
-                    selectedRows={selectedRows}
-                    setSelectedRows={setSelectedRows}
-                    showArchived={showArchived}
-                    highlightedRowId={highlightedRowId}
-                    onFileClick={onFileClick}
-                  />
-                  {index === 0 && (
-                    <tr className="sticky top-12 z-20 h-1">
-                      <td colSpan={22} className="border-b-4 border-gray-600 bg-white"></td>
-                    </tr>
-                  )}
-                </React.Fragment>
+                <ImportTrackingTableRow
+                  key={record.id}
+                  record={record}
+                  index={index}
+                  updateRecord={updateRecord}
+                  deleteRecord={deleteRecord}
+                  onArchive={handleArchiveRecord}
+                  onUnarchive={handleUnarchiveRecord}
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
+                  showArchived={showArchived}
+                  highlightedRowId={highlightedRowId}
+                  onFileClick={onFileClick}
+                />
               ))}
               <tr>
                 <td colSpan={22} className="h-16"></td>
