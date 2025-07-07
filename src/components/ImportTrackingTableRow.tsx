@@ -37,21 +37,11 @@ const ImportTrackingTableRow = ({
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if all boolean fields from POA to Returned are "Yes" (completed)
-  const isCompleted = record.poa === 'Yes' && 
-    record.isf === 'Yes' && 
-    record.packingListCommercialInvoice === 'Yes' && 
-    record.billOfLading === 'Yes' && 
-    record.arrivalNotice === 'Yes' && 
-    record.isfFiled === 'Yes' && 
-    record.entryFiled === 'Yes' && 
-    record.blRelease === 'Yes' && 
-    record.customsRelease === 'Yes' && 
-    record.invoiceSent === 'Yes' && 
-    record.paymentReceived === 'Yes' && 
-    record.workOrderSetup === 'Yes' && 
-    record.delivered === 'Yes' &&
-    record.returned === 'Yes';
+  // Check if all boolean fields are true (completed)
+  const isCompleted = record.poa === 'Yes' && record.isf === 'Yes' && record.packingListCommercialInvoice === 'Yes' && 
+    record.billOfLading === 'Yes' && record.arrivalNotice === 'Yes' && record.isfFiled === 'Yes' && record.entryFiled === 'Yes' && 
+    record.blRelease === 'Yes' && record.customsRelease === 'Yes' && record.invoiceSent === 'Yes' && record.paymentReceived === 'Yes' && 
+    record.workOrderSetup === 'Yes' && record.delivered === 'Yes';
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
@@ -83,12 +73,12 @@ const ImportTrackingTableRow = ({
     }
   };
 
-  // Row styling with green highlight for completed records
+  // More distinctive alternating colors matching export tabs with highlight support
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
     isArchived ? 'bg-gray-200 opacity-60' : 
     index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
-  } ${isCompleted ? 'border-2 border-green-500 bg-green-50 font-bold' : ''}`;
+  } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
