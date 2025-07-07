@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -93,7 +92,7 @@ const DomesticTruckingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[60vh] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1100px]">
           <table className="w-full border-collapse text-xs">
             <DomesticTruckingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />

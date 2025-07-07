@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -91,7 +90,7 @@ const ImportTrackingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[72vh] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
         <div className="w-full">
           <table className="w-full border-collapse text-xs">
             <ImportTrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
