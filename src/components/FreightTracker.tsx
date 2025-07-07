@@ -18,7 +18,10 @@ const FreightTracker = () => {
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
   const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('allfiles');
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    // Load saved tab from localStorage, default to 'allfiles' if not found
+    return localStorage.getItem('freightTracker-activeTab') || 'allfiles';
+  });
   const [currentView, setCurrentView] = useState<'tables' | 'calendar'>('tables');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const highlightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -142,6 +145,8 @@ const FreightTracker = () => {
 
     if (foundRecord) {
       setActiveTab(targetTab);
+      // Save the new tab to localStorage
+      localStorage.setItem('freightTracker-activeTab', targetTab);
       setCurrentView('tables');
       
       // Clear any existing highlight timeout
@@ -319,7 +324,11 @@ const FreightTracker = () => {
             highlightedRowId={highlightedRowId}
             onFileClick={onFileClick}
             activeTab={activeTab}
-            setActiveTab={setActiveTab}
+            setActiveTab={(tab) => {
+              setActiveTab(tab);
+              // Save tab to localStorage whenever it changes
+              localStorage.setItem('freightTracker-activeTab', tab);
+            }}
             filteredExportData={filteredExportData}
             filteredImportData={filteredImportData}
             filteredAllFilesData={filteredAllFilesData}
