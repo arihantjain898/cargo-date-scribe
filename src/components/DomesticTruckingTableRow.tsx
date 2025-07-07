@@ -125,7 +125,7 @@ const DomesticTruckingTableRow = ({
       </td>
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
-          value={record.delivered}
+          value={record.delivered || 'Select delivery date'}
           onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
           isDate={true}
           placeholder="Select delivery date"
