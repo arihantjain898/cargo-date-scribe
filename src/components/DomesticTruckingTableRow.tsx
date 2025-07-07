@@ -36,8 +36,12 @@ const DomesticTruckingTableRow = ({
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if all boolean fields are true (completed) - handle both boolean and string values
-  const checkCompleted = (val: string | boolean) => val === 'Yes' || val === true;
+  // Check if all boolean fields are completed - must be Yes, true, or N/A (not Select, Pending, No, or false)
+  const checkCompleted = (val: string | boolean) => {
+    if (val === 'Yes' || val === true || val === 'N/A') return true;
+    if (val === 'No' || val === false || val === 'Pending' || val === 'Select' || val === '' || val === undefined) return false;
+    return false;
+  };
   const isCompleted = checkCompleted(record.woSent) && checkCompleted(record.insurance) && checkCompleted(record.paymentReceived) && checkCompleted(record.paymentMade);
 
   // Check if record is empty (has no meaningful data)
