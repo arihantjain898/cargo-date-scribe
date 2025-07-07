@@ -3,7 +3,6 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Archive, ArchiveRestore } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
-import { useSearch } from '../hooks/useSearch';
 import TrackingTableHeader from './TrackingTableHeader';
 import TrackingTableRow from './TrackingTableRow';
 
@@ -32,7 +31,6 @@ const TrackingTable = ({
 }: TrackingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
-  const { searchTerm, setSearchTerm, filteredData } = useSearch(data);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -73,7 +71,7 @@ const TrackingTable = ({
     updateRecord(id, 'archived', false);
   };
 
-  const finalFilteredData = showArchived ? filteredData : filteredData.filter(record => !record.archived);
+  const filteredData = showArchived ? data : data.filter(record => !record.archived);
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
@@ -95,15 +93,9 @@ const TrackingTable = ({
       <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
         <div className="w-full">
           <table className="w-full border-collapse text-xs">
-            <TrackingTableHeader 
-              selectedRows={selectedRows} 
-              data={filteredData} 
-              setSelectedRows={setSelectedRows}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
+            <TrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
             <tbody>
-              {finalFilteredData.map((record, index) => (
+              {filteredData.map((record, index) => (
                 <TrackingTableRow
                   key={record.id}
                   record={record}
