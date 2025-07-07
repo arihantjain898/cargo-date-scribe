@@ -109,10 +109,14 @@ const FreightTracker = () => {
       // For linking to all files: match first 2 letters to file column, digits 3-end to number column
       const filePrefix = fileNumber.slice(0, 2).toUpperCase();
       const numberPart = fileNumber.slice(2);
-      foundRecord = allFilesData?.find(record => 
-        record.file?.toUpperCase() === filePrefix && record.number === numberPart
-      );
-      console.log('Looking for All Files record:', { filePrefix, numberPart, found: !!foundRecord });
+      foundRecord = allFilesData?.find(record => {
+        const recordFile = record.file?.toUpperCase().trim();
+        const recordNumber = record.number?.trim();
+        const matches = recordFile === filePrefix && recordNumber === numberPart;
+        console.log(`Checking record: file="${recordFile}" vs "${filePrefix}", number="${recordNumber}" vs "${numberPart}", matches: ${matches}`);
+        return matches;
+      });
+      console.log('Looking for All Files record:', { original: fileNumber, filePrefix, numberPart, found: !!foundRecord });
     } else if (fileType === 'domestic') {
       targetTab = 'domestic';
       foundRecord = domesticTruckingData?.find(record => record.file && record.file.replace(/[^0-9]/g, '') === fileNumber);
