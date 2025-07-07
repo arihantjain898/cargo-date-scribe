@@ -96,7 +96,7 @@ const TrackingTableRow = ({
   return (
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <div className="flex items-center gap-2 min-w-[100px]">
+        <div className="flex items-center gap-2 w-[90px]">
           <InlineEditCell
             value={record.customer}
             onSave={(value) => updateRecord(record.id, 'customer', value as string)}

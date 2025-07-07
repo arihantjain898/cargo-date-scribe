@@ -46,7 +46,7 @@ const FreightTracker: React.FC = () => {
   const { searchTerm: domesticSearchTerm, setSearchTerm: setDomesticSearchTerm, filteredData: filteredDomesticData } = useDomesticTruckingSearch(domesticTruckingData);
 
   // Undo/Redo functionality
-  const { canUndo, canRedo, undo, redo } = useUndoRedo();
+  const { canUndo, canRedo, undo, redo } = useUndoRedo([]);
 
   const [showArchivedExport, setShowArchivedExport] = useState(false);
   const [showArchivedImport, setShowArchivedImport] = useState(false);
@@ -93,40 +93,10 @@ const FreightTracker: React.FC = () => {
   };
 
   const addNewExportRecord = () => {
-    const newRecord: Omit<TrackingRecord, 'id'> = {
-      customer: '',
-      ref: '',
-      file: '',
-      workOrder: '',
-      dropDone: '',
-      dropDate: '',
-      returnNeeded: '',
-      returnDate: '',
-      docsSent: false,
-      docsReceived: false,
-      aesMblVgmSent: false,
-      docCutoffDate: '',
-      titlesDispatched: '',
-      validatedFwd: false,
-      titlesReturned: '',
-      sslDraftInvRec: false,
-      draftInvApproved: false,
-      transphereInvSent: false,
-      paymentRec: false,
-      sslPaid: false,
-      insured: false,
-      released: false,
-      docsSentToCustomer: false,
-      notes: '',
-      archived: false,
-      userId: currentUserId
-    };
-    
-    addExportItem(newRecord);
+    addExportItem();
   };
 
   const addNewImportRecord = () => {
-    // Fixed: use the hook function directly without parameters
     addImportItem();
   };
 
