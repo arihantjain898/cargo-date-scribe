@@ -48,8 +48,20 @@ const AllFilesTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.number && record.file) {
-      console.log('AllFiles row clicked - number:', record.number, 'file:', record.file);
-      onFileClick(record.number, record.file);
+      // Determine target tab based on file prefix
+      let targetTab = '';
+      const filePrefix = record.file.slice(0, 2).toUpperCase();
+      
+      if (filePrefix === 'EA' || filePrefix === 'ES' || filePrefix === 'ET') {
+        targetTab = 'export';
+      } else if (filePrefix === 'IA' || filePrefix === 'IS') {
+        targetTab = 'import';
+      } else if (filePrefix === 'DT') {
+        targetTab = 'domestic';
+      }
+      
+      console.log('AllFiles row clicked - number:', record.number, 'file:', record.file, 'targetTab:', targetTab);
+      onFileClick(record.number, targetTab);
     }
   };
 

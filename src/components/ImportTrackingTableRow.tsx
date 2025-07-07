@@ -59,10 +59,8 @@ const ImportTrackingTableRow = ({
     if (onFileClick && record.file) {
       // Extract number from file (remove letters)
       const fileNumber = record.file.replace(/[^0-9]/g, '');
-      // Extract letters from file
-      const fileType = record.file.replace(/[0-9]/g, '');
-      console.log('Import row clicked - extracted number:', fileNumber, 'fileType:', fileType);
-      onFileClick(fileNumber, fileType || 'IS');
+      console.log('Import row clicked - file:', record.file, 'extracted number:', fileNumber);
+      onFileClick(fileNumber, 'allfiles');
     }
   };
 

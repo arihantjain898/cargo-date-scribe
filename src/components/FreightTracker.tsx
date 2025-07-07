@@ -100,22 +100,25 @@ const FreightTracker = () => {
 
     if (fileType === 'export') {
       targetTab = 'export';
-      foundRecord = exportData?.find(record => record.file === fileNumber);
+      foundRecord = exportData?.find(record => record.file && record.file.replace(/[^0-9]/g, '') === fileNumber);
     } else if (fileType === 'import') {
       targetTab = 'import';
-      foundRecord = importData?.find(record => record.file === fileNumber);
-    } else if (fileType === 'all_files' || fileType === 'allfiles') {
+      foundRecord = importData?.find(record => record.file && record.file.replace(/[^0-9]/g, '') === fileNumber);
+    } else if (fileType === 'allfiles') {
       targetTab = 'allfiles';
       foundRecord = allFilesData?.find(record => record.number === fileNumber);
-    } else if (fileType === 'domestic_trucking' || fileType === 'domestic') {
+    } else if (fileType === 'domestic') {
       targetTab = 'domestic';
-      foundRecord = domesticTruckingData?.find(record => record.file === fileNumber);
+      foundRecord = domesticTruckingData?.find(record => record.file && record.file.replace(/[^0-9]/g, '') === fileNumber);
     }
 
     if (foundRecord) {
       setActiveTab(targetTab);
       setCurrentView('tables');
       setHighlightedRowId(foundRecord.id);
+      
+      // Clear highlight after animation
+      setTimeout(() => setHighlightedRowId(null), 3000);
     } else {
       toast({
         title: "File Not Found",

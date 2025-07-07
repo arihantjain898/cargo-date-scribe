@@ -52,17 +52,10 @@ const DomesticTruckingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      // Parse the file to extract file type and number for reverse linking
-      const fileMatch = record.file.match(/^([A-Za-z]{1,2})(\d+)$/);
-      if (fileMatch) {
-        const [, fileType, fileNumber] = fileMatch;
-        console.log('Domestic row clicked - parsed fileType:', fileType, 'fileNumber:', fileNumber);
-        onFileClick(fileNumber, fileType);
-      } else {
-        console.log('Domestic row clicked - could not parse file:', record.file);
-        // Fallback: treat the whole file as fileNumber with empty fileType
-        onFileClick(record.file, '');
-      }
+      // Extract number from file (remove letters)
+      const fileNumber = record.file.replace(/[^0-9]/g, '');
+      console.log('Domestic row clicked - file:', record.file, 'extracted number:', fileNumber);
+      onFileClick(fileNumber, 'allfiles');
     }
   };
 
