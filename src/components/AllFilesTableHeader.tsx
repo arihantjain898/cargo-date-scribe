@@ -34,7 +34,7 @@ const AllFilesTableHeader = ({ selectedRows, data, setSelectedRows }: AllFilesTa
         <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Sales Contact</th>
         <th className="bg-red-200 p-2 text-center font-bold text-gray-900">Select</th>
       </tr>
-      <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
+      <tr className="bg-gray-200 border-b-4 border-black sticky top-[41px] z-30">
         <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[100px] sticky left-0 z-40">Customer</th>
         <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[50px]">File</th>
         <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">Number</th>
