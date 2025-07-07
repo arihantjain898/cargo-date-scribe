@@ -32,7 +32,7 @@ const TrackingTableHeader = ({
   const isIndeterminate = selectedRows.length > 0 && selectedRows.length < data.length;
 
   return (
-    <thead className="sticky top-0 bg-white z-30 shadow-sm">
+    <thead className="bg-white z-30 shadow-sm">
       <tr className="bg-white border-b">
         <th colSpan={21} className="p-4 text-left">
           <div className="relative max-w-sm">
