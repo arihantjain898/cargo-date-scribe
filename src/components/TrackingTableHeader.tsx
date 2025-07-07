@@ -34,7 +34,7 @@ const TrackingTableHeader = ({
   return (
     <thead className="sticky top-0 bg-white z-30 shadow-sm">
       <tr className="bg-white border-b">
-        <th colSpan={24} className="p-4 text-left">
+        <th colSpan={22} className="p-4 text-left">
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
@@ -47,42 +47,40 @@ const TrackingTableHeader = ({
         </th>
       </tr>
       <tr className="border-b-4 border-black bg-white">
-        <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-28 sticky left-0 z-40">Customer</th>
+        <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-32 sticky left-0 z-40">Customer</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">Basic Information</th>
-        <th colSpan={4} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">Drop & Return</th>
+        <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">Drop & Return</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200">Documents</th>
         <th colSpan={5} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Title Processing</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Invoice & Payment</th>
         <th colSpan={4} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">Final Steps</th>
-        <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 w-48 sticky right-12 z-40">Notes</th>
-        <th className="bg-red-200 p-2 text-center font-bold text-gray-900 sticky right-0 z-40">Select</th>
+        <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 w-64 sticky right-12 z-40">Notes</th>
+        <th className="bg-red-200 p-2 text-center font-bold text-gray-900 w-16 sticky right-0 z-40">Select</th>
       </tr>
       <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
-        <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 w-28 sticky left-0 z-40">Customer</th>
-        <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-20">Ref</th>
-        <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-20">File</th>
-        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-24">Work Order</th>
-        <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-24">Drop Date</th>
-        <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-20">Drop Done</th>
-        <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-24">Return Date</th>
-        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-20">Return Needed</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Docs Sent</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Docs Rec'd</th>
-        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-24">Doc Cutoff Date</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-22">AES/MBL/VGM Sent</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-22">Titles Dispatched</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Validated Fwd</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-22">Titles Returned</th>
-        <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">SSL Draft<br/>Inv Rec</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Draft Inv Approved</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-22">Transphere Inv Sent</th>
-        <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Payment Rec</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">SSL Paid</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Insured</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Released</th>
-        <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Docs Sent to Customer</th>
-        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-300 w-48 sticky right-12 z-40">Notes</th>
-        <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12 sticky right-0 z-40">
+        <th className="bg-gray-300 border-r-4 border-black p-2 text-left text-xs font-bold text-gray-800 w-32 sticky left-0 z-40">Customer</th>
+        <th className="border-r border-gray-500 p-2 text-left text-xs font-bold text-gray-800 bg-gray-200 w-24">Ref</th>
+        <th className="border-r border-gray-500 p-2 text-left text-xs font-bold text-gray-800 bg-gray-200 w-24">File</th>
+        <th className="border-r-4 border-black p-2 text-left text-xs font-bold text-gray-800 bg-gray-200 w-28">Work Order</th>
+        <th className="border-r border-gray-500 p-2 text-left text-xs font-bold text-gray-800 bg-gray-200 w-32">Drop Date</th>
+        <th className="border-r-4 border-black p-2 text-left text-xs font-bold text-gray-800 bg-gray-200 w-32">Return Date</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-24">Docs Sent</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-24">Docs Rec'd</th>
+        <th className="border-r-4 border-black p-2 text-left text-xs font-bold text-gray-800 bg-gray-200 w-32">Doc Cutoff Date</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-28">AES/MBL/VGM Sent</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-28">Titles Dispatched</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-24">Validated Fwd</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-28">Titles Returned</th>
+        <th className="border-r-4 border-black p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-24">SSL Draft<br/>Inv Rec</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-24">Draft Inv Approved</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-28">Transphere Inv Sent</th>
+        <th className="border-r-4 border-black p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-24">Payment Rec</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">SSL Paid</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Insured</th>
+        <th className="border-r border-gray-500 p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-20">Released</th>
+        <th className="border-r-4 border-black p-2 text-center text-xs font-bold text-gray-800 bg-gray-200 w-28">Docs Sent to Customer</th>
+        <th className="border-r-4 border-black p-2 text-left text-xs font-bold text-gray-800 bg-gray-300 w-64 sticky right-12 z-40">Notes</th>
+        <th className="bg-gray-300 p-2 text-center text-xs font-bold text-gray-800 w-16 sticky right-0 z-40">
           <Checkbox
             checked={isAllSelected}
             onCheckedChange={handleSelectAll}

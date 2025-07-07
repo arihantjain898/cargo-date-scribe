@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
@@ -42,7 +43,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
   } = useFirestore<DomesticTruckingRecord>('domestic_trucking', currentUserId);
 
   // Wrapper for adding import items with proper defaults
-  const addImportItem = async () => {
+  const addImportRecord = async () => {
     const newImportRecord: Omit<ImportTrackingRecord, 'id'> = {
       customer: '',
       booking: '',
@@ -133,7 +134,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
     domesticTruckingData,
     loading: exportLoading || importLoading || allFilesLoading || domesticTruckingLoading,
     addExportItem,
-    addImportItem,
+    addImportRecord,
     addAllFilesItem,
     addDomesticTruckingItem,
     updateRecord,
