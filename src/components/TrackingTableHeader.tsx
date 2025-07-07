@@ -54,7 +54,7 @@ const TrackingTableHeader = ({
         <th colSpan={5} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Title Processing</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Invoice & Payment</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">Final Steps</th>
-        <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[120px]">Notes</th>
+        <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 w-20">Notes</th>
         <th className="bg-red-200 p-2 text-center font-bold text-gray-900">Select</th>
       </tr>
       <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
@@ -78,7 +78,7 @@ const TrackingTableHeader = ({
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-10">SSL Paid</th>
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-10">Insured</th>
         <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-10">Released</th>
-        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[120px]">Notes</th>
+        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-20">Notes</th>
         <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-10">
           <Checkbox
             checked={isAllSelected}
