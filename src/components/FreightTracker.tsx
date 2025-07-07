@@ -17,7 +17,7 @@ import ExcelExportDialog from './ExcelExportDialog';
 import { useUndoRedo } from '../hooks/useUndoRedo';
 
 const FreightTracker = () => {
-  const [currentUserId, setCurrentUserId] = useState<string>('test-user-123');
+  const [currentUserId] = useState<string>('demo-user');
   const [selectedExportRows, setSelectedExportRows] = useState<string[]>([]);
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
@@ -45,18 +45,12 @@ const FreightTracker = () => {
     deleteDomesticTruckingItem
   } = useFreightTrackerData(currentUserId || '');
 
-  const { state: undoRedoData, undo, redo, canUndo, canRedo } = useUndoRedo({
+  const { undo, redo, canUndo, canRedo } = useUndoRedo({
     exportData: exportData || [],
     importData: importData || [],
     allFilesData: allFilesData || [],
     domesticTruckingData: domesticTruckingData || []
   });
-
-  useEffect(() => {
-    if (undoRedoData) {
-      // console.log("UndoRedo Data:", undoRedoData);
-    }
-  }, [undoRedoData]);
 
   const onFileClick = useCallback((fileNumber: string, fileType: string) => {
     if (fileType === 'export') {
@@ -193,9 +187,9 @@ const FreightTracker = () => {
       woSent: false,
       insurance: false,
       pickDate: '',
-      delivered: '',
+      delivered: false,
       paymentReceived: false,
-      paymentMade: false,
+      paymentMade: '',
       notes: '',
       archived: false,
       userId: currentUserId || ''
@@ -221,20 +215,16 @@ const FreightTracker = () => {
           <Button variant="outline" size="sm" onClick={undo} disabled={!canUndo}><ArrowLeft className="mr-2 h-4 w-4" />Undo</Button>
           <Button variant="outline" size="sm" onClick={redo} disabled={!canRedo}>Redo<ArrowRight className="ml-2 h-4 w-4" /></Button>
           <ExcelExportDialog
-            activeTab={activeTab}
             exportData={exportData || []}
             importData={importData || []}
             allFilesData={allFilesData || []}
             domesticTruckingData={domesticTruckingData || []}
+            activeTab={activeTab}
             selectedExportRows={selectedExportRows}
             selectedImportRows={selectedImportRows}
             selectedAllFilesRows={selectedAllFilesRows}
             selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-          >
-            <Button variant="outline" size="sm">
-              Export to Excel
-            </Button>
-          </ExcelExportDialog>
+          />
         </div>
       </div>
 
