@@ -3,9 +3,6 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import FreightTrackerHeader from './FreightTrackerHeader';
 import FreightTrackerTabs from './FreightTrackerTabs';
-import { useSearch } from '../hooks/useSearch';
-import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
-import { useDomesticTruckingSearch } from '../hooks/useDomesticTruckingSearch';
 import { useFirebaseAuth } from '../hooks/useFirebaseAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { TrackingRecord } from '../types/TrackingRecord';
@@ -47,12 +44,32 @@ const FreightTracker = () => {
     deleteDomesticTruckingItem
   } = useFreightTrackerData(user?.uid || '');
 
-  // Filtered data based on search and archive status
-  const filteredExportData = useSearch(exportData, searchTerm, showArchived);
-  const filteredAllFilesData = useAllFilesSearch(allFilesData, searchTerm, showArchived);
-  const filteredDomesticTruckingData = useDomesticTruckingSearch(domesticTruckingData, searchTerm, showArchived);
+  // Filter data based on search and archive status
+  const filteredExportData = useMemo(() => {
+    if (!exportData) return [];
+    
+    let filtered = exportData;
+    
+    // Filter by archive status
+    if (!showArchived) {
+      filtered = filtered.filter(record => !record.archived);
+    }
+    
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const lowercaseSearch = searchTerm.toLowerCase();
+      filtered = filtered.filter(record =>
+        (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.ref || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.workOrder || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.notes || '').toLowerCase().includes(lowercaseSearch)
+      );
+    }
+    
+    return filtered;
+  }, [exportData, searchTerm, showArchived]);
 
-  // Filtered import data
   const filteredImportData = useMemo(() => {
     if (!importData) return [];
     
@@ -67,15 +84,64 @@ const FreightTracker = () => {
     if (searchTerm.trim()) {
       const lowercaseSearch = searchTerm.toLowerCase();
       filtered = filtered.filter(record =>
-        record.customer.toLowerCase().includes(lowercaseSearch) ||
-        record.booking.toLowerCase().includes(lowercaseSearch) ||
-        record.file.toLowerCase().includes(lowercaseSearch) ||
-        record.notes.toLowerCase().includes(lowercaseSearch)
+        (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.booking || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.notes || '').toLowerCase().includes(lowercaseSearch)
       );
     }
     
     return filtered;
   }, [importData, searchTerm, showArchived]);
+
+  const filteredAllFilesData = useMemo(() => {
+    if (!allFilesData) return [];
+    
+    let filtered = allFilesData;
+    
+    // Filter by archive status
+    if (!showArchived) {
+      filtered = filtered.filter(record => !record.archived);
+    }
+    
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const lowercaseSearch = searchTerm.toLowerCase();
+      filtered = filtered.filter(record =>
+        (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.number || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.originPort || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.destinationPort || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.destinationCountry || '').toLowerCase().includes(lowercaseSearch)
+      );
+    }
+    
+    return filtered;
+  }, [allFilesData, searchTerm, showArchived]);
+
+  const filteredDomesticTruckingData = useMemo(() => {
+    if (!domesticTruckingData) return [];
+    
+    let filtered = domesticTruckingData;
+    
+    // Filter by archive status
+    if (!showArchived) {
+      filtered = filtered.filter(record => !record.archived);
+    }
+    
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const lowercaseSearch = searchTerm.toLowerCase();
+      filtered = filtered.filter(record =>
+        (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+        (record.notes || '').toLowerCase().includes(lowercaseSearch)
+      );
+    }
+    
+    return filtered;
+  }, [domesticTruckingData, searchTerm, showArchived]);
 
   const handleAddRecord = useCallback(async () => {
     try {
@@ -125,7 +191,7 @@ const FreightTracker = () => {
     }
     
     // Find matching record in All Files
-    const matchingRecord = allFilesData.find(record => {
+    const matchingRecord = allFilesData?.find(record => {
       const recordNumber = record.file.replace(/[^0-9]/g, '');
       const recordType = record.file.replace(/[0-9]/g, '');
       return recordNumber === fileNumber && (!fileType || recordType === fileType);
@@ -145,6 +211,27 @@ const FreightTracker = () => {
     }
   }, [activeTab, allFilesData, addNotification]);
 
+  // Get the add function based on active tab
+  const getAddRecordFunction = () => {
+    switch (activeTab) {
+      case 'export':
+        return handleAddRecord;
+      case 'import':
+        return handleAddImportRecord;
+      case 'domestic':
+        return handleAddDomesticRecord;
+      case 'allfiles':
+      default:
+        return handleAddAllFilesRecord;
+    }
+  };
+
+  // Dummy undo/redo functions for now
+  const handleUndo = () => {};
+  const handleRedo = () => {};
+  const handleDeleteBulkRecords = () => {};
+  const handleArchiveBulkRecords = () => {};
+
   if (loading) {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
   }
@@ -152,19 +239,32 @@ const FreightTracker = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-slate-100">
       <FreightTrackerHeader
+        activeTab={activeTab}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        showArchived={showArchived}
-        setShowArchived={setShowArchived}
-        activeTab={activeTab}
+        selectedRows={selectedExportRows}
+        selectedImportRows={selectedImportRows}
+        selectedAllFilesRows={selectedAllFilesRows}
+        selectedDomesticTruckingRows={selectedDomesticRows}
+        filteredExportData={filteredExportData}
+        filteredImportData={filteredImportData}
+        filteredAllFilesData={filteredAllFilesData}
+        filteredDomesticTruckingData={filteredDomesticTruckingData}
+        canUndo={false}
+        canRedo={false}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        onAddRecord={getAddRecordFunction()}
+        onDeleteBulkRecords={handleDeleteBulkRecords}
+        onArchiveBulkRecords={handleArchiveBulkRecords}
       />
       
       <div className="max-w-full mx-auto px-4 py-6">
         <FreightTrackerTabs
-          exportData={exportData}
-          importData={importData}
-          domesticData={domesticTruckingData}
-          allFilesData={allFilesData}
+          exportData={exportData || []}
+          importData={importData || []}
+          domesticData={domesticTruckingData || []}
+          allFilesData={allFilesData || []}
           updateExportRecord={updateRecord}
           updateImportRecord={updateImportRecord}
           updateDomesticRecord={updateDomesticTruckingRecord}
