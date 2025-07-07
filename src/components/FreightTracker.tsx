@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 // Removed Clerk import - using Firebase auth
-import { Plus, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Plus, ArrowLeft, ArrowRight, Download } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
@@ -23,7 +23,7 @@ const FreightTracker = () => {
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
   const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('export');
+  const [activeTab, setActiveTab] = useState<string>('all_files');
 
   const {
     exportData,
@@ -226,28 +226,31 @@ const FreightTracker = () => {
             selectedAllFilesRows={selectedAllFilesRows}
             selectedDomesticTruckingRows={selectedDomesticTruckingRows}
           >
-            Export Data
+            <Button variant="outline" size="sm">
+              <Download className="mr-2 h-4 w-4" />
+              Export to Excel
+            </Button>
           </ExcelExportDialog>
         </div>
       </div>
 
-      <Tabs defaultValue="export" className="space-y-4" value={activeTab} onValueChange={setActiveTab}>
+      <Tabs defaultValue="all_files" className="space-y-4" value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="export">Export Tracking</TabsTrigger>
-          <TabsTrigger value="import">Import Tracking</TabsTrigger>
           <TabsTrigger value="all_files">All Files</TabsTrigger>
+          <TabsTrigger value="import">Import Tracking</TabsTrigger>
+          <TabsTrigger value="export">Export Tracking</TabsTrigger>
           <TabsTrigger value="domestic_trucking">Domestic Trucking</TabsTrigger>
         </TabsList>
-        <TabsContent value="export">
+        <TabsContent value="all_files">
           <div className="mb-4">
-            <Button onClick={addExportRecord}><Plus className="mr-2 h-4 w-4" />Add Export Record</Button>
+            <Button onClick={addAllFilesRecord}><Plus className="mr-2 h-4 w-4" />Add All Files Record</Button>
           </div>
-          <TrackingTable
-            data={exportData || []}
-            updateRecord={updateRecord}
-            deleteRecord={deleteExportItem}
-            selectedRows={selectedExportRows}
-            setSelectedRows={setSelectedExportRows}
+          <AllFilesTable
+            data={allFilesData || []}
+            updateRecord={updateAllFilesRecord}
+            deleteRecord={deleteAllFilesItem}
+            selectedRows={selectedAllFilesRows}
+            setSelectedRows={setSelectedAllFilesRows}
             highlightedRowId={highlightedRowId}
             onFileClick={onFileClick}
           />
@@ -266,16 +269,16 @@ const FreightTracker = () => {
             onFileClick={onFileClick}
           />
         </TabsContent>
-        <TabsContent value="all_files">
+        <TabsContent value="export">
           <div className="mb-4">
-            <Button onClick={addAllFilesRecord}><Plus className="mr-2 h-4 w-4" />Add All Files Record</Button>
+            <Button onClick={addExportRecord}><Plus className="mr-2 h-4 w-4" />Add Export Record</Button>
           </div>
-          <AllFilesTable
-            data={allFilesData || []}
-            updateRecord={updateAllFilesRecord}
-            deleteRecord={deleteAllFilesItem}
-            selectedRows={selectedAllFilesRows}
-            setSelectedRows={setSelectedAllFilesRows}
+          <TrackingTable
+            data={exportData || []}
+            updateRecord={updateRecord}
+            deleteRecord={deleteExportItem}
+            selectedRows={selectedExportRows}
+            setSelectedRows={setSelectedExportRows}
             highlightedRowId={highlightedRowId}
             onFileClick={onFileClick}
           />
