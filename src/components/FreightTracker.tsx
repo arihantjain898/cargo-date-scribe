@@ -5,7 +5,6 @@ import { ImportTrackingRecord } from '@/types/ImportTrackingRecord';
 import { AllFilesRecord } from '@/types/AllFilesRecord';
 import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
 import FreightTrackerTabs from '@/components/FreightTrackerTabs';
-import FreightTrackerHeader from '@/components/FreightTrackerHeader';
 import CalendarView from '@/components/CalendarView';
 import NotificationSettings from '@/components/NotificationSettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -155,7 +154,7 @@ const FreightTracker: React.FC = () => {
       userId: currentUserId
     };
     
-    addImportItem();
+    addImportItem(newRecord);
   };
 
   const addNewDomesticRecord = () => {
@@ -434,27 +433,6 @@ const FreightTracker: React.FC = () => {
         </TabsList>
         
         <TabsContent value="tracking" className="flex-1 overflow-hidden">
-          <FreightTrackerHeader
-            activeTab={activeTab}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedRows={selectedExportRows}
-            selectedImportRows={selectedImportRows}
-            selectedAllFilesRows={selectedAllFilesRows}
-            selectedDomesticTruckingRows={selectedDomesticRows}
-            filteredExportData={filteredExportData}
-            filteredImportData={filteredImportData}
-            filteredAllFilesData={filteredAllFilesData}
-            filteredDomesticTruckingData={filteredDomesticData}
-            canUndo={canUndo}
-            canRedo={canRedo}
-            onUndo={undo}
-            onRedo={redo}
-            onAddRecord={handleAddRecord}
-            onDeleteBulkRecords={handleDeleteBulkRecords}
-            onArchiveBulkRecords={handleArchiveBulkRecords}
-          />
-          
           <FreightTrackerTabs
             exportData={exportData}
             importData={importData}
@@ -484,6 +462,10 @@ const FreightTracker: React.FC = () => {
             onFileClick={handleFileClick}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
+            filteredExportData={filteredExportData}
+            filteredImportData={filteredImportData}
+            filteredAllFilesData={filteredAllFilesData}
+            filteredDomesticTruckingData={filteredDomesticData}
           />
         </TabsContent>
 

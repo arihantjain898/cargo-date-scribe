@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Plus, Archive, ArchiveRestore, Trash2, X } from 'lucide-react';
+import { Plus, Archive, ArchiveRestore, Trash2, X, Download } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
@@ -11,6 +10,7 @@ import TrackingTable from './TrackingTable';
 import ImportTrackingTable from './ImportTrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
 import AllFilesTable from './AllFilesTable';
+import ExcelExportDialog from './ExcelExportDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,6 +52,10 @@ interface FreightTrackerTabsProps {
   onFileClick: (fileNumber: string, fileType: string) => void;
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
+  filteredExportData: TrackingRecord[];
+  filteredImportData: ImportTrackingRecord[];
+  filteredAllFilesData: AllFilesRecord[];
+  filteredDomesticTruckingData: DomesticTruckingRecord[];
 }
 
 const FreightTrackerTabs = ({
@@ -82,7 +86,11 @@ const FreightTrackerTabs = ({
   highlightedRowId,
   onFileClick,
   activeTab,
-  setActiveTab
+  setActiveTab,
+  filteredExportData,
+  filteredImportData,
+  filteredAllFilesData,
+  filteredDomesticTruckingData
 }: FreightTrackerTabsProps) => {
   // Helper functions for bulk operations
   const handleBulkArchive = (recordIds: string[], updateFunction: any, setSelected: any) => {
@@ -225,6 +233,24 @@ const FreightTrackerTabs = ({
             🚛 Domestic Trucking
           </TabsTrigger>
         </TabsList>
+
+        {/* Excel Export Button */}
+        <ExcelExportDialog 
+          activeTab={activeTab || 'allfiles'}
+          exportData={filteredExportData} 
+          importData={filteredImportData}
+          allFilesData={filteredAllFilesData}
+          domesticTruckingData={filteredDomesticTruckingData}
+          selectedExportRows={selectedExportRows}
+          selectedImportRows={selectedImportRows}
+          selectedAllFilesRows={selectedAllFilesRows}
+          selectedDomesticTruckingRows={selectedDomesticRows}
+        >
+          <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700">
+            <Download className="w-4 h-4 mr-2" />
+            Export Excel
+          </Button>
+        </ExcelExportDialog>
       </div>
 
       <TabsContent value="allfiles" className="space-y-4">
