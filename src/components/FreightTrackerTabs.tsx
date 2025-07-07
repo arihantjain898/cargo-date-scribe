@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -233,24 +234,6 @@ const FreightTrackerTabs = ({
             🚛 Domestic Trucking
           </TabsTrigger>
         </TabsList>
-
-        {/* Excel Export Button */}
-        <ExcelExportDialog 
-          activeTab={activeTab || 'allfiles'}
-          exportData={filteredExportData} 
-          importData={filteredImportData}
-          allFilesData={filteredAllFilesData}
-          domesticTruckingData={filteredDomesticTruckingData}
-          selectedExportRows={selectedExportRows}
-          selectedImportRows={selectedImportRows}
-          selectedAllFilesRows={selectedAllFilesRows}
-          selectedDomesticTruckingRows={selectedDomesticRows}
-        >
-          <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700">
-            <Download className="w-4 h-4 mr-2" />
-            Export Excel
-          </Button>
-        </ExcelExportDialog>
       </div>
 
       <TabsContent value="allfiles" className="space-y-4">
@@ -264,10 +247,28 @@ const FreightTrackerTabs = ({
               setSelectedAllFilesRows
             )}
           </div>
-          <Button onClick={addAllFilesRecord} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Record
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExcelExportDialog 
+              activeTab={activeTab || 'allfiles'}
+              exportData={filteredExportData} 
+              importData={filteredImportData}
+              allFilesData={filteredAllFilesData}
+              domesticTruckingData={filteredDomesticTruckingData}
+              selectedExportRows={selectedExportRows}
+              selectedImportRows={selectedImportRows}
+              selectedAllFilesRows={selectedAllFilesRows}
+              selectedDomesticTruckingRows={selectedDomesticRows}
+            >
+              <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700">
+                <Download className="w-4 h-4 mr-2" />
+                Export Excel
+              </Button>
+            </ExcelExportDialog>
+            <Button onClick={addAllFilesRecord} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Add Record
+            </Button>
+          </div>
         </div>
         <AllFilesTable
           data={allFilesData}
@@ -291,10 +292,28 @@ const FreightTrackerTabs = ({
               setSelectedImportRows
             )}
           </div>
-          <Button onClick={addImportRecord} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Record
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExcelExportDialog 
+              activeTab={activeTab || 'allfiles'}
+              exportData={filteredExportData} 
+              importData={filteredImportData}
+              allFilesData={filteredAllFilesData}
+              domesticTruckingData={filteredDomesticTruckingData}
+              selectedExportRows={selectedExportRows}
+              selectedImportRows={selectedImportRows}
+              selectedAllFilesRows={selectedAllFilesRows}
+              selectedDomesticTruckingRows={selectedDomesticRows}
+            >
+              <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700">
+                <Download className="w-4 h-4 mr-2" />
+                Export Excel
+              </Button>
+            </ExcelExportDialog>
+            <Button onClick={addImportRecord} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Add Record
+            </Button>
+          </div>
         </div>
         <ImportTrackingTable
           data={importData}
@@ -318,10 +337,28 @@ const FreightTrackerTabs = ({
               setSelectedExportRows
             )}
           </div>
-          <Button onClick={addExportRecord} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Record
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExcelExportDialog 
+              activeTab={activeTab || 'allfiles'}
+              exportData={filteredExportData} 
+              importData={filteredImportData}
+              allFilesData={filteredAllFilesData}
+              domesticTruckingData={filteredDomesticTruckingData}
+              selectedExportRows={selectedExportRows}
+              selectedImportRows={selectedImportRows}
+              selectedAllFilesRows={selectedAllFilesRows}
+              selectedDomesticTruckingRows={selectedDomesticRows}
+            >
+              <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700">
+                <Download className="w-4 h-4 mr-2" />
+                Export Excel
+              </Button>
+            </ExcelExportDialog>
+            <Button onClick={addExportRecord} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Add Record
+            </Button>
+          </div>
         </div>
         <TrackingTable
           data={exportData}
@@ -345,10 +382,28 @@ const FreightTrackerTabs = ({
               setSelectedDomesticRows
             )}
           </div>
-          <Button onClick={addDomesticRecord} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Record
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExcelExportDialog 
+              activeTab={activeTab || 'allfiles'}
+              exportData={filteredExportData} 
+              importData={filteredImportData}
+              allFilesData={filteredAllFilesData}
+              domesticTruckingData={filteredDomesticTruckingData}
+              selectedExportRows={selectedExportRows}
+              selectedImportRows={selectedImportRows}
+              selectedAllFilesRows={selectedAllFilesRows}
+              selectedDomesticTruckingRows={selectedDomesticRows}
+            >
+              <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700">
+                <Download className="w-4 h-4 mr-2" />
+                Export Excel
+              </Button>
+            </ExcelExportDialog>
+            <Button onClick={addDomesticRecord} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Add Record
+            </Button>
+          </div>
         </div>
         <DomesticTruckingTable
           data={domesticData}
