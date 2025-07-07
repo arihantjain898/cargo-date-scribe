@@ -93,7 +93,9 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
       Ref: record.ref,
       File: record.file,
       'Work Order': record.workOrder,
+      'Drop Done': record.dropDone,
       'Drop Date': record.dropDate,
+      'Return Needed': record.returnNeeded,
       'Return Date': record.returnDate,
       'Docs Sent': record.docsSent,
       'Docs Received': record.docsReceived,
@@ -109,6 +111,7 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
       'SSL Paid': record.sslPaid,
       'Insured': record.insured,
       'Released': record.released,
+      'Docs Sent to Customer': record.docsSentToCustomer,
       'Notes': record.notes
     }));
     const exportWorksheet = XLSX.utils.json_to_sheet(exportFormatted);
