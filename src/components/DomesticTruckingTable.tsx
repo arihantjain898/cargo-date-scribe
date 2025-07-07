@@ -94,7 +94,7 @@ const DomesticTruckingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[69vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1100px]">
           <table className="w-full border-collapse text-xs">
             <DomesticTruckingTableHeader 

@@ -95,7 +95,7 @@ const AllFilesTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[69vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1400px]">
           <table className="w-full border-collapse text-xs">
             <AllFilesTableHeader 

@@ -76,7 +76,6 @@ const FreightTracker: React.FC = () => {
   const [selectedDomesticRows, setSelectedDomesticRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
 
-  // Get current search term and setter based on active tab
   const getCurrentSearchProps = () => {
     switch (activeTab) {
       case 'export':
