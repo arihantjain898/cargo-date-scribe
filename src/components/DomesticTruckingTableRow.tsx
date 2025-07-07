@@ -36,8 +36,9 @@ const DomesticTruckingTableRow = ({
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if all boolean fields are true (completed)
-  const isCompleted = record.woSent && record.insurance && record.paymentReceived && record.paymentMade;
+  // Check if all boolean fields are true (completed) - handle both boolean and string values
+  const checkCompleted = (val: string | boolean) => val === 'Yes' || val === true;
+  const isCompleted = checkCompleted(record.woSent) && checkCompleted(record.insurance) && checkCompleted(record.paymentReceived) && checkCompleted(record.paymentMade);
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
@@ -98,16 +99,16 @@ const DomesticTruckingTableRow = ({
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.woSent}
-          onSave={(value) => updateRecord(record.id, 'woSent', value as boolean)}
-          isBoolean={true}
+          value={record.woSent || 'Select'}
+          onSave={(value) => updateRecord(record.id, 'woSent', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
-          value={record.insurance}
-          onSave={(value) => updateRecord(record.id, 'insurance', value as boolean)}
-          isBoolean={true}
+          value={record.insurance || 'Select'}
+          onSave={(value) => updateRecord(record.id, 'insurance', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       <td className="border-r border-gray-500 p-1">
@@ -128,16 +129,16 @@ const DomesticTruckingTableRow = ({
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.paymentReceived}
-          onSave={(value) => updateRecord(record.id, 'paymentReceived', value as boolean)}
-          isBoolean={true}
+          value={record.paymentReceived || 'Select'}
+          onSave={(value) => updateRecord(record.id, 'paymentReceived', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
-          value={record.paymentMade}
-          onSave={(value) => updateRecord(record.id, 'paymentMade', value as boolean)}
-          isBoolean={true}
+          value={record.paymentMade || 'Select'}
+          onSave={(value) => updateRecord(record.id, 'paymentMade', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       <td className="border-r-4 border-black p-1">
