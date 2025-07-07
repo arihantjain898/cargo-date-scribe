@@ -29,7 +29,6 @@ export const useImportSearch = (data: ImportTrackingRecord[]) => {
       (record.customer || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.booking || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.file || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.bond || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.notes || '').toLowerCase().includes(searchTerm.toLowerCase())
     ), [data, searchTerm]
   );
@@ -45,11 +44,7 @@ export const useAllFilesSearch = (data: AllFilesRecord[]) => {
       (record.customer || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.file || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.originPort || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.destinationPort || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.destinationCountry || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.comments || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.salesContact || '').toLowerCase().includes(searchTerm.toLowerCase())
+      (record.comments || '').toLowerCase().includes(searchTerm.toLowerCase())
     ), [data, searchTerm]
   );
 
