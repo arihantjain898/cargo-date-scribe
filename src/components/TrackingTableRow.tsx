@@ -79,8 +79,6 @@ const TrackingTableRow = ({
     record.sslDraftInvRec && record.draftInvApproved && record.transphereInvSent && 
     record.paymentRec && record.sslPaid && record.insured && record.released;
 
-  const isEmpty = !record.customer && !record.file;
-
   // Helper function to get text styling based on content
   const getTextStyling = (value: string, placeholder?: string) => {
     if (!value || value.trim() === '') {
@@ -312,7 +310,7 @@ const TrackingTableRow = ({
         />
       </td>
       
-      <td className="border-r-4 border-black p-1 min-w-[200px]">
+      <td className="p-1 min-w-[300px]">
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}

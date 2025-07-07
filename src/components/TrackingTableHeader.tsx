@@ -46,7 +46,7 @@ const TrackingTableHeader = ({
           </div>
         </th>
       </tr>
-      <tr className="border-b-4 border-black bg-white">
+      <tr className="border-b-4 border-black bg-white sticky top-[73px] z-30">
         <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-32 sticky left-0 z-40">Customer</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">Basic Information</th>
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">Drop & Return</th>
@@ -54,10 +54,10 @@ const TrackingTableHeader = ({
         <th colSpan={5} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Title Processing</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Invoice & Payment</th>
         <th colSpan={4} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">Final Steps</th>
-        <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[200px]">Notes</th>
+        <th className="p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[300px]">Notes</th>
         <th className="bg-red-200 p-2 text-center font-bold text-gray-900 w-12">Select</th>
       </tr>
-      <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[89px] z-30">
+      <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[121px] z-30">
         <th className="bg-gray-300 border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 min-w-[100px] sticky left-0 z-40">Customer</th>
         <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">Ref</th>
         <th className="border-r border-gray-500 p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">File</th>
@@ -79,7 +79,7 @@ const TrackingTableHeader = ({
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">Insured</th>
         <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[60px]">Released</th>
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 min-w-[80px]">Docs Sent to Customer</th>
-        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[200px]">Notes</th>
+        <th className="p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 min-w-[300px]">Notes</th>
         <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-12">
           <Checkbox
             checked={isAllSelected}
