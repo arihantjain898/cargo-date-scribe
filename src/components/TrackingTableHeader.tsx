@@ -54,7 +54,7 @@ const TrackingTableHeader = ({
         <th colSpan={5} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Title Processing</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Invoice & Payment</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">Final Steps</th>
-        <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 w-32">Notes</th>
+        <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 w-40">Notes</th>
         <th className="bg-red-200 p-2 text-center font-bold text-gray-900">Select</th>
       </tr>
       <tr className="bg-gray-200 border-b-4 border-gray-500 sticky top-[41px] z-30">
@@ -67,18 +67,18 @@ const TrackingTableHeader = ({
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Docs Sent</th>
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Docs Rec'd</th>
         <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-12">Doc Cutoff Date</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-10">AES/MBL/VGM Sent</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-10">Titles Dispatched</th>
+        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">AES/MBL/VGM Sent</th>
+        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Titles Dispatched</th>
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Validated Fwd</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-10">Titles Returned</th>
+        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Titles Returned</th>
         <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">SSL Draft Inv Rec</th>
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Draft Inv Approved</th>
-        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-10">Transphere Inv Sent</th>
+        <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Transphere Inv Sent</th>
         <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Payment Rec</th>
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">SSL Paid</th>
         <th className="border-r border-gray-500 p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Insured</th>
         <th className="border-r-4 border-black p-1 text-center text-xs font-bold text-gray-800 bg-gray-200 w-8">Released</th>
-        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-32">Notes</th>
+        <th className="border-r-4 border-black p-1 text-left text-xs font-bold text-gray-800 bg-gray-200 w-40">Notes</th>
         <th className="bg-gray-300 p-1 text-center text-xs font-bold text-gray-800 w-10">
           <Checkbox
             checked={isAllSelected}
