@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ExternalLink, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -37,11 +38,11 @@ const ImportTrackingTableRow = ({
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if all boolean fields are true (completed)
+  // Check if all boolean fields are true (completed) - FIXED: including 'returned' in the check
   const isCompleted = record.poa === 'Yes' && record.isf === 'Yes' && record.packingListCommercialInvoice === 'Yes' && 
     record.billOfLading === 'Yes' && record.arrivalNotice === 'Yes' && record.isfFiled === 'Yes' && record.entryFiled === 'Yes' && 
     record.blRelease === 'Yes' && record.customsRelease === 'Yes' && record.invoiceSent === 'Yes' && record.paymentReceived === 'Yes' && 
-    record.workOrderSetup === 'Yes' && record.delivered === 'Yes';
+    record.workOrderSetup === 'Yes' && record.delivered === 'Yes' && record.returned === 'Yes';
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFreightTrackerData } from '@/hooks/useFreightTrackerData';
 import { TrackingRecord } from '@/types/TrackingRecord';
@@ -25,7 +26,7 @@ const FreightTracker: React.FC = () => {
     domesticTruckingData,
     loading,
     addExportItem,
-    addImportItem,
+    addImportItem, // Fixed: this function doesn't take parameters
     addAllFilesItem,
     addDomesticTruckingItem,
     updateRecord,
@@ -125,35 +126,8 @@ const FreightTracker: React.FC = () => {
   };
 
   const addNewImportRecord = () => {
-    const newRecord: Omit<ImportTrackingRecord, 'id'> = {
-      customer: '',
-      booking: '',
-      bookingUrl: '',
-      file: '',
-      etaFinalPod: '',
-      bond: 'Continuous',
-      poa: 'Select',
-      isf: 'Select',
-      packingListCommercialInvoice: 'Select',
-      billOfLading: 'Select',
-      arrivalNotice: 'Select',
-      isfFiled: 'Select',
-      entryFiled: 'Select',
-      blRelease: 'Select',
-      customsRelease: 'Select',
-      invoiceSent: 'Select',
-      paymentReceived: 'Select',
-      workOrderSetup: 'Select',
-      delivered: 'Select',
-      returned: 'Select',
-      deliveryDate: '',
-      notes: '',
-      archived: false,
-      createdAt: new Date().toISOString(),
-      userId: currentUserId
-    };
-    
-    addImportItem(newRecord);
+    // Fixed: use the hook function directly without parameters
+    addImportItem();
   };
 
   const addNewDomesticRecord = () => {
