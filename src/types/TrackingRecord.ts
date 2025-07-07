@@ -5,10 +5,10 @@ export interface TrackingRecord {
   ref: string;
   file: string;
   workOrder: string;
-  dropDone: string;
   dropDate: string;
-  returnNeeded: string;
+  dropDateStatus?: 'gray' | 'yellow' | 'green' | 'red';
   returnDate: string;
+  returnDateStatus?: 'gray' | 'yellow' | 'green' | 'red';
   docsSent: boolean;
   docsReceived: boolean;
   aesMblVgmSent: boolean;

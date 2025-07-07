@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TrackingRecord } from '../types/TrackingRecord';
@@ -56,9 +56,29 @@ const TrackingTableRow = ({
     }
   };
 
-  // Check if all boolean fields are true (completed)
-  const isCompleted = record.dropDone === 'Yes' && record.returnNeeded === 'Yes' && 
-    record.docsReceived && record.aesMblVgmSent && record.validatedFwd && 
+  const handleDateStatusToggle = (field: 'dropDateStatus' | 'returnDateStatus') => {
+    const currentStatus = record[field] || 'gray';
+    const statusCycle = ['gray', 'yellow', 'green', 'red'] as const;
+    const currentIndex = statusCycle.indexOf(currentStatus);
+    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+    updateRecord(record.id, field, nextStatus);
+  };
+
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case 'yellow':
+        return 'bg-yellow-400 border-yellow-500';
+      case 'green':
+        return 'bg-green-400 border-green-500';
+      case 'red':
+        return 'bg-red-400 border-red-500';
+      default:
+        return 'bg-gray-400 border-gray-500';
+    }
+  };
+
+  // Check if all boolean fields are true (completed) - removed dropDone and returnNeeded from condition
+  const isCompleted = record.docsReceived && record.aesMblVgmSent && record.validatedFwd && 
     record.sslDraftInvRec && record.draftInvApproved && record.transphereInvSent && 
     record.paymentRec && record.sslPaid && record.insured && record.released;
 
@@ -125,43 +145,47 @@ const TrackingTableRow = ({
           isTextColumn={true}
         />
       </td>
-      {/* Column 5: Drop Done */}
+      {/* Column 5: Drop Date with Status */}
       <td className="border-r border-gray-500 p-1">
-        <InlineEditCell
-          value={record.dropDone}
-          onSave={(value) => updateRecord(record.id, 'dropDone', value as string)}
-          options={['No', 'Yes', 'N/A']}
-          placeholder="Select status"
-        />
+        <div className="flex items-center gap-1">
+          <InlineEditCell
+            value={record.dropDate}
+            onSave={(value) => updateRecord(record.id, 'dropDate', value as string)}
+            isDate={true}
+            placeholder="Select drop date"
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleDateStatusToggle('dropDateStatus')}
+            className="h-6 w-6 p-0 hover:bg-gray-100"
+            title="Toggle status"
+          >
+            <Circle className={`h-4 w-4 ${getStatusColor(record.dropDateStatus)} border-2 rounded-full`} />
+          </Button>
+        </div>
       </td>
-      {/* Column 6: Drop Date */}
-      <td className="border-r border-gray-500 p-1">
-        <InlineEditCell
-          value={record.dropDate}
-          onSave={(value) => updateRecord(record.id, 'dropDate', value as string)}
-          isDate={true}
-          placeholder="Select drop date"
-        />
-      </td>
-      {/* Column 7: Return Needed */}
-      <td className="border-r border-gray-500 p-1">
-        <InlineEditCell
-          value={record.returnNeeded}
-          onSave={(value) => updateRecord(record.id, 'returnNeeded', value as string)}
-          options={['No', 'Yes', 'N/A']}
-          placeholder="Select status"
-        />
-      </td>
-      {/* Column 8: Return Date */}
+      {/* Column 6: Return Date with Status */}
       <td className="border-r-4 border-black p-1">
-        <InlineEditCell
-          value={record.returnDate}
-          onSave={(value) => updateRecord(record.id, 'returnDate', value as string)}
-          isDate={true}
-          placeholder="Select return date"
-        />
+        <div className="flex items-center gap-1">
+          <InlineEditCell
+            value={record.returnDate}
+            onSave={(value) => updateRecord(record.id, 'returnDate', value as string)}
+            isDate={true}
+            placeholder="Select return date"
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleDateStatusToggle('returnDateStatus')}
+            className="h-6 w-6 p-0 hover:bg-gray-100"
+            title="Toggle status"
+          >
+            <Circle className={`h-4 w-4 ${getStatusColor(record.returnDateStatus)} border-2 rounded-full`} />
+          </Button>
+        </div>
       </td>
-      {/* Column 9: Docs Sent */}
+      {/* Column 7: Docs Sent */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsSent}
@@ -169,7 +193,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 10: Docs Received */}
+      {/* Column 8: Docs Received */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsReceived}
@@ -177,7 +201,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 11: Doc Cutoff Date */}
+      {/* Column 9: Doc Cutoff Date */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.docCutoffDate}
@@ -186,7 +210,7 @@ const TrackingTableRow = ({
           placeholder="Select cutoff date"
         />
       </td>
-      {/* Column 12: AES/MBL/VGM Sent */}
+      {/* Column 10: AES/MBL/VGM Sent */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.aesMblVgmSent}
@@ -194,7 +218,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 13: Titles Dispatched */}
+      {/* Column 11: Titles Dispatched */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.titlesDispatched}
@@ -203,7 +227,7 @@ const TrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
-      {/* Column 14: Validated Fwd */}
+      {/* Column 12: Validated Fwd */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.validatedFwd}
@@ -211,7 +235,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 15: Titles Returned */}
+      {/* Column 13: Titles Returned */}
       <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.titlesReturned}
@@ -220,7 +244,7 @@ const TrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
-      {/* Column 16: SSL Draft Inv Rec */}
+      {/* Column 14: SSL Draft Inv Rec */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.sslDraftInvRec}
@@ -228,7 +252,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 17: Draft Inv Approved */}
+      {/* Column 15: Draft Inv Approved */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.draftInvApproved}
@@ -236,7 +260,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 18: Transphere Inv Sent */}
+      {/* Column 16: Transphere Inv Sent */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.transphereInvSent}
@@ -244,7 +268,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 19: Payment Rec */}
+      {/* Column 17: Payment Rec */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.paymentRec}
@@ -252,7 +276,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 20: SSL Paid */}
+      {/* Column 18: SSL Paid */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.sslPaid}
@@ -260,7 +284,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 21: Insured */}
+      {/* Column 19: Insured */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.insured}
@@ -268,7 +292,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 22: Released */}
+      {/* Column 20: Released */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.released}
@@ -276,7 +300,7 @@ const TrackingTableRow = ({
           isBoolean={true}
         />
       </td>
-      {/* Column 23: Notes */}
+      {/* Column 21: Notes */}
       <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
@@ -286,7 +310,7 @@ const TrackingTableRow = ({
           isNotesColumn={true}
         />
       </td>
-      {/* Column 24: Select */}
+      {/* Column 22: Select */}
       <td className="p-1 text-center">
         <Checkbox
           checked={isSelected}
