@@ -1,4 +1,5 @@
 
+
 export interface TrackingRecord {
   id: string;
   customer: string;
@@ -7,8 +8,10 @@ export interface TrackingRecord {
   workOrder: string;
   dropDone: string;
   dropDate: string;
+  dropDateStatus?: 'gray' | 'yellow' | 'green' | 'red';
   returnNeeded: string;
   returnDate: string;
+  returnDateStatus?: 'gray' | 'yellow' | 'green' | 'red';
   docsSent: boolean;
   docsReceived: boolean;
   aesMblVgmSent: boolean;
@@ -28,3 +31,4 @@ export interface TrackingRecord {
   archived?: boolean;
   userId?: string;
 }
+
