@@ -75,7 +75,8 @@ const TrackingTableRow = ({
 
   // Check if all boolean fields are true (completed) - handle both boolean and string values
   const checkCompleted = (val: string | boolean) => val === 'Yes' || val === true || val === 'N/A';
-  const isCompleted = checkCompleted(record.docsReceived) && checkCompleted(record.aesMblVgmSent) && checkCompleted(record.validatedFwd) && 
+  const isCompleted = checkCompleted(record.docsSent) && checkCompleted(record.docsReceived) && checkCompleted(record.aesMblVgmSent) && 
+    checkCompleted(record.titlesDispatched) && checkCompleted(record.validatedFwd) && checkCompleted(record.titlesReturned) && 
     checkCompleted(record.sslDraftInvRec) && checkCompleted(record.draftInvApproved) && checkCompleted(record.transphereInvSent) && 
     checkCompleted(record.paymentRec) && checkCompleted(record.sslPaid) && checkCompleted(record.insured) && checkCompleted(record.released);
 
