@@ -1,19 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-// Removed Clerk import - using Firebase auth
-import { Plus, ArrowLeft, ArrowRight, Download } from 'lucide-react';
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
+import { toast } from "@/hooks/use-toast"
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
-import TrackingTable from './TrackingTable';
-import ImportTrackingTable from './ImportTrackingTable';
-import AllFilesTable from './AllFilesTable';
-import DomesticTruckingTable from './DomesticTruckingTable';
-import ExcelExportDialog from './ExcelExportDialog';
+import FreightTrackerHeader from './FreightTrackerHeader';
+import FreightTrackerTabs from './FreightTrackerTabs';
+import CalendarView from './CalendarView';
 import { useUndoRedo } from '../hooks/useUndoRedo';
 
 const FreightTracker = () => {
@@ -23,7 +18,9 @@ const FreightTracker = () => {
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
   const [selectedDomesticTruckingRows, setSelectedDomesticTruckingRows] = useState<string[]>([]);
   const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('all_files');
+  const [activeTab, setActiveTab] = useState<string>('allfiles');
+  const [currentView, setCurrentView] = useState<'tables' | 'calendar'>('tables');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const {
     exportData,
@@ -52,58 +49,80 @@ const FreightTracker = () => {
     domesticTruckingData: domesticTruckingData || []
   });
 
+  // Simple filtering for now - will enhance later
+  const filteredExportData = useMemo(() => {
+    if (!searchTerm.trim()) return exportData || [];
+    const lowercaseSearch = searchTerm.toLowerCase();
+    return (exportData || []).filter(record =>
+      (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.ref || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.workOrder || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.notes || '').toLowerCase().includes(lowercaseSearch)
+    );
+  }, [exportData, searchTerm]);
+
+  const filteredImportData = useMemo(() => {
+    if (!searchTerm.trim()) return importData || [];
+    const lowercaseSearch = searchTerm.toLowerCase();
+    return (importData || []).filter(record =>
+      (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.booking || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.notes || '').toLowerCase().includes(lowercaseSearch)
+    );
+  }, [importData, searchTerm]);
+
+  const filteredAllFilesData = useMemo(() => {
+    if (!searchTerm.trim()) return allFilesData || [];
+    const lowercaseSearch = searchTerm.toLowerCase();
+    return (allFilesData || []).filter(record =>
+      (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.number || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.comments || '').toLowerCase().includes(lowercaseSearch)
+    );
+  }, [allFilesData, searchTerm]);
+
+  const filteredDomesticTruckingData = useMemo(() => {
+    if (!searchTerm.trim()) return domesticTruckingData || [];
+    const lowercaseSearch = searchTerm.toLowerCase();
+    return (domesticTruckingData || []).filter(record =>
+      (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.notes || '').toLowerCase().includes(lowercaseSearch)
+    );
+  }, [domesticTruckingData, searchTerm]);
+
   const onFileClick = useCallback((fileNumber: string, fileType: string) => {
+    let targetTab = '';
+    let foundRecord = null;
+
     if (fileType === 'export') {
-      setActiveTab('export');
-      const foundRecord = exportData?.find(record => record.file === fileNumber);
-      if (foundRecord) {
-        setHighlightedRowId(foundRecord.id);
-      } else {
-        toast({
-          title: "File Not Found",
-          description: `File number ${fileNumber} not found in Export Tracking.`,
-        })
-      }
+      targetTab = 'export';
+      foundRecord = exportData?.find(record => record.file === fileNumber);
     } else if (fileType === 'import') {
-      setActiveTab('import');
-      const foundRecord = importData?.find(record => record.file === fileNumber);
-      if (foundRecord) {
-        setHighlightedRowId(foundRecord.id);
-      } else {
-        toast({
-          title: "File Not Found",
-          description: `File number ${fileNumber} not found in Import Tracking.`,
-        })
-      }
-    } else if (fileType === 'all_files') {
-      setActiveTab('all_files');
-      const foundRecord = allFilesData?.find(record => record.number === fileNumber);
-      if (foundRecord) {
-        setHighlightedRowId(foundRecord.id);
-      } else {
-        toast({
-          title: "File Not Found",
-          description: `File number ${fileNumber} not found in All Files.`,
-        })
-      }
-    } else if (fileType === 'domestic_trucking') {
-      setActiveTab('domestic_trucking');
-      const foundRecord = domesticTruckingData?.find(record => record.file === fileNumber);
-      if (foundRecord) {
-        setHighlightedRowId(foundRecord.id);
-      } else {
-        toast({
-          title: "File Not Found",
-          description: `File number ${fileNumber} not found in Domestic Trucking.`,
-        })
-      }
+      targetTab = 'import';
+      foundRecord = importData?.find(record => record.file === fileNumber);
+    } else if (fileType === 'all_files' || fileType === 'allfiles') {
+      targetTab = 'allfiles';
+      foundRecord = allFilesData?.find(record => record.number === fileNumber);
+    } else if (fileType === 'domestic_trucking' || fileType === 'domestic') {
+      targetTab = 'domestic';
+      foundRecord = domesticTruckingData?.find(record => record.file === fileNumber);
+    }
+
+    if (foundRecord) {
+      setActiveTab(targetTab);
+      setCurrentView('tables');
+      setHighlightedRowId(foundRecord.id);
     } else {
       toast({
-        title: "File Type Not Supported",
-        description: `File type ${fileType} is not supported.`,
-      })
+        title: "File Not Found",
+        description: `File number ${fileNumber} not found in ${fileType} tracking.`,
+      });
     }
-  }, [exportData, importData, allFilesData, domesticTruckingData, toast, setHighlightedRowId, setActiveTab]);
+  }, [exportData, importData, allFilesData, domesticTruckingData]);
 
   const addExportRecord = async () => {
     const newRecord: Omit<TrackingRecord, 'id'> = {
@@ -141,7 +160,7 @@ const FreightTracker = () => {
         title: "Error",
         description: "Failed to add new export record.",
         variant: "destructive",
-      })
+      });
     }
   };
 
@@ -176,7 +195,7 @@ const FreightTracker = () => {
         title: "Error",
         description: "Failed to add new all files record.",
         variant: "destructive",
-      })
+      });
     }
   };
 
@@ -203,98 +222,100 @@ const FreightTracker = () => {
         title: "Error",
         description: "Failed to add new domestic trucking record.",
         variant: "destructive",
-      })
+      });
     }
   };
 
-
   return (
     <div className="container mx-auto py-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Freight Tracker</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={undo} disabled={!canUndo}><ArrowLeft className="mr-2 h-4 w-4" />Undo</Button>
-          <Button variant="outline" size="sm" onClick={redo} disabled={!canRedo}>Redo<ArrowRight className="ml-2 h-4 w-4" /></Button>
-          <ExcelExportDialog 
-            exportData={exportData || []} 
-            importData={importData || []} 
-            allFilesData={allFilesData || []} 
-            domesticTruckingData={domesticTruckingData || []}
-            activeTab={activeTab}
-            selectedExportRows={selectedExportRows}
-            selectedImportRows={selectedImportRows}
-            selectedAllFilesRows={selectedAllFilesRows}
-            selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-          >
-            <Button variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Export to Excel
-            </Button>
-          </ExcelExportDialog>
-        </div>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold mb-4">Freight Tracker</h1>
+        <FreightTrackerHeader
+          activeTab={activeTab}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedRows={selectedExportRows}
+          selectedImportRows={selectedImportRows}
+          selectedAllFilesRows={selectedAllFilesRows}
+          selectedDomesticTruckingRows={selectedDomesticTruckingRows}
+          filteredExportData={filteredExportData}
+          filteredImportData={filteredImportData}
+          filteredAllFilesData={filteredAllFilesData}
+          filteredDomesticTruckingData={filteredDomesticTruckingData}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={undo}
+          onRedo={redo}
+          onAddRecord={() => {
+            switch (activeTab) {
+              case 'export':
+                addExportRecord();
+                break;
+              case 'import':
+                addImportItem();
+                break;
+              case 'allfiles':
+                addAllFilesRecord();
+                break;
+              case 'domestic':
+                addDomesticTruckingRecord();
+                break;
+            }
+          }}
+          onDeleteBulkRecords={() => {}}
+          onArchiveBulkRecords={() => {}}
+        />
       </div>
 
-      <Tabs defaultValue="all_files" className="space-y-4" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="all_files">All Files</TabsTrigger>
-          <TabsTrigger value="import">Import Tracking</TabsTrigger>
-          <TabsTrigger value="export">Export Tracking</TabsTrigger>
-          <TabsTrigger value="domestic_trucking">Domestic Trucking</TabsTrigger>
+      <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as 'tables' | 'calendar')} className="space-y-4">
+        <TabsList className="grid w-[400px] grid-cols-2">
+          <TabsTrigger value="tables">📊 Tracking Tables</TabsTrigger>
+          <TabsTrigger value="calendar">📅 Calendar View</TabsTrigger>
         </TabsList>
-        <TabsContent value="all_files">
-          <div className="mb-4">
-            <Button onClick={addAllFilesRecord}><Plus className="mr-2 h-4 w-4" />Add All Files Record</Button>
-          </div>
-          <AllFilesTable
-            data={allFilesData || []}
-            updateRecord={updateAllFilesRecord}
-            deleteRecord={deleteAllFilesItem}
-            selectedRows={selectedAllFilesRows}
-            setSelectedRows={setSelectedAllFilesRows}
+        
+        <TabsContent value="tables">
+          <FreightTrackerTabs
+            exportData={filteredExportData}
+            importData={filteredImportData}
+            domesticData={filteredDomesticTruckingData}
+            allFilesData={filteredAllFilesData}
+            updateExportRecord={updateRecord}
+            updateImportRecord={updateImportRecord}
+            updateDomesticRecord={updateDomesticTruckingRecord}
+            updateAllFilesRecord={updateAllFilesRecord}
+            deleteExportRecord={deleteExportItem}
+            deleteImportRecord={deleteImportItem}
+            deleteDomesticRecord={deleteDomesticTruckingItem}
+            deleteAllFilesRecord={deleteAllFilesItem}
+            addExportRecord={addExportRecord}
+            addImportRecord={addImportItem}
+            addDomesticRecord={addDomesticTruckingRecord}
+            addAllFilesRecord={addAllFilesRecord}
+            selectedExportRows={selectedExportRows}
+            setSelectedExportRows={setSelectedExportRows}
+            selectedImportRows={selectedImportRows}
+            setSelectedImportRows={setSelectedImportRows}
+            selectedDomesticRows={selectedDomesticTruckingRows}
+            setSelectedDomesticRows={setSelectedDomesticTruckingRows}
+            selectedAllFilesRows={selectedAllFilesRows}
+            setSelectedAllFilesRows={setSelectedAllFilesRows}
             highlightedRowId={highlightedRowId}
             onFileClick={onFileClick}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            filteredExportData={filteredExportData}
+            filteredImportData={filteredImportData}
+            filteredAllFilesData={filteredAllFilesData}
+            filteredDomesticTruckingData={filteredDomesticTruckingData}
           />
         </TabsContent>
-        <TabsContent value="import">
-          <div className="mb-4">
-            <Button onClick={addImportItem}><Plus className="mr-2 h-4 w-4" />Add Import Record</Button>
-          </div>
-          <ImportTrackingTable
-            data={importData || []}
-            updateRecord={updateImportRecord}
-            deleteRecord={deleteImportItem}
-            selectedRows={selectedImportRows}
-            setSelectedRows={setSelectedImportRows}
-            highlightedRowId={highlightedRowId}
-            onFileClick={onFileClick}
-          />
-        </TabsContent>
-        <TabsContent value="export">
-          <div className="mb-4">
-            <Button onClick={addExportRecord}><Plus className="mr-2 h-4 w-4" />Add Export Record</Button>
-          </div>
-          <TrackingTable
-            data={exportData || []}
-            updateRecord={updateRecord}
-            deleteRecord={deleteExportItem}
-            selectedRows={selectedExportRows}
-            setSelectedRows={setSelectedExportRows}
-            highlightedRowId={highlightedRowId}
-            onFileClick={onFileClick}
-          />
-        </TabsContent>
-        <TabsContent value="domestic_trucking">
-          <div className="mb-4">
-            <Button onClick={addDomesticTruckingRecord}><Plus className="mr-2 h-4 w-4" />Add Domestic Trucking Record</Button>
-          </div>
-          <DomesticTruckingTable
-            data={domesticTruckingData || []}
-            updateRecord={updateDomesticTruckingRecord}
-            deleteRecord={deleteDomesticTruckingItem}
-            selectedRows={selectedDomesticTruckingRows}
-            setSelectedRows={setSelectedDomesticTruckingRows}
-            highlightedRowId={highlightedRowId}
-            onFileClick={onFileClick}
+        
+        <TabsContent value="calendar">
+          <CalendarView
+            data={filteredExportData}
+            importData={filteredImportData}
+            domesticData={filteredDomesticTruckingData}
+            onCalendarEventClick={onFileClick}
           />
         </TabsContent>
       </Tabs>
