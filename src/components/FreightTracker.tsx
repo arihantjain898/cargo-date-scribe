@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "@/hooks/use-toast"
 import { useFreightTrackerData } from '../hooks/useFreightTrackerData';
@@ -21,6 +21,7 @@ const FreightTracker = () => {
   const [activeTab, setActiveTab] = useState<string>('allfiles');
   const [currentView, setCurrentView] = useState<'tables' | 'calendar'>('tables');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const highlightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
     exportData,
@@ -142,10 +143,21 @@ const FreightTracker = () => {
     if (foundRecord) {
       setActiveTab(targetTab);
       setCurrentView('tables');
+      
+      // Clear any existing highlight timeout
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+        highlightTimeoutRef.current = null;
+      }
+      
+      // Set the highlight
       setHighlightedRowId(foundRecord.id);
       
-      // Clear highlight after animation
-      setTimeout(() => setHighlightedRowId(null), 3000);
+      // Clear highlight after exactly 3 seconds
+      highlightTimeoutRef.current = setTimeout(() => {
+        setHighlightedRowId(null);
+        highlightTimeoutRef.current = null;
+      }, 3000);
     } else {
       toast({
         title: "File Not Found",
@@ -256,6 +268,15 @@ const FreightTracker = () => {
       });
     }
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="w-full px-4 py-6">
