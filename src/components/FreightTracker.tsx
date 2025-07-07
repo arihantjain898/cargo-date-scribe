@@ -5,12 +5,15 @@ import { ImportTrackingRecord } from '@/types/ImportTrackingRecord';
 import { AllFilesRecord } from '@/types/AllFilesRecord';
 import { DomesticTruckingRecord } from '@/types/DomesticTruckingRecord';
 import FreightTrackerTabs from '@/components/FreightTrackerTabs';
+import FreightTrackerHeader from '@/components/FreightTrackerHeader';
 import CalendarView from '@/components/CalendarView';
 import NotificationSettings from '@/components/NotificationSettings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Bell } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useSearch, useImportSearch, useAllFilesSearch, useDomesticTruckingSearch } from '@/hooks/useSearch';
+import { useUndoRedo } from '@/hooks/useUndoRedo';
 
 const FreightTracker: React.FC = () => {
   const currentUserId = 'test-user-123'; // Mock user ID
@@ -35,6 +38,15 @@ const FreightTracker: React.FC = () => {
     deleteAllFilesItem,
     deleteDomesticTruckingItem
   } = useFreightTrackerData(currentUserId);
+
+  // Search hooks
+  const { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm, filteredData: filteredExportData } = useSearch(exportData);
+  const { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm, filteredData: filteredImportData } = useImportSearch(importData);
+  const { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm, filteredData: filteredAllFilesData } = useAllFilesSearch(allFilesData);
+  const { searchTerm: domesticSearchTerm, setSearchTerm: setDomesticSearchTerm, filteredData: filteredDomesticData } = useDomesticTruckingSearch(domesticTruckingData);
+
+  // Undo/Redo functionality
+  const { canUndo, canRedo, undo, redo } = useUndoRedo();
 
   const [showArchivedExport, setShowArchivedExport] = useState(false);
   const [showArchivedImport, setShowArchivedImport] = useState(false);
@@ -64,6 +76,22 @@ const FreightTracker: React.FC = () => {
   const [selectedImportRows, setSelectedImportRows] = useState<string[]>([]);
   const [selectedDomesticRows, setSelectedDomesticRows] = useState<string[]>([]);
   const [selectedAllFilesRows, setSelectedAllFilesRows] = useState<string[]>([]);
+
+  // Get current search term and setter based on active tab
+  const getCurrentSearchProps = () => {
+    switch (activeTab) {
+      case 'export':
+        return { searchTerm: exportSearchTerm, setSearchTerm: setExportSearchTerm };
+      case 'import':
+        return { searchTerm: importSearchTerm, setSearchTerm: setImportSearchTerm };
+      case 'allfiles':
+        return { searchTerm: allFilesSearchTerm, setSearchTerm: setAllFilesSearchTerm };
+      case 'domestic':
+        return { searchTerm: domesticSearchTerm, setSearchTerm: setDomesticSearchTerm };
+      default:
+        return { searchTerm: '', setSearchTerm: () => {} };
+    }
+  };
 
   const addNewExportRecord = () => {
     const newRecord: Omit<TrackingRecord, 'id'> = {
@@ -172,6 +200,33 @@ const FreightTracker: React.FC = () => {
     };
     
     addAllFilesItem(newRecord);
+  };
+
+  const handleAddRecord = () => {
+    switch (activeTab) {
+      case 'export':
+        addNewExportRecord();
+        break;
+      case 'import':
+        addNewImportRecord();
+        break;
+      case 'domestic':
+        addNewDomesticRecord();
+        break;
+      case 'allfiles':
+        addNewAllFilesRecord();
+        break;
+    }
+  };
+
+  const handleDeleteBulkRecords = () => {
+    // Implementation for bulk delete
+    console.log('Bulk delete not yet implemented');
+  };
+
+  const handleArchiveBulkRecords = () => {
+    // Implementation for bulk archive
+    console.log('Bulk archive not yet implemented');
   };
 
   const handleFileClick = useCallback((fileNumber: string, fileType: string) => {
@@ -357,19 +412,10 @@ const FreightTracker: React.FC = () => {
     return <div>Loading...</div>;
   }
 
+  const { searchTerm, setSearchTerm } = getCurrentSearchProps();
+
   return (
     <div className="w-full h-[95vh] px-2 py-4 max-w-[98vw] mx-auto flex flex-col">
-      {/* Header with Notification Settings */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">Freight Forwarding Tracker</h1>
-        <NotificationSettings>
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
-            <Bell className="w-4 h-4" />
-            Notification Settings
-          </Button>
-        </NotificationSettings>
-      </div>
-
       <Tabs value={mainActiveTab} onValueChange={setMainActiveTab} className="w-full flex flex-col flex-1">
         {/* Main tabs with enhanced styling */}
         <TabsList className="mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-sm">
@@ -388,6 +434,27 @@ const FreightTracker: React.FC = () => {
         </TabsList>
         
         <TabsContent value="tracking" className="flex-1 overflow-hidden">
+          <FreightTrackerHeader
+            activeTab={activeTab}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedRows={selectedExportRows}
+            selectedImportRows={selectedImportRows}
+            selectedAllFilesRows={selectedAllFilesRows}
+            selectedDomesticTruckingRows={selectedDomesticRows}
+            filteredExportData={filteredExportData}
+            filteredImportData={filteredImportData}
+            filteredAllFilesData={filteredAllFilesData}
+            filteredDomesticTruckingData={filteredDomesticData}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onUndo={undo}
+            onRedo={redo}
+            onAddRecord={handleAddRecord}
+            onDeleteBulkRecords={handleDeleteBulkRecords}
+            onArchiveBulkRecords={handleArchiveBulkRecords}
+          />
+          
           <FreightTrackerTabs
             exportData={exportData}
             importData={importData}
