@@ -226,7 +226,7 @@ const TrackingTableRow = ({
       {/* Column 12: Validated Fwd */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
-          value={record.validatedFwd}
+          value={record.validatedFwd || 'Select'}
           onSave={(value) => updateRecord(record.id, 'validatedFwd', value as string)}
           isFourStateBoolean={true}
         />

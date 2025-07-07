@@ -105,17 +105,23 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (isFourStateBoolean) {
       // Handle both boolean and string values for backward compatibility
       const currentValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+      console.log('Four-state boolean clicked:', { originalValue: value, currentValue });
       
       // Cycle through: Select -> Pending -> Yes -> N/A -> Pending (skip Select after first use)
       if (currentValue === 'Select' || currentValue === '' || currentValue === undefined) {
+        console.log('Setting to Pending');
         onSave('Pending');
       } else if (currentValue === 'Pending') {
+        console.log('Setting to Yes');
         onSave('Yes');
       } else if (currentValue === 'Yes') {
+        console.log('Setting to N/A');
         onSave('N/A');
       } else if (currentValue === 'N/A') {
+        console.log('Setting to Pending');
         onSave('Pending');
       } else {
+        console.log('Unknown value, setting to Pending');
         onSave('Pending');
       }
     } else if (isThreeStateBoolean) {
