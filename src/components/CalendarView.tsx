@@ -42,9 +42,18 @@ const EventDetailModal = ({ event, isOpen, onClose, onEventClick }: EventDetailM
   if (!event) return null;
 
   const handleEventClick = () => {
-    console.log('EventDetailModal: Navigating to record:', event.recordId, event.source);
+    console.log('EventDetailModal: Navigating to file:', event.file, event.source);
     if (onEventClick) {
-      onEventClick(event.recordId, event.source);
+      // Pass the file identifier and the correct tab type for linking
+      let tabType = '';
+      if (event.source === 'export') {
+        tabType = 'export';
+      } else if (event.source === 'import') {
+        tabType = 'import';
+      } else if (event.source === 'domestic') {
+        tabType = 'domestic';
+      }
+      onEventClick(event.file, tabType);
       onClose();
     }
   };
@@ -345,9 +354,18 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   };
 
   const handleEventClick = (event: CalendarEvent) => {
-    console.log('CalendarView: Event clicked, navigating to:', event.recordId, event.source);
+    console.log('CalendarView: Event clicked, file:', event.file, 'source:', event.source);
     if (onCalendarEventClick) {
-      onCalendarEventClick(event.recordId, event.source);
+      // Pass the file identifier and the correct tab type for linking
+      let tabType = '';
+      if (event.source === 'export') {
+        tabType = 'export';
+      } else if (event.source === 'import') {
+        tabType = 'import';
+      } else if (event.source === 'domestic') {
+        tabType = 'domestic';
+      }
+      onCalendarEventClick(event.file, tabType);
     }
   };
 
