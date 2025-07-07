@@ -220,7 +220,7 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.titlesDispatched || 'Select'}
           onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as string)}
-          isFourStateBoolean={true}
+          isFiveStateBoolean={true}
         />
       </td>
       {/* Column 12: Validated Fwd */}
@@ -228,7 +228,7 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.validatedFwd || 'Select'}
           onSave={(value) => updateRecord(record.id, 'validatedFwd', value as string)}
-          isFourStateBoolean={true}
+          isFiveStateBoolean={true}
         />
       </td>
       {/* Column 13: Titles Returned */}
@@ -236,7 +236,7 @@ const TrackingTableRow = ({
         <InlineEditCell
           value={record.titlesReturned || 'Select'}
           onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
-          isFourStateBoolean={true}
+          isFiveStateBoolean={true}
         />
       </td>
       {/* Column 14: SSL Draft Inv Rec */}

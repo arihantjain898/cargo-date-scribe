@@ -12,6 +12,7 @@ interface InlineEditCellProps {
   options?: string[];
   isThreeStateBoolean?: boolean;
   isFourStateBoolean?: boolean;
+  isFiveStateBoolean?: boolean;
   isPoaColumn?: boolean;
   isBondColumn?: boolean;
   isTextColumn?: boolean;
@@ -28,6 +29,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   options = [],
   isThreeStateBoolean = false,
   isFourStateBoolean = false,
+  isFiveStateBoolean = false,
   isPoaColumn = false,
   isBondColumn = false,
   isTextColumn = false,
@@ -102,6 +104,31 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
       } else {
         onSave('Pending');
       }
+     } else if (isFiveStateBoolean) {
+      // Handle both boolean and string values for backward compatibility
+      const currentValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+      console.log('Five-state boolean clicked:', { originalValue: value, currentValue });
+      
+      // Cycle through: Select -> Pending -> Yes -> No -> N/A -> Pending (skip Select after first use)
+      if (currentValue === 'Select' || currentValue === '' || currentValue === undefined) {
+        console.log('Setting to Pending');
+        onSave('Pending');
+      } else if (currentValue === 'Pending') {
+        console.log('Setting to Yes');
+        onSave('Yes');
+      } else if (currentValue === 'Yes') {
+        console.log('Setting to No');
+        onSave('No');
+      } else if (currentValue === 'No') {
+        console.log('Setting to N/A');
+        onSave('N/A');
+      } else if (currentValue === 'N/A') {
+        console.log('Setting to Pending');
+        onSave('Pending');
+      } else {
+        console.log('Unknown value, setting to Pending');
+        onSave('Pending');
+      }
     } else if (isFourStateBoolean) {
       // Handle both boolean and string values for backward compatibility
       const currentValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
@@ -159,7 +186,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
-  if (isEditing && !isBoolean && !isThreeStateBoolean && !isFourStateBoolean && !isPoaColumn && !isBondColumn && options.length === 0) {
+  if (isEditing && !isBoolean && !isThreeStateBoolean && !isFourStateBoolean && !isFiveStateBoolean && !isPoaColumn && !isBondColumn && options.length === 0) {
     const textInputWidth = isNotesColumn ? 'min-w-[160px]' : isTextColumn ? 'min-w-[100px]' : '';
     const textareaWidth = isNotesColumn ? 'min-w-[160px]' : 'min-w-[100px]';
     
@@ -217,6 +244,25 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
+  const getFiveStateBooleanDisplay = () => {
+    // Handle both string and boolean values for backward compatibility
+    const stringValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+    
+    if (stringValue === 'Select' || stringValue === '' || stringValue === undefined) {
+      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+    } else if (stringValue === 'Pending') {
+      return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
+    } else if (stringValue === 'Yes') {
+      return { text: 'Yes', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
+    } else if (stringValue === 'No') {
+      return { text: 'No', color: 'bg-red-100 text-red-800 hover:bg-red-200' };
+    } else if (stringValue === 'N/A') {
+      return { text: 'N/A', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
+    } else {
+      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+    }
+  };
+
   const getFourStateBooleanDisplay = () => {
     // Handle both string and boolean values for backward compatibility
     const stringValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
@@ -255,6 +301,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     ? getBondDisplay().text
     : isPoaColumn
     ? getPoaDisplay().text
+    : isFiveStateBoolean
+    ? getFiveStateBooleanDisplay().text
     : isFourStateBoolean
     ? getFourStateBooleanDisplay().text
     : isThreeStateBoolean 
@@ -276,6 +324,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getBondDisplay().color}`
     : isPoaColumn
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getPoaDisplay().color}`
+    : isFiveStateBoolean
+    ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getFiveStateBooleanDisplay().color}`
     : isFourStateBoolean
     ? `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer ${getFourStateBooleanDisplay().color}`
     : isThreeStateBoolean
