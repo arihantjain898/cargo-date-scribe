@@ -67,13 +67,13 @@ const TrackingTableRow = ({
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'yellow':
-        return 'bg-yellow-400 border-yellow-500';
+        return 'bg-yellow-400 border-yellow-600 shadow-lg';
       case 'green':
-        return 'bg-green-400 border-green-500';
+        return 'bg-green-400 border-green-600 shadow-lg';
       case 'red':
-        return 'bg-red-400 border-red-500';
+        return 'bg-red-400 border-red-600 shadow-lg';
       default:
-        return 'bg-gray-400 border-gray-500';
+        return 'bg-gray-400 border-gray-600 shadow-md';
     }
   };
 
@@ -158,10 +158,10 @@ const TrackingTableRow = ({
             variant="ghost"
             size="sm"
             onClick={() => handleDateStatusToggle('dropDateStatus')}
-            className="h-6 w-6 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-gray-100"
             title="Toggle status"
           >
-            <Circle className={`h-4 w-4 ${getStatusColor(record.dropDateStatus)} border-2 rounded-full`} />
+            <Circle className={`h-6 w-6 ${getStatusColor(record.dropDateStatus)} border-2 rounded-full`} />
           </Button>
         </div>
       </td>
@@ -178,10 +178,10 @@ const TrackingTableRow = ({
             variant="ghost"
             size="sm"
             onClick={() => handleDateStatusToggle('returnDateStatus')}
-            className="h-6 w-6 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-gray-100"
             title="Toggle status"
           >
-            <Circle className={`h-4 w-4 ${getStatusColor(record.returnDateStatus)} border-2 rounded-full`} />
+            <Circle className={`h-6 w-6 ${getStatusColor(record.returnDateStatus)} border-2 rounded-full`} />
           </Button>
         </div>
       </td>
