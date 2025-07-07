@@ -211,21 +211,6 @@ const FreightTracker = () => {
     }
   }, [activeTab, allFilesData, addNotification]);
 
-  // Get the add function based on active tab
-  const getAddRecordFunction = () => {
-    switch (activeTab) {
-      case 'export':
-        return handleAddRecord;
-      case 'import':
-        return handleAddImportRecord;
-      case 'domestic':
-        return handleAddDomesticRecord;
-      case 'allfiles':
-      default:
-        return handleAddAllFilesRecord;
-    }
-  };
-
   // Dummy undo/redo functions for now
   const handleUndo = () => {};
   const handleRedo = () => {};
@@ -238,27 +223,6 @@ const FreightTracker = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-slate-100">
-      <FreightTrackerHeader
-        activeTab={activeTab}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        selectedRows={selectedExportRows}
-        selectedImportRows={selectedImportRows}
-        selectedAllFilesRows={selectedAllFilesRows}
-        selectedDomesticTruckingRows={selectedDomesticRows}
-        filteredExportData={filteredExportData}
-        filteredImportData={filteredImportData}
-        filteredAllFilesData={filteredAllFilesData}
-        filteredDomesticTruckingData={filteredDomesticTruckingData}
-        canUndo={false}
-        canRedo={false}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        onAddRecord={getAddRecordFunction()}
-        onDeleteBulkRecords={handleDeleteBulkRecords}
-        onArchiveBulkRecords={handleArchiveBulkRecords}
-      />
-      
       <div className="max-w-full mx-auto px-4 py-6">
         <FreightTrackerTabs
           exportData={exportData || []}
