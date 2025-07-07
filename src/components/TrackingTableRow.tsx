@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ExternalLink, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,9 +47,7 @@ const TrackingTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.file) {
-      // Extract number from file (remove letters)
       const fileNumber = record.file.replace(/[^0-9]/g, '');
-      // Extract letters from file
       const fileType = record.file.replace(/[0-9]/g, '');
       console.log('Export row clicked - extracted number:', fileNumber, 'fileType:', fileType);
       onFileClick(fileNumber, fileType || 'ET');
@@ -76,15 +75,12 @@ const TrackingTableRow = ({
     }
   };
 
-  // Check if all boolean fields are true (completed)
   const isCompleted = record.docsReceived && record.aesMblVgmSent && record.validatedFwd && 
     record.sslDraftInvRec && record.draftInvApproved && record.transphereInvSent && 
     record.paymentRec && record.sslPaid && record.insured && record.released;
 
-  // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
 
-  // More distinctive alternating colors matching import tabs with highlight support
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
     isArchived ? 'bg-gray-200 opacity-60' : 
@@ -93,8 +89,7 @@ const TrackingTableRow = ({
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
-      {/* Column 1: Customer */}
-      <td className="border-r-4 border-black p-2 sticky left-0 z-20 bg-inherit w-32">
+      <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
         <div className="flex items-center gap-2">
           <InlineEditCell
             value={record.customer}
@@ -115,8 +110,7 @@ const TrackingTableRow = ({
           </Button>
         </div>
       </td>
-      {/* Column 2: Ref */}
-      <td className="border-r border-gray-500 p-2 w-24">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.ref}
           onSave={(value) => updateRecord(record.id, 'ref', value as string)}
@@ -125,8 +119,7 @@ const TrackingTableRow = ({
           isTextColumn={true}
         />
       </td>
-      {/* Column 3: File */}
-      <td className="border-r border-gray-500 p-2 w-24">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -135,8 +128,7 @@ const TrackingTableRow = ({
           isTextColumn={true}
         />
       </td>
-      {/* Column 4: Work Order */}
-      <td className="border-r-4 border-black p-2 w-28">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.workOrder}
           onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
@@ -144,8 +136,7 @@ const TrackingTableRow = ({
           isTextColumn={true}
         />
       </td>
-      {/* Column 5: Drop Date with Status */}
-      <td className="border-r border-gray-500 p-2 w-32">
+      <td className="border-r border-gray-500 p-1">
         <div className="flex items-center gap-1">
           <InlineEditCell
             value={record.dropDate}
@@ -164,8 +155,7 @@ const TrackingTableRow = ({
           </Button>
         </div>
       </td>
-      {/* Column 6: Return Date with Status */}
-      <td className="border-r-4 border-black p-2 w-32">
+      <td className="border-r-4 border-black p-1">
         <div className="flex items-center gap-1">
           <InlineEditCell
             value={record.returnDate}
@@ -184,24 +174,21 @@ const TrackingTableRow = ({
           </Button>
         </div>
       </td>
-      {/* Column 7: Docs Sent */}
-      <td className="border-r border-gray-500 p-2 text-center w-24">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsSent}
           onSave={(value) => updateRecord(record.id, 'docsSent', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 8: Docs Received */}
-      <td className="border-r border-gray-500 p-2 text-center w-24">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsReceived}
           onSave={(value) => updateRecord(record.id, 'docsReceived', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 9: Doc Cutoff Date */}
-      <td className="border-r-4 border-black p-2 w-32">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.docCutoffDate}
           onSave={(value) => updateRecord(record.id, 'docCutoffDate', value as string)}
@@ -209,16 +196,14 @@ const TrackingTableRow = ({
           placeholder="Select cutoff date"
         />
       </td>
-      {/* Column 10: AES/MBL/VGM Sent */}
-      <td className="border-r border-gray-500 p-2 text-center w-28">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.aesMblVgmSent}
           onSave={(value) => updateRecord(record.id, 'aesMblVgmSent', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 11: Titles Dispatched */}
-      <td className="border-r border-gray-500 p-2 w-28">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.titlesDispatched}
           onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as string)}
@@ -226,16 +211,14 @@ const TrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
-      {/* Column 12: Validated Fwd */}
-      <td className="border-r border-gray-500 p-2 text-center w-24">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.validatedFwd}
           onSave={(value) => updateRecord(record.id, 'validatedFwd', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 13: Titles Returned */}
-      <td className="border-r border-gray-500 p-2 w-28">
+      <td className="border-r border-gray-500 p-1">
         <InlineEditCell
           value={record.titlesReturned}
           onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
@@ -243,72 +226,63 @@ const TrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
-      {/* Column 14: SSL Draft Inv Rec */}
-      <td className="border-r-4 border-black p-2 text-center w-24">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.sslDraftInvRec}
           onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 15: Draft Inv Approved */}
-      <td className="border-r border-gray-500 p-2 text-center w-24">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.draftInvApproved}
           onSave={(value) => updateRecord(record.id, 'draftInvApproved', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 16: Transphere Inv Sent */}
-      <td className="border-r border-gray-500 p-2 text-center w-28">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.transphereInvSent}
           onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 17: Payment Rec */}
-      <td className="border-r-4 border-black p-2 text-center w-24">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.paymentRec}
           onSave={(value) => updateRecord(record.id, 'paymentRec', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 18: SSL Paid */}
-      <td className="border-r border-gray-500 p-2 text-center w-20">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.sslPaid}
           onSave={(value) => updateRecord(record.id, 'sslPaid', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 19: Insured */}
-      <td className="border-r border-gray-500 p-2 text-center w-20">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.insured}
           onSave={(value) => updateRecord(record.id, 'insured', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 20: Released */}
-      <td className="border-r border-gray-500 p-2 text-center w-20">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.released}
           onSave={(value) => updateRecord(record.id, 'released', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 21: Docs Sent to Customer */}
-      <td className="border-r-4 border-black p-2 text-center w-28">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.docsSentToCustomer}
           onSave={(value) => updateRecord(record.id, 'docsSentToCustomer', value as boolean)}
           isBoolean={true}
         />
       </td>
-      {/* Column 22: Notes - Sticky Right */}
-      <td className="border-r-4 border-black p-2 sticky right-12 z-20 bg-inherit border-l-4 w-64">
+      <td className="border-r-4 border-black p-1">
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
@@ -317,8 +291,7 @@ const TrackingTableRow = ({
           isNotesColumn={true}
         />
       </td>
-      {/* Column 23: Select - Sticky Right */}
-      <td className="p-2 text-center sticky right-0 z-20 bg-inherit border-l-4 border-black w-16">
+      <td className="p-1 text-center">
         <Checkbox
           checked={isSelected}
           onCheckedChange={handleCheckboxChange}

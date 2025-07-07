@@ -75,6 +75,38 @@ export const useFreightTrackerData = (currentUserId: string) => {
     return await addImportItemBase(newImportRecord);
   };
 
+  // Wrapper for adding export items with proper defaults
+  const addExportRecord = async () => {
+    const newExportRecord: Omit<TrackingRecord, 'id'> = {
+      customer: '',
+      ref: '',
+      file: '',
+      workOrder: '',
+      dropDate: '',
+      returnDate: '',
+      docsSent: false,
+      docsReceived: false,
+      aesMblVgmSent: false,
+      docCutoffDate: '',
+      titlesDispatched: '',
+      validatedFwd: false,
+      titlesReturned: '',
+      sslDraftInvRec: false,
+      draftInvApproved: false,
+      transphereInvSent: false,
+      paymentRec: false,
+      sslPaid: false,
+      insured: false,
+      released: false,
+      docsSentToCustomer: false,
+      notes: '',
+      archived: false,
+      userId: currentUserId
+    };
+    
+    return await addExportItem(newExportRecord);
+  };
+
   const updateRecord = async (
     id: string,
     field: keyof TrackingRecord,
@@ -133,7 +165,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
     allFilesData,
     domesticTruckingData,
     loading: exportLoading || importLoading || allFilesLoading || domesticTruckingLoading,
-    addExportItem,
+    addExportRecord,
     addImportRecord,
     addAllFilesItem,
     addDomesticTruckingItem,
