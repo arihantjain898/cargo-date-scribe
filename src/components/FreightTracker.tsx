@@ -94,33 +94,50 @@ const FreightTracker = () => {
     );
   }, [domesticTruckingData, searchTerm]);
 
-  const onFileClick = useCallback((fileNumber: string, fileType: string) => {
+  const onFileClick = useCallback((fileIdentifier: string, fileType: string) => {
     let targetTab = '';
     let foundRecord = null;
+    let searchDescription = '';
 
     if (fileType === 'export') {
       targetTab = 'export';
-      foundRecord = exportData?.find(record => record.file && record.file.replace(/[^0-9]/g, '') === fileNumber);
+      foundRecord = exportData?.find(record => record.file?.trim() === fileIdentifier.trim());
+      searchDescription = `"${fileIdentifier}" in Export tab file column`;
     } else if (fileType === 'import') {
       targetTab = 'import';
-      foundRecord = importData?.find(record => record.file && record.file.replace(/[^0-9]/g, '') === fileNumber);
+      foundRecord = importData?.find(record => record.file?.trim() === fileIdentifier.trim());
+      searchDescription = `"${fileIdentifier}" in Import tab file column`;
     } else if (fileType === 'allfiles') {
       targetTab = 'allfiles';
-      // For linking to all files: match first 2 letters to file column, digits 3-end to number column
-      const filePrefix = fileNumber.slice(0, 2).toUpperCase();
-      const numberPart = fileNumber.slice(2);
+      // For linking to all files: split fileIdentifier into prefix (first 2 chars) and number (rest)
+      if (fileIdentifier.length < 3) {
+        console.log('Invalid file identifier for All Files linking:', fileIdentifier);
+        toast({
+          title: "Invalid File Format",
+          description: `File "${fileIdentifier}" must have at least 3 characters (2 letters + digits).`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const filePrefix = fileIdentifier.slice(0, 2).toUpperCase();
+      const numberPart = fileIdentifier.slice(2);
+      
       foundRecord = allFilesData?.find(record => {
-        const recordFile = record.file?.toUpperCase().trim();
+        const recordFile = record.file?.trim().toUpperCase();
         const recordNumber = record.number?.trim();
         const matches = recordFile === filePrefix && recordNumber === numberPart;
-        console.log(`Checking record: file="${recordFile}" vs "${filePrefix}", number="${recordNumber}" vs "${numberPart}", matches: ${matches}`);
+        console.log(`Checking All Files record: file="${recordFile}" vs "${filePrefix}", number="${recordNumber}" vs "${numberPart}", matches: ${matches}`);
         return matches;
       });
-      console.log('Looking for All Files record:', { original: fileNumber, filePrefix, numberPart, found: !!foundRecord });
+      searchDescription = `file="${filePrefix}" and number="${numberPart}" in All Files tab`;
     } else if (fileType === 'domestic') {
       targetTab = 'domestic';
-      foundRecord = domesticTruckingData?.find(record => record.file && record.file.replace(/[^0-9]/g, '') === fileNumber);
+      foundRecord = domesticTruckingData?.find(record => record.file?.trim() === fileIdentifier.trim());
+      searchDescription = `"${fileIdentifier}" in Domestic Trucking tab file column`;
     }
+
+    console.log(`File linking attempt: Looking for ${searchDescription}, found: ${!!foundRecord}`);
 
     if (foundRecord) {
       setActiveTab(targetTab);
@@ -132,7 +149,8 @@ const FreightTracker = () => {
     } else {
       toast({
         title: "File Not Found",
-        description: `File number ${fileNumber} not found in ${fileType} tracking.`,
+        description: `Could not find ${searchDescription}.`,
+        variant: "destructive",
       });
     }
   }, [exportData, importData, allFilesData, domesticTruckingData]);

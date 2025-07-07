@@ -48,9 +48,12 @@ const AllFilesTableRow = ({
 
   const handleFileClick = () => {
     if (onFileClick && record.number && record.file) {
+      // Combine file + number to create the target file identifier (e.g., "ET" + "1028" = "ET1028")
+      const targetFileIdentifier = record.file.trim() + record.number.trim();
+      
       // Determine target tab based on file prefix
       let targetTab = '';
-      const filePrefix = record.file.slice(0, 2).toUpperCase();
+      const filePrefix = record.file.trim().toUpperCase();
       
       if (filePrefix === 'EA' || filePrefix === 'ES' || filePrefix === 'ET') {
         targetTab = 'export';
@@ -60,8 +63,8 @@ const AllFilesTableRow = ({
         targetTab = 'domestic';
       }
       
-      console.log('AllFiles row clicked - number:', record.number, 'file:', record.file, 'targetTab:', targetTab);
-      onFileClick(record.number, targetTab);
+      console.log('AllFiles row clicked - file:', record.file, 'number:', record.number, 'targetIdentifier:', targetFileIdentifier, 'targetTab:', targetTab);
+      onFileClick(targetFileIdentifier, targetTab);
     }
   };
 
