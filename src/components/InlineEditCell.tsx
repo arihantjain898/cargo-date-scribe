@@ -109,7 +109,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
       const currentValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
       console.log('Five-state boolean clicked:', { originalValue: value, currentValue });
       
-      // Cycle through: Select -> Pending -> Yes -> No -> N/A -> Pending (skip Select after first use)
+      // Cycle through: Select -> Pending -> Yes -> N/A -> No -> Pending (skip Select after first use)
       if (currentValue === 'Select' || currentValue === '' || currentValue === undefined) {
         console.log('Setting to Pending');
         onSave('Pending');
@@ -117,12 +117,12 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
         console.log('Setting to Yes');
         onSave('Yes');
       } else if (currentValue === 'Yes') {
-        console.log('Setting to No');
-        onSave('No');
-      } else if (currentValue === 'No') {
         console.log('Setting to N/A');
         onSave('N/A');
       } else if (currentValue === 'N/A') {
+        console.log('Setting to No');
+        onSave('No');
+      } else if (currentValue === 'No') {
         console.log('Setting to Pending');
         onSave('Pending');
       } else {
