@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -88,33 +87,31 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
     XLSX.utils.book_append_sheet(workbook, importWorksheet, 'Import Tracking');
 
     // Tab 3: Export Tracking Data
-    const exportFormatted = exportData.map(record => ({
-      Customer: record.customer,
-      Ref: record.ref,
-      File: record.file,
+    const exportRows = exportData.map(record => ({
+      'Customer': record.customer,
+      'Ref': record.ref,
+      'File': record.file,
       'Work Order': record.workOrder,
-      'Drop Done': record.dropDone,
       'Drop Date': record.dropDate,
-      'Return Needed': record.returnNeeded,
       'Return Date': record.returnDate,
-      'Docs Sent': record.docsSent,
-      'Docs Received': record.docsReceived,
+      'Docs Sent': record.docsSent ? 'Yes' : 'No',
+      'Docs Received': record.docsReceived ? 'Yes' : 'No',
+      'AES/MBL/VGM Sent': record.aesMblVgmSent ? 'Yes' : 'No',
       'Doc Cutoff Date': record.docCutoffDate,
-      'AES/MBL/VGM Sent': record.aesMblVgmSent,
       'Titles Dispatched': record.titlesDispatched,
-      'Validated Fwd': record.validatedFwd,
+      'Validated Fwd': record.validatedFwd ? 'Yes' : 'No',
       'Titles Returned': record.titlesReturned,
-      'SSL Draft Inv Rec': record.sslDraftInvRec,
-      'Draft Inv Approved': record.draftInvApproved,
-      'Transphere Inv Sent': record.transphereInvSent,
-      'Payment Rec': record.paymentRec,
-      'SSL Paid': record.sslPaid,
-      'Insured': record.insured,
-      'Released': record.released,
-      'Docs Sent to Customer': record.docsSentToCustomer,
+      'SSL Draft Inv Rec': record.sslDraftInvRec ? 'Yes' : 'No',
+      'Draft Inv Approved': record.draftInvApproved ? 'Yes' : 'No',
+      'Transphere Inv Sent': record.transphereInvSent ? 'Yes' : 'No',
+      'Payment Rec': record.paymentRec ? 'Yes' : 'No',
+      'SSL Paid': record.sslPaid ? 'Yes' : 'No',
+      'Insured': record.insured ? 'Yes' : 'No',
+      'Released': record.released ? 'Yes' : 'No',
+      'Docs Sent To Customer': record.docsSentToCustomer ? 'Yes' : 'No',
       'Notes': record.notes
     }));
-    const exportWorksheet = XLSX.utils.json_to_sheet(exportFormatted);
+    const exportWorksheet = XLSX.utils.json_to_sheet(exportRows);
     XLSX.utils.book_append_sheet(workbook, exportWorksheet, 'Export Tracking');
 
     // Tab 4: Domestic Trucking Data

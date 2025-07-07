@@ -1,4 +1,3 @@
-
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
@@ -8,7 +7,6 @@ export const isExportRecordComplete = (record: TrackingRecord): boolean => {
   return !!(
     record.customer &&
     record.file &&
-    record.dropDone === "Yes" &&
     record.docsSent &&
     record.docsReceived &&
     record.aesMblVgmSent &&
