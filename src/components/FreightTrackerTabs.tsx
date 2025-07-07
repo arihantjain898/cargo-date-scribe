@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -221,7 +222,7 @@ const FreightTrackerTabs = ({
             value="domestic" 
             className="px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-indigo-50 hover:text-indigo-700"
           >
-            🚛 Domestic
+            🚛 Domestic Trucking
           </TabsTrigger>
         </TabsList>
       </div>

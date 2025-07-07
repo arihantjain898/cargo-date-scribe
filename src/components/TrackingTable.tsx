@@ -91,7 +91,7 @@ const TrackingTable = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[72vh] w-full" ref={scrollAreaRef}>
+      <ScrollArea className="h-[60vh] w-full" ref={scrollAreaRef}>
         <div className="w-full">
           <table className="w-full border-collapse text-xs">
             <TrackingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
