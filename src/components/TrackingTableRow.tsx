@@ -73,10 +73,10 @@ const TrackingTableRow = ({
     }
   };
 
-  // Check if all boolean fields are true (completed) - removed dropDone and returnNeeded from condition
-  const isCompleted = record.docsReceived && record.aesMblVgmSent && record.validatedFwd && 
-    record.sslDraftInvRec && record.draftInvApproved && record.transphereInvSent && 
-    record.paymentRec && record.sslPaid && record.insured && record.released;
+  // Check if all boolean fields are true (completed) - updated for three-state boolean values
+  const isCompleted = record.docsReceived === 'Yes' && record.aesMblVgmSent === 'Yes' && record.validatedFwd === 'Yes' && 
+    record.sslDraftInvRec === 'Yes' && record.draftInvApproved === 'Yes' && record.transphereInvSent === 'Yes' && 
+    record.paymentRec === 'Yes' && record.sslPaid === 'Yes' && record.insured === 'Yes' && record.released === 'Yes';
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
@@ -185,16 +185,16 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsSent}
-          onSave={(value) => updateRecord(record.id, 'docsSent', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'docsSent', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 8: Docs Received */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.docsReceived}
-          onSave={(value) => updateRecord(record.id, 'docsReceived', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'docsReceived', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 9: Doc Cutoff Date */}
@@ -210,8 +210,8 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.aesMblVgmSent}
-          onSave={(value) => updateRecord(record.id, 'aesMblVgmSent', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'aesMblVgmSent', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 11: Titles Dispatched */}
@@ -227,8 +227,8 @@ const TrackingTableRow = ({
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.validatedFwd}
-          onSave={(value) => updateRecord(record.id, 'validatedFwd', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'validatedFwd', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 13: Titles Returned */}
@@ -244,56 +244,56 @@ const TrackingTableRow = ({
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.sslDraftInvRec}
-          onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 15: Draft Inv Approved */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.draftInvApproved}
-          onSave={(value) => updateRecord(record.id, 'draftInvApproved', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'draftInvApproved', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 16: Transphere Inv Sent */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.transphereInvSent}
-          onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 17: Payment Rec */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.paymentRec}
-          onSave={(value) => updateRecord(record.id, 'paymentRec', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'paymentRec', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 18: SSL Paid */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.sslPaid}
-          onSave={(value) => updateRecord(record.id, 'sslPaid', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'sslPaid', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 19: Insured */}
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.insured}
-          onSave={(value) => updateRecord(record.id, 'insured', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'insured', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 20: Released */}
       <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.released}
-          onSave={(value) => updateRecord(record.id, 'released', value as boolean)}
-          isBoolean={true}
+          onSave={(value) => updateRecord(record.id, 'released', value as string)}
+          isThreeStateBoolean={true}
         />
       </td>
       {/* Column 21: Notes */}
