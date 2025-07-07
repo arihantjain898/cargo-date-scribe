@@ -46,7 +46,7 @@ const TrackingTableHeader = ({
           </div>
         </th>
       </tr>
-      <tr className="border-b-4 border-black bg-white">
+      <tr className="border-b-4 border-black bg-white sticky top-[41px] z-30">
         <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-24 sticky left-0 z-40">Customer</th>
         <th colSpan={3} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">Basic Information</th>
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">Drop & Return</th>
