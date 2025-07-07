@@ -3,6 +3,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Archive, ArchiveRestore } from 'lucide-react';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
+import { useDomesticTruckingSearch } from '../hooks/useSearch';
 import DomesticTruckingTableHeader from './DomesticTruckingTableHeader';
 import DomesticTruckingTableRow from './DomesticTruckingTableRow';
 
@@ -31,6 +32,7 @@ const DomesticTruckingTable = ({
 }: DomesticTruckingTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
+  const { searchTerm, setSearchTerm, filteredData } = useDomesticTruckingSearch(data);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -73,7 +75,7 @@ const DomesticTruckingTable = ({
     updateRecord(id, 'archived', false);
   };
 
-  const filteredData = showArchived ? data : data.filter(record => !record.archived);
+  const finalFilteredData = showArchived ? filteredData : filteredData.filter(record => !record.archived);
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
@@ -95,9 +97,15 @@ const DomesticTruckingTable = ({
       <ScrollArea className="h-[66vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1100px]">
           <table className="w-full border-collapse text-xs">
-            <DomesticTruckingTableHeader selectedRows={selectedRows} data={data} setSelectedRows={setSelectedRows} />
+            <DomesticTruckingTableHeader 
+              selectedRows={selectedRows} 
+              data={filteredData} 
+              setSelectedRows={setSelectedRows}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
             <tbody>
-              {filteredData.map((record, index) => (
+              {finalFilteredData.map((record, index) => (
                 <DomesticTruckingTableRow
                   key={record.id}
                   record={record}

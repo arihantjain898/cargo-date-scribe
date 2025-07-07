@@ -1,15 +1,25 @@
 
 import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 
 interface AllFilesTableHeaderProps {
   selectedRows: string[];
   data: AllFilesRecord[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
 }
 
-const AllFilesTableHeader = ({ selectedRows, data, setSelectedRows }: AllFilesTableHeaderProps) => {
+const AllFilesTableHeader = ({ 
+  selectedRows, 
+  data, 
+  setSelectedRows,
+  searchTerm,
+  setSearchTerm 
+}: AllFilesTableHeaderProps) => {
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedRows(data.map(record => record.id));
@@ -23,6 +33,19 @@ const AllFilesTableHeader = ({ selectedRows, data, setSelectedRows }: AllFilesTa
 
   return (
     <thead className="sticky top-0 bg-white z-30 shadow-sm">
+      <tr className="bg-white border-b">
+        <th colSpan={20} className="p-4 text-left">
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search by customer, file, port, destination..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 text-sm"
+            />
+          </div>
+        </th>
+      </tr>
       <tr className="border-b-4 border-black bg-white">
         <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-32 sticky left-0 z-40">Customer</th>
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">File Information</th>
