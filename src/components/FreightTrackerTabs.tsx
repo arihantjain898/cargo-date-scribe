@@ -259,10 +259,10 @@ const FreightTrackerTabs = ({
               selectedAllFilesRows={selectedAllFilesRows}
               selectedDomesticTruckingRows={selectedDomesticRows}
             >
-              <Button variant="outline" size="sm" className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700">
-                <Download className="w-4 h-4 mr-2" />
-                Export Excel
-              </Button>
+            <Button variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700">
+              <span className="text-sm">🔔</span>
+              Notifications
+            </Button>
             </ExcelExportDialog>
             <Button onClick={addAllFilesRecord} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />

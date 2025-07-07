@@ -230,41 +230,6 @@ const FreightTracker = () => {
     <div className="container mx-auto py-6">
       <div className="mb-4">
         <h1 className="text-2xl font-bold mb-4">Freight Tracker</h1>
-        <FreightTrackerHeader
-          activeTab={activeTab}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedRows={selectedExportRows}
-          selectedImportRows={selectedImportRows}
-          selectedAllFilesRows={selectedAllFilesRows}
-          selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-          filteredExportData={filteredExportData}
-          filteredImportData={filteredImportData}
-          filteredAllFilesData={filteredAllFilesData}
-          filteredDomesticTruckingData={filteredDomesticTruckingData}
-          canUndo={canUndo}
-          canRedo={canRedo}
-          onUndo={undo}
-          onRedo={redo}
-          onAddRecord={() => {
-            switch (activeTab) {
-              case 'export':
-                addExportRecord();
-                break;
-              case 'import':
-                addImportItem();
-                break;
-              case 'allfiles':
-                addAllFilesRecord();
-                break;
-              case 'domestic':
-                addDomesticTruckingRecord();
-                break;
-            }
-          }}
-          onDeleteBulkRecords={() => {}}
-          onArchiveBulkRecords={() => {}}
-        />
       </div>
 
       <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as 'tables' | 'calendar')} className="space-y-4">
