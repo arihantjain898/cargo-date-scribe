@@ -9,8 +9,6 @@ export interface TrackingRecord {
   dropDateStatus?: 'gray' | 'yellow' | 'green' | 'red';
   returnDate: string;
   returnDateStatus?: 'gray' | 'yellow' | 'green' | 'red';
-  dropDone: string;
-  returnNeeded: string;
   docsSent: boolean;
   docsReceived: boolean;
   aesMblVgmSent: boolean;
