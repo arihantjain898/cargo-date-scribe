@@ -102,7 +102,7 @@ const ImportTrackingTableRow = ({
         </div>
       </td>
       {/* Column 2: Booking */}
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             {record.bookingUrl ? (
@@ -149,7 +149,7 @@ const ImportTrackingTableRow = ({
           )}
         </div>
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -158,7 +158,7 @@ const ImportTrackingTableRow = ({
           isTextColumn={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.etaFinalPod}
           onSave={(value) => updateRecord(record.id, 'etaFinalPod', value as string)}
