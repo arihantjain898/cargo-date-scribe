@@ -96,8 +96,8 @@ const AllFilesTable = ({
       </div>
       
       <ScrollArea className="h-[69vh] w-full" ref={scrollAreaRef}>
-        <div className="min-w-[1400px]">
-          <table className="w-full border-collapse text-xs">
+        <div className="w-full min-w-fit">
+          <table className="w-full border-collapse text-xs table-fixed">
             <AllFilesTableHeader 
               selectedRows={selectedRows} 
               data={filteredData} 
