@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Bell, BellOff, Check, AlertCircle } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Bell, BellOff, Check, AlertCircle, Ship, Truck, Calendar } from 'lucide-react';
 import { useBrowserNotifications } from '../hooks/useBrowserNotifications';
 import { useToast } from '@/hooks/use-toast';
 
@@ -9,10 +12,64 @@ interface NotificationSetupProps {
   children: React.ReactNode;
 }
 
+interface NotificationSettings {
+  exportTable: {
+    dropDate: boolean;
+    returnDate: boolean;
+    docCutoffDate: boolean;
+  };
+  importTable: {
+    etaFinalPod: boolean;
+    deliveryDate: boolean;
+  };
+  domesticTruckingTable: {
+    pickDate: boolean;
+  };
+  notificationTiming: {
+    threeDays: boolean;
+    twoDays: boolean;
+    oneDay: boolean;
+    dayOf: boolean;
+  };
+}
+
 const NotificationSetup = ({ children }: NotificationSetupProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [settings, setSettings] = useState<NotificationSettings>({
+    exportTable: {
+      dropDate: false,
+      returnDate: false,
+      docCutoffDate: false,
+    },
+    importTable: {
+      etaFinalPod: false,
+      deliveryDate: false,
+    },
+    domesticTruckingTable: {
+      pickDate: false,
+    },
+    notificationTiming: {
+      threeDays: false,
+      twoDays: false,
+      oneDay: false,
+      dayOf: false,
+    },
+  });
+  
   const { isEnabled, isSupported, requestPermission, sendTestNotification } = useBrowserNotifications();
   const { toast } = useToast();
+
+  // Load settings from localStorage on component mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('notificationSettings');
+    if (savedSettings) {
+      const parsed = JSON.parse(savedSettings);
+      setSettings(prevSettings => ({
+        ...prevSettings,
+        ...parsed
+      }));
+    }
+  }, []);
 
   const handleEnableNotifications = async () => {
     const granted = await requestPermission();
@@ -36,6 +93,54 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
       title: "Test Notification Sent",
       description: "Check if you received the notification!",
     });
+  };
+
+  const handleSaveSettings = () => {
+    localStorage.setItem('notificationSettings', JSON.stringify(settings));
+    toast({
+      title: "Settings Saved",
+      description: "Your notification preferences have been saved.",
+    });
+  };
+
+  const updateExportTableSetting = (field: keyof typeof settings.exportTable, value: boolean) => {
+    setSettings(prev => ({
+      ...prev,
+      exportTable: {
+        ...prev.exportTable,
+        [field]: value
+      }
+    }));
+  };
+
+  const updateImportTableSetting = (field: keyof typeof settings.importTable, value: boolean) => {
+    setSettings(prev => ({
+      ...prev,
+      importTable: {
+        ...prev.importTable,
+        [field]: value
+      }
+    }));
+  };
+
+  const updateDomesticTruckingTableSetting = (field: keyof typeof settings.domesticTruckingTable, value: boolean) => {
+    setSettings(prev => ({
+      ...prev,
+      domesticTruckingTable: {
+        ...prev.domesticTruckingTable,
+        [field]: value
+      }
+    }));
+  };
+
+  const updateNotificationTiming = (field: keyof typeof settings.notificationTiming, value: boolean) => {
+    setSettings(prev => ({
+      ...prev,
+      notificationTiming: {
+        ...prev.notificationTiming,
+        [field]: value
+      }
+    }));
   };
 
   if (!isSupported) {
@@ -64,7 +169,7 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {isEnabled ? (
@@ -75,14 +180,12 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
             Notification Settings
           </DialogTitle>
           <DialogDescription>
-            {isEnabled 
-              ? "Notifications are enabled. You'll receive alerts for shipment updates."
-              : "Enable notifications to get real-time alerts about your shipments."
-            }
+            Select which dates to monitor and when to receive notifications.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Enable Notifications Section */}
           {!isEnabled ? (
             <Button onClick={handleEnableNotifications} className="w-full">
               <Bell className="w-4 h-4 mr-2" />
@@ -100,26 +203,133 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
             </div>
           )}
 
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="font-medium text-sm mb-2">What you'll be notified about:</h3>
-            <ul className="text-xs text-gray-600 space-y-1">
-              <li>• Overdue shipments (7+ days)</li>
-              <li>• Documents pending for more than 5 days</li>
-              <li>• Payment reminders</li>
-              <li>• Status updates from carriers</li>
-            </ul>
+          <Separator />
+
+          {/* Export Table Settings */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Ship className="w-4 h-4" />
+              Export Table Dates
+            </Label>
+            <div className="space-y-2 pl-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="export-drop-date"
+                  checked={settings.exportTable.dropDate}
+                  onCheckedChange={(checked) => updateExportTableSetting('dropDate', checked as boolean)}
+                />
+                <Label htmlFor="export-drop-date" className="text-sm">Drop Date</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="export-return-date"
+                  checked={settings.exportTable.returnDate}
+                  onCheckedChange={(checked) => updateExportTableSetting('returnDate', checked as boolean)}
+                />
+                <Label htmlFor="export-return-date" className="text-sm">Return Date</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="export-doc-cutoff"
+                  checked={settings.exportTable.docCutoffDate}
+                  onCheckedChange={(checked) => updateExportTableSetting('docCutoffDate', checked as boolean)}
+                />
+                <Label htmlFor="export-doc-cutoff" className="text-sm">Doc Cutoff Date</Label>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-yellow-50 p-4 rounded-lg">
-            <h3 className="font-medium text-sm mb-2">Setup Steps:</h3>
-            <ol className="text-xs text-gray-600 space-y-1">
-              <li>1. Click "Enable Notifications" above</li>
-              <li>2. Allow notifications in your browser</li>
-              <li>3. Get your VAPID key from Firebase Console</li>
-              <li>4. Update the VAPID_KEY in notificationUtils.ts</li>
-              <li>5. Test notifications work properly</li>
-            </ol>
+          {/* Import Table Settings */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Truck className="w-4 h-4" />
+              Import Table Dates
+            </Label>
+            <div className="space-y-2 pl-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="import-eta-final-pod"
+                  checked={settings.importTable.etaFinalPod}
+                  onCheckedChange={(checked) => updateImportTableSetting('etaFinalPod', checked as boolean)}
+                />
+                <Label htmlFor="import-eta-final-pod" className="text-sm">ETA Final POD</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="import-delivery-date"
+                  checked={settings.importTable.deliveryDate}
+                  onCheckedChange={(checked) => updateImportTableSetting('deliveryDate', checked as boolean)}
+                />
+                <Label htmlFor="import-delivery-date" className="text-sm">Delivery Date</Label>
+              </div>
+            </div>
           </div>
+
+          {/* Domestic Trucking Table Settings */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Truck className="w-4 h-4" />
+              Domestic Trucking Table Dates
+            </Label>
+            <div className="space-y-2 pl-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="domestic-pick-date"
+                  checked={settings.domesticTruckingTable.pickDate}
+                  onCheckedChange={(checked) => updateDomesticTruckingTableSetting('pickDate', checked as boolean)}
+                />
+                <Label htmlFor="domestic-pick-date" className="text-sm">Pick Date</Label>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Notification Timing */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Notification Timing
+            </Label>
+            <div className="space-y-2 pl-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="timing-three-days"
+                  checked={settings.notificationTiming.threeDays}
+                  onCheckedChange={(checked) => updateNotificationTiming('threeDays', checked as boolean)}
+                />
+                <Label htmlFor="timing-three-days" className="text-sm">3 days before</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="timing-two-days"
+                  checked={settings.notificationTiming.twoDays}
+                  onCheckedChange={(checked) => updateNotificationTiming('twoDays', checked as boolean)}
+                />
+                <Label htmlFor="timing-two-days" className="text-sm">2 days before</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="timing-one-day"
+                  checked={settings.notificationTiming.oneDay}
+                  onCheckedChange={(checked) => updateNotificationTiming('oneDay', checked as boolean)}
+                />
+                <Label htmlFor="timing-one-day" className="text-sm">1 day before</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="timing-day-of"
+                  checked={settings.notificationTiming.dayOf}
+                  onCheckedChange={(checked) => updateNotificationTiming('dayOf', checked as boolean)}
+                />
+                <Label htmlFor="timing-day-of" className="text-sm">Day of</Label>
+              </div>
+            </div>
+          </div>
+
+          <Button onClick={handleSaveSettings} className="w-full">
+            Save Settings
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
