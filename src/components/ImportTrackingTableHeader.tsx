@@ -33,8 +33,8 @@ const ImportTrackingTableHeader = ({
 
   return (
     <thead className="sticky top-0 bg-white z-30 shadow-sm">
-      <tr className="bg-white border-b">
-        <th colSpan={22} className="p-4 text-left">
+      <tr className="bg-white border-b sticky left-0 z-40">
+        <th colSpan={22} className="p-4 text-left bg-white sticky left-0">
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
