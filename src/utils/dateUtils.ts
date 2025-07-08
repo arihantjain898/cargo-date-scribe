@@ -11,13 +11,24 @@ export const isDateWithinDays = (dateString: string, days: number): boolean => {
   if (!dateString) return false;
   const date = new Date(dateString);
   const today = new Date();
-  const futureDate = new Date(today);
-  futureDate.setDate(today.getDate() + days);
   
-  today.setHours(0, 0, 0, 0);
-  futureDate.setHours(23, 59, 59, 999);
+  // For day 0 (today), check if it's exactly today
+  if (days === 0) {
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    return targetDate.getTime() === today.getTime();
+  }
   
-  return date >= today && date <= futureDate;
+  // For other days, check if the date is exactly X days from today
+  const targetDate = new Date(today);
+  targetDate.setDate(today.getDate() + days);
+  targetDate.setHours(0, 0, 0, 0);
+  
+  const checkDate = new Date(date);
+  checkDate.setHours(0, 0, 0, 0);
+  
+  return checkDate.getTime() === targetDate.getTime();
 };
 
 export const getContainerVolumeColor = (count: string): string => {

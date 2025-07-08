@@ -180,7 +180,7 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
             Notification Settings
           </DialogTitle>
           <DialogDescription>
-            Select which dates to monitor and when to receive notifications.
+            Select which dates to monitor and when to receive notifications. Notifications are sent daily at 9:00 AM.
           </DialogDescription>
         </DialogHeader>
 

@@ -74,6 +74,25 @@ export const useFreightTrackerData = (currentUserId: string) => {
     return await addImportItemBase(newImportRecord);
   };
 
+  // Persist data to localStorage for notification scheduler
+  useEffect(() => {
+    if (exportData.length > 0) {
+      localStorage.setItem('exportData', JSON.stringify(exportData));
+    }
+  }, [exportData]);
+
+  useEffect(() => {
+    if (importData.length > 0) {
+      localStorage.setItem('importData', JSON.stringify(importData));
+    }
+  }, [importData]);
+
+  useEffect(() => {
+    if (domesticTruckingData.length > 0) {
+      localStorage.setItem('domesticTruckingData', JSON.stringify(domesticTruckingData));
+    }
+  }, [domesticTruckingData]);
+
   const updateRecord = async (
     id: string,
     field: keyof TrackingRecord,

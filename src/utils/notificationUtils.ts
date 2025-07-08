@@ -69,7 +69,7 @@ export class NotificationService {
   }
 
   // Show local browser notification
-  private showLocalNotification(payload: NotificationPayload) {
+  showLocalNotification(payload: NotificationPayload) {
     if (Notification.permission === 'granted') {
       const notification = new Notification(payload.title, {
         body: payload.body,
