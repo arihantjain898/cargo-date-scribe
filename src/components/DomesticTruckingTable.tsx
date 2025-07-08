@@ -95,8 +95,8 @@ const DomesticTruckingTable = ({
       </div>
       
       <ScrollArea className="h-[69vh] w-full" ref={scrollAreaRef}>
-        <div className="w-full min-w-fit">
-          <table className="w-full border-collapse text-xs table-fixed">
+        <div className="min-w-[1100px]">
+          <table className="w-full border-collapse text-xs">
             <DomesticTruckingTableHeader 
               selectedRows={selectedRows} 
               data={filteredData} 
