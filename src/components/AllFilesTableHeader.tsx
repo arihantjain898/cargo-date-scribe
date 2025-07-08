@@ -53,7 +53,7 @@ const AllFilesTableHeader = ({
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Destination</th>
         <th colSpan={6} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-orange-200">Container & Transport Types</th>
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-pink-200">Service Providers</th>
-        <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-yellow-200 min-w-[100px]">Comments</th>
+        <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-yellow-200 min-w-[100px]">Comments</th>
         <th className="border-r-4 border-black p-2 text-left font-bold text-gray-900 bg-gray-200 min-w-[100px]">Sales Contact</th>
         <th className="bg-red-200 p-2 text-center font-bold text-gray-900">Select</th>
       </tr>
