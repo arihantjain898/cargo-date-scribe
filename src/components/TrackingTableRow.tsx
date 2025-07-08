@@ -82,7 +82,8 @@ const TrackingTableRow = ({
   const isCompleted = checkCompleted(record.docsSent) && checkCompleted(record.docsReceived) && checkCompleted(record.aesMblVgmSent) && 
     checkCompleted(record.titlesDispatched) && checkCompleted(record.validatedFwd) && checkCompleted(record.titlesReturned) && 
     checkCompleted(record.sslDraftInvRec) && checkCompleted(record.draftInvApproved) && checkCompleted(record.transphereInvSent) && 
-    checkCompleted(record.paymentRec) && checkCompleted(record.sslPaid) && checkCompleted(record.insured) && checkCompleted(record.released);
+    checkCompleted(record.paymentRec) && checkCompleted(record.sslPaid) && checkCompleted(record.insured) && checkCompleted(record.released) &&
+    record.dropDateStatus === 'green' && record.returnDateStatus === 'green';
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
