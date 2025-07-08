@@ -102,7 +102,7 @@ const ImportTrackingTableRow = ({
         </div>
       </td>
       {/* Column 2: Booking */}
-      <td className="border-r border-gray-500 p-1 text-center">
+      <td className="border-r border-gray-500 p-1">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             {record.bookingUrl ? (
