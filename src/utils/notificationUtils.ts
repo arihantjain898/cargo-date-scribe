@@ -4,7 +4,7 @@ import app from '../config/firebase';
 const messaging = getMessaging(app);
 
 // Replace with your VAPID key from Firebase Console
-const VAPID_KEY = 'YOUR_VAPID_KEY_HERE'; // You'll get this from Firebase Console
+const VAPID_KEY = 'BM_IZAfuNVL1o1Sdjtege1pI9obbwV_B6h9jeNMWFph0lxbqhvw2no-LBWOVRG5wQ1pVwdMB_5eNJx_ZDOVKFYk'; // You'll get this from Firebase Console
 
 export interface NotificationPayload {
   title: string;
