@@ -92,7 +92,7 @@ const DomesticTruckingTableRow = ({
           </Button>
         </div>
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -115,7 +115,7 @@ const DomesticTruckingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.pickDate}
           onSave={(value) => updateRecord(record.id, 'pickDate', value as string)}
@@ -123,7 +123,7 @@ const DomesticTruckingTableRow = ({
           placeholder="Select pick date"
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.delivered}
           onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
@@ -145,7 +145,7 @@ const DomesticTruckingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1 text-left">
         <InlineEditCell
           value={record.notes}
           onSave={(value) => updateRecord(record.id, 'notes', value as string)}
