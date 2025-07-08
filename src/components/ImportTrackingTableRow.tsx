@@ -166,7 +166,7 @@ const ImportTrackingTableRow = ({
           placeholder="Select ETA"
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.bond || 'Select'}
           onSave={(value) => updateRecord(record.id, 'bond', value as string)}
@@ -258,7 +258,7 @@ const ImportTrackingTableRow = ({
           isThreeStateBoolean={true}
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.delivered || 'Select'}
           onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
@@ -266,7 +266,7 @@ const ImportTrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.returned || 'Select'}
           onSave={(value) => updateRecord(record.id, 'returned', value as string)}
@@ -274,7 +274,7 @@ const ImportTrackingTableRow = ({
           placeholder="Select status"
         />
       </td>
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.deliveryDate}
           onSave={(value) => updateRecord(record.id, 'deliveryDate', value as string)}
