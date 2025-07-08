@@ -120,7 +120,7 @@ const TrackingTableRow = ({
         </div>
       </td>
       {/* Column 2: Ref */}
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.ref}
           onSave={(value) => updateRecord(record.id, 'ref', value as string)}
@@ -130,7 +130,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 3: File */}
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.file}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
@@ -140,7 +140,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 4: Work Order */}
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.workOrder}
           onSave={(value) => updateRecord(record.id, 'workOrder', value as string)}
@@ -149,8 +149,8 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 5: Drop Date with Status */}
-      <td className="border-r border-gray-500 p-1">
-        <div className="flex items-center gap-1">
+      <td className="border-r border-gray-500 p-1 text-center">
+        <div className="flex items-center gap-1 justify-center">
           <InlineEditCell
             value={record.dropDate}
             onSave={(value) => updateRecord(record.id, 'dropDate', value as string)}
@@ -169,8 +169,8 @@ const TrackingTableRow = ({
         </div>
       </td>
       {/* Column 6: Return Date with Status */}
-      <td className="border-r-4 border-black p-1">
-        <div className="flex items-center gap-1">
+      <td className="border-r-4 border-black p-1 text-center">
+        <div className="flex items-center gap-1 justify-center">
           <InlineEditCell
             value={record.returnDate}
             onSave={(value) => updateRecord(record.id, 'returnDate', value as string)}
@@ -205,7 +205,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 9: Doc Cutoff Date */}
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1 text-center">
         <InlineEditCell
           value={record.docCutoffDate}
           onSave={(value) => updateRecord(record.id, 'docCutoffDate', value as string)}
@@ -222,7 +222,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 11: Titles Dispatched */}
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.titlesDispatched || 'Select'}
           onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as string)}
@@ -238,7 +238,7 @@ const TrackingTableRow = ({
         />
       </td>
       {/* Column 13: Titles Returned */}
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell
           value={record.titlesReturned || 'Select'}
           onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
