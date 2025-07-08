@@ -205,6 +205,32 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
 
           <Separator />
 
+          {/* Import Table Settings */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Truck className="w-4 h-4" />
+              Import Table Dates
+            </Label>
+            <div className="space-y-2 pl-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="import-eta-final-pod"
+                  checked={settings.importTable.etaFinalPod}
+                  onCheckedChange={(checked) => updateImportTableSetting('etaFinalPod', checked as boolean)}
+                />
+                <Label htmlFor="import-eta-final-pod" className="text-sm">ETA Final POD</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="import-delivery-date"
+                  checked={settings.importTable.deliveryDate}
+                  onCheckedChange={(checked) => updateImportTableSetting('deliveryDate', checked as boolean)}
+                />
+                <Label htmlFor="import-delivery-date" className="text-sm">Delivery Date</Label>
+              </div>
+            </div>
+          </div>
+
           {/* Export Table Settings */}
           <div className="space-y-3">
             <Label className="text-sm font-medium flex items-center gap-2">
@@ -235,32 +261,6 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
                   onCheckedChange={(checked) => updateExportTableSetting('docCutoffDate', checked as boolean)}
                 />
                 <Label htmlFor="export-doc-cutoff" className="text-sm">Doc Cutoff Date</Label>
-              </div>
-            </div>
-          </div>
-
-          {/* Import Table Settings */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium flex items-center gap-2">
-              <Truck className="w-4 h-4" />
-              Import Table Dates
-            </Label>
-            <div className="space-y-2 pl-6">
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="import-eta-final-pod"
-                  checked={settings.importTable.etaFinalPod}
-                  onCheckedChange={(checked) => updateImportTableSetting('etaFinalPod', checked as boolean)}
-                />
-                <Label htmlFor="import-eta-final-pod" className="text-sm">ETA Final POD</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="import-delivery-date"
-                  checked={settings.importTable.deliveryDate}
-                  onCheckedChange={(checked) => updateImportTableSetting('deliveryDate', checked as boolean)}
-                />
-                <Label htmlFor="import-delivery-date" className="text-sm">Delivery Date</Label>
               </div>
             </div>
           </div>
