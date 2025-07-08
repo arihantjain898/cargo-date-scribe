@@ -437,7 +437,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   const renderOptimizedEventsBySource = (events: CalendarEvent[]) => {
     if (events.length === 0) {
       return (
-        <div className="flex items-center justify-center h-full min-h-[200px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+        <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
           <div className="text-center">
             <div className="text-3xl mb-2 opacity-50">📅</div>
             <p className="text-gray-400 text-sm">No events for this date</p>
