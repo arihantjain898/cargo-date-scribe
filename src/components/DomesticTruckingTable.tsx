@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Archive, ArchiveRestore } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Search, Archive, ArchiveRestore } from 'lucide-react';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
 import { useDomesticTruckingSearch } from '../hooks/useSearch';
 import DomesticTruckingTableHeader from './DomesticTruckingTableHeader';
@@ -94,6 +95,18 @@ const DomesticTruckingTable = ({
         </div>
       </div>
       
+      <div className="p-4 border-b bg-white sticky top-0 z-40">
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search by customer, file, notes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 text-sm"
+          />
+        </div>
+      </div>
+      
       <ScrollArea className="h-[69vh] w-full" ref={scrollAreaRef}>
         <div className="min-w-[1100px]">
           <table className="w-full border-collapse text-xs">
@@ -101,8 +114,6 @@ const DomesticTruckingTable = ({
               selectedRows={selectedRows} 
               data={filteredData} 
               setSelectedRows={setSelectedRows}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
             />
             <tbody>
               {finalFilteredData.map((record, index) => (
