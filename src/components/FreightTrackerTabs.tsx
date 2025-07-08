@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Plus, Archive, ArchiveRestore, Trash2, X, Download } from 'lucide-react';
+import { Plus, Archive, ArchiveRestore, Trash2, X, Download, Bell } from 'lucide-react';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
@@ -12,6 +12,7 @@ import ImportTrackingTable from './ImportTrackingTable';
 import DomesticTruckingTable from './DomesticTruckingTable';
 import AllFilesTable from './AllFilesTable';
 import ExcelExportDialog from './ExcelExportDialog';
+import NotificationSetup from './NotificationSetup';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -268,6 +269,12 @@ const FreightTrackerTabs = ({
               <Plus className="h-4 w-4" />
               Add Record
             </Button>
+            <NotificationSetup>
+              <Button variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700">
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications
+              </Button>
+            </NotificationSetup>
           </div>
         </div>
         <AllFilesTable
@@ -313,6 +320,12 @@ const FreightTrackerTabs = ({
               <Plus className="h-4 w-4" />
               Add Record
             </Button>
+            <NotificationSetup>
+              <Button variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700">
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications
+              </Button>
+            </NotificationSetup>
           </div>
         </div>
         <ImportTrackingTable
@@ -358,6 +371,12 @@ const FreightTrackerTabs = ({
               <Plus className="h-4 w-4" />
               Add Record
             </Button>
+            <NotificationSetup>
+              <Button variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700">
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications
+              </Button>
+            </NotificationSetup>
           </div>
         </div>
         <TrackingTable
@@ -403,6 +422,12 @@ const FreightTrackerTabs = ({
               <Plus className="h-4 w-4" />
               Add Record
             </Button>
+            <NotificationSetup>
+              <Button variant="outline" size="sm" className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700">
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications
+              </Button>
+            </NotificationSetup>
           </div>
         </div>
         <DomesticTruckingTable
