@@ -283,62 +283,13 @@ const FreightTracker = () => {
     };
   }, []);
 
-  const handleDeleteBulkRecords = () => {
-    // Implementation for bulk delete based on active tab
-    const selectedIds = activeTab === 'export' ? selectedExportRows :
-                       activeTab === 'import' ? selectedImportRows :
-                       activeTab === 'allfiles' ? selectedAllFilesRows :
-                       selectedDomesticTruckingRows;
-    
-    selectedIds.forEach(id => {
-      if (activeTab === 'export') deleteExportItem(id);
-      else if (activeTab === 'import') deleteImportItem(id);
-      else if (activeTab === 'allfiles') deleteAllFilesItem(id);
-      else if (activeTab === 'domestic') deleteDomesticTruckingItem(id);
-    });
-    
-    // Clear selections
-    if (activeTab === 'export') setSelectedExportRows([]);
-    else if (activeTab === 'import') setSelectedImportRows([]);
-    else if (activeTab === 'allfiles') setSelectedAllFilesRows([]);
-    else if (activeTab === 'domestic') setSelectedDomesticTruckingRows([]);
-  };
-
-  const handleArchiveBulkRecords = () => {
-    // Implementation for bulk archive - similar to delete but set archived: true
-    console.log('Bulk archive not implemented yet');
-  };
-
   return (
-    <div className="w-full">
-      <FreightTrackerHeader
-        activeTab={activeTab}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        selectedRows={selectedExportRows}
-        selectedImportRows={selectedImportRows}
-        selectedAllFilesRows={selectedAllFilesRows}
-        selectedDomesticTruckingRows={selectedDomesticTruckingRows}
-        filteredExportData={filteredExportData}
-        filteredImportData={filteredImportData}
-        filteredAllFilesData={filteredAllFilesData}
-        filteredDomesticTruckingData={filteredDomesticTruckingData}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        onUndo={undo}
-        onRedo={redo}
-        onAddRecord={() => {
-          if (activeTab === 'export') addExportRecord();
-          else if (activeTab === 'import') addImportItem();
-          else if (activeTab === 'allfiles') addAllFilesRecord();
-          else if (activeTab === 'domestic') addDomesticTruckingRecord();
-        }}
-        onDeleteBulkRecords={handleDeleteBulkRecords}
-        onArchiveBulkRecords={handleArchiveBulkRecords}
-      />
+    <div className="w-full px-4 py-6">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold mb-4">Freight Tracker</h1>
+      </div>
 
-      <div className="px-4 py-6">
-        <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as 'tables' | 'calendar')} className="space-y-4">
+      <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as 'tables' | 'calendar')} className="space-y-4">
         <TabsList className="grid w-[400px] grid-cols-2">
           <TabsTrigger value="tables">📊 Tracking Tables</TabsTrigger>
           <TabsTrigger value="calendar">📅 Calendar View</TabsTrigger>
@@ -394,7 +345,6 @@ const FreightTracker = () => {
           />
         </TabsContent>
       </Tabs>
-      </div>
     </div>
   );
 };
