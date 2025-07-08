@@ -47,7 +47,7 @@ const DomesticTruckingTableHeader = ({
         </th>
       </tr>
       <tr className="border-b-4 border-black bg-white">
-        <th className="bg-gray-100 border-r-4 border-black p-2 text-left font-bold text-gray-900 w-32 sticky left-0 z-40">Customer</th>
+        <th className="bg-gray-100 border-r-4 border-black p-2 text-center font-bold text-gray-900 w-32 sticky left-0 z-40">Customer</th>
         <th className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-blue-200">File Info</th>
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-green-200">Work Order & Insurance</th>
         <th colSpan={2} className="border-r-4 border-black p-2 text-center font-bold text-gray-900 bg-purple-200">Schedule</th>
