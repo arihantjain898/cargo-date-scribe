@@ -98,7 +98,25 @@ const AllFilesTableRow = ({
   const handleCreateCorrespondingRow = () => {
     console.log('Plus button clicked for record:', record);
     if (onCreateCorrespondingRow) {
-      onCreateCorrespondingRow(record);
+      const filePrefix = record.file.trim().toUpperCase();
+      let targetTab = '';
+      
+      if (filePrefix === 'EA' || filePrefix === 'ES' || filePrefix === 'ET') {
+        targetTab = 'Export';
+      } else if (filePrefix === 'IA' || filePrefix === 'IS') {
+        targetTab = 'Import';
+      } else if (filePrefix === 'DT') {
+        targetTab = 'Domestic Trucking';
+      }
+      
+      // Show confirmation dialog
+      const confirmed = window.confirm(
+        `Create a corresponding record in the ${targetTab} table for customer "${record.customer}" with file "${record.file}${record.number}"?`
+      );
+      
+      if (confirmed) {
+        onCreateCorrespondingRow(record);
+      }
     }
   };
 
@@ -120,8 +138,8 @@ const AllFilesTableRow = ({
   return (
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
-        <div className="flex items-center gap-2">
-          <div data-field="customer">
+        <div className="flex items-center justify-between w-full">
+          <div data-field="customer" className="flex-1 min-w-0">
             <InlineEditCell
               value={record.customer}
               onSave={(value) => updateRecord(record.id, 'customer', value as string)}
@@ -131,28 +149,30 @@ const AllFilesTableRow = ({
               onNextCell={() => focusNextCell('customer')}
             />
           </div>
-          {record.customer && record.file && record.number && onCreateCorrespondingRow && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCreateCorrespondingRow}
-              className="h-6 w-6 p-0 hover:bg-green-100"
-              title="Create corresponding row in import/export/domestic tab"
-            >
-              <Plus className="h-3 w-3 text-green-600" />
-            </Button>
-          )}
-          {record.number && record.file && onFileClick && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleFileClick}
-              className="h-6 w-6 p-0 hover:bg-blue-100"
-              title={`Open ${record.file}${record.number} in corresponding tab`}
-            >
-              <ExternalLink className="h-3 w-3 text-blue-600" />
-            </Button>
-          )}
+          <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+            {record.customer && record.file && record.number && onCreateCorrespondingRow && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCreateCorrespondingRow}
+                className="h-6 w-6 p-0 hover:bg-green-100"
+                title="Create corresponding row in import/export/domestic tab"
+              >
+                <Plus className="h-3 w-3 text-green-600" />
+              </Button>
+            )}
+            {record.number && record.file && onFileClick && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleFileClick}
+                className="h-6 w-6 p-0 hover:bg-blue-100"
+                title={`Open ${record.file}${record.number} in corresponding tab`}
+              >
+                <ExternalLink className="h-3 w-3 text-blue-600" />
+              </Button>
+            )}
+          </div>
         </div>
       </td>
       
