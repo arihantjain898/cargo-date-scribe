@@ -75,8 +75,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
     setIsEditing(false);
     
-    // Only trigger navigation if value changed and Enter was pressed
-    if (onNextCell && shouldTabOnSave && editValue !== originalValue) {
+    // Trigger navigation when Enter was pressed, regardless of value change
+    if (onNextCell && shouldTabOnSave) {
       setTimeout(onNextCell, 0);
     }
     setShouldTabOnSave(false);
