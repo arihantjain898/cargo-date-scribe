@@ -3,7 +3,7 @@ import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
 import AllFilesTableFileCell from './AllFilesTableFileCell';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -19,6 +19,7 @@ interface AllFilesTableRowProps {
   showArchived: boolean;
   onFileClick?: (fileNumber: string, fileType: string) => void;
   highlightedRowId?: string | null;
+  onCreateCorrespondingRow?: (record: AllFilesRecord) => void;
 }
 
 const AllFilesTableRow = ({
@@ -32,7 +33,8 @@ const AllFilesTableRow = ({
   setSelectedRows,
   showArchived,
   onFileClick,
-  highlightedRowId
+  highlightedRowId,
+  onCreateCorrespondingRow
 }: AllFilesTableRowProps) => {
   const isSelected = selectedRows.includes(record.id);
   const isArchived = record.archived === 'true' || record.archived === true;
@@ -93,6 +95,12 @@ const AllFilesTableRow = ({
     }
   };
 
+  const handleCreateCorrespondingRow = () => {
+    if (onCreateCorrespondingRow) {
+      onCreateCorrespondingRow(record);
+    }
+  };
+
   // More distinctive alternating colors matching export/import tabs with highlight support
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
@@ -122,6 +130,17 @@ const AllFilesTableRow = ({
               onNextCell={() => focusNextCell('customer')}
             />
           </div>
+          {record.customer && record.file && record.number && onCreateCorrespondingRow && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCreateCorrespondingRow}
+              className="h-6 w-6 p-0 hover:bg-green-100"
+              title="Create corresponding row in import/export/domestic tab"
+            >
+              <Plus className="h-3 w-3 text-green-600" />
+            </Button>
+          )}
           {record.number && record.file && onFileClick && (
             <Button
               variant="ghost"

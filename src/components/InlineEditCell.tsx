@@ -39,15 +39,22 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
+  const [originalValue, setOriginalValue] = useState(String(value));
+  const [shouldTabOnSave, setShouldTabOnSave] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setEditValue(String(value));
+    setOriginalValue(String(value));
   }, [value]);
 
   useEffect(() => {
     if (isEditing) {
+      // Set original value when editing starts
+      setOriginalValue(String(value));
+      setShouldTabOnSave(false);
+      
       if (isDate || isTextColumn) {
         inputRef.current?.focus();
         if (!isDate) {
@@ -58,7 +65,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
         textareaRef.current?.select();
       }
     }
-  }, [isEditing, isDate, isTextColumn]);
+  }, [isEditing, isDate, isTextColumn, value]);
 
   const handleSave = () => {
     if (isBoolean || isThreeStateBoolean) {
@@ -67,20 +74,24 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
       onSave(editValue);
     }
     setIsEditing(false);
-    // Trigger navigation to next cell after saving
-    if (onNextCell) {
+    
+    // Only trigger navigation if value changed and Enter was pressed
+    if (onNextCell && shouldTabOnSave && editValue !== originalValue) {
       setTimeout(onNextCell, 0);
     }
+    setShouldTabOnSave(false);
   };
 
   const handleCancel = () => {
     setEditValue(String(value));
     setIsEditing(false);
+    setShouldTabOnSave(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      setShouldTabOnSave(true);
       handleSave();
     }
     if (e.key === 'Escape') {

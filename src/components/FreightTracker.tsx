@@ -308,6 +308,7 @@ const FreightTracker = () => {
             deleteExportRecord={deleteExportItem}
             deleteImportRecord={deleteImportItem}
             deleteDomesticRecord={deleteDomesticTruckingItem}
+            createCorrespondingRecord={createCorrespondingRecord}
             deleteAllFilesRecord={deleteAllFilesItem}
             addExportRecord={addExportRecord}
             addImportRecord={addImportItem}

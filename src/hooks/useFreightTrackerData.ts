@@ -290,6 +290,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
     deleteExportItem,
     deleteImportItem,
     deleteAllFilesItem,
-    deleteDomesticTruckingItem
+    deleteDomesticTruckingItem,
+    createCorrespondingRecord
   };
 };

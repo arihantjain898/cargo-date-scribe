@@ -20,10 +20,9 @@ const AllFilesTableFileCell = ({
 
   const handleValueChange = (value: string) => {
     onSave(value);
-    // Trigger navigation to next cell after saving
-    if (onNextCell) {
-      setTimeout(onNextCell, 0);
-    }
+    // Only trigger navigation if this was changed via keyboard navigation
+    // For now, we'll disable auto-navigation for select dropdowns
+    // since it's harder to track if it was changed via Enter key
   };
 
   return (

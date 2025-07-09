@@ -21,6 +21,7 @@ interface AllFilesTableProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   onFileClick?: (fileNumber: string, fileType: string) => void;
   highlightedRowId?: string | null;
+  onCreateCorrespondingRow?: (record: AllFilesRecord) => void;
 }
 
 const AllFilesTable = ({ 
@@ -30,7 +31,8 @@ const AllFilesTable = ({
   selectedRows, 
   setSelectedRows, 
   onFileClick,
-  highlightedRowId
+  highlightedRowId,
+  onCreateCorrespondingRow
 }: AllFilesTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
@@ -131,6 +133,7 @@ const AllFilesTable = ({
                   showArchived={showArchived}
                   onFileClick={onFileClick}
                   highlightedRowId={highlightedRowId}
+                  onCreateCorrespondingRow={onCreateCorrespondingRow}
                 />
               ))}
               <tr>
