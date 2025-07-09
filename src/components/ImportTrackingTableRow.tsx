@@ -190,6 +190,7 @@ const ImportTrackingTableRow = ({
           onSave={(value) => updateRecord(record.id, 'bond', value as string)}
           isBondColumn={true}
           placeholder="Select bond type"
+          selectText="Select Bond"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -197,6 +198,7 @@ const ImportTrackingTableRow = ({
           value={record.poa}
           onSave={(value) => updateRecord(record.id, 'poa', value as string)}
           isPoaColumn={true}
+          selectText="Select POA"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -204,6 +206,7 @@ const ImportTrackingTableRow = ({
           value={record.isf}
           onSave={(value) => updateRecord(record.id, 'isf', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select ISF"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -211,6 +214,7 @@ const ImportTrackingTableRow = ({
           value={record.packingListCommercialInvoice}
           onSave={(value) => updateRecord(record.id, 'packingListCommercialInvoice', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Packing"
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
@@ -218,6 +222,7 @@ const ImportTrackingTableRow = ({
           value={record.billOfLading}
           onSave={(value) => updateRecord(record.id, 'billOfLading', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select BOL"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -225,6 +230,7 @@ const ImportTrackingTableRow = ({
           value={record.arrivalNotice}
           onSave={(value) => updateRecord(record.id, 'arrivalNotice', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Arrival"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -232,6 +238,7 @@ const ImportTrackingTableRow = ({
           value={record.isfFiled}
           onSave={(value) => updateRecord(record.id, 'isfFiled', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select ISF Filed"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -239,6 +246,7 @@ const ImportTrackingTableRow = ({
           value={record.entryFiled}
           onSave={(value) => updateRecord(record.id, 'entryFiled', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Entry"
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
@@ -246,6 +254,7 @@ const ImportTrackingTableRow = ({
           value={record.blRelease}
           onSave={(value) => updateRecord(record.id, 'blRelease', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select BL Release"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -253,6 +262,7 @@ const ImportTrackingTableRow = ({
           value={record.customsRelease}
           onSave={(value) => updateRecord(record.id, 'customsRelease', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Customs"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -260,6 +270,7 @@ const ImportTrackingTableRow = ({
           value={record.invoiceSent}
           onSave={(value) => updateRecord(record.id, 'invoiceSent', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Invoice"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -267,6 +278,7 @@ const ImportTrackingTableRow = ({
           value={record.paymentReceived}
           onSave={(value) => updateRecord(record.id, 'paymentReceived', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Payment"
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
@@ -274,6 +286,7 @@ const ImportTrackingTableRow = ({
           value={record.workOrderSetup}
           onSave={(value) => updateRecord(record.id, 'workOrderSetup', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select W/O Setup"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">

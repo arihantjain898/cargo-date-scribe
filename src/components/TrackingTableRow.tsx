@@ -194,6 +194,7 @@ const TrackingTableRow = ({
           value={record.docsSent}
           onSave={(value) => updateRecord(record.id, 'docsSent', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Docs Sent"
         />
       </td>
       {/* Column 8: Docs Received */}
@@ -202,6 +203,7 @@ const TrackingTableRow = ({
           value={record.docsReceived}
           onSave={(value) => updateRecord(record.id, 'docsReceived', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Docs Rec'd"
         />
       </td>
       {/* Column 9: Doc Cutoff Date */}
@@ -219,6 +221,7 @@ const TrackingTableRow = ({
           value={record.aesMblVgmSent}
           onSave={(value) => updateRecord(record.id, 'aesMblVgmSent', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select AES/MBL/VGM"
         />
       </td>
       {/* Column 11: Titles Dispatched */}
@@ -227,6 +230,7 @@ const TrackingTableRow = ({
           value={record.titlesDispatched || 'Select'}
           onSave={(value) => updateRecord(record.id, 'titlesDispatched', value as string)}
           isFiveStateBoolean={true}
+          selectText="Select Titles Disp"
         />
       </td>
       {/* Column 12: Validated Fwd */}
@@ -235,6 +239,7 @@ const TrackingTableRow = ({
           value={record.validatedFwd || 'Select'}
           onSave={(value) => updateRecord(record.id, 'validatedFwd', value as string)}
           isFiveStateBoolean={true}
+          selectText="Select Validated"
         />
       </td>
       {/* Column 13: Titles Returned */}
@@ -243,6 +248,7 @@ const TrackingTableRow = ({
           value={record.titlesReturned || 'Select'}
           onSave={(value) => updateRecord(record.id, 'titlesReturned', value as string)}
           isFiveStateBoolean={true}
+          selectText="Select Titles Return"
         />
       </td>
       {/* Column 14: SSL Draft Inv Rec */}
@@ -251,6 +257,7 @@ const TrackingTableRow = ({
           value={record.sslDraftInvRec}
           onSave={(value) => updateRecord(record.id, 'sslDraftInvRec', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select SSL Draft"
         />
       </td>
       {/* Column 15: Draft Inv Approved */}
@@ -259,6 +266,7 @@ const TrackingTableRow = ({
           value={record.draftInvApproved}
           onSave={(value) => updateRecord(record.id, 'draftInvApproved', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Draft Appr"
         />
       </td>
       {/* Column 16: Transphere Inv Sent */}
@@ -267,6 +275,7 @@ const TrackingTableRow = ({
           value={record.transphereInvSent}
           onSave={(value) => updateRecord(record.id, 'transphereInvSent', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Transphere"
         />
       </td>
       {/* Column 17: Payment Rec */}
@@ -275,6 +284,7 @@ const TrackingTableRow = ({
           value={record.paymentRec}
           onSave={(value) => updateRecord(record.id, 'paymentRec', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Payment"
         />
       </td>
       {/* Column 18: SSL Paid */}
@@ -283,6 +293,7 @@ const TrackingTableRow = ({
           value={record.sslPaid}
           onSave={(value) => updateRecord(record.id, 'sslPaid', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select SSL Paid"
         />
       </td>
       {/* Column 19: Insured */}
@@ -291,6 +302,7 @@ const TrackingTableRow = ({
           value={record.insured}
           onSave={(value) => updateRecord(record.id, 'insured', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Insured"
         />
       </td>
       {/* Column 20: Released */}
@@ -299,6 +311,7 @@ const TrackingTableRow = ({
           value={record.released}
           onSave={(value) => updateRecord(record.id, 'released', value as string)}
           isThreeStateBoolean={true}
+          selectText="Select Released"
         />
       </td>
       {/* Column 21: Notes */}

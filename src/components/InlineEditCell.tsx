@@ -18,6 +18,7 @@ interface InlineEditCellProps {
   isTextColumn?: boolean;
   isNotesColumn?: boolean;
   onNextCell?: () => void;
+  selectText?: string; // Custom text for "Select" state
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -35,7 +36,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isBondColumn = false,
   isTextColumn = false,
   isNotesColumn = false,
-  onNextCell
+  onNextCell,
+  selectText = "Select"
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -246,7 +248,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   const getPoaDisplay = () => {
     if (value === 'Select') {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (value === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
     } else if (value === 'Yes') {
@@ -254,13 +256,13 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (value === 'No') {
       return { text: 'No', color: 'bg-red-100 text-red-800 hover:bg-red-200' };
     } else {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     }
   };
 
   const getBondDisplay = () => {
     if (value === 'Select') {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (value === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
     } else if (value === 'Continuous') {
@@ -268,7 +270,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (value === 'Single Entry') {
       return { text: 'Single Entry', color: 'bg-purple-100 text-purple-800 hover:bg-purple-200' };
     } else {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     }
   };
 
@@ -277,7 +279,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     const stringValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
     
     if (stringValue === 'Select' || stringValue === '' || stringValue === undefined) {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (stringValue === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
     } else if (stringValue === 'Yes') {
@@ -287,7 +289,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (stringValue === 'N/A') {
       return { text: 'N/A', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
     } else {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     }
   };
 
@@ -296,7 +298,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     const stringValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
     
     if (stringValue === 'Select' || stringValue === '' || stringValue === undefined) {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (stringValue === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
     } else if (stringValue === 'Yes') {
@@ -304,7 +306,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (stringValue === 'N/A') {
       return { text: 'N/A', color: 'bg-green-100 text-green-800 hover:bg-green-200' };
     } else {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     }
   };
 
@@ -313,7 +315,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     const stringValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
     
     if (stringValue === 'Select' || stringValue === '' || stringValue === undefined) {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     } else if (stringValue === 'Pending') {
       return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
     } else if (stringValue === 'Yes') {
@@ -321,7 +323,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     } else if (stringValue === 'No') {
       return { text: 'No', color: 'bg-red-100 text-red-800 hover:bg-red-200' };
     } else {
-      return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+      return { text: selectText, color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
     }
   };
 
