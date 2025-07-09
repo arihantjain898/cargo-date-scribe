@@ -20,6 +20,7 @@ interface NotificationSettings {
   };
   importTable: {
     etaFinalPod: boolean;
+    returnDate: boolean;
     deliveryDate: boolean;
   };
   domesticTruckingTable: {
@@ -43,6 +44,7 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
     },
     importTable: {
       etaFinalPod: false,
+      returnDate: false,
       deliveryDate: false,
     },
     domesticTruckingTable: {
@@ -219,6 +221,14 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
                   onCheckedChange={(checked) => updateImportTableSetting('etaFinalPod', checked as boolean)}
                 />
                 <Label htmlFor="import-eta-final-pod" className="text-sm">ETA Final POD</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="import-return-date"
+                  checked={settings.importTable.returnDate}
+                  onCheckedChange={(checked) => updateImportTableSetting('returnDate', checked as boolean)}
+                />
+                <Label htmlFor="import-return-date" className="text-sm">Return Date</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox 
