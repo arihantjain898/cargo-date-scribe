@@ -337,7 +337,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     ? getThreeStateBooleanDisplay().text
     : isBoolean 
     ? (value ? 'Yes' : 'No')
-    : (String(value) || placeholder);
+    : (value && String(value) !== 'undefined' && String(value) !== '' ? String(value) : placeholder);
 
   const getStatusColor = (val: string) => {
     if (val === 'Select') return 'bg-gray-100 text-gray-500 hover:bg-gray-200';
