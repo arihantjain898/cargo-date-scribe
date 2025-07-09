@@ -7,17 +7,27 @@ interface AllFilesTableFileCellProps {
   numberValue: string;
   onSave: (value: string) => void;
   className?: string;
+  onNextCell?: () => void;
 }
 
 const AllFilesTableFileCell = ({
   fileValue,
   onSave,
-  className
+  className,
+  onNextCell
 }: AllFilesTableFileCellProps) => {
   const fileOptions = ['IA', 'IS', 'EA', 'ES', 'ET', 'DT'];
 
+  const handleValueChange = (value: string) => {
+    onSave(value);
+    // Trigger navigation to next cell after saving
+    if (onNextCell) {
+      setTimeout(onNextCell, 0);
+    }
+  };
+
   return (
-    <Select value={fileValue} onValueChange={onSave}>
+    <Select value={fileValue} onValueChange={handleValueChange}>
       <SelectTrigger className={`h-6 text-xs border-0 bg-transparent hover:bg-gray-50 focus:ring-0 focus:ring-offset-0 ${className}`}>
         <SelectValue placeholder="Select file type" />
       </SelectTrigger>

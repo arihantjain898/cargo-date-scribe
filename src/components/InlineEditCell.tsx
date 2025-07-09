@@ -17,6 +17,7 @@ interface InlineEditCellProps {
   isBondColumn?: boolean;
   isTextColumn?: boolean;
   isNotesColumn?: boolean;
+  onNextCell?: () => void;
 }
 
 const InlineEditCell: React.FC<InlineEditCellProps> = ({
@@ -33,7 +34,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   isPoaColumn = false,
   isBondColumn = false,
   isTextColumn = false,
-  isNotesColumn = false
+  isNotesColumn = false,
+  onNextCell
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(String(value));
@@ -65,6 +67,10 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
       onSave(editValue);
     }
     setIsEditing(false);
+    // Trigger navigation to next cell after saving
+    if (onNextCell) {
+      setTimeout(onNextCell, 0);
+    }
   };
 
   const handleCancel = () => {

@@ -38,6 +38,31 @@ const AllFilesTableRow = ({
   const isArchived = record.archived === 'true' || record.archived === true;
   const isHighlighted = highlightedRowId === record.id;
 
+  // Define the order of editable fields for tab navigation
+  const editableFields = [
+    'customer', 'file', 'number', 'originPort', 'originState', 
+    'destinationPort', 'destinationCountry', 'container20', 'container40', 
+    'roro', 'lcl', 'air', 'truck', 'ssl', 'nvo', 'comments', 'salesContact'
+  ];
+
+  const focusNextCell = (currentField: string) => {
+    const currentIndex = editableFields.indexOf(currentField);
+    const nextIndex = (currentIndex + 1) % editableFields.length;
+    const nextField = editableFields[nextIndex];
+    
+    // Find the next cell and focus it
+    const currentRow = document.querySelector(`[data-row-id="${record.id}"]`);
+    if (currentRow) {
+      const nextCell = currentRow.querySelector(`[data-field="${nextField}"]`);
+      if (nextCell) {
+        const clickableElement = nextCell.querySelector('[title="Click to edit"]');
+        if (clickableElement) {
+          (clickableElement as HTMLElement).click();
+        }
+      }
+    }
+  };
+
   const handleCheckboxChange = (checked: boolean) => {
     if (checked) {
       setSelectedRows(prev => [...prev, record.id]);
@@ -87,13 +112,16 @@ const AllFilesTableRow = ({
     <tr className={rowClassName} data-row-id={record.id}>
       <td className="border-r-4 border-black p-1 sticky left-0 z-20 bg-inherit">
         <div className="flex items-center gap-2">
-          <InlineEditCell
-            value={record.customer}
-            onSave={(value) => updateRecord(record.id, 'customer', value as string)}
-            placeholder="Enter customer"
-            className={getTextStyling(record.customer)}
-            isTextColumn={true}
-          />
+          <div data-field="customer">
+            <InlineEditCell
+              value={record.customer}
+              onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+              placeholder="Enter customer"
+              className={getTextStyling(record.customer)}
+              isTextColumn={true}
+              onNextCell={() => focusNextCell('customer')}
+            />
+          </div>
           {record.number && record.file && onFileClick && (
             <Button
               variant="ghost"
@@ -108,146 +136,160 @@ const AllFilesTableRow = ({
         </div>
       </td>
       
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1" data-field="file">
         <AllFilesTableFileCell
           fileValue={record.file}
           numberValue={record.number}
           onSave={(value) => updateRecord(record.id, 'file', value as string)}
           className={getTextStyling(record.file)}
+          onNextCell={() => focusNextCell('file')}
         />
       </td>
       
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1" data-field="number">
         <InlineEditCell
           value={record.number}
           onSave={(value) => updateRecord(record.id, 'number', value as string)}
           placeholder="Enter number"
           className={getTextStyling(record.number)}
           isTextColumn={true}
+          onNextCell={() => focusNextCell('number')}
         />
       </td>
       
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1" data-field="originPort">
         <InlineEditCell
           value={record.originPort}
           onSave={(value) => updateRecord(record.id, 'originPort', value as string)}
           placeholder="Enter origin port"
           className={getTextStyling(record.originPort)}
           isTextColumn={true}
+          onNextCell={() => focusNextCell('originPort')}
         />
       </td>
       
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1" data-field="originState">
         <InlineEditCell
           value={record.originState}
           onSave={(value) => updateRecord(record.id, 'originState', value as string)}
           placeholder="Enter origin state"
           className={getTextStyling(record.originState)}
           isTextColumn={true}
+          onNextCell={() => focusNextCell('originState')}
         />
       </td>
       
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1" data-field="destinationPort">
         <InlineEditCell
           value={record.destinationPort}
           onSave={(value) => updateRecord(record.id, 'destinationPort', value as string)}
           placeholder="Enter destination port"
           className={getTextStyling(record.destinationPort)}
           isTextColumn={true}
+          onNextCell={() => focusNextCell('destinationPort')}
         />
       </td>
       
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1" data-field="destinationCountry">
         <InlineEditCell
           value={record.destinationCountry}
           onSave={(value) => updateRecord(record.id, 'destinationCountry', value as string)}
           placeholder="Enter destination country"
           className={getTextStyling(record.destinationCountry)}
           isTextColumn={true}
+          onNextCell={() => focusNextCell('destinationCountry')}
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container20)}`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container20)}`} data-field="container20">
         <InlineEditCell
           value={record.container20}
           onSave={(value) => updateRecord(record.id, 'container20', value as string)}
           placeholder="20'"
           className="font-medium"
           isTextColumn={true}
+          onNextCell={() => focusNextCell('container20')}
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container40)}`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container40)}`} data-field="container40">
         <InlineEditCell
           value={record.container40}
           onSave={(value) => updateRecord(record.id, 'container40', value as string)}
           placeholder="40'"
           className="font-medium"
           isTextColumn={true}
+          onNextCell={() => focusNextCell('container40')}
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.roro)}`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.roro)}`} data-field="roro">
         <InlineEditCell
           value={record.roro}
           onSave={(value) => updateRecord(record.id, 'roro', value as string)}
           placeholder="RoRo"
           className="font-medium"
           isTextColumn={true}
+          onNextCell={() => focusNextCell('roro')}
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.lcl)}`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.lcl)}`} data-field="lcl">
         <InlineEditCell
           value={record.lcl}
           onSave={(value) => updateRecord(record.id, 'lcl', value as string)}
           placeholder="LCL"
           className="font-medium"
           isTextColumn={true}
+          onNextCell={() => focusNextCell('lcl')}
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.air)}`}>
+      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.air)}`} data-field="air">
         <InlineEditCell
           value={record.air}
           onSave={(value) => updateRecord(record.id, 'air', value as string)}
           placeholder="Air"
           className="font-medium"
           isTextColumn={true}
+          onNextCell={() => focusNextCell('air')}
         />
       </td>
       
-      <td className={`border-r-4 border-black p-1 ${getContainerVolumeColor(record.truck)}`}>
+      <td className={`border-r-4 border-black p-1 ${getContainerVolumeColor(record.truck)}`} data-field="truck">
         <InlineEditCell
           value={record.truck}
           onSave={(value) => updateRecord(record.id, 'truck', value as string)}
           placeholder="Truck"
           className="font-medium"
           isTextColumn={true}
+          onNextCell={() => focusNextCell('truck')}
         />
       </td>
       
-      <td className="border-r border-gray-500 p-1">
+      <td className="border-r border-gray-500 p-1" data-field="ssl">
         <InlineEditCell
           value={record.ssl}
           onSave={(value) => updateRecord(record.id, 'ssl', value as string)}
           placeholder="SSL or Trucker"
           className={getTextStyling(record.ssl)}
           isTextColumn={true}
+          onNextCell={() => focusNextCell('ssl')}
         />
       </td>
       
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1" data-field="nvo">
         <InlineEditCell
           value={record.nvo}
           onSave={(value) => updateRecord(record.id, 'nvo', value as string)}
           placeholder="NVO"
           className={getTextStyling(record.nvo)}
           isTextColumn={true}
+          onNextCell={() => focusNextCell('nvo')}
         />
       </td>
       
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1" data-field="comments">
         <InlineEditCell
           value={record.comments}
           onSave={(value) => updateRecord(record.id, 'comments', value as string)}
@@ -255,16 +297,18 @@ const AllFilesTableRow = ({
           className={getTextStyling(record.comments)}
           isTextColumn={true}
           isNotesColumn={true}
+          onNextCell={() => focusNextCell('comments')}
         />
       </td>
       
-      <td className="border-r-4 border-black p-1">
+      <td className="border-r-4 border-black p-1" data-field="salesContact">
         <InlineEditCell
           value={record.salesContact}
           onSave={(value) => updateRecord(record.id, 'salesContact', value as string)}
           placeholder="Enter sales contact"
           className={getTextStyling(record.salesContact)}
           isTextColumn={true}
+          onNextCell={() => focusNextCell('salesContact')}
         />
       </td>
       
