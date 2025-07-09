@@ -11,8 +11,13 @@ export const useAllFilesSearch = (data: AllFilesRecord[]) => {
       (record.file || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.originPort || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (record.originState || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.destinationPort || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.destinationCountry || '').toLowerCase().includes(searchTerm.toLowerCase())
+      (record.destinationCountry || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (record.ssl || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (record.truck || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (record.nvo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (record.salesContact || '').toLowerCase().includes(searchTerm.toLowerCase())
     ), [data, searchTerm]
   );
 
