@@ -155,7 +155,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
         // Import Sea or Import Air -> Create Import record
         const existingImport = importData.find(record => 
           record.customer === allFilesRecord.customer && 
-          record.file === allFilesRecord.number
+          record.file === `${allFilesRecord.file}${allFilesRecord.number}`
         );
         
         if (!existingImport) {
@@ -163,7 +163,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
             customer: allFilesRecord.customer,
             booking: '',
             bookingUrl: '',
-            file: allFilesRecord.number,
+            file: `${allFilesRecord.file}${allFilesRecord.number}`,
             etaFinalPod: '',
             bond: 'Select',
             poa: 'Select',
@@ -194,14 +194,14 @@ export const useFreightTrackerData = (currentUserId: string) => {
         // Export Sea or Export Air -> Create Export record
         const existingExport = exportData.find(record => 
           record.customer === allFilesRecord.customer && 
-          record.file === allFilesRecord.number
+          record.file === `${allFilesRecord.file}${allFilesRecord.number}`
         );
         
         if (!existingExport) {
           const newExportRecord: Omit<TrackingRecord, 'id'> = {
             customer: allFilesRecord.customer,
             ref: '',
-            file: allFilesRecord.number,
+            file: `${allFilesRecord.file}${allFilesRecord.number}`,
             workOrder: '',
             dropDate: '',
             returnDate: '',
@@ -232,13 +232,13 @@ export const useFreightTrackerData = (currentUserId: string) => {
         // Domestic Trucking -> Create Domestic Trucking record
         const existingDomestic = domesticTruckingData.find(record => 
           record.customer === allFilesRecord.customer && 
-          record.file === allFilesRecord.number
+          record.file === `${allFilesRecord.file}${allFilesRecord.number}`
         );
         
         if (!existingDomestic) {
           const newDomesticRecord: Omit<DomesticTruckingRecord, 'id'> = {
             customer: allFilesRecord.customer,
-            file: allFilesRecord.number,
+            file: `${allFilesRecord.file}${allFilesRecord.number}`,
             woSent: false,
             insurance: false,
             pickDate: '',
