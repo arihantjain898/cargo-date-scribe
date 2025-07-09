@@ -369,7 +369,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
       }`
     : `w-full min-h-[24px] p-1 text-xs cursor-pointer hover:bg-blue-50 rounded border border-transparent hover:border-blue-200 transition-all duration-200 ${
         value ? 'text-gray-800' : 'text-gray-400 italic'
-      } ${isDate && value ? 'text-blue-700 bg-blue-50' : ''}`;
+      } ${isDate ? 'text-blue-700 bg-blue-50 border border-blue-200 rounded px-2 py-1' : ''}`;
 
   return (
     <div
@@ -377,7 +377,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
       onClick={handleClick}
       title="Click to edit"
     >
-      <span className={isDate && value ? 'px-1 py-0.5 rounded text-[10px]' : 'break-words whitespace-pre-wrap'}>
+      <span className={isDate ? 'px-1 py-0.5 rounded text-xs font-medium' : 'break-words whitespace-pre-wrap'}>
         {displayValue}
       </span>
     </div>
