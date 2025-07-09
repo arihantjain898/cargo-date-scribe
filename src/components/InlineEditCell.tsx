@@ -67,8 +67,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   }, [isEditing, isDate, isTextColumn, value]);
 
-  const handleSave = () => {
-    console.log('handleSave called:', { shouldTabOnSave, onNextCell: !!onNextCell });
+  const handleSave = (shouldNavigate = false) => {
+    console.log('handleSave called:', { shouldNavigate, onNextCell: !!onNextCell });
     
     if (isBoolean || isThreeStateBoolean) {
       onSave(editValue === 'true');
@@ -78,11 +78,15 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     setIsEditing(false);
     
     // Trigger navigation when Enter was pressed, regardless of value change
-    if (onNextCell && shouldTabOnSave) {
+    if (onNextCell && shouldNavigate) {
       console.log('Calling onNextCell');
       setTimeout(onNextCell, 0);
     }
     setShouldTabOnSave(false);
+  };
+
+  const handleBlur = () => {
+    handleSave(false);
   };
 
   const handleCancel = () => {
@@ -94,9 +98,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      console.log('Enter pressed - setting shouldTabOnSave to true');
-      setShouldTabOnSave(true);
-      handleSave();
+      console.log('Enter pressed - calling handleSave with shouldNavigate=true');
+      handleSave(true);
     }
     if (e.key === 'Escape') {
       e.preventDefault();
@@ -219,7 +222,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
             type={isDate ? "date" : "text"}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            onBlur={handleSave}
+            onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             className={`w-full text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 ${textInputWidth}`}
             placeholder={placeholder}
@@ -229,7 +232,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
             ref={textareaRef}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            onBlur={handleSave}
+            onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             className={`w-full min-h-[60px] text-xs border-blue-500 focus:border-blue-600 focus:ring-blue-500 resize-none ${textareaWidth}`}
             placeholder={placeholder}
