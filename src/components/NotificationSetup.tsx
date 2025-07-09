@@ -25,6 +25,7 @@ interface NotificationSettings {
   };
   domesticTruckingTable: {
     pickDate: boolean;
+    deliveryDate: boolean;
   };
   notificationTiming: {
     threeDays: boolean;
@@ -49,6 +50,7 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
     },
     domesticTruckingTable: {
       pickDate: false,
+      deliveryDate: false,
     },
     notificationTiming: {
       threeDays: false,
@@ -289,6 +291,14 @@ const NotificationSetup = ({ children }: NotificationSetupProps) => {
                   onCheckedChange={(checked) => updateDomesticTruckingTableSetting('pickDate', checked as boolean)}
                 />
                 <Label htmlFor="domestic-pick-date" className="text-sm">Pick Date</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="domestic-delivery-date"
+                  checked={settings.domesticTruckingTable.deliveryDate}
+                  onCheckedChange={(checked) => updateDomesticTruckingTableSetting('deliveryDate', checked as boolean)}
+                />
+                <Label htmlFor="domestic-delivery-date" className="text-sm">Delivery Date</Label>
               </div>
             </div>
           </div>
