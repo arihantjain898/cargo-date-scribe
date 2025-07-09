@@ -38,11 +38,8 @@ const ImportTrackingTableRow = ({
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if all boolean fields are true (completed) - FIXED: including 'returnDate' in the check
-  const isCompleted = record.poa === 'Yes' && record.isf === 'Yes' && record.packingListCommercialInvoice === 'Yes' && 
-    record.billOfLading === 'Yes' && record.arrivalNotice === 'Yes' && record.isfFiled === 'Yes' && record.entryFiled === 'Yes' && 
-    record.blRelease === 'Yes' && record.customsRelease === 'Yes' && record.invoiceSent === 'Yes' && record.paymentReceived === 'Yes' && 
-    record.workOrderSetup === 'Yes' && record.returnDate !== '';
+  // Check if row is completed: return date and delivery date must have green status, bond must not be pending
+  const isCompleted = record.returnDateStatus === 'green' && record.deliveryDateStatus === 'green' && record.bond !== 'Pending';
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
