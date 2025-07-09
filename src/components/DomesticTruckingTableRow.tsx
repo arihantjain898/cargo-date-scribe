@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
@@ -62,6 +62,27 @@ const DomesticTruckingTableRow = ({
     }
   };
 
+  const handleDateStatusToggle = (field: 'pickDateStatus' | 'deliveredStatus') => {
+    const currentStatus = record[field] || 'gray';
+    const statusCycle = ['gray', 'yellow', 'green', 'red'] as const;
+    const currentIndex = statusCycle.indexOf(currentStatus as 'gray' | 'yellow' | 'green' | 'red');
+    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+    updateRecord(record.id, field, nextStatus);
+  };
+
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case 'yellow':
+        return 'bg-yellow-400 border-yellow-500';
+      case 'green':
+        return 'bg-green-400 border-green-500';
+      case 'red':
+        return 'bg-red-400 border-red-500';
+      default:
+        return 'bg-gray-400 border-gray-500';
+    }
+  };
+
   // More distinctive alternating colors matching export/import tabs
   const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
     isHighlighted ? 'bg-yellow-200 animate-pulse' :
@@ -116,20 +137,42 @@ const DomesticTruckingTableRow = ({
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.pickDate}
-          onSave={(value) => updateRecord(record.id, 'pickDate', value as string)}
-          isDate={true}
-          placeholder="Select pick date"
-        />
+        <div className="flex items-center gap-1 justify-center">
+          <InlineEditCell
+            value={record.pickDate}
+            onSave={(value) => updateRecord(record.id, 'pickDate', value as string)}
+            isDate={true}
+            placeholder="Select pick date"
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleDateStatusToggle('pickDateStatus')}
+            className="h-6 w-6 p-0 hover:bg-gray-100"
+            title="Toggle status"
+          >
+            <Circle className={`h-4 w-4 ${getStatusColor(record.pickDateStatus)} border-2 rounded-full`} />
+          </Button>
+        </div>
       </td>
       <td className="border-r-4 border-black p-1 text-center">
-        <InlineEditCell
-          value={record.delivered}
-          onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
-          isDate={true}
-          placeholder="Select delivery date"
-        />
+        <div className="flex items-center gap-1 justify-center">
+          <InlineEditCell
+            value={record.delivered}
+            onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
+            isDate={true}
+            placeholder="Select delivery date"
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleDateStatusToggle('deliveredStatus')}
+            className="h-6 w-6 p-0 hover:bg-gray-100"
+            title="Toggle status"
+          >
+            <Circle className={`h-4 w-4 ${getStatusColor(record.deliveredStatus)} border-2 rounded-full`} />
+          </Button>
+        </div>
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
         <InlineEditCell

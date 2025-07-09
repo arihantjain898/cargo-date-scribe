@@ -22,6 +22,7 @@ export interface ImportTrackingRecord {
   delivered: string;
   returned: string;
   deliveryDate: string;
+  deliveryDateStatus?: string;
   notes: string;
   archived: boolean;
   createdAt: string;

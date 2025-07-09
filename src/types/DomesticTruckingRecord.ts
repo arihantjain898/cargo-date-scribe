@@ -6,7 +6,9 @@ export interface DomesticTruckingRecord {
   woSent: boolean;
   insurance: boolean;
   pickDate: string;
+  pickDateStatus?: string;
   delivered: string;
+  deliveredStatus?: string;
   paymentReceived: boolean;
   paymentMade: boolean;
   notes: string;
