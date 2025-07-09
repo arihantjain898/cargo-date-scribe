@@ -14,11 +14,6 @@ export const useSearch = (data: TrackingRecord[]) => {
       (record.ref || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.file || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.workOrder || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.dropDate || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.returnDate || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.docCutoffDate || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.titlesDispatched || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.titlesReturned || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.notes || '').toLowerCase().includes(searchTerm.toLowerCase())
     ), [data, searchTerm]
   );
@@ -34,13 +29,6 @@ export const useImportSearch = (data: ImportTrackingRecord[]) => {
       (record.customer || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.booking || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.file || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.etaFinalPod || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.bond || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.poa || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.isf || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.delivered || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.returned || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.deliveryDate || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (record.notes || '').toLowerCase().includes(searchTerm.toLowerCase())
     ), [data, searchTerm]
   );
@@ -81,8 +69,6 @@ export const useDomesticTruckingSearch = (data: DomesticTruckingRecord[]) => {
     return data.filter(record =>
       (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
       (record.file || '').toLowerCase().includes(lowercaseSearch) ||
-      (record.pickDate || '').toLowerCase().includes(lowercaseSearch) ||
-      (record.delivered || '').toLowerCase().includes(lowercaseSearch) ||
       (record.notes || '').toLowerCase().includes(lowercaseSearch)
     );
   }, [data, searchTerm]);

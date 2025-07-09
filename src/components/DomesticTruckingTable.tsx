@@ -99,7 +99,7 @@ const DomesticTruckingTable = ({
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search by customer, file, pick date, delivered, notes..."
+            placeholder="Search by customer, file, notes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 text-sm"
