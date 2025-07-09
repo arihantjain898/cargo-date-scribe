@@ -327,7 +327,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
-  const displayValue = isBondColumn
+const displayValue = isBondColumn
     ? getBondDisplay().text
     : isPoaColumn
     ? getPoaDisplay().text
@@ -340,6 +340,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     : isBoolean 
     ? (value ? 'Yes' : 'No')
     : (value && String(value) !== 'undefined' && String(value) !== '' ? String(value) : placeholder);
+
+  const isPlaceholderText = displayValue === placeholder;
 
   const getStatusColor = (val: string) => {
     if (val === 'Select') return 'bg-gray-100 text-gray-500 hover:bg-gray-200';
@@ -369,7 +371,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
       }`
     : `w-full min-h-[24px] p-1 text-xs cursor-pointer hover:bg-blue-50 rounded border border-transparent hover:border-blue-200 transition-all duration-200 ${
         value ? 'text-gray-800' : 'text-gray-400 italic'
-      } ${isDate ? (value && value !== '' && !String(value).startsWith('Select') && value !== placeholder ? 'text-blue-700 bg-blue-50 border border-blue-200 rounded px-2 py-1' : 'text-gray-400 bg-gray-50 border border-gray-200 rounded px-2 py-1') : ''}`;
+      } ${isDate ? (isPlaceholderText ? 'text-gray-400 bg-gray-50 border border-gray-200 rounded px-2 py-1' : 'text-blue-700 bg-blue-50 border border-blue-200 rounded px-2 py-1') : ''}`;
 
   return (
     <div
