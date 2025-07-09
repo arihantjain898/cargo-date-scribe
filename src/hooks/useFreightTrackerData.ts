@@ -136,9 +136,6 @@ export const useFreightTrackerData = (currentUserId: string) => {
     const fileType = allFilesRecord.file.toUpperCase();
     
     try {
-      // Check if a corresponding record already exists to avoid duplicates
-      const existingRecordId = `${allFilesRecord.customer}-${allFilesRecord.file}-${allFilesRecord.number}`;
-      
       if (fileType === 'IS' || fileType === 'IA') {
         // Import Sea or Import Air -> Create Import record
         const existingImport = importData.find(record => 
@@ -153,19 +150,19 @@ export const useFreightTrackerData = (currentUserId: string) => {
             bookingUrl: '',
             file: `${allFilesRecord.file}${allFilesRecord.number}`,
             etaFinalPod: '',
-            bond: 'Select',
-            poa: 'Select',
-            isf: 'Select',
-            packingListCommercialInvoice: 'Select',
-            billOfLading: 'Select',
-            arrivalNotice: 'Select',
-            isfFiled: 'Select',
-            entryFiled: 'Select',
-            blRelease: 'Select',
-            customsRelease: 'Select',
-            invoiceSent: 'Select',
-            paymentReceived: 'Select',
-            workOrderSetup: 'Select',
+            bond: 'Select Bond',
+            poa: 'Select POA',
+            isf: 'Select ISF',
+            packingListCommercialInvoice: 'Select P/L & C/I',
+            billOfLading: 'Select B/L',
+            arrivalNotice: 'Select Arrival Notice',
+            isfFiled: 'Select ISF Filed',
+            entryFiled: 'Select Entry Filed',
+            blRelease: 'Select B/L Release',
+            customsRelease: 'Select Customs Release',
+            invoiceSent: 'Select Invoice Sent',
+            paymentReceived: 'Select Payment Rec\'d',
+            workOrderSetup: 'Select W/O Setup',
             returnDate: '',
             deliveryDate: '',
             notes: '',
@@ -177,8 +174,8 @@ export const useFreightTrackerData = (currentUserId: string) => {
           await addImportItemBase(newImportRecord);
           addNotification('Success', `Import record created for ${allFilesRecord.customer}`, 'success');
         }
-      } else if (fileType === 'ES' || fileType === 'EA') {
-        // Export Sea or Export Air -> Create Export record
+      } else if (fileType === 'ES' || fileType === 'EA' || fileType === 'ET') {
+        // Export Sea, Export Air, or Export Truck -> Create Export record
         const existingExport = exportData.find(record => 
           record.customer === allFilesRecord.customer && 
           record.file === `${allFilesRecord.file}${allFilesRecord.number}`
@@ -192,20 +189,20 @@ export const useFreightTrackerData = (currentUserId: string) => {
             workOrder: '',
             dropDate: '',
             returnDate: '',
-            docsSent: 'Select',
-            docsReceived: 'Select',
-            aesMblVgmSent: 'Select',
+            docsSent: 'Select Docs Sent',
+            docsReceived: 'Select Docs Rec\'d',
+            aesMblVgmSent: 'Select AES/MBL/VGM',
             docCutoffDate: '',
-            titlesDispatched: 'Select',
-            validatedFwd: 'Select',
-            titlesReturned: 'Select',
-            sslDraftInvRec: 'Select',
-            draftInvApproved: 'Select',
-            transphereInvSent: 'Select',
-            paymentRec: 'Select',
-            sslPaid: 'Select',
-            insured: 'Select',
-            released: 'Select',
+            titlesDispatched: 'Select Titles Dispatched',
+            validatedFwd: 'Select Validated Fwd',
+            titlesReturned: 'Select Titles Returned',
+            sslDraftInvRec: 'Select SSL Draft Inv',
+            draftInvApproved: 'Select Draft Inv Approved',
+            transphereInvSent: 'Select Trans Inv Sent',
+            paymentRec: 'Select Payment Rec\'d',
+            sslPaid: 'Select SSL Paid',
+            insured: 'Select Insured',
+            released: 'Select Released',
             docsSentToCustomer: false,
             notes: '',
             archived: false,
