@@ -109,13 +109,15 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
 
   const handleClick = () => {
     if (isBondColumn) {
-      // Bond column cycling logic - start with Select, then Continuous and Single Entry
+      // Bond column cycling logic - start with Select, then Pending, Continuous and Single Entry
       if (value === 'Select') {
+        onSave('Pending');
+      } else if (value === 'Pending') {
         onSave('Continuous');
       } else if (value === 'Continuous') {
         onSave('Single Entry');
       } else {
-        onSave('Continuous');
+        onSave('Pending');
       }
     } else if (isPoaColumn) {
       // POA column cycling logic - skip "Select" after first selection
@@ -259,6 +261,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   const getBondDisplay = () => {
     if (value === 'Select') {
       return { text: 'Select', color: 'bg-gray-100 text-gray-600 hover:bg-gray-200' };
+    } else if (value === 'Pending') {
+      return { text: 'Pending', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' };
     } else if (value === 'Continuous') {
       return { text: 'Continuous', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' };
     } else if (value === 'Single Entry') {
