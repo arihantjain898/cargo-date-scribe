@@ -42,7 +42,7 @@ const ImportTrackingTableRow = ({
   const isCompleted = record.poa === 'Yes' && record.isf === 'Yes' && record.packingListCommercialInvoice === 'Yes' && 
     record.billOfLading === 'Yes' && record.arrivalNotice === 'Yes' && record.isfFiled === 'Yes' && record.entryFiled === 'Yes' && 
     record.blRelease === 'Yes' && record.customsRelease === 'Yes' && record.invoiceSent === 'Yes' && record.paymentReceived === 'Yes' && 
-    record.workOrderSetup === 'Yes' && record.delivered === 'Yes' && record.returnDate !== '';
+    record.workOrderSetup === 'Yes' && record.returnDate !== '';
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
@@ -277,14 +277,6 @@ const ImportTrackingTableRow = ({
           value={record.workOrderSetup}
           onSave={(value) => updateRecord(record.id, 'workOrderSetup', value as string)}
           isThreeStateBoolean={true}
-        />
-      </td>
-      <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.delivered || 'Select'}
-          onSave={(value) => updateRecord(record.id, 'delivered', value as string)}
-          options={['Select', 'Pending', 'Yes', 'No']}
-          placeholder="Select status"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">

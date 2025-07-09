@@ -42,7 +42,7 @@ export const isImportRecordComplete = (record: ImportTrackingRecord): boolean =>
     record.invoiceSent &&
     record.paymentReceived &&
     record.workOrderSetup &&
-    record.delivered === "Yes"
+    record.returnDate !== ""
   );
 };
 

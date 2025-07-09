@@ -19,7 +19,6 @@ export interface ImportTrackingRecord {
   invoiceSent: string; // Changed from boolean to string
   paymentReceived: string; // Changed from boolean to string
   workOrderSetup: string; // Changed from boolean to string
-  delivered: string;
   returnDate: string;
   returnDateStatus?: string;
   deliveryDate: string;

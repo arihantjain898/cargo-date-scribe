@@ -21,7 +21,6 @@ export const sampleImportData: ImportTrackingRecord[] = [
     invoiceSent: 'No',
     paymentReceived: 'No',
     workOrderSetup: 'No',
-    delivered: 'Select',
     returnDate: '',
     deliveryDate: '2025-07-18',
     notes: 'Customs pending',

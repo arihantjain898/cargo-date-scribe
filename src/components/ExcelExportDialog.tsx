@@ -78,7 +78,6 @@ const ExcelExportDialog: React.FC<ExcelExportDialogProps> = ({
       'Invoice Sent': record.invoiceSent,
       'Payment Received': record.paymentReceived,
       'Work Order Setup': record.workOrderSetup,
-      Delivered: record.delivered,
       'Return Date': record.returnDate,
       'Delivery Date': record.deliveryDate,
       Notes: record.notes
