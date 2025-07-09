@@ -173,6 +173,8 @@ export const useFreightTrackerData = (currentUserId: string) => {
           
           await addImportItemBase(newImportRecord);
           addNotification('Success', `Import record created for ${allFilesRecord.customer}`, 'success');
+        } else {
+          addNotification('Duplicate Found', `Import record for customer "${allFilesRecord.customer}" with file "${allFilesRecord.file}${allFilesRecord.number}" already exists`, 'error');
         }
       } else if (fileType === 'ES' || fileType === 'EA' || fileType === 'ET') {
         // Export Sea, Export Air, or Export Truck -> Create Export record
@@ -211,6 +213,8 @@ export const useFreightTrackerData = (currentUserId: string) => {
           
           await addExportItem(newExportRecord);
           addNotification('Success', `Export record created for ${allFilesRecord.customer}`, 'success');
+        } else {
+          addNotification('Duplicate Found', `Export record for customer "${allFilesRecord.customer}" with file "${allFilesRecord.file}${allFilesRecord.number}" already exists`, 'error');
         }
       } else if (fileType === 'DT' || fileType === 'TRUCK') {
         // Domestic Trucking -> Create Domestic Trucking record
@@ -236,6 +240,8 @@ export const useFreightTrackerData = (currentUserId: string) => {
           
           await addDomesticTruckingItem(newDomesticRecord);
           addNotification('Success', `Domestic Trucking record created for ${allFilesRecord.customer}`, 'success');
+        } else {
+          addNotification('Duplicate Found', `Domestic Trucking record for customer "${allFilesRecord.customer}" with file "${allFilesRecord.file}${allFilesRecord.number}" already exists`, 'error');
         }
       }
     } catch (error) {
