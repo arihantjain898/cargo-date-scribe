@@ -126,18 +126,6 @@ export const useFreightTrackerData = (currentUserId: string) => {
   ) => {
     try {
       await updateAllFilesItem(id, { [field]: value } as Partial<AllFilesRecord>);
-      
-      // Check if we need to create a corresponding record in another table
-      const updatedRecord = allFilesData.find(record => record.id === id);
-      if (updatedRecord) {
-        // Create a new object with the updated field
-        const recordWithUpdate = { ...updatedRecord, [field]: value };
-        
-        // Check if customer, file, and number are all filled
-        if (recordWithUpdate.customer && recordWithUpdate.file && recordWithUpdate.number) {
-          await createCorrespondingRecord(recordWithUpdate);
-        }
-      }
     } catch (error) {
       console.error('Error updating all files record:', error);
       addNotification('Error', 'Failed to save changes', 'error');
@@ -145,6 +133,7 @@ export const useFreightTrackerData = (currentUserId: string) => {
   };
 
   const createCorrespondingRecord = async (allFilesRecord: AllFilesRecord) => {
+    console.log('Creating corresponding record for:', allFilesRecord);
     const fileType = allFilesRecord.file.toUpperCase();
     
     try {

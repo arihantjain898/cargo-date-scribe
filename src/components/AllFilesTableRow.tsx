@@ -96,6 +96,7 @@ const AllFilesTableRow = ({
   };
 
   const handleCreateCorrespondingRow = () => {
+    console.log('Plus button clicked for record:', record);
     if (onCreateCorrespondingRow) {
       onCreateCorrespondingRow(record);
     }
