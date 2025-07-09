@@ -327,7 +327,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     }
   };
 
-const displayValue = isBondColumn
+  const displayValue = isBondColumn
     ? getBondDisplay().text
     : isPoaColumn
     ? getPoaDisplay().text
@@ -340,19 +340,6 @@ const displayValue = isBondColumn
     : isBoolean 
     ? (value ? 'Yes' : 'No')
     : (value && String(value) !== 'undefined' && String(value) !== '' ? String(value) : placeholder);
-
-  const isPlaceholderText = displayValue === placeholder;
-  
-  // Debug logging for date fields
-  if (isDate) {
-    console.log('Date field debug:', { 
-      value, 
-      displayValue, 
-      placeholder, 
-      isPlaceholderText,
-      type: typeof value 
-    });
-  }
 
   const getStatusColor = (val: string) => {
     if (val === 'Select') return 'bg-gray-100 text-gray-500 hover:bg-gray-200';
@@ -382,7 +369,7 @@ const displayValue = isBondColumn
       }`
     : `w-full min-h-[24px] p-1 text-xs cursor-pointer hover:bg-blue-50 rounded border border-transparent hover:border-blue-200 transition-all duration-200 ${
         value ? 'text-gray-800' : 'text-gray-400 italic'
-      } ${isDate ? (isPlaceholderText ? 'text-gray-400 bg-gray-50 border border-gray-200 rounded px-2 py-1' : 'text-blue-700 bg-blue-50 border border-blue-200 rounded px-2 py-1') : ''}`;
+      } ${isDate && value ? 'text-blue-700 bg-blue-50' : ''}`;
 
   return (
     <div
@@ -390,7 +377,7 @@ const displayValue = isBondColumn
       onClick={handleClick}
       title="Click to edit"
     >
-      <span className={isDate ? 'px-1 py-0.5 rounded text-xs font-medium' : 'break-words whitespace-pre-wrap'}>
+      <span className={isDate && value ? 'px-1 py-0.5 rounded text-[10px]' : 'break-words whitespace-pre-wrap'}>
         {displayValue}
       </span>
     </div>
