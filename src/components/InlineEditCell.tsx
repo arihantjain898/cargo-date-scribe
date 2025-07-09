@@ -68,6 +68,8 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   }, [isEditing, isDate, isTextColumn, value]);
 
   const handleSave = () => {
+    console.log('handleSave called:', { shouldTabOnSave, onNextCell: !!onNextCell });
+    
     if (isBoolean || isThreeStateBoolean) {
       onSave(editValue === 'true');
     } else {
@@ -77,6 +79,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
     
     // Trigger navigation when Enter was pressed, regardless of value change
     if (onNextCell && shouldTabOnSave) {
+      console.log('Calling onNextCell');
       setTimeout(onNextCell, 0);
     }
     setShouldTabOnSave(false);
@@ -91,6 +94,7 @@ const InlineEditCell: React.FC<InlineEditCellProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      console.log('Enter pressed - setting shouldTabOnSave to true');
       setShouldTabOnSave(true);
       handleSave();
     }

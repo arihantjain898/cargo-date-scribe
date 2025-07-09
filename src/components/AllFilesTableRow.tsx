@@ -48,16 +48,20 @@ const AllFilesTableRow = ({
   ];
 
   const focusNextCell = (currentField: string) => {
+    console.log('focusNextCell called with:', currentField);
     const currentIndex = editableFields.indexOf(currentField);
     const nextIndex = (currentIndex + 1) % editableFields.length;
     const nextField = editableFields[nextIndex];
+    console.log('Next field:', nextField);
     
     // Find the next cell and focus it
     const currentRow = document.querySelector(`[data-row-id="${record.id}"]`);
     if (currentRow) {
       const nextCell = currentRow.querySelector(`[data-field="${nextField}"]`);
+      console.log('Next cell found:', !!nextCell);
       if (nextCell) {
         const clickableElement = nextCell.querySelector('[title="Click to edit"]');
+        console.log('Clickable element found:', !!clickableElement);
         if (clickableElement) {
           (clickableElement as HTMLElement).click();
         }
