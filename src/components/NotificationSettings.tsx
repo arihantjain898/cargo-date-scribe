@@ -27,6 +27,7 @@ interface NotificationSettings {
   };
   importAlerts: {
     etaFinalPod: AlertSettings;
+    returnDate: AlertSettings;
     deliveryDate: AlertSettings;
   };
 }
@@ -41,6 +42,7 @@ const NotificationSettings = ({ children }: NotificationSettingsProps) => {
     },
     importAlerts: {
       etaFinalPod: { enabled: true, daysBeforeAlert: 5 },
+      returnDate: { enabled: true, daysBeforeAlert: 2 },
       deliveryDate: { enabled: true, daysBeforeAlert: 2 }
     }
   });
@@ -111,6 +113,9 @@ const NotificationSettings = ({ children }: NotificationSettingsProps) => {
     // Check import alerts
     if (settings.importAlerts.etaFinalPod.enabled) {
       enabledAlerts.push(`ETA Final POD alerts (${settings.importAlerts.etaFinalPod.daysBeforeAlert} days before)`);
+    }
+    if (settings.importAlerts.returnDate.enabled) {
+      enabledAlerts.push(`Return Date alerts (${settings.importAlerts.returnDate.daysBeforeAlert} days before)`);
     }
     if (settings.importAlerts.deliveryDate.enabled) {
       enabledAlerts.push(`Delivery Date alerts (${settings.importAlerts.deliveryDate.daysBeforeAlert} days before)`);
@@ -309,6 +314,33 @@ const NotificationSettings = ({ children }: NotificationSettingsProps) => {
                           onChange={(e) => updateImportAlert('etaFinalPod', 'daysBeforeAlert', parseInt(e.target.value) || 5)}
                           className="w-16 h-8"
                           disabled={!settings.importAlerts.etaFinalPod.enabled}
+                        />
+                        <span className="text-sm text-gray-600">days before</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex-1">
+                    <Label className="flex items-center gap-2 font-medium">
+                      <Calendar className="w-4 h-4" />
+                      Return Date Alerts
+                    </Label>
+                    <div className="flex items-center gap-3 mt-2">
+                      <Switch
+                        checked={settings.importAlerts.returnDate.enabled}
+                        onCheckedChange={(checked) => updateImportAlert('returnDate', 'enabled', checked)}
+                      />
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={settings.importAlerts.returnDate.daysBeforeAlert}
+                          onChange={(e) => updateImportAlert('returnDate', 'daysBeforeAlert', parseInt(e.target.value) || 2)}
+                          className="w-16 h-8"
+                          disabled={!settings.importAlerts.returnDate.enabled}
                         />
                         <span className="text-sm text-gray-600">days before</span>
                       </div>
