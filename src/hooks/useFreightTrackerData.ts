@@ -134,16 +134,21 @@ export const useFreightTrackerData = (currentUserId: string) => {
   const createCorrespondingRecord = async (allFilesRecord: AllFilesRecord) => {
     console.log('Creating corresponding record for:', allFilesRecord);
     const fileType = allFilesRecord.file.toUpperCase();
+    console.log('File type detected:', fileType);
     
     try {
       if (fileType === 'IS' || fileType === 'IA') {
+        console.log('Processing Import record...');
         // Import Sea or Import Air -> Create Import record
         const existingImport = importData.find(record => 
           record.customer === allFilesRecord.customer && 
           record.file === `${allFilesRecord.file}${allFilesRecord.number}`
         );
         
+        console.log('Existing import found:', !!existingImport);
+        
         if (!existingImport) {
+          console.log('Creating new import record...');
           const newImportRecord: Omit<ImportTrackingRecord, 'id'> = {
             customer: allFilesRecord.customer,
             booking: '',
@@ -172,18 +177,24 @@ export const useFreightTrackerData = (currentUserId: string) => {
           };
           
           await addImportItemBase(newImportRecord);
+          console.log('Import record created successfully');
           addNotification('Success', `Import record created for ${allFilesRecord.customer}`, 'success');
         } else {
+          console.log('Duplicate import record found');
           addNotification('Duplicate Found', `Import record for customer "${allFilesRecord.customer}" with file "${allFilesRecord.file}${allFilesRecord.number}" already exists`, 'error');
         }
       } else if (fileType === 'ES' || fileType === 'EA' || fileType === 'ET') {
+        console.log('Processing Export record...');
         // Export Sea, Export Air, or Export Truck -> Create Export record
         const existingExport = exportData.find(record => 
           record.customer === allFilesRecord.customer && 
           record.file === `${allFilesRecord.file}${allFilesRecord.number}`
         );
         
+        console.log('Existing export found:', !!existingExport);
+        
         if (!existingExport) {
+          console.log('Creating new export record...');
           const newExportRecord: Omit<TrackingRecord, 'id'> = {
             customer: allFilesRecord.customer,
             ref: '',
@@ -212,18 +223,24 @@ export const useFreightTrackerData = (currentUserId: string) => {
           };
           
           await addExportItem(newExportRecord);
+          console.log('Export record created successfully');
           addNotification('Success', `Export record created for ${allFilesRecord.customer}`, 'success');
         } else {
+          console.log('Duplicate export record found');
           addNotification('Duplicate Found', `Export record for customer "${allFilesRecord.customer}" with file "${allFilesRecord.file}${allFilesRecord.number}" already exists`, 'error');
         }
       } else if (fileType === 'DT' || fileType === 'TRUCK') {
+        console.log('Processing Domestic Trucking record...');
         // Domestic Trucking -> Create Domestic Trucking record
         const existingDomestic = domesticTruckingData.find(record => 
           record.customer === allFilesRecord.customer && 
           record.file === `${allFilesRecord.file}${allFilesRecord.number}`
         );
         
+        console.log('Existing domestic found:', !!existingDomestic);
+        
         if (!existingDomestic) {
+          console.log('Creating new domestic trucking record...');
           const newDomesticRecord: Omit<DomesticTruckingRecord, 'id'> = {
             customer: allFilesRecord.customer,
             file: `${allFilesRecord.file}${allFilesRecord.number}`,
@@ -239,10 +256,15 @@ export const useFreightTrackerData = (currentUserId: string) => {
           };
           
           await addDomesticTruckingItem(newDomesticRecord);
+          console.log('Domestic trucking record created successfully');
           addNotification('Success', `Domestic Trucking record created for ${allFilesRecord.customer}`, 'success');
         } else {
+          console.log('Duplicate domestic trucking record found');
           addNotification('Duplicate Found', `Domestic Trucking record for customer "${allFilesRecord.customer}" with file "${allFilesRecord.file}${allFilesRecord.number}" already exists`, 'error');
         }
+      } else {
+        console.log('Unrecognized file type:', fileType);
+        addNotification('Error', `Unrecognized file type "${fileType}". Expected IS/IA for Import, ES/EA/ET for Export, or DT for Domestic Trucking.`, 'error');
       }
     } catch (error) {
       console.error('Error creating corresponding record:', error);
