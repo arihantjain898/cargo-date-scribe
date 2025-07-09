@@ -53,7 +53,7 @@ const NotificationSettings = ({ children }: NotificationSettingsProps) => {
     const savedSettings = localStorage.getItem('notificationSettings');
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
-      // Merge with default structure to handle new fields
+      // Merge with default structure to handle new fields - ensure new fields are preserved
       setSettings(prevSettings => ({
         ...prevSettings,
         ...parsed,
@@ -63,7 +63,9 @@ const NotificationSettings = ({ children }: NotificationSettingsProps) => {
         },
         importAlerts: {
           ...prevSettings.importAlerts,
-          ...parsed.importAlerts
+          ...parsed.importAlerts,
+          // Ensure new fields are included even if not in localStorage
+          returnDate: parsed.importAlerts?.returnDate || prevSettings.importAlerts.returnDate
         }
       }));
     }
