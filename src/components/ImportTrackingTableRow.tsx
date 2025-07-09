@@ -38,11 +38,11 @@ const ImportTrackingTableRow = ({
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if all boolean fields are true (completed) - FIXED: including 'returned' in the check
+  // Check if all boolean fields are true (completed) - FIXED: including 'returnDate' in the check
   const isCompleted = record.poa === 'Yes' && record.isf === 'Yes' && record.packingListCommercialInvoice === 'Yes' && 
     record.billOfLading === 'Yes' && record.arrivalNotice === 'Yes' && record.isfFiled === 'Yes' && record.entryFiled === 'Yes' && 
     record.blRelease === 'Yes' && record.customsRelease === 'Yes' && record.invoiceSent === 'Yes' && record.paymentReceived === 'Yes' && 
-    record.workOrderSetup === 'Yes' && record.delivered === 'Yes' && record.returned === 'Yes';
+    record.workOrderSetup === 'Yes' && record.delivered === 'Yes' && record.returnDate !== '';
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
@@ -70,7 +70,7 @@ const ImportTrackingTableRow = ({
     }
   };
 
-  const handleDateStatusToggle = (field: 'deliveryDateStatus') => {
+  const handleDateStatusToggle = (field: 'deliveryDateStatus' | 'returnDateStatus') => {
     const currentStatus = record[field] || 'gray';
     const statusCycle = ['gray', 'yellow', 'green', 'red'] as const;
     const currentIndex = statusCycle.indexOf(currentStatus as 'gray' | 'yellow' | 'green' | 'red');
@@ -288,12 +288,23 @@ const ImportTrackingTableRow = ({
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
-        <InlineEditCell
-          value={record.returned || 'Select'}
-          onSave={(value) => updateRecord(record.id, 'returned', value as string)}
-          options={['Select', 'Pending', 'Yes', 'No']}
-          placeholder="Select status"
-        />
+        <div className="flex items-center gap-1 justify-center">
+          <InlineEditCell
+            value={record.returnDate}
+            onSave={(value) => updateRecord(record.id, 'returnDate', value as string)}
+            isDate={true}
+            placeholder="Select return date"
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleDateStatusToggle('returnDateStatus')}
+            className="h-6 w-6 p-0 hover:bg-gray-100"
+            title="Toggle status"
+          >
+            <Circle className={`h-4 w-4 ${getStatusColor(record.returnDateStatus)} border-2 rounded-full`} />
+          </Button>
+        </div>
       </td>
       <td className="border-r-4 border-black p-1 text-center">
         <div className="flex items-center gap-1 justify-center">

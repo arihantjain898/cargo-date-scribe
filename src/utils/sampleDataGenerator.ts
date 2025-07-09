@@ -57,7 +57,7 @@ export const generateImportRecords = (count: number = 10, userId: string): Omit<
     paymentReceived: 'Select',
     workOrderSetup: 'Select',
     delivered: 'Select',
-    returned: 'Select',
+    returnDate: Math.random() > 0.5 ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : '',
     deliveryDate: Math.random() > 0.5 ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : '',
     notes: Math.random() > 0.7 ? `Note for record ${index + 1}` : '',
     archived: false,

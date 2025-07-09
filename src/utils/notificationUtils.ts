@@ -122,10 +122,11 @@ export class NotificationService {
     });
   }
 
-  // Check for specific shipment updates
+  // Check for specific shipment updates including return dates
   checkShipmentUpdates(records: any[]) {
-    // Example: Check for overdue shipments
     const now = new Date();
+    
+    // Check for overdue shipments (export data)
     const overdueShipments = records.filter(record => {
       if (record.dropDate) {
         const dropDate = new Date(record.dropDate);
@@ -135,11 +136,29 @@ export class NotificationService {
       return false;
     });
 
+    // Check for overdue return dates (import data)
+    const overdueReturns = records.filter(record => {
+      if (record.returnDate) {
+        const returnDate = new Date(record.returnDate);
+        const daysDiff = Math.floor((now.getTime() - returnDate.getTime()) / (1000 * 60 * 60 * 24));
+        return daysDiff > 3; // Overdue by 3 days
+      }
+      return false;
+    });
+
     if (overdueShipments.length > 0) {
       this.showLocalNotification({
         title: 'Overdue Shipments Alert',
         body: `${overdueShipments.length} shipment(s) are overdue`,
         data: { type: 'overdue_alert', count: overdueShipments.length }
+      });
+    }
+
+    if (overdueReturns.length > 0) {
+      this.showLocalNotification({
+        title: 'Overdue Returns Alert',
+        body: `${overdueReturns.length} return date(s) are overdue`,
+        data: { type: 'overdue_returns', count: overdueReturns.length }
       });
     }
   }

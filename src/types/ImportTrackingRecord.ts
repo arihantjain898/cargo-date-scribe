@@ -20,7 +20,8 @@ export interface ImportTrackingRecord {
   paymentReceived: string; // Changed from boolean to string
   workOrderSetup: string; // Changed from boolean to string
   delivered: string;
-  returned: string;
+  returnDate: string;
+  returnDateStatus?: string;
   deliveryDate: string;
   deliveryDateStatus?: string;
   notes: string;
