@@ -342,6 +342,17 @@ const displayValue = isBondColumn
     : (value && String(value) !== 'undefined' && String(value) !== '' ? String(value) : placeholder);
 
   const isPlaceholderText = displayValue === placeholder;
+  
+  // Debug logging for date fields
+  if (isDate) {
+    console.log('Date field debug:', { 
+      value, 
+      displayValue, 
+      placeholder, 
+      isPlaceholderText,
+      type: typeof value 
+    });
+  }
 
   const getStatusColor = (val: string) => {
     if (val === 'Select') return 'bg-gray-100 text-gray-500 hover:bg-gray-200';
