@@ -126,9 +126,137 @@ export const useFreightTrackerData = (currentUserId: string) => {
   ) => {
     try {
       await updateAllFilesItem(id, { [field]: value } as Partial<AllFilesRecord>);
+      
+      // Check if we need to create a corresponding record in another table
+      const updatedRecord = allFilesData.find(record => record.id === id);
+      if (updatedRecord) {
+        // Create a new object with the updated field
+        const recordWithUpdate = { ...updatedRecord, [field]: value };
+        
+        // Check if customer, file, and number are all filled
+        if (recordWithUpdate.customer && recordWithUpdate.file && recordWithUpdate.number) {
+          await createCorrespondingRecord(recordWithUpdate);
+        }
+      }
     } catch (error) {
       console.error('Error updating all files record:', error);
       addNotification('Error', 'Failed to save changes', 'error');
+    }
+  };
+
+  const createCorrespondingRecord = async (allFilesRecord: AllFilesRecord) => {
+    const fileType = allFilesRecord.file.toUpperCase();
+    
+    try {
+      // Check if a corresponding record already exists to avoid duplicates
+      const existingRecordId = `${allFilesRecord.customer}-${allFilesRecord.file}-${allFilesRecord.number}`;
+      
+      if (fileType === 'IS' || fileType === 'IA') {
+        // Import Sea or Import Air -> Create Import record
+        const existingImport = importData.find(record => 
+          record.customer === allFilesRecord.customer && 
+          record.file === allFilesRecord.number
+        );
+        
+        if (!existingImport) {
+          const newImportRecord: Omit<ImportTrackingRecord, 'id'> = {
+            customer: allFilesRecord.customer,
+            booking: '',
+            bookingUrl: '',
+            file: allFilesRecord.number,
+            etaFinalPod: '',
+            bond: 'Select',
+            poa: 'Select',
+            isf: 'Select',
+            packingListCommercialInvoice: 'Select',
+            billOfLading: 'Select',
+            arrivalNotice: 'Select',
+            isfFiled: 'Select',
+            entryFiled: 'Select',
+            blRelease: 'Select',
+            customsRelease: 'Select',
+            invoiceSent: 'Select',
+            paymentReceived: 'Select',
+            workOrderSetup: 'Select',
+            delivered: 'Select',
+            returned: 'Select',
+            deliveryDate: '',
+            notes: `Auto-created from All Files: ${allFilesRecord.file}${allFilesRecord.number}`,
+            archived: false,
+            createdAt: new Date().toISOString(),
+            userId: currentUserId
+          };
+          
+          await addImportItemBase(newImportRecord);
+          addNotification('Success', `Import record created for ${allFilesRecord.customer}`, 'success');
+        }
+      } else if (fileType === 'ES' || fileType === 'EA') {
+        // Export Sea or Export Air -> Create Export record
+        const existingExport = exportData.find(record => 
+          record.customer === allFilesRecord.customer && 
+          record.file === allFilesRecord.number
+        );
+        
+        if (!existingExport) {
+          const newExportRecord: Omit<TrackingRecord, 'id'> = {
+            customer: allFilesRecord.customer,
+            ref: '',
+            file: allFilesRecord.number,
+            workOrder: '',
+            dropDate: '',
+            returnDate: '',
+            docsSent: false,
+            docsReceived: false,
+            aesMblVgmSent: false,
+            docCutoffDate: '',
+            titlesDispatched: 'Select',
+            validatedFwd: false,
+            titlesReturned: 'Select',
+            sslDraftInvRec: false,
+            draftInvApproved: false,
+            transphereInvSent: false,
+            paymentRec: false,
+            sslPaid: false,
+            insured: false,
+            released: false,
+            docsSentToCustomer: false,
+            notes: `Auto-created from All Files: ${allFilesRecord.file}${allFilesRecord.number}`,
+            archived: false,
+            userId: currentUserId
+          };
+          
+          await addExportItem(newExportRecord);
+          addNotification('Success', `Export record created for ${allFilesRecord.customer}`, 'success');
+        }
+      } else if (fileType === 'DT' || fileType === 'TRUCK') {
+        // Domestic Trucking -> Create Domestic Trucking record
+        const existingDomestic = domesticTruckingData.find(record => 
+          record.customer === allFilesRecord.customer && 
+          record.file === allFilesRecord.number
+        );
+        
+        if (!existingDomestic) {
+          const newDomesticRecord: Omit<DomesticTruckingRecord, 'id'> = {
+            customer: allFilesRecord.customer,
+            file: allFilesRecord.number,
+            woSent: false,
+            insurance: false,
+            pickDate: '',
+            delivered: 'Select',
+            paymentReceived: false,
+            paymentMade: false,
+            notes: `Auto-created from All Files: ${allFilesRecord.file}${allFilesRecord.number}`,
+            archived: false,
+            userId: currentUserId
+          };
+          
+          await addDomesticTruckingItem(newDomesticRecord);
+          addNotification('Success', `Domestic Trucking record created for ${allFilesRecord.customer}`, 'success');
+        }
+      }
+    } catch (error) {
+      console.error('Error creating corresponding record:', error);
+      addNotification('Error', 'Failed to create corresponding record', 'error');
     }
   };
 
