@@ -293,6 +293,7 @@ const NotificationSettings = ({ children }: NotificationSettingsProps) => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Import Table Date Notifications */}
               <div className="grid grid-cols-1 gap-4">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex-1">
