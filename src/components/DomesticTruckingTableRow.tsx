@@ -42,7 +42,7 @@ const DomesticTruckingTableRow = ({
     if (val === 'No' || val === false || val === 'Pending' || val === 'Select' || val === '' || val === undefined) return false;
     return false;
   };
-  const isCompleted = checkCompleted(record.woSent) && checkCompleted(record.insurance) && checkCompleted(record.paymentReceived) && checkCompleted(record.paymentMade);
+  const isCompleted = checkCompleted(record.woSent) && checkCompleted(record.insurance) && checkCompleted(record.paymentReceived) && checkCompleted(record.paymentMade) && record.pickDateStatus === 'green' && record.deliveredStatus === 'green';
 
   // Check if record is empty (has no meaningful data)
   const isEmpty = !record.customer && !record.file;
