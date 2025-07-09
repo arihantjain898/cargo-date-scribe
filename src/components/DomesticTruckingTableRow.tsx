@@ -127,7 +127,7 @@ const DomesticTruckingTableRow = ({
           value={record.woSent || 'Select'}
           onSave={(value) => updateRecord(record.id, 'woSent', value as string)}
           isThreeStateBoolean={true}
-          selectText="Select W/O Sent"
+          selectText="Select"
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
@@ -135,7 +135,7 @@ const DomesticTruckingTableRow = ({
           value={record.insurance || 'Select'}
           onSave={(value) => updateRecord(record.id, 'insurance', value as string)}
           isThreeStateBoolean={true}
-          selectText="Select Insurance"
+          selectText="Select"
         />
       </td>
       <td className="border-r border-gray-500 p-1 text-center">
@@ -181,7 +181,7 @@ const DomesticTruckingTableRow = ({
           value={record.paymentReceived || 'Select'}
           onSave={(value) => updateRecord(record.id, 'paymentReceived', value as string)}
           isThreeStateBoolean={true}
-          selectText="Select Payment Rec'd"
+          selectText="Select"
         />
       </td>
       <td className="border-r-4 border-black p-1 text-center">
@@ -189,7 +189,7 @@ const DomesticTruckingTableRow = ({
           value={record.paymentMade || 'Select'}
           onSave={(value) => updateRecord(record.id, 'paymentMade', value as string)}
           isThreeStateBoolean={true}
-          selectText="Select Payment Made"
+          selectText="Select"
         />
       </td>
       <td className="border-r-4 border-black p-1 text-left">
