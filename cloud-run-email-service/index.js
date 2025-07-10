@@ -317,11 +317,11 @@ functions.http('senddailydigest', async (req, res) => {
   try {
     console.log('Starting daily digest generation...');
     
-    // Fetch all data from Firestore
+    // Fetch all data from Firestore using correct collection names
     const [trackingSnapshot, importSnapshot, domesticSnapshot] = await Promise.all([
-      db.collection('trackingRecords').get(),
-      db.collection('importTrackingRecords').get(),
-      db.collection('domesticTruckingRecords').get()
+      db.collection('export_tracking').get(),
+      db.collection('import_tracking').get(),
+      db.collection('domestic_trucking').get()
     ]);
     
     const trackingRecords = trackingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
