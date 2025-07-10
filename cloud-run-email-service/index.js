@@ -303,7 +303,7 @@ function createEmailHTML(todayEvents, upcomingEvents) {
 }
 
 // Main Cloud Function
-functions.http('sendDailyDigest', async (req, res) => {
+functions.http('senddailydigest', async (req, res) => {
   // Set CORS headers
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Methods', 'GET, POST');
