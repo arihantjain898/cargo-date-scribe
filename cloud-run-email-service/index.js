@@ -133,8 +133,28 @@ function getEventsForDateRange(events, startDate, endDate) {
   const start = startDate.toISOString().split('T')[0];
   const end = endDate.toISOString().split('T')[0];
   
-  return events.filter(event => event.date >= start && event.date <= end)
-    .sort((a, b) => a.date.localeCompare(b.date));
+  console.log(`Filtering events between ${start} and ${end}`);
+  
+  return events.filter(event => {
+    // Ensure event.date is a string in YYYY-MM-DD format
+    let eventDateStr = event.date;
+    if (event.date instanceof Date) {
+      eventDateStr = event.date.toISOString().split('T')[0];
+    } else if (typeof event.date === 'string' && event.date.length > 10) {
+      // If it's a full ISO string, extract just the date part
+      eventDateStr = event.date.split('T')[0];
+    }
+    
+    const isInRange = eventDateStr >= start && eventDateStr <= end;
+    if (isInRange) {
+      console.log(`Event included: ${eventDateStr} - ${event.customer} - ${event.type}`);
+    }
+    return isInRange;
+  }).sort((a, b) => {
+    const aDate = a.date instanceof Date ? a.date.toISOString().split('T')[0] : a.date.split('T')[0];
+    const bDate = b.date instanceof Date ? b.date.toISOString().split('T')[0] : b.date.split('T')[0];
+    return aDate.localeCompare(bDate);
+  });
 }
 
 // Group events by date
