@@ -330,6 +330,17 @@ functions.http('sendDailyDigest', async (req, res) => {
     
     console.log(`Fetched ${trackingRecords.length} tracking, ${importRecords.length} import, ${domesticRecords.length} domestic records`);
     
+    // Debug: Log sample records to see data structure
+    if (trackingRecords.length > 0) {
+      console.log('Sample tracking record:', JSON.stringify(trackingRecords[0], null, 2));
+    }
+    if (importRecords.length > 0) {
+      console.log('Sample import record:', JSON.stringify(importRecords[0], null, 2));
+    }
+    if (domesticRecords.length > 0) {
+      console.log('Sample domestic record:', JSON.stringify(domesticRecords[0], null, 2));
+    }
+    
     // Process events
     const allEvents = processEvents(trackingRecords, importRecords, domesticRecords);
     console.log(`Processed ${allEvents.length} total events`);
