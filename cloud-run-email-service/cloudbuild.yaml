@@ -1,0 +1,37 @@
+steps:
+  # Build and push Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/freight-email-service:$COMMIT_SHA'
+      - '.'
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/freight-email-service:$COMMIT_SHA'
+  
+  # Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'freight-email-service'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/freight-email-service:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--set-env-vars'
+      - 'FIREBASE_SERVICE_ACCOUNT_KEY=${_FIREBASE_SERVICE_ACCOUNT_KEY},GMAIL_CLIENT_ID=${_GMAIL_CLIENT_ID},GMAIL_CLIENT_SECRET=${_GMAIL_CLIENT_SECRET},GMAIL_REFRESH_TOKEN=${_GMAIL_REFRESH_TOKEN},GMAIL_REDIRECT_URL=${_GMAIL_REDIRECT_URL}'
+      - '--quiet'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  
+timeout: 1200s
