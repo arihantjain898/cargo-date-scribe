@@ -1,13 +1,8 @@
-const express = require('express');
-const cors = require('cors');
+const functions = require('@google-cloud/functions-framework');
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 const { google } = require('googleapis');
 const { addDays, format, isToday, isTomorrow } = require('date-fns');
-
-const app = express();
-app.use(cors());
-app.use(express.json());
 
 // Initialize Firebase Admin
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
@@ -31,7 +26,7 @@ oauth2Client.setCredentials({
 
 const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
-// Event processing logic (from CalendarView)
+// Event processing logic
 function processEvents(trackingRecords, importRecords, domesticRecords) {
   const events = [];
   
@@ -307,8 +302,18 @@ function createEmailHTML(todayEvents, upcomingEvents) {
   `;
 }
 
-// Main email sending function
-async function sendDailyDigest(req, res) {
+// Main Cloud Function
+functions.http('sendDailyDigest', async (req, res) => {
+  // Set CORS headers
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).send('');
+    return;
+  }
+
   try {
     console.log('Starting daily digest generation...');
     
@@ -382,17 +387,4 @@ async function sendDailyDigest(req, res) {
       error: error.message
     });
   }
-}
-
-// Routes
-app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
-});
-
-app.post('/send-daily-digest', sendDailyDigest);
-app.get('/send-daily-digest', sendDailyDigest); // Allow GET for Cloud Scheduler
-
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`Email service running on port ${port}`);
 });

@@ -1,10 +1,9 @@
-# Freight Tracker Email Service Setup (Simple Console Method)
+# Freight Tracker Email Service Setup (Simple Cloud Function)
 
 ## Prerequisites
 - Google Cloud Project with billing enabled
 - Firebase project (freight-file-tracker-v2)
 - Gmail account for sending emails
-- GitHub repository containing this code
 
 ## Step 1: Firebase Service Account
 
@@ -37,24 +36,27 @@
 6. In Step 2, click "Exchange authorization code for tokens"
 7. Copy the refresh_token value
 
-## Step 4: Deploy to Cloud Run (Simple Console Method)
+## Step 4: Deploy Cloud Function (Simple Method)
 
-1. Go to [Cloud Run Console](https://console.cloud.google.com/run)
-2. Click "Create Service"
-3. Choose "Continuously deploy from a repository"
-4. Connect your GitHub repository
-5. Select the branch and set source location to: `cloud-run-email-service`
-6. Configure service:
-   - Service name: `freight-email-service`
+1. Go to [Cloud Functions Console](https://console.cloud.google.com/functions)
+2. Click "Create Function"
+3. Configure:
+   - Function name: `sendDailyDigest`
    - Region: `us-central1`
-   - Allow unauthenticated invocations: Yes
-   - Port: 8080
-7. Set environment variables:
+   - Trigger: HTTP
+   - Authentication: Allow unauthenticated invocations
+4. In the source code section:
+   - Runtime: Node.js 18
+   - Entry point: `sendDailyDigest`
+   - Copy the contents of `index.js` into the editor
+   - Copy the contents of `package.json` into the package.json tab
+5. Set environment variables:
    - `FIREBASE_SERVICE_ACCOUNT_KEY`: [paste the entire JSON content from step 1]
    - `GMAIL_CLIENT_ID`: [from step 2]
    - `GMAIL_CLIENT_SECRET`: [from step 2]
    - `GMAIL_REFRESH_TOKEN`: [from step 3]
    - `GMAIL_REDIRECT_URL`: `https://developers.google.com/oauthplayground`
+6. Click "Deploy"
 
 ## Step 5: Set up Daily Schedule (Cloud Scheduler)
 
@@ -65,13 +67,13 @@
    - Frequency: `0 8 * * *` (8 AM daily)
    - Timezone: Your timezone
    - Target Type: HTTP
-   - URL: `https://YOUR_SERVICE_URL/send-daily-digest`
+   - URL: `https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/sendDailyDigest`
    - HTTP Method: GET
 4. Click "Create"
 
-## Step 6: Test the Service
+## Step 6: Test the Function
 
-Test manually by visiting: `https://YOUR_SERVICE_URL/send-daily-digest`
+Test manually by visiting: `https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/sendDailyDigest`
 
 ## Email Features:
 - ✅ Beautiful HTML template with your branding
@@ -82,4 +84,4 @@ Test manually by visiting: `https://YOUR_SERVICE_URL/send-daily-digest`
 - ✅ Responsive design
 - ✅ Professional Space Square branding
 
-The service will send from `info@spacesquare.dev` to `info@spacesquare.dev` daily at 8 AM with all freight events.
+The function will send from `info@spacesquare.dev` to `info@spacesquare.dev` daily at 8 AM with all freight events.
