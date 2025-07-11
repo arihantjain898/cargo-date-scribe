@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 export const useFirebaseAuth = () => {
@@ -34,6 +34,16 @@ export const useFirebaseAuth = () => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -48,6 +58,7 @@ export const useFirebaseAuth = () => {
     loading,
     signIn,
     signUp,
+    signInWithGoogle,
     logout
   };
 };
