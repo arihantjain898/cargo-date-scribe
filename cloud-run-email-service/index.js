@@ -337,14 +337,8 @@ functions.http('senddailydigest', async (req, res) => {
   try {
     console.log('Starting daily digest generation...');
     
-    // Get userId from request body or query params
-    const userId = req.body?.userId || req.query?.userId;
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        error: 'userId is required'
-      });
-    }
+    // Get userId from request body or query params, default to test-user-123
+    const userId = req.body?.userId || req.query?.userId || 'test-user-123';
     
     console.log('Fetching data for userId:', userId);
     
