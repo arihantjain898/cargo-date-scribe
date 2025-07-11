@@ -312,7 +312,7 @@ function createEmailHTML(todayEvents, upcomingEvents) {
               Generated automatically by your Freight File Tracker system
             </p>
             <p style="margin: 8px 0 0 0;">
-              Space Square Development - Logistics Management Solutions
+              Freight Management Solutions
             </p>
           </div>
         </div>
@@ -337,11 +337,22 @@ functions.http('senddailydigest', async (req, res) => {
   try {
     console.log('Starting daily digest generation...');
     
-    // Fetch all data from Firestore using correct collection names
+    // Get userId from request body or query params
+    const userId = req.body?.userId || req.query?.userId;
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'userId is required'
+      });
+    }
+    
+    console.log('Fetching data for userId:', userId);
+    
+    // Fetch data filtered by userId using correct collection names
     const [trackingSnapshot, importSnapshot, domesticSnapshot] = await Promise.all([
-      db.collection('export_tracking').get(),
-      db.collection('import_tracking').get(),
-      db.collection('domestic_trucking').get()
+      db.collection('export_tracking').where('userId', '==', userId).get(),
+      db.collection('import_tracking').where('userId', '==', userId).get(),
+      db.collection('domestic_trucking').where('userId', '==', userId).get()
     ]);
     
     const trackingRecords = trackingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -382,7 +393,7 @@ functions.http('senddailydigest', async (req, res) => {
     
     // Create email message
     const message = [
-      `From: Space Square Logistics <info@spacesquare.dev>`,
+      `From: Freight File Tracker <noreply@freightfiletracker.com>`,
       `To: info@spacesquare.dev`,
       `Subject: ${subject}`,
       `MIME-Version: 1.0`,
