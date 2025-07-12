@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import NotificationScheduler from "./services/notificationScheduler";
+import FirebaseAuthWrapper from "./components/FirebaseAuthWrapper";
 
 const queryClient = new QueryClient();
 
@@ -29,12 +30,14 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <FirebaseAuthWrapper>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </FirebaseAuthWrapper>
       </TooltipProvider>
     </QueryClientProvider>
   );
