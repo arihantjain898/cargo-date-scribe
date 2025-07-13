@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, memo, useMemo, useCallback } from 'react';
 import { ExternalLink, Link, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,7 +20,7 @@ interface ImportTrackingTableRowProps {
   onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
-const ImportTrackingTableRow = ({
+const ImportTrackingTableRow = memo(({
   record,
   index,
   updateRecord,
@@ -34,48 +34,49 @@ const ImportTrackingTableRow = ({
   onFileClick
 }: ImportTrackingTableRowProps) => {
   const [showUrlInput, setShowUrlInput] = useState(false);
-  const isSelected = selectedRows.includes(record.id);
+  const isSelected = useMemo(() => selectedRows.includes(record.id), [selectedRows, record.id]);
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if row is completed: return date and delivery date must have green status, bond must not be pending
-  const isCompleted = record.returnDateStatus === 'green' && record.deliveryDateStatus === 'green' && record.bond !== 'Pending';
+  // Memoized computed values for performance
+  const { isCompleted, isEmpty } = useMemo(() => {
+    const completed = record.returnDateStatus === 'green' && record.deliveryDateStatus === 'green' && record.bond !== 'Pending';
+    const empty = !record.customer && !record.file;
+    return { isCompleted: completed, isEmpty: empty };
+  }, [record.returnDateStatus, record.deliveryDateStatus, record.bond, record.customer, record.file]);
 
-  // Check if record is empty (has no meaningful data)
-  const isEmpty = !record.customer && !record.file;
-
-  const handleCheckboxChange = (checked: boolean) => {
+  const handleCheckboxChange = useCallback((checked: boolean) => {
     if (checked) {
       setSelectedRows(prev => [...prev, record.id]);
     } else {
       setSelectedRows(prev => prev.filter(id => id !== record.id));
     }
-  };
+  }, [record.id, setSelectedRows]);
 
-  const handleFileClick = () => {
+  const handleFileClick = useCallback(() => {
     if (onFileClick && record.file) {
       console.log('Import row clicked - file:', record.file);
       onFileClick(record.file, 'allfiles');
     }
-  };
+  }, [onFileClick, record.file]);
 
-  const handleBookingClick = () => {
+  const handleBookingClick = useCallback(() => {
     if (record.bookingUrl) {
       window.open(record.bookingUrl, '_blank');
     } else {
       setShowUrlInput(true);
     }
-  };
+  }, [record.bookingUrl]);
 
-  const handleDateStatusToggle = (field: 'deliveryDateStatus' | 'returnDateStatus') => {
+  const handleDateStatusToggle = useCallback((field: 'deliveryDateStatus' | 'returnDateStatus') => {
     const currentStatus = record[field] || 'gray';
     const statusCycle = ['gray', 'yellow', 'green', 'red'] as const;
     const currentIndex = statusCycle.indexOf(currentStatus as 'gray' | 'yellow' | 'green' | 'red');
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
     updateRecord(record.id, field, nextStatus);
-  };
+  }, [record, updateRecord]);
 
-  const getStatusColor = (status?: string) => {
+  const getStatusColor = useCallback((status?: string) => {
     switch (status) {
       case 'yellow':
         return 'bg-yellow-400 border-yellow-500';
@@ -86,14 +87,17 @@ const ImportTrackingTableRow = ({
       default:
         return 'bg-gray-400 border-gray-500';
     }
-  };
+  }, []);
 
-  // More distinctive alternating colors matching export tabs with highlight support
-  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
-    isHighlighted ? 'bg-yellow-200 animate-pulse' :
-    isArchived ? 'bg-gray-200 opacity-60' : 
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
-  } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
+  // Memoized row className for performance
+  const rowClassName = useMemo(() => 
+    `border-b-2 border-gray-500 ${
+      isHighlighted ? 'bg-yellow-200' :
+      isArchived ? 'bg-gray-200 opacity-60' : 
+      index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
+    } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`,
+    [isHighlighted, isArchived, index, isCompleted]
+  );
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -345,6 +349,6 @@ const ImportTrackingTableRow = ({
       </td>
     </tr>
   );
-};
+});
 
 export default ImportTrackingTableRow;

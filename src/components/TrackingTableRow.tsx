@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import { ExternalLink, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,7 +20,7 @@ interface TrackingTableRowProps {
   onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
-const TrackingTableRow = ({
+const TrackingTableRow = memo(({
   record,
   index,
   updateRecord,
@@ -33,34 +33,34 @@ const TrackingTableRow = ({
   highlightedRowId,
   onFileClick
 }: TrackingTableRowProps) => {
-  const isSelected = selectedRows.includes(record.id);
+  const isSelected = useMemo(() => selectedRows.includes(record.id), [selectedRows, record.id]);
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  const handleCheckboxChange = (checked: boolean) => {
+  const handleCheckboxChange = useCallback((checked: boolean) => {
     if (checked) {
       setSelectedRows(prev => [...prev, record.id]);
     } else {
       setSelectedRows(prev => prev.filter(id => id !== record.id));
     }
-  };
+  }, [record.id, setSelectedRows]);
 
-  const handleFileClick = () => {
+  const handleFileClick = useCallback(() => {
     if (onFileClick && record.file) {
       console.log('Export row clicked - file:', record.file);
       onFileClick(record.file, 'allfiles');
     }
-  };
+  }, [onFileClick, record.file]);
 
-  const handleDateStatusToggle = (field: 'dropDateStatus' | 'returnDateStatus') => {
+  const handleDateStatusToggle = useCallback((field: 'dropDateStatus' | 'returnDateStatus') => {
     const currentStatus = record[field] || 'gray';
     const statusCycle = ['gray', 'yellow', 'green', 'red'] as const;
     const currentIndex = statusCycle.indexOf(currentStatus);
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
     updateRecord(record.id, field, nextStatus);
-  };
+  }, [record, updateRecord]);
 
-  const getStatusColor = (status?: string) => {
+  const getStatusColor = useCallback((status?: string) => {
     switch (status) {
       case 'yellow':
         return 'bg-yellow-400 border-yellow-500';
@@ -71,29 +71,36 @@ const TrackingTableRow = ({
       default:
         return 'bg-gray-400 border-gray-500';
     }
-  };
+  }, []);
 
-  // Check if all boolean fields are completed - must be Yes, true, or N/A (not Select, Pending, No, or false)
-  const checkCompleted = (val: string | boolean) => {
-    if (val === 'Yes' || val === true || val === 'N/A') return true;
-    if (val === 'No' || val === false || val === 'Pending' || val === 'Select' || val === '' || val === undefined) return false;
-    return false;
-  };
-  const isCompleted = checkCompleted(record.docsSent) && checkCompleted(record.docsReceived) && checkCompleted(record.aesMblVgmSent) && 
-    checkCompleted(record.titlesDispatched) && checkCompleted(record.validatedFwd) && checkCompleted(record.titlesReturned) && 
-    checkCompleted(record.sslDraftInvRec) && checkCompleted(record.draftInvApproved) && checkCompleted(record.transphereInvSent) && 
-    checkCompleted(record.paymentRec) && checkCompleted(record.sslPaid) && checkCompleted(record.insured) && checkCompleted(record.released) &&
-    record.dropDateStatus === 'green' && record.returnDateStatus === 'green';
+  // Check if all boolean fields are completed - memoized for performance
+  const { isCompleted, isEmpty } = useMemo(() => {
+    const checkCompleted = (val: string | boolean) => {
+      if (val === 'Yes' || val === true || val === 'N/A') return true;
+      if (val === 'No' || val === false || val === 'Pending' || val === 'Select' || val === '' || val === undefined) return false;
+      return false;
+    };
+    
+    const completed = checkCompleted(record.docsSent) && checkCompleted(record.docsReceived) && checkCompleted(record.aesMblVgmSent) && 
+      checkCompleted(record.titlesDispatched) && checkCompleted(record.validatedFwd) && checkCompleted(record.titlesReturned) && 
+      checkCompleted(record.sslDraftInvRec) && checkCompleted(record.draftInvApproved) && checkCompleted(record.transphereInvSent) && 
+      checkCompleted(record.paymentRec) && checkCompleted(record.sslPaid) && checkCompleted(record.insured) && checkCompleted(record.released) &&
+      record.dropDateStatus === 'green' && record.returnDateStatus === 'green';
 
-  // Check if record is empty (has no meaningful data)
-  const isEmpty = !record.customer && !record.file;
+    const empty = !record.customer && !record.file;
+    
+    return { isCompleted: completed, isEmpty: empty };
+  }, [record]);
 
-  // More distinctive alternating colors matching import tabs with highlight support
-  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
-    isHighlighted ? 'bg-yellow-200 animate-pulse' :
-    isArchived ? 'bg-gray-200 opacity-60' : 
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
-  } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
+  // Memoized row className for performance
+  const rowClassName = useMemo(() => 
+    `border-b-2 border-gray-500 ${
+      isHighlighted ? 'bg-yellow-200' :
+      isArchived ? 'bg-gray-200 opacity-60' : 
+      index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
+    } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`,
+    [isHighlighted, isArchived, index, isCompleted]
+  );
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -334,6 +341,6 @@ const TrackingTableRow = ({
       </td>
     </tr>
   );
-};
+});
 
 export default TrackingTableRow;

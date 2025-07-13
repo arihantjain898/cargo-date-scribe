@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
@@ -22,7 +22,7 @@ interface AllFilesTableRowProps {
   onCreateCorrespondingRow?: (record: AllFilesRecord) => void;
 }
 
-const AllFilesTableRow = ({
+const AllFilesTableRow = memo(({
   record,
   index,
   updateRecord,
@@ -36,7 +36,7 @@ const AllFilesTableRow = ({
   highlightedRowId,
   onCreateCorrespondingRow
 }: AllFilesTableRowProps) => {
-  const isSelected = selectedRows.includes(record.id);
+  const isSelected = useMemo(() => selectedRows.includes(record.id), [selectedRows, record.id]);
   const isArchived = record.archived === 'true' || record.archived === true;
   const isHighlighted = highlightedRowId === record.id;
 
@@ -47,7 +47,7 @@ const AllFilesTableRow = ({
     'roro', 'lcl', 'air', 'truck', 'ssl', 'nvo', 'comments', 'salesContact'
   ];
 
-  const focusNextCell = (currentField: string) => {
+  const focusNextCell = useCallback((currentField: string) => {
     console.log('focusNextCell called with:', currentField);
     const currentIndex = editableFields.indexOf(currentField);
     const nextIndex = (currentIndex + 1) % editableFields.length;
@@ -67,17 +67,17 @@ const AllFilesTableRow = ({
         }
       }
     }
-  };
+  }, [record.id]);
 
-  const handleCheckboxChange = (checked: boolean) => {
+  const handleCheckboxChange = useCallback((checked: boolean) => {
     if (checked) {
       setSelectedRows(prev => [...prev, record.id]);
     } else {
       setSelectedRows(prev => prev.filter(id => id !== record.id));
     }
-  };
+  }, [record.id, setSelectedRows]);
 
-  const handleFileClick = () => {
+  const handleFileClick = useCallback(() => {
     if (onFileClick && record.number && record.file) {
       // Combine file + number to create the target file identifier (e.g., "ET" + "1028" = "ET1028")
       const targetFileIdentifier = record.file.trim() + record.number.trim();
@@ -97,9 +97,9 @@ const AllFilesTableRow = ({
       console.log('AllFiles row clicked - file:', record.file, 'number:', record.number, 'targetIdentifier:', targetFileIdentifier, 'targetTab:', targetTab);
       onFileClick(targetFileIdentifier, targetTab);
     }
-  };
+  }, [onFileClick, record.number, record.file]);
 
-  const handleCreateCorrespondingRow = () => {
+  const handleCreateCorrespondingRow = useCallback(() => {
     console.log('Plus button clicked for record:', record);
     if (onCreateCorrespondingRow) {
       const filePrefix = record.file.trim().toUpperCase();
@@ -122,22 +122,25 @@ const AllFilesTableRow = ({
         onCreateCorrespondingRow(record);
       }
     }
-  };
+  }, [onCreateCorrespondingRow, record]);
 
-  // More distinctive alternating colors matching export/import tabs with highlight support
-  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
-    isHighlighted ? 'bg-yellow-200 animate-pulse' :
-    isArchived ? 'bg-gray-200 opacity-60' : 
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
-  }`;
+  // Memoized row className for performance
+  const rowClassName = useMemo(() => 
+    `border-b-2 border-gray-500 ${
+      isHighlighted ? 'bg-yellow-200' :
+      isArchived ? 'bg-gray-200 opacity-60' : 
+      index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
+    }`,
+    [isHighlighted, isArchived, index]
+  );
 
   // Helper function to get text styling based on content
-  const getTextStyling = (value: string, placeholder?: string) => {
+  const getTextStyling = useCallback((value: string, placeholder?: string) => {
     if (!value || value.trim() === '') {
       return 'text-gray-400 italic';
     }
     return 'text-gray-900 font-medium';
-  };
+  }, []);
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -365,6 +368,6 @@ const AllFilesTableRow = ({
       </td>
     </tr>
   );
-};
+});
 
 export default AllFilesTableRow;

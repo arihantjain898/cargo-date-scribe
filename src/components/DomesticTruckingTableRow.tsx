@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import { ExternalLink, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,7 +19,7 @@ interface DomesticTruckingTableRowProps {
   onFileClick?: (fileNumber: string, fileType: string) => void;
 }
 
-const DomesticTruckingTableRow = ({
+const DomesticTruckingTableRow = memo(({
   record,
   index,
   updateRecord,
@@ -32,45 +32,51 @@ const DomesticTruckingTableRow = ({
   highlightedRowId,
   onFileClick
 }: DomesticTruckingTableRowProps) => {
-  const isSelected = selectedRows.includes(record.id);
+  const isSelected = useMemo(() => selectedRows.includes(record.id), [selectedRows, record.id]);
   const isArchived = record.archived;
   const isHighlighted = highlightedRowId === record.id;
 
-  // Check if all boolean fields are completed - must be Yes, true, or N/A (not Select, Pending, No, or false)
-  const checkCompleted = (val: string | boolean) => {
-    if (val === 'Yes' || val === true || val === 'N/A') return true;
-    if (val === 'No' || val === false || val === 'Pending' || val === 'Select' || val === '' || val === undefined) return false;
-    return false;
-  };
-  const isCompleted = checkCompleted(record.woSent) && checkCompleted(record.insurance) && checkCompleted(record.paymentReceived) && checkCompleted(record.paymentMade) && record.pickDateStatus === 'green' && record.deliveredStatus === 'green';
+  // Memoized computed values for performance
+  const { isCompleted, isEmpty } = useMemo(() => {
+    const checkCompleted = (val: string | boolean) => {
+      if (val === 'Yes' || val === true || val === 'N/A') return true;
+      if (val === 'No' || val === false || val === 'Pending' || val === 'Select' || val === '' || val === undefined) return false;
+      return false;
+    };
+    
+    const completed = checkCompleted(record.woSent) && checkCompleted(record.insurance) && 
+      checkCompleted(record.paymentReceived) && checkCompleted(record.paymentMade) && 
+      record.pickDateStatus === 'green' && record.deliveredStatus === 'green';
+    
+    const empty = !record.customer && !record.file;
+    
+    return { isCompleted: completed, isEmpty: empty };
+  }, [record]);
 
-  // Check if record is empty (has no meaningful data)
-  const isEmpty = !record.customer && !record.file;
-
-  const handleCheckboxChange = (checked: boolean) => {
+  const handleCheckboxChange = useCallback((checked: boolean) => {
     if (checked) {
       setSelectedRows(prev => [...prev, record.id]);
     } else {
       setSelectedRows(prev => prev.filter(id => id !== record.id));
     }
-  };
+  }, [record.id, setSelectedRows]);
 
-  const handleFileClick = () => {
+  const handleFileClick = useCallback(() => {
     if (onFileClick && record.file) {
       console.log('Domestic row clicked - file:', record.file);
       onFileClick(record.file, 'allfiles');
     }
-  };
+  }, [onFileClick, record.file]);
 
-  const handleDateStatusToggle = (field: 'pickDateStatus' | 'deliveredStatus') => {
+  const handleDateStatusToggle = useCallback((field: 'pickDateStatus' | 'deliveredStatus') => {
     const currentStatus = record[field] || 'gray';
     const statusCycle = ['gray', 'yellow', 'green', 'red'] as const;
     const currentIndex = statusCycle.indexOf(currentStatus as 'gray' | 'yellow' | 'green' | 'red');
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
     updateRecord(record.id, field, nextStatus);
-  };
+  }, [record, updateRecord]);
 
-  const getStatusColor = (status?: string) => {
+  const getStatusColor = useCallback((status?: string) => {
     switch (status) {
       case 'yellow':
         return 'bg-yellow-400 border-yellow-500';
@@ -81,14 +87,17 @@ const DomesticTruckingTableRow = ({
       default:
         return 'bg-gray-400 border-gray-500';
     }
-  };
+  }, []);
 
-  // More distinctive alternating colors matching export/import tabs
-  const rowClassName = `border-b-2 border-gray-500 transition-all duration-200 ${
-    isHighlighted ? 'bg-yellow-200 animate-pulse' :
-    isArchived ? 'bg-gray-200 opacity-60' : 
-    index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
-  } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`;
+  // Memoized row className for performance
+  const rowClassName = useMemo(() => 
+    `border-b-2 border-gray-500 ${
+      isHighlighted ? 'bg-yellow-200' :
+      isArchived ? 'bg-gray-200 opacity-60' : 
+      index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
+    } ${isCompleted ? 'border-4 border-green-500 bg-green-50' : ''}`,
+    [isHighlighted, isArchived, index, isCompleted]
+  );
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -210,6 +219,6 @@ const DomesticTruckingTableRow = ({
       </td>
     </tr>
   );
-};
+});
 
 export default DomesticTruckingTableRow;
