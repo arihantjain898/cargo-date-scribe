@@ -37,11 +37,35 @@ export const useFirebaseAuth = () => {
   const signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      
+      // Check if user is authorized
+      const user = result.user;
+      if (!isUserAuthorized(user.email)) {
+        await signOut(auth);
+        throw new Error('Unauthorized: Access restricted to company users only');
+      }
     } catch (error) {
       console.error('Google sign in error:', error);
       throw error;
     }
+  };
+
+  // Add your company domain or list of allowed emails here
+  const isUserAuthorized = (email: string | null): boolean => {
+    if (!email) return false;
+    
+    // Option 1: Restrict by domain (replace with your company domain)
+    const allowedDomain = '@yourcompany.com';
+    if (email.endsWith(allowedDomain)) return true;
+    
+    // Option 2: Whitelist specific emails
+    const allowedEmails = [
+      'user1@company.com',
+      'user2@company.com',
+      // Add more allowed emails here
+    ];
+    return allowedEmails.includes(email);
   };
 
   const logout = async () => {
