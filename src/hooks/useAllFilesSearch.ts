@@ -5,22 +5,25 @@ import { AllFilesRecord } from '../types/AllFilesRecord';
 export const useAllFilesSearch = (data: AllFilesRecord[]) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredData = useMemo(() => 
-    data.filter(record => 
-      (record.customer || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.file || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.originPort || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.originState || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.destinationPort || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.destinationCountry || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.truck || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.ssl || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.nvo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.comments || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (record.salesContact || '').toLowerCase().includes(searchTerm.toLowerCase())
-    ), [data, searchTerm]
-  );
+  const filteredData = useMemo(() => {
+    if (!searchTerm.trim()) return data;
+    
+    const lowercaseSearch = searchTerm.toLowerCase();
+    return data.filter(record => 
+      (record.customer || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.file || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.number || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.originPort || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.originState || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.destinationPort || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.destinationCountry || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.truck || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.ssl || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.nvo || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.comments || '').toLowerCase().includes(lowercaseSearch) ||
+      (record.salesContact || '').toLowerCase().includes(lowercaseSearch)
+    );
+  }, [data, searchTerm]);
 
   return { searchTerm, setSearchTerm, filteredData };
 };

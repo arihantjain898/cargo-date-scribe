@@ -22,7 +22,10 @@ const FreightTracker = () => {
     // Load saved tab from localStorage, default to 'allfiles' if not found
     return localStorage.getItem('freightTracker-activeTab') || 'allfiles';
   });
-  const [currentView, setCurrentView] = useState<'tables' | 'calendar'>('tables');
+  const [currentView, setCurrentView] = useState<'tables' | 'calendar'>(() => {
+    // Load saved view from localStorage, default to 'tables' if not found
+    return (localStorage.getItem('freightTracker-currentView') as 'tables' | 'calendar') || 'tables';
+  });
   const [searchTerm, setSearchTerm] = useState<string>('');
   const highlightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -290,7 +293,11 @@ const FreightTracker = () => {
         <h1 className="text-2xl font-bold mb-4">Freight Tracker</h1>
       </div>
 
-      <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as 'tables' | 'calendar')} className="space-y-4">
+      <Tabs value={currentView} onValueChange={(value) => {
+        const newView = value as 'tables' | 'calendar';
+        setCurrentView(newView);
+        localStorage.setItem('freightTracker-currentView', newView);
+      }} className="space-y-4">
         <TabsList className="grid w-[400px] grid-cols-2">
           <TabsTrigger value="tables">📊 Tracking Tables</TabsTrigger>
           <TabsTrigger value="calendar">📅 Calendar View</TabsTrigger>

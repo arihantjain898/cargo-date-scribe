@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Archive, ArchiveRestore, ExternalLink } from 'lucide-react';
 import { AllFilesRecord } from '../types/AllFilesRecord';
-import { useAllFilesSearch } from '../hooks/useSearch';
+import { useAllFilesSearch } from '../hooks/useAllFilesSearch';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import AllFilesTableHeader from './AllFilesTableHeader';
 import AllFilesTableRow from './AllFilesTableRow';
@@ -79,7 +79,9 @@ const AllFilesTable = ({
     updateRecord(id, 'archived', 'false');
   };
 
-  const finalFilteredData = showArchived ? filteredData : filteredData.filter(record => !record.archived);
+  const finalFilteredData = React.useMemo(() => {
+    return showArchived ? filteredData : filteredData.filter(record => !record.archived);
+  }, [filteredData, showArchived]);
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
