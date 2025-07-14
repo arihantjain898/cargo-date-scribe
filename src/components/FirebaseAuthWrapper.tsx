@@ -11,10 +11,9 @@ interface FirebaseAuthWrapperProps {
 }
 
 const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) => {
-  const { user, loading, signIn, signUp, signInWithGoogle, logout } = useFirebaseAuth();
+  const { user, loading, signIn, signInWithGoogle, logout } = useFirebaseAuth();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [isSignUp, setIsSignUp] = React.useState(false);
 
   if (loading) {
     return (
@@ -29,7 +28,7 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>{isSignUp ? 'Sign Up' : 'Sign In'}</CardTitle>
+            <CardTitle>Sign In</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Input
@@ -45,10 +44,10 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
               onChange={(e) => setPassword(e.target.value)}
             />
             <Button
-              onClick={() => isSignUp ? signUp(email, password) : signIn(email, password)}
+              onClick={() => signIn(email, password)}
               className="w-full"
             >
-              {isSignUp ? 'Sign Up' : 'Sign In'}
+              Sign In
             </Button>
             
             <div className="relative">
@@ -71,13 +70,6 @@ const FirebaseAuthWrapper: React.FC<FirebaseAuthWrapperProps> = ({ children }) =
               Continue with Google
             </Button>
             
-            <Button
-              variant="outline"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="w-full"
-            >
-              {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
-            </Button>
           </CardContent>
         </Card>
       </div>

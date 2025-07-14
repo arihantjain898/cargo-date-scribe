@@ -22,6 +22,19 @@ interface AllFilesTableRowProps {
   onCreateCorrespondingRow?: (record: AllFilesRecord) => void;
 }
 
+// Memoize the color calculations to avoid recalculating on every render
+const getRowClassName = (isHighlighted: boolean, isArchived: boolean, index: number) => {
+  if (isHighlighted) return 'border-b-2 border-gray-500 bg-yellow-200';
+  if (isArchived) return 'border-b-2 border-gray-500 bg-gray-200 opacity-60';
+  return index % 2 === 0 
+    ? 'border-b-2 border-gray-500 bg-white hover:bg-blue-50' 
+    : 'border-b-2 border-gray-500 bg-blue-50 hover:bg-blue-100';
+};
+
+const getTextStyling = (value: string) => {
+  return (!value || value.trim() === '') ? 'text-gray-400 italic' : 'text-gray-900 font-medium';
+};
+
 const AllFilesTableRow = memo(({
   record,
   index,
@@ -41,51 +54,42 @@ const AllFilesTableRow = memo(({
   const isHighlighted = highlightedRowId === record.id;
 
   // Define the order of editable fields for tab navigation
-  const editableFields = [
+  const editableFields = useMemo(() => [
     'customer', 'file', 'number', 'originPort', 'originState', 
     'destinationPort', 'destinationCountry', 'container20', 'container40', 
     'roro', 'lcl', 'air', 'truck', 'ssl', 'nvo', 'comments', 'salesContact'
-  ];
+  ], []);
 
+  // Optimized focus function that uses direct DOM manipulation
   const focusNextCell = useCallback((currentField: string) => {
-    console.log('focusNextCell called with:', currentField);
     const currentIndex = editableFields.indexOf(currentField);
     const nextIndex = (currentIndex + 1) % editableFields.length;
     const nextField = editableFields[nextIndex];
-    console.log('Next field:', nextField);
     
-    // Find the next cell and focus it
-    const currentRow = document.querySelector(`[data-row-id="${record.id}"]`);
-    if (currentRow) {
-      const nextCell = currentRow.querySelector(`[data-field="${nextField}"]`);
-      console.log('Next cell found:', !!nextCell);
+    // Use a more efficient approach with a single query
+    requestAnimationFrame(() => {
+      const nextCell = document.querySelector(`[data-row-id="${record.id}"] [data-field="${nextField}"] [title="Click to edit"]`);
       if (nextCell) {
-        const clickableElement = nextCell.querySelector('[title="Click to edit"]');
-        console.log('Clickable element found:', !!clickableElement);
-        if (clickableElement) {
-          (clickableElement as HTMLElement).click();
-        }
+        (nextCell as HTMLElement).click();
       }
-    }
-  }, [record.id]);
+    });
+  }, [record.id, editableFields]);
 
+  // Memoize callbacks to prevent unnecessary re-renders
   const handleCheckboxChange = useCallback((checked: boolean) => {
-    if (checked) {
-      setSelectedRows(prev => [...prev, record.id]);
-    } else {
-      setSelectedRows(prev => prev.filter(id => id !== record.id));
-    }
+    setSelectedRows(prev => 
+      checked 
+        ? [...prev, record.id]
+        : prev.filter(id => id !== record.id)
+    );
   }, [record.id, setSelectedRows]);
 
   const handleFileClick = useCallback(() => {
     if (onFileClick && record.number && record.file) {
-      // Combine file + number to create the target file identifier (e.g., "ET" + "1028" = "ET1028")
       const targetFileIdentifier = record.file.trim() + record.number.trim();
-      
-      // Determine target tab based on file prefix
-      let targetTab = '';
       const filePrefix = record.file.trim().toUpperCase();
       
+      let targetTab = '';
       if (filePrefix === 'EA' || filePrefix === 'ES' || filePrefix === 'ET') {
         targetTab = 'export';
       } else if (filePrefix === 'IA' || filePrefix === 'IS') {
@@ -94,13 +98,11 @@ const AllFilesTableRow = memo(({
         targetTab = 'domestic';
       }
       
-      console.log('AllFiles row clicked - file:', record.file, 'number:', record.number, 'targetIdentifier:', targetFileIdentifier, 'targetTab:', targetTab);
       onFileClick(targetFileIdentifier, targetTab);
     }
   }, [onFileClick, record.number, record.file]);
 
   const handleCreateCorrespondingRow = useCallback(() => {
-    console.log('Plus button clicked for record:', record);
     if (onCreateCorrespondingRow) {
       const filePrefix = record.file.trim().toUpperCase();
       let targetTab = '';
@@ -113,34 +115,50 @@ const AllFilesTableRow = memo(({
         targetTab = 'Domestic Trucking';
       }
       
-      // Show confirmation dialog
-      const confirmed = window.confirm(
+      if (window.confirm(
         `Create a corresponding record in the ${targetTab} table for customer "${record.customer}" with file "${record.file}${record.number}"?`
-      );
-      
-      if (confirmed) {
+      )) {
         onCreateCorrespondingRow(record);
       }
     }
   }, [onCreateCorrespondingRow, record]);
 
-  // Memoized row className for performance
+  // Memoize row className for performance
   const rowClassName = useMemo(() => 
-    `border-b-2 border-gray-500 ${
-      isHighlighted ? 'bg-yellow-200' :
-      isArchived ? 'bg-gray-200 opacity-60' : 
-      index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-blue-50 hover:bg-blue-100'
-    }`,
+    getRowClassName(isHighlighted, isArchived, index),
     [isHighlighted, isArchived, index]
   );
 
-  // Helper function to get text styling based on content
-  const getTextStyling = useCallback((value: string, placeholder?: string) => {
-    if (!value || value.trim() === '') {
-      return 'text-gray-400 italic';
-    }
-    return 'text-gray-900 font-medium';
-  }, []);
+  // Memoize color calculations for container fields
+  const containerColors = useMemo(() => ({
+    container20: getContainerVolumeColor(record.container20),
+    container40: getContainerVolumeColor(record.container40),
+    roro: getContainerVolumeColor(record.roro),
+    lcl: getContainerVolumeColor(record.lcl),
+    air: getContainerVolumeColor(record.air),
+    truck: getContainerVolumeColor(record.truck)
+  }), [record.container20, record.container40, record.roro, record.lcl, record.air, record.truck]);
+
+  // Memoize update functions
+  const updateFunctions = useMemo(() => ({
+    customer: (value: string) => updateRecord(record.id, 'customer', value),
+    file: (value: string) => updateRecord(record.id, 'file', value),
+    number: (value: string) => updateRecord(record.id, 'number', value),
+    originPort: (value: string) => updateRecord(record.id, 'originPort', value),
+    originState: (value: string) => updateRecord(record.id, 'originState', value),
+    destinationPort: (value: string) => updateRecord(record.id, 'destinationPort', value),
+    destinationCountry: (value: string) => updateRecord(record.id, 'destinationCountry', value),
+    container20: (value: string) => updateRecord(record.id, 'container20', value),
+    container40: (value: string) => updateRecord(record.id, 'container40', value),
+    roro: (value: string) => updateRecord(record.id, 'roro', value),
+    lcl: (value: string) => updateRecord(record.id, 'lcl', value),
+    air: (value: string) => updateRecord(record.id, 'air', value),
+    truck: (value: string) => updateRecord(record.id, 'truck', value),
+    ssl: (value: string) => updateRecord(record.id, 'ssl', value),
+    nvo: (value: string) => updateRecord(record.id, 'nvo', value),
+    comments: (value: string) => updateRecord(record.id, 'comments', value),
+    salesContact: (value: string) => updateRecord(record.id, 'salesContact', value)
+  }), [record.id, updateRecord]);
 
   return (
     <tr className={rowClassName} data-row-id={record.id}>
@@ -149,7 +167,7 @@ const AllFilesTableRow = memo(({
           <div data-field="customer" className="flex-1 min-w-0">
             <InlineEditCell
               value={record.customer}
-              onSave={(value) => updateRecord(record.id, 'customer', value as string)}
+              onSave={updateFunctions.customer}
               placeholder="Enter customer"
               className={getTextStyling(record.customer)}
               isTextColumn={true}
@@ -187,7 +205,7 @@ const AllFilesTableRow = memo(({
         <AllFilesTableFileCell
           fileValue={record.file}
           numberValue={record.number}
-          onSave={(value) => updateRecord(record.id, 'file', value as string)}
+          onSave={updateFunctions.file}
           className={getTextStyling(record.file)}
           onNextCell={() => focusNextCell('file')}
         />
@@ -196,7 +214,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r-4 border-black p-1" data-field="number">
         <InlineEditCell
           value={record.number}
-          onSave={(value) => updateRecord(record.id, 'number', value as string)}
+          onSave={updateFunctions.number}
           placeholder="Enter number"
           className={getTextStyling(record.number)}
           isTextColumn={true}
@@ -207,7 +225,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r border-gray-500 p-1" data-field="originPort">
         <InlineEditCell
           value={record.originPort}
-          onSave={(value) => updateRecord(record.id, 'originPort', value as string)}
+          onSave={updateFunctions.originPort}
           placeholder="Enter origin port"
           className={getTextStyling(record.originPort)}
           isTextColumn={true}
@@ -218,7 +236,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r-4 border-black p-1" data-field="originState">
         <InlineEditCell
           value={record.originState}
-          onSave={(value) => updateRecord(record.id, 'originState', value as string)}
+          onSave={updateFunctions.originState}
           placeholder="Enter origin state"
           className={getTextStyling(record.originState)}
           isTextColumn={true}
@@ -229,7 +247,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r border-gray-500 p-1" data-field="destinationPort">
         <InlineEditCell
           value={record.destinationPort}
-          onSave={(value) => updateRecord(record.id, 'destinationPort', value as string)}
+          onSave={updateFunctions.destinationPort}
           placeholder="Enter destination port"
           className={getTextStyling(record.destinationPort)}
           isTextColumn={true}
@@ -240,7 +258,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r-4 border-black p-1" data-field="destinationCountry">
         <InlineEditCell
           value={record.destinationCountry}
-          onSave={(value) => updateRecord(record.id, 'destinationCountry', value as string)}
+          onSave={updateFunctions.destinationCountry}
           placeholder="Enter destination country"
           className={getTextStyling(record.destinationCountry)}
           isTextColumn={true}
@@ -248,10 +266,10 @@ const AllFilesTableRow = memo(({
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container20)}`} data-field="container20">
+      <td className={`border-r border-gray-500 p-1 ${containerColors.container20}`} data-field="container20">
         <InlineEditCell
           value={record.container20}
-          onSave={(value) => updateRecord(record.id, 'container20', value as string)}
+          onSave={updateFunctions.container20}
           placeholder="20'"
           className="font-medium"
           isTextColumn={true}
@@ -259,10 +277,10 @@ const AllFilesTableRow = memo(({
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.container40)}`} data-field="container40">
+      <td className={`border-r border-gray-500 p-1 ${containerColors.container40}`} data-field="container40">
         <InlineEditCell
           value={record.container40}
-          onSave={(value) => updateRecord(record.id, 'container40', value as string)}
+          onSave={updateFunctions.container40}
           placeholder="40'"
           className="font-medium"
           isTextColumn={true}
@@ -270,10 +288,10 @@ const AllFilesTableRow = memo(({
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.roro)}`} data-field="roro">
+      <td className={`border-r border-gray-500 p-1 ${containerColors.roro}`} data-field="roro">
         <InlineEditCell
           value={record.roro}
-          onSave={(value) => updateRecord(record.id, 'roro', value as string)}
+          onSave={updateFunctions.roro}
           placeholder="RoRo"
           className="font-medium"
           isTextColumn={true}
@@ -281,10 +299,10 @@ const AllFilesTableRow = memo(({
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.lcl)}`} data-field="lcl">
+      <td className={`border-r border-gray-500 p-1 ${containerColors.lcl}`} data-field="lcl">
         <InlineEditCell
           value={record.lcl}
-          onSave={(value) => updateRecord(record.id, 'lcl', value as string)}
+          onSave={updateFunctions.lcl}
           placeholder="LCL"
           className="font-medium"
           isTextColumn={true}
@@ -292,10 +310,10 @@ const AllFilesTableRow = memo(({
         />
       </td>
       
-      <td className={`border-r border-gray-500 p-1 ${getContainerVolumeColor(record.air)}`} data-field="air">
+      <td className={`border-r border-gray-500 p-1 ${containerColors.air}`} data-field="air">
         <InlineEditCell
           value={record.air}
-          onSave={(value) => updateRecord(record.id, 'air', value as string)}
+          onSave={updateFunctions.air}
           placeholder="Air"
           className="font-medium"
           isTextColumn={true}
@@ -303,10 +321,10 @@ const AllFilesTableRow = memo(({
         />
       </td>
       
-      <td className={`border-r-4 border-black p-1 ${getContainerVolumeColor(record.truck)}`} data-field="truck">
+      <td className={`border-r-4 border-black p-1 ${containerColors.truck}`} data-field="truck">
         <InlineEditCell
           value={record.truck}
-          onSave={(value) => updateRecord(record.id, 'truck', value as string)}
+          onSave={updateFunctions.truck}
           placeholder="Truck"
           className="font-medium"
           isTextColumn={true}
@@ -317,7 +335,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r border-gray-500 p-1" data-field="ssl">
         <InlineEditCell
           value={record.ssl}
-          onSave={(value) => updateRecord(record.id, 'ssl', value as string)}
+          onSave={updateFunctions.ssl}
           placeholder="SSL or Trucker"
           className={getTextStyling(record.ssl)}
           isTextColumn={true}
@@ -328,7 +346,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r-4 border-black p-1" data-field="nvo">
         <InlineEditCell
           value={record.nvo}
-          onSave={(value) => updateRecord(record.id, 'nvo', value as string)}
+          onSave={updateFunctions.nvo}
           placeholder="NVO"
           className={getTextStyling(record.nvo)}
           isTextColumn={true}
@@ -339,7 +357,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r-4 border-black p-1" data-field="comments">
         <InlineEditCell
           value={record.comments}
-          onSave={(value) => updateRecord(record.id, 'comments', value as string)}
+          onSave={updateFunctions.comments}
           placeholder="Enter comments"
           className={getTextStyling(record.comments)}
           isTextColumn={true}
@@ -351,7 +369,7 @@ const AllFilesTableRow = memo(({
       <td className="border-r-4 border-black p-1" data-field="salesContact">
         <InlineEditCell
           value={record.salesContact}
-          onSave={(value) => updateRecord(record.id, 'salesContact', value as string)}
+          onSave={updateFunctions.salesContact}
           placeholder="Enter sales contact"
           className={getTextStyling(record.salesContact)}
           isTextColumn={true}
@@ -369,5 +387,7 @@ const AllFilesTableRow = memo(({
     </tr>
   );
 });
+
+AllFilesTableRow.displayName = 'AllFilesTableRow';
 
 export default AllFilesTableRow;
