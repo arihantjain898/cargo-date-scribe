@@ -35,14 +35,17 @@ export const useFirestore = <T>(collectionName: string, userId?: string) => {
       orderBy('createdAt', 'asc')
     );
 
+    let isInitialLoad = true;
     const unsubscribe = onSnapshot(q, 
       (snapshot) => {
-        console.log(`Received ${snapshot.docs.length} documents from ${collectionName}`);
+        if (isInitialLoad) {
+          console.log(`Initial load: ${snapshot.docs.length} documents from ${collectionName}`);
+          isInitialLoad = false;
+        }
         const items = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })) as T[];
-        console.log('Parsed items:', items);
         setData(items);
         setLoading(false);
       },
@@ -84,15 +87,39 @@ export const useFirestore = <T>(collectionName: string, userId?: string) => {
 
   const updateItem = async (id: string, updates: Partial<T>) => {
     try {
-      console.log(`Updating item ${id} in ${collectionName}:`, updates);
+      // Optimistic update - update local state immediately
+      setData(prevData => 
+        prevData.map(item => 
+          (item as any).id === id 
+            ? { ...item, ...updates, updatedAt: new Date() } 
+            : item
+        )
+      );
+
+      // Then update Firestore in background
       const docRef = doc(db, collectionName, id);
       await updateDoc(docRef, {
         ...updates,
         updatedAt: new Date()
       });
-      console.log(`Successfully updated document ${id}`);
     } catch (err) {
       console.error(`Error updating item ${id} in ${collectionName}:`, err);
+      
+      // Revert optimistic update on error by refetching data
+      const collectionRebootRef = collection(db, collectionName);
+      const q = query(
+        collectionRebootRef, 
+        where('userId', '==', userId),
+        orderBy('createdAt', 'asc')
+      );
+      
+      const snapshot = await getDocs(q);
+      const items = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as T[];
+      setData(items);
+      
       setError(err instanceof Error ? err.message : 'Unknown error');
       throw err;
     }
