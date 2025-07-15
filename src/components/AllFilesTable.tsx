@@ -22,6 +22,7 @@ interface AllFilesTableProps {
   onFileClick?: (fileNumber: string, fileType: string) => void;
   highlightedRowId?: string | null;
   onCreateCorrespondingRow?: (record: AllFilesRecord) => void;
+  onArchiveCorrespondingRecord?: (record: AllFilesRecord, archiveStatus: boolean) => void;
 }
 
 const AllFilesTable = ({ 
@@ -32,7 +33,8 @@ const AllFilesTable = ({
   setSelectedRows, 
   onFileClick,
   highlightedRowId,
-  onCreateCorrespondingRow
+  onCreateCorrespondingRow,
+  onArchiveCorrespondingRecord
 }: AllFilesTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
@@ -73,10 +75,20 @@ const AllFilesTable = ({
 
   const handleArchiveRecord = (id: string) => {
     updateRecord(id, 'archived', 'true');
+    // Find the record and archive corresponding record
+    const record = data.find(r => r.id === id);
+    if (record && onArchiveCorrespondingRecord) {
+      onArchiveCorrespondingRecord(record, true);
+    }
   };
 
   const handleUnarchiveRecord = (id: string) => {
     updateRecord(id, 'archived', 'false');
+    // Find the record and unarchive corresponding record
+    const record = data.find(r => r.id === id);
+    if (record && onArchiveCorrespondingRecord) {
+      onArchiveCorrespondingRecord(record, false);
+    }
   };
 
   const finalFilteredData = React.useMemo(() => {

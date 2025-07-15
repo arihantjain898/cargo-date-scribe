@@ -47,7 +47,8 @@ const FreightTracker = () => {
     deleteImportItem,
     deleteAllFilesItem,
     deleteDomesticTruckingItem,
-    createCorrespondingRecord
+    createCorrespondingRecord,
+    archiveCorrespondingRecord
   } = useFreightTrackerData(currentUserId || '');
 
   const { undo, redo, canUndo, canRedo } = useUndoRedo({
@@ -317,6 +318,7 @@ const FreightTracker = () => {
             deleteImportRecord={deleteImportItem}
             deleteDomesticRecord={deleteDomesticTruckingItem}
             createCorrespondingRecord={createCorrespondingRecord}
+            archiveCorrespondingRecord={archiveCorrespondingRecord}
             deleteAllFilesRecord={deleteAllFilesItem}
             addExportRecord={addExportRecord}
             addImportRecord={addImportItem}
