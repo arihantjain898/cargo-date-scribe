@@ -291,6 +291,9 @@ const FreightTrackerTabs = ({
           onFileClick={onFileClick}
           onCreateCorrespondingRow={createCorrespondingRecord}
           onArchiveCorrespondingRecord={archiveCorrespondingRecord}
+          importData={importData}
+          exportData={exportData}
+          domesticData={domesticData}
         />
       </TabsContent>
 
