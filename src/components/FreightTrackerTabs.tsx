@@ -59,7 +59,6 @@ interface FreightTrackerTabsProps {
   filteredAllFilesData: AllFilesRecord[];
   filteredDomesticTruckingData: DomesticTruckingRecord[];
   createCorrespondingRecord: (record: AllFilesRecord) => void;
-  archiveCorrespondingRecord: (record: AllFilesRecord, archiveStatus: boolean) => void;
 }
 
 const FreightTrackerTabs = ({
@@ -95,8 +94,7 @@ const FreightTrackerTabs = ({
   filteredImportData,
   filteredAllFilesData,
   filteredDomesticTruckingData,
-  createCorrespondingRecord,
-  archiveCorrespondingRecord
+  createCorrespondingRecord
 }: FreightTrackerTabsProps) => {
   // Helper functions for bulk operations
   const handleBulkArchive = (recordIds: string[], updateFunction: any, setSelected: any) => {
@@ -290,10 +288,6 @@ const FreightTrackerTabs = ({
           highlightedRowId={highlightedRowId}
           onFileClick={onFileClick}
           onCreateCorrespondingRow={createCorrespondingRecord}
-          onArchiveCorrespondingRecord={archiveCorrespondingRecord}
-          importData={importData}
-          exportData={exportData}
-          domesticData={domesticData}
         />
       </TabsContent>
 

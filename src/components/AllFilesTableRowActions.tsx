@@ -23,10 +23,7 @@ interface AllFilesTableRowActionsProps {
   onCheckboxChange: (checked: boolean) => void;
   onArchive: (id: string) => void;
   onUnarchive: (id: string) => void;
-  onArchiveAll?: (id: string) => void;
-  onUnarchiveAll?: (id: string) => void;
   onDelete: (id: string) => void;
-  hasCorrespondingRecord?: boolean;
 }
 
 const AllFilesTableRowActions = ({
@@ -37,10 +34,7 @@ const AllFilesTableRowActions = ({
   onCheckboxChange,
   onArchive,
   onUnarchive,
-  onArchiveAll,
-  onUnarchiveAll,
-  onDelete,
-  hasCorrespondingRecord
+  onDelete
 }: AllFilesTableRowActionsProps) => {
   return (
     <>
@@ -63,44 +57,28 @@ const AllFilesTableRowActions = ({
               )}
             </Button>
           </AlertDialogTrigger>
-           <AlertDialogContent>
-             <AlertDialogHeader>
-               <AlertDialogTitle>
-                 {isArchived ? 'Unarchive Record' : 'Archive Record'}
-               </AlertDialogTitle>
-               <AlertDialogDescription>
-                 {isArchived 
-                   ? `Are you sure you want to unarchive this record for ${customerName}?`
-                   : `Are you sure you want to archive this record for ${customerName}?`
-                 }
-                 {hasCorrespondingRecord && (
-                   <div className="mt-2 text-sm text-gray-600">
-                     {isArchived 
-                       ? 'You can unarchive just this record or also unarchive the corresponding record in the import/export/domestic tab.'
-                       : 'You can archive just this record or also archive the corresponding record in the import/export/domestic tab.'
-                     }
-                   </div>
-                 )}
-               </AlertDialogDescription>
-             </AlertDialogHeader>
-             <AlertDialogFooter className="gap-2">
-               <AlertDialogCancel>Cancel</AlertDialogCancel>
-               <AlertDialogAction
-                 onClick={() => isArchived ? onUnarchive(recordId) : onArchive(recordId)}
-                 className={isArchived ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}
-               >
-                 {isArchived ? 'Unarchive' : 'Archive'}
-               </AlertDialogAction>
-               {hasCorrespondingRecord && (onArchiveAll || onUnarchiveAll) && (
-                 <AlertDialogAction
-                   onClick={() => isArchived ? onUnarchiveAll?.(recordId) : onArchiveAll?.(recordId)}
-                   className={isArchived ? "bg-green-700 hover:bg-green-800" : "bg-yellow-700 hover:bg-yellow-800"}
-                 >
-                   {isArchived ? 'Unarchive All' : 'Archive All'}
-                 </AlertDialogAction>
-               )}
-             </AlertDialogFooter>
-           </AlertDialogContent>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {isArchived ? 'Unarchive Record' : 'Archive Record'}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {isArchived 
+                  ? `Are you sure you want to unarchive this record for ${customerName}? It will be visible in the main view again.`
+                  : `Are you sure you want to archive this record for ${customerName}? Archived records will be hidden from the main view.`
+                }
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => isArchived ? onUnarchive(recordId) : onArchive(recordId)}
+                className={isArchived ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}
+              >
+                {isArchived ? 'Unarchive' : 'Archive'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
         </AlertDialog>
       </td>
       

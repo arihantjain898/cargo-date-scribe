@@ -285,55 +285,6 @@ export const useFreightTrackerData = (currentUserId: string) => {
     }
   };
 
-  const archiveCorrespondingRecord = async (allFilesRecord: AllFilesRecord, archiveStatus: boolean) => {
-    console.log('Archiving corresponding record for:', allFilesRecord);
-    const fileType = allFilesRecord.file.toUpperCase();
-    const targetFile = `${allFilesRecord.file}${allFilesRecord.number}`;
-    
-    try {
-      if (fileType === 'IS' || fileType === 'IA') {
-        // Import Sea or Import Air -> Archive/Unarchive Import record
-        const correspondingImport = importData.find(record => 
-          record.customer === allFilesRecord.customer && 
-          record.file === targetFile
-        );
-        
-        if (correspondingImport) {
-          await updateImportItem(correspondingImport.id, { archived: archiveStatus });
-          console.log(`Import record ${archiveStatus ? 'archived' : 'unarchived'} successfully`);
-          addNotification('Success', `Import record ${archiveStatus ? 'archived' : 'unarchived'} for ${allFilesRecord.customer}`, 'success');
-        }
-      } else if (fileType === 'ES' || fileType === 'EA' || fileType === 'ET') {
-        // Export Sea, Export Air, or Export Truck -> Archive/Unarchive Export record
-        const correspondingExport = exportData.find(record => 
-          record.customer === allFilesRecord.customer && 
-          record.file === targetFile
-        );
-        
-        if (correspondingExport) {
-          await updateExportItem(correspondingExport.id, { archived: archiveStatus });
-          console.log(`Export record ${archiveStatus ? 'archived' : 'unarchived'} successfully`);
-          addNotification('Success', `Export record ${archiveStatus ? 'archived' : 'unarchived'} for ${allFilesRecord.customer}`, 'success');
-        }
-      } else if (fileType === 'DT' || fileType === 'TRUCK') {
-        // Domestic Trucking -> Archive/Unarchive Domestic Trucking record
-        const correspondingDomestic = domesticTruckingData.find(record => 
-          record.customer === allFilesRecord.customer && 
-          record.file === targetFile
-        );
-        
-        if (correspondingDomestic) {
-          await updateDomesticTruckingItem(correspondingDomestic.id, { archived: archiveStatus });
-          console.log(`Domestic trucking record ${archiveStatus ? 'archived' : 'unarchived'} successfully`);
-          addNotification('Success', `Domestic Trucking record ${archiveStatus ? 'archived' : 'unarchived'} for ${allFilesRecord.customer}`, 'success');
-        }
-      }
-    } catch (error) {
-      console.error('Error archiving corresponding record:', error);
-      addNotification('Error', 'Failed to archive corresponding record', 'error');
-    }
-  };
-
   return {
     exportData,
     importData,
@@ -352,7 +303,6 @@ export const useFreightTrackerData = (currentUserId: string) => {
     deleteImportItem,
     deleteAllFilesItem,
     deleteDomesticTruckingItem,
-    createCorrespondingRecord,
-    archiveCorrespondingRecord
+    createCorrespondingRecord
   };
 };

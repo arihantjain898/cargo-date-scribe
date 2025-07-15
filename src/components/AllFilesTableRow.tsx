@@ -3,9 +3,9 @@ import { AllFilesRecord } from '../types/AllFilesRecord';
 import { getContainerVolumeColor } from '../utils/dateUtils';
 import InlineEditCell from './InlineEditCell';
 import AllFilesTableFileCell from './AllFilesTableFileCell';
-import AllFilesTableRowActions from './AllFilesTableRowActions';
 import { ExternalLink, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface AllFilesTableRowProps {
   record: AllFilesRecord;
@@ -14,15 +14,12 @@ interface AllFilesTableRowProps {
   deleteRecord: (id: string) => void;
   onArchive: (id: string) => void;
   onUnarchive: (id: string) => void;
-  onArchiveAll?: (id: string) => void;
-  onUnarchiveAll?: (id: string) => void;
   selectedRows: string[];
   setSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   showArchived: boolean;
   onFileClick?: (fileNumber: string, fileType: string) => void;
   highlightedRowId?: string | null;
   onCreateCorrespondingRow?: (record: AllFilesRecord) => void;
-  hasCorrespondingRecord?: boolean;
 }
 
 // Memoize the color calculations to avoid recalculating on every render
@@ -45,15 +42,12 @@ const AllFilesTableRow = memo(({
   deleteRecord,
   onArchive,
   onUnarchive,
-  onArchiveAll,
-  onUnarchiveAll,
   selectedRows,
   setSelectedRows,
   showArchived,
   onFileClick,
   highlightedRowId,
-  onCreateCorrespondingRow,
-  hasCorrespondingRecord
+  onCreateCorrespondingRow
 }: AllFilesTableRowProps) => {
   const isSelected = useMemo(() => selectedRows.includes(record.id), [selectedRows, record.id]);
   const isArchived = record.archived === 'true' || record.archived === true;
@@ -383,19 +377,13 @@ const AllFilesTableRow = memo(({
         />
       </td>
       
-      <AllFilesTableRowActions
-        recordId={record.id}
-        customerName={record.customer}
-        isSelected={isSelected}
-        isArchived={isArchived}
-        onCheckboxChange={handleCheckboxChange}
-        onArchive={onArchive}
-        onUnarchive={onUnarchive}
-        onArchiveAll={onArchiveAll}
-        onUnarchiveAll={onUnarchiveAll}
-        onDelete={deleteRecord}
-        hasCorrespondingRecord={hasCorrespondingRecord}
-      />
+      <td className="p-1 text-center">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={handleCheckboxChange}
+          className="h-3 w-3 border"
+        />
+      </td>
     </tr>
   );
 });

@@ -22,10 +22,6 @@ interface AllFilesTableProps {
   onFileClick?: (fileNumber: string, fileType: string) => void;
   highlightedRowId?: string | null;
   onCreateCorrespondingRow?: (record: AllFilesRecord) => void;
-  onArchiveCorrespondingRecord?: (record: AllFilesRecord, archiveStatus: boolean) => void;
-  importData?: any[];
-  exportData?: any[];
-  domesticData?: any[];
 }
 
 const AllFilesTable = ({ 
@@ -36,11 +32,7 @@ const AllFilesTable = ({
   setSelectedRows, 
   onFileClick,
   highlightedRowId,
-  onCreateCorrespondingRow,
-  onArchiveCorrespondingRecord,
-  importData = [],
-  exportData = [],
-  domesticData = []
+  onCreateCorrespondingRow
 }: AllFilesTableProps) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [showArchived, setShowArchived] = React.useState(false);
@@ -79,45 +71,12 @@ const AllFilesTable = ({
     }
   }, [highlightedRowId]);
 
-  // Helper function to find corresponding record
-  const findCorrespondingRecord = (record: AllFilesRecord) => {
-    const targetFileIdentifier = `${record.file}${record.number}`;
-    const filePrefix = record.file.trim().toUpperCase();
-    
-    if (filePrefix === 'EA' || filePrefix === 'ES' || filePrefix === 'ET') {
-      return exportData.find(r => r.customer === record.customer && r.file === targetFileIdentifier);
-    } else if (filePrefix === 'IA' || filePrefix === 'IS') {
-      return importData.find(r => r.customer === record.customer && r.file === targetFileIdentifier);
-    } else if (filePrefix === 'DT') {
-      return domesticData.find(r => r.customer === record.customer && r.file === targetFileIdentifier);
-    }
-    return null;
-  };
-
   const handleArchiveRecord = (id: string) => {
     updateRecord(id, 'archived', 'true');
   };
 
   const handleUnarchiveRecord = (id: string) => {
     updateRecord(id, 'archived', 'false');
-  };
-
-  const handleArchiveAllRecord = (id: string) => {
-    updateRecord(id, 'archived', 'true');
-    // Find the record and archive corresponding record
-    const record = data.find(r => r.id === id);
-    if (record && onArchiveCorrespondingRecord) {
-      onArchiveCorrespondingRecord(record, true);
-    }
-  };
-
-  const handleUnarchiveAllRecord = (id: string) => {
-    updateRecord(id, 'archived', 'false');
-    // Find the record and unarchive corresponding record
-    const record = data.find(r => r.id === id);
-    if (record && onArchiveCorrespondingRecord) {
-      onArchiveCorrespondingRecord(record, false);
-    }
   };
 
   const finalFilteredData = React.useMemo(() => {
@@ -163,24 +122,21 @@ const AllFilesTable = ({
             />
             <tbody>
               {finalFilteredData.map((record, index) => (
-                 <AllFilesTableRow
-                   key={record.id}
-                   record={record}
-                   index={index}
-                   updateRecord={updateRecord}
-                   deleteRecord={deleteRecord}
-                   onArchive={handleArchiveRecord}
-                   onUnarchive={handleUnarchiveRecord}
-                   onArchiveAll={handleArchiveAllRecord}
-                   onUnarchiveAll={handleUnarchiveAllRecord}
-                   selectedRows={selectedRows}
-                   setSelectedRows={setSelectedRows}
-                   showArchived={showArchived}
-                   onFileClick={onFileClick}
-                   highlightedRowId={highlightedRowId}
-                   onCreateCorrespondingRow={onCreateCorrespondingRow}
-                   hasCorrespondingRecord={!!findCorrespondingRecord(record)}
-                 />
+                <AllFilesTableRow
+                  key={record.id}
+                  record={record}
+                  index={index}
+                  updateRecord={updateRecord}
+                  deleteRecord={deleteRecord}
+                  onArchive={handleArchiveRecord}
+                  onUnarchive={handleUnarchiveRecord}
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
+                  showArchived={showArchived}
+                  onFileClick={onFileClick}
+                  highlightedRowId={highlightedRowId}
+                  onCreateCorrespondingRow={onCreateCorrespondingRow}
+                />
               ))}
               <tr>
                 <td colSpan={21} className="h-16"></td>
