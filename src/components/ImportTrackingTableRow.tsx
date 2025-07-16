@@ -41,8 +41,10 @@ const ImportTrackingTableRow = memo(({
 
   // Memoized computed values for performance
   const { isCompleted, isEmpty } = useMemo(() => {
+    console.log('ImportTrackingTableRow: Checking completion for record:', record.id, record.customer);
     const completed = isImportRecordComplete(record);
     const empty = !record.customer && !record.file;
+    console.log('ImportTrackingTableRow: Completion result:', completed, 'Empty:', empty);
     return { isCompleted: completed, isEmpty: empty };
   }, [record]);
 
