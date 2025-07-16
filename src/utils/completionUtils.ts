@@ -30,19 +30,22 @@ export const isImportRecordComplete = (record: ImportTrackingRecord): boolean =>
     record.customer &&
     record.file &&
     record.bond &&
-    record.poa &&
-    record.isf &&
-    record.packingListCommercialInvoice &&
-    record.billOfLading &&
-    record.arrivalNotice &&
-    record.isfFiled &&
-    record.entryFiled &&
-    record.blRelease &&
-    record.customsRelease &&
-    record.invoiceSent &&
-    record.paymentReceived &&
-    record.workOrderSetup &&
-    record.returnDate !== ""
+    record.bond !== 'Pending' &&
+    record.poa === 'Yes' &&
+    record.isf === 'Yes' &&
+    record.packingListCommercialInvoice === 'Yes' &&
+    record.billOfLading === 'Yes' &&
+    record.arrivalNotice === 'Yes' &&
+    record.isfFiled === 'Yes' &&
+    record.entryFiled === 'Yes' &&
+    record.blRelease === 'Yes' &&
+    record.customsRelease === 'Yes' &&
+    record.invoiceSent === 'Yes' &&
+    record.paymentReceived === 'Yes' &&
+    record.workOrderSetup === 'Yes' &&
+    record.returnDate !== "" &&
+    record.returnDateStatus === 'green' &&
+    record.deliveryDateStatus === 'green'
   );
 };
 

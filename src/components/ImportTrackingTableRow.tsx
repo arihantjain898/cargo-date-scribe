@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import InlineEditCell from './InlineEditCell';
+import { isImportRecordComplete } from '../utils/completionUtils';
 
 interface ImportTrackingTableRowProps {
   record: ImportTrackingRecord;
@@ -40,10 +41,10 @@ const ImportTrackingTableRow = memo(({
 
   // Memoized computed values for performance
   const { isCompleted, isEmpty } = useMemo(() => {
-    const completed = record.returnDateStatus === 'green' && record.deliveryDateStatus === 'green' && record.bond !== 'Pending';
+    const completed = isImportRecordComplete(record);
     const empty = !record.customer && !record.file;
     return { isCompleted: completed, isEmpty: empty };
-  }, [record.returnDateStatus, record.deliveryDateStatus, record.bond, record.customer, record.file]);
+  }, [record]);
 
   const handleCheckboxChange = useCallback((checked: boolean) => {
     if (checked) {
