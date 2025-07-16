@@ -30,14 +30,13 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <FirebaseAuthWrapper>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </FirebaseAuthWrapper>
+        {/* Temporarily bypass Firebase auth */}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );
