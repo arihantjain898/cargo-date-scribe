@@ -7,16 +7,20 @@ import { Button } from '@/components/ui/button';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
+import { Task } from '../types/Task';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Filter, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useFirestore } from '@/hooks/useFirestore';
+import TaskManagement from './TaskManagement';
 
 interface CalendarViewProps {
   data: TrackingRecord[];
   importData?: ImportTrackingRecord[];
   domesticData?: DomesticTruckingRecord[];
   onCalendarEventClick?: (fileId: string, source: string) => void;
+  userId?: string;
 }
 
 interface CalendarEvent {
@@ -183,10 +187,11 @@ const getEventTypeLabel = (type: string) => {
   }
 };
 
-const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEventClick }: CalendarViewProps) => {
+const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEventClick, userId = 'test-user-123' }: CalendarViewProps) => {
+  const { data: tasks } = useFirestore<Task>('tasks', userId);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
-  const [calendarFilter, setCalendarFilter] = useState<'all' | 'export' | 'import' | 'domestic'>('all');
+  const [calendarFilter, setCalendarFilter] = useState<'all' | 'export' | 'import' | 'domestic' | 'task'>('all');
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
 
   const { exportEvents, importEvents, domesticEvents, allEvents } = useMemo(() => {
@@ -304,7 +309,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     };
   }, [data, importData, domesticData]);
 
-  const getEventsForDate = (date: Date, eventSource: 'all' | 'export' | 'import' | 'domestic' = 'all') => {
+  const getEventsForDate = (date: Date, eventSource: 'all' | 'export' | 'import' | 'domestic' | 'task' = 'all') => {
     const dateString = date.toISOString().split('T')[0];
     const events = eventSource === 'export' ? exportEvents : 
                   eventSource === 'import' ? importEvents :
@@ -609,6 +614,14 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             >
               Domestic
             </Button>
+            <Button
+              variant={calendarFilter === 'task' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setCalendarFilter('task')}
+              className="text-sm"
+            >
+              Tasks
+            </Button>
           </div>
         </div>
 
@@ -656,13 +669,19 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                       <div className="flex flex-wrap gap-2">
                         <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 text-xs">Pick Date</Badge>
                         <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300 text-xs">Delivered</Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 pt-3 border-t">
-                    <div className="w-3 h-3 bg-blue-600 rounded"></div>
-                    <span className="text-gray-500 text-sm">Days with events</span>
-                  </div>
+                       </div>
+                     </div>
+                     <div>
+                       <div className="font-medium text-pink-700 mb-3 text-sm">Task Events:</div>
+                       <div className="flex flex-wrap gap-2">
+                         <Badge variant="outline" className="bg-pink-100 text-pink-800 border-pink-300 text-xs">Task</Badge>
+                       </div>
+                     </div>
+                   </div>
+                   <div className="flex items-center gap-2 pt-3 border-t">
+                     <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                     <span className="text-gray-500 text-sm">Days with events</span>
+                   </div>
                 </div>
               </CardContent>
             </Card>
@@ -765,17 +784,20 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                                   variant="outline" 
                                   className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
                                 >
-                                  {getEventTypeLabel(event.type)}
-                                </Badge>
-                              </div>
-                              <div className="font-semibold text-gray-900 text-xs truncate">{event.customer}</div>
-                              <div className="text-gray-600 text-xs">
-                                <div className="truncate">
-                                  {event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
-                                   event.source === 'export' && event.ref ? `Ref: ${event.ref}` : 
-                                   `File: ${event.file}`}
-                                </div>
-                              </div>
+                         {getEventTypeLabel(event.type)}
+                       </Badge>
+                     </div>
+                     <div className="font-semibold text-gray-900 text-xs truncate">
+                       {event.source === 'task' ? event.assignedTo : event.customer}
+                     </div>
+                     <div className="text-gray-600 text-xs">
+                       <div className="truncate">
+                         {event.source === 'task' ? event.description :
+                          event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
+                          event.source === 'export' && event.ref ? `Ref: ${event.ref}` : 
+                          `File: ${event.file}`}
+                       </div>
+                     </div>
                             </div>
                           </div>
                         ))}
@@ -786,6 +808,14 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Task Management Section */}
+        <div className="flex-shrink-0 mt-6">
+          <TaskManagement 
+            currentWeekOffset={currentWeekOffset}
+            userId={userId}
+          />
         </div>
 
         <EventDetailModal

@@ -351,6 +351,7 @@ const FreightTracker = () => {
             importData={filteredImportData}
             domesticData={filteredDomesticTruckingData}
             onCalendarEventClick={onFileClick}
+            userId={currentUserId}
           />
         </TabsContent>
       </Tabs>
