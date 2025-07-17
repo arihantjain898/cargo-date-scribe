@@ -1,9 +1,11 @@
 
 import React, { useMemo, useState } from 'react';
+import { format, parseISO, startOfWeek, addDays, endOfWeek } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { TrackingRecord } from '../types/TrackingRecord';
 import { ImportTrackingRecord } from '../types/ImportTrackingRecord';
 import { DomesticTruckingRecord } from '../types/DomesticTruckingRecord';
@@ -11,9 +13,10 @@ import { Task } from '../types/Task';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Filter, X, ChevronLeft, ChevronRight, Plus, Check, Trash2, CalendarIcon } from 'lucide-react';
 import { useFirestore } from '@/hooks/useFirestore';
-import TaskManagement from './TaskManagement';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface CalendarViewProps {
   data: TrackingRecord[];
@@ -25,14 +28,17 @@ interface CalendarViewProps {
 
 interface CalendarEvent {
   date: string;
-  type: 'drop' | 'return' | 'cutoff' | 'eta' | 'delivery' | 'pickup' | 'delivered';
+  type: 'drop' | 'return' | 'cutoff' | 'eta' | 'delivery' | 'pickup' | 'delivered' | 'task';
   customer: string;
   ref: string;
   file: string;
-  source: 'export' | 'import' | 'domestic';
+  source: 'export' | 'import' | 'domestic' | 'task';
   recordId: string;
   booking?: string;
   uniqueId: string;
+  description?: string;
+  assignedTo?: string;
+  completed?: boolean;
 }
 
 interface EventDetailModalProps {
@@ -153,8 +159,7 @@ const getEventTypeColor = (type: string, source: string) => {
       default:
         return 'bg-indigo-100 text-indigo-800 border-indigo-300';
     }
-  } else {
-    // domestic
+  } else if (source === 'domestic') {
     switch (type) {
       case 'pickup':
         return 'bg-amber-100 text-amber-800 border-amber-300';
@@ -163,7 +168,10 @@ const getEventTypeColor = (type: string, source: string) => {
       default:
         return 'bg-gray-100 text-gray-800 border-gray-300';
     }
+  } else if (source === 'task') {
+    return 'bg-pink-100 text-pink-800 border-pink-300';
   }
+  return 'bg-gray-100 text-gray-800 border-gray-300';
 };
 
 const getEventTypeLabel = (type: string) => {
@@ -182,22 +190,27 @@ const getEventTypeLabel = (type: string) => {
       return 'Pick Date';
     case 'delivered':
       return 'Delivered';
+    case 'task':
+      return 'Task';
     default:
       return type;
   }
 };
 
 const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEventClick, userId = 'test-user-123' }: CalendarViewProps) => {
-  const { data: tasks } = useFirestore<Task>('tasks', userId);
+  const { data: tasks, addItem: addTask, updateItem: updateTask, deleteItem: deleteTask } = useFirestore<Task>('tasks', userId);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [calendarFilter, setCalendarFilter] = useState<'all' | 'export' | 'import' | 'domestic' | 'task'>('all');
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
+  const [showAddTask, setShowAddTask] = useState<string | null>(null);
+  const [newTask, setNewTask] = useState({ description: '', assignedTo: '' });
 
   const { exportEvents, importEvents, domesticEvents, allEvents } = useMemo(() => {
     const exportEventList: CalendarEvent[] = [];
     const importEventList: CalendarEvent[] = [];
     const domesticEventList: CalendarEvent[] = [];
+    const taskEventList: CalendarEvent[] = [];
     
     // Export events
     data.forEach(record => {
@@ -300,14 +313,86 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         });
       }
     });
+
+    // Task events
+    tasks.forEach(task => {
+      if (task.dueDate) {
+        taskEventList.push({
+          date: task.dueDate,
+          type: 'task',
+          customer: task.assignedTo,
+          ref: '',
+          file: task.description,
+          source: 'task',
+          recordId: task.id,
+          uniqueId: `${task.id}-task-${task.dueDate}`,
+          description: task.description,
+          assignedTo: task.assignedTo,
+          completed: task.completed
+        });
+      }
+    });
     
     return {
       exportEvents: exportEventList,
       importEvents: importEventList,
       domesticEvents: domesticEventList,
-      allEvents: [...importEventList, ...exportEventList, ...domesticEventList]
+      allEvents: [...importEventList, ...exportEventList, ...domesticEventList, ...taskEventList]
     };
-  }, [data, importData, domesticData]);
+  }, [data, importData, domesticData, tasks]);
+
+  // Task-related functions
+  const getCurrentWeekStart = () => {
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 0 });
+    return addDays(weekStart, currentWeekOffset * 7);
+  };
+
+  const getWeekDays = () => {
+    const weekStart = getCurrentWeekStart();
+    return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  };
+
+  const getTasksForDate = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return tasks.filter(task => task.dueDate === dateStr);
+  };
+
+  const handleAddTask = async (dateStr: string) => {
+    if (!newTask.description || !newTask.assignedTo) return;
+
+    try {
+      await addTask({
+        description: newTask.description,
+        dueDate: dateStr,
+        assignedTo: newTask.assignedTo,
+        completed: false,
+        userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      setNewTask({ description: '', assignedTo: '' });
+      setShowAddTask(null);
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
+  };
+
+  const handleToggleTask = async (taskId: string, completed: boolean) => {
+    try {
+      await updateTask(taskId, { completed: !completed });
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await deleteTask(taskId);
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
 
   const getEventsForDate = (date: Date, eventSource: 'all' | 'export' | 'import' | 'domestic' | 'task' = 'all') => {
     const dateString = date.toISOString().split('T')[0];
@@ -570,6 +655,8 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
         return <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-300 text-xs">Export</Badge>;
       case 'domestic':
         return <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs">Domestic</Badge>;
+      case 'task':
+        return <Badge variant="outline" className="bg-pink-100 text-pink-700 border-pink-300 text-xs">Task</Badge>;
       default:
         return null;
     }
@@ -756,67 +843,158 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </CardHeader>
             <CardContent className="p-6 pt-0">
               <div className="grid grid-cols-7 gap-4">
-                {getWeeklyEventsGroupedByDate().map(({ date, dateObj, events }) => (
-                  <div key={date} className="space-y-3 min-h-0">
-                    <div className="text-center p-3 bg-gray-50 rounded-lg border">
-                      <div className="font-semibold text-gray-900 text-sm">
-                        {dateObj.toLocaleDateString('en-US', { weekday: 'short' })}
+                {getWeekDays().map((dateObj) => {
+                  const date = format(dateObj, 'yyyy-MM-dd');
+                  const events = getEventsForDate(dateObj, calendarFilter);
+                  const dayTasks = getTasksForDate(dateObj);
+                  
+                  return (
+                    <div key={date} className="space-y-3 min-h-0">
+                      <div className="text-center p-3 bg-gray-50 rounded-lg border">
+                        <div className="font-semibold text-gray-900 text-sm">
+                          {dateObj.toLocaleDateString('en-US', { weekday: 'short' })}
+                        </div>
+                        <div className="text-lg font-bold text-gray-700">
+                          {dateObj.getDate()}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {events.length} event{events.length !== 1 ? 's' : ''}
+                        </div>
                       </div>
-                      <div className="text-lg font-bold text-gray-700">
-                        {dateObj.getDate()}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {events.length} event{events.length !== 1 ? 's' : ''}
-                      </div>
-                    </div>
-                    <div className="max-h-80 overflow-y-auto">
-                      <div className="space-y-2 pr-2">
-                        {events.map((event) => (
-                          <div 
-                            key={event.uniqueId} 
-                            className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all cursor-pointer text-xs"
-                            onClick={() => handleEventClick(event)}
-                          >
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-1 flex-wrap">
-                                {getSourceBadge(event.source)}
-                                <Badge 
-                                  variant="outline" 
-                                  className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
-                                >
-                         {getEventTypeLabel(event.type)}
-                       </Badge>
-                     </div>
-                     <div className="font-semibold text-gray-900 text-xs truncate">
-                       {event.source === 'task' ? event.assignedTo : event.customer}
-                     </div>
-                     <div className="text-gray-600 text-xs">
-                       <div className="truncate">
-                         {event.source === 'task' ? event.description :
-                          event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
-                          event.source === 'export' && event.ref ? `Ref: ${event.ref}` : 
-                          `File: ${event.file}`}
-                       </div>
-                     </div>
+                      
+                      <div className="max-h-80 overflow-y-auto">
+                        <div className="space-y-2 pr-2">
+                          {/* Regular Events */}
+                          {events.map((event) => (
+                            <div 
+                              key={event.uniqueId} 
+                              className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all cursor-pointer text-xs"
+                              onClick={() => handleEventClick(event)}
+                            >
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-1 flex-wrap">
+                                  {getSourceBadge(event.source)}
+                                  <Badge 
+                                    variant="outline" 
+                                    className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                                  >
+                                    {getEventTypeLabel(event.type)}
+                                  </Badge>
+                                </div>
+                                <div className="font-semibold text-gray-900 text-xs truncate">
+                                  {event.source === 'task' ? event.assignedTo : event.customer}
+                                </div>
+                                <div className="text-gray-600 text-xs">
+                                  <div className="truncate">
+                                    {event.source === 'task' ? event.description :
+                                     event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
+                                     event.source === 'export' && event.ref ? `Ref: ${event.ref}` : 
+                                     `File: ${event.file}`}
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                          
+                          {/* Task Management */}
+                          {dayTasks.map((task) => (
+                            <div 
+                              key={task.id} 
+                              className={cn(
+                                "p-2 border rounded bg-pink-50 border-pink-200 text-xs",
+                                task.completed && "opacity-60 line-through"
+                              )}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-medium text-pink-900">
+                                    {task.description}
+                                  </div>
+                                  <div className="text-xs text-pink-700 mt-1">
+                                    Assigned to: {task.assignedTo}
+                                  </div>
+                                </div>
+                                <div className="flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleToggleTask(task.id, task.completed)}
+                                    className="h-5 w-5 p-0 text-pink-600"
+                                  >
+                                    <Check className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleDeleteTask(task.id)}
+                                    className="h-5 w-5 p-0 text-red-500"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {/* Add Task Form */}
+                          {showAddTask === date && (
+                            <div className="p-2 border rounded bg-gray-50 border-gray-300">
+                              <div className="space-y-2">
+                                <Textarea
+                                  placeholder="Task description..."
+                                  value={newTask.description}
+                                  onChange={(e) => setNewTask(prev => ({ ...prev, description: e.target.value }))}
+                                  className="text-xs h-16"
+                                />
+                                <Input
+                                  placeholder="Assigned to"
+                                  value={newTask.assignedTo}
+                                  onChange={(e) => setNewTask(prev => ({ ...prev, assignedTo: e.target.value }))}
+                                  className="text-xs"
+                                />
+                                <div className="flex gap-1">
+                                  <Button 
+                                    size="sm" 
+                                    onClick={() => handleAddTask(date)}
+                                    className="text-xs h-6"
+                                  >
+                                    Add
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    onClick={() => setShowAddTask(null)}
+                                    className="text-xs h-6"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Add Task Button */}
+                          {showAddTask !== date && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setShowAddTask(date)}
+                              className="w-full text-xs h-6 text-pink-600 hover:bg-pink-50"
+                            >
+                              <Plus className="h-3 w-3 mr-1" />
+                              Add Task
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Task Management Section */}
-        <div className="flex-shrink-0 mt-6">
-          <TaskManagement 
-            currentWeekOffset={currentWeekOffset}
-            userId={userId}
-          />
-        </div>
 
         <EventDetailModal
           event={selectedEvent}
