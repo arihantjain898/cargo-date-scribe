@@ -462,7 +462,9 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   const getWeeklyEventsGroupedByDate = () => {
     const events = calendarFilter === 'all' ? allEvents :
                   calendarFilter === 'export' ? exportEvents : 
-                  calendarFilter === 'import' ? importEvents : domesticEvents;
+                  calendarFilter === 'import' ? importEvents : 
+                  calendarFilter === 'domestic' ? domesticEvents :
+                  calendarFilter === 'task' ? allEvents.filter(e => e.source === 'task') : allEvents;
     
     // Calculate the start of the current week (Sunday) plus offset
     const today = new Date();
@@ -897,16 +899,21 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                           ))}
                           
                           {/* Task Management */}
-                          {dayTasks.map((task) => (
+                          {(calendarFilter === 'all' || calendarFilter === 'task') && dayTasks.map((task) => (
                             <div 
                               key={task.id} 
                               className={cn(
-                                "p-2 border rounded bg-pink-50 border-pink-200 text-xs",
+                                "p-3 border rounded-lg bg-pink-50 border-pink-200 text-xs",
                                 task.completed && "opacity-60 line-through"
                               )}
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <Badge variant="outline" className="bg-pink-100 text-pink-700 border-pink-300 text-xs">
+                                      Task
+                                    </Badge>
+                                  </div>
                                   <div className="font-medium text-pink-900">
                                     {task.description}
                                   </div>
@@ -919,7 +926,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                                     size="sm"
                                     variant="ghost"
                                     onClick={() => handleToggleTask(task.id, task.completed)}
-                                    className="h-5 w-5 p-0 text-pink-600"
+                                    className="h-6 w-6 p-0 text-pink-600 hover:bg-pink-100"
                                   >
                                     <Check className="h-3 w-3" />
                                   </Button>
@@ -927,7 +934,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                                     size="sm"
                                     variant="ghost"
                                     onClick={() => handleDeleteTask(task.id)}
-                                    className="h-5 w-5 p-0 text-red-500"
+                                    className="h-6 w-6 p-0 text-red-500 hover:bg-red-100"
                                   >
                                     <Trash2 className="h-3 w-3" />
                                   </Button>
@@ -938,33 +945,43 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                           
                           {/* Add Task Form */}
                           {showAddTask === date && (
-                            <div className="p-2 border rounded bg-gray-50 border-gray-300">
-                              <div className="space-y-2">
-                                <Textarea
-                                  placeholder="Task description..."
-                                  value={newTask.description}
-                                  onChange={(e) => setNewTask(prev => ({ ...prev, description: e.target.value }))}
-                                  className="text-xs h-16"
-                                />
-                                <Input
-                                  placeholder="Assigned to"
-                                  value={newTask.assignedTo}
-                                  onChange={(e) => setNewTask(prev => ({ ...prev, assignedTo: e.target.value }))}
-                                  className="text-xs"
-                                />
-                                <div className="flex gap-1">
+                            <div className="p-3 border rounded-lg bg-pink-50 border-pink-200">
+                              <div className="space-y-3">
+                                <div className="text-xs font-medium text-pink-900 mb-2">Add New Task</div>
+                                <div className="space-y-2">
+                                  <div>
+                                    <label className="text-xs text-pink-700 block mb-1">Description</label>
+                                    <Textarea
+                                      placeholder="e.g., call ZIM to renew quote#1235"
+                                      value={newTask.description}
+                                      onChange={(e) => setNewTask(prev => ({ ...prev, description: e.target.value }))}
+                                      className="text-xs h-16 bg-white border-pink-200 focus:border-pink-300"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs text-pink-700 block mb-1">Assigned to</label>
+                                    <Input
+                                      placeholder="e.g., Pranadhi"
+                                      value={newTask.assignedTo}
+                                      onChange={(e) => setNewTask(prev => ({ ...prev, assignedTo: e.target.value }))}
+                                      className="text-xs bg-white border-pink-200 focus:border-pink-300"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex gap-2 pt-2">
                                   <Button 
                                     size="sm" 
                                     onClick={() => handleAddTask(date)}
-                                    className="text-xs h-6"
+                                    className="text-xs h-7 bg-pink-600 hover:bg-pink-700"
+                                    disabled={!newTask.description || !newTask.assignedTo}
                                   >
-                                    Add
+                                    Add Task
                                   </Button>
                                   <Button 
                                     size="sm" 
                                     variant="outline" 
                                     onClick={() => setShowAddTask(null)}
-                                    className="text-xs h-6"
+                                    className="text-xs h-7 border-pink-300 text-pink-700 hover:bg-pink-100"
                                   >
                                     Cancel
                                   </Button>
@@ -974,12 +991,12 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                           )}
                           
                           {/* Add Task Button */}
-                          {showAddTask !== date && (
+                          {showAddTask !== date && (calendarFilter === 'all' || calendarFilter === 'task') && (
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => setShowAddTask(date)}
-                              className="w-full text-xs h-6 text-pink-600 hover:bg-pink-50"
+                              className="w-full text-xs h-7 text-pink-600 hover:bg-pink-50 border border-dashed border-pink-300"
                             >
                               <Plus className="h-3 w-3 mr-1" />
                               Add Task

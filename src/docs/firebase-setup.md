@@ -40,3 +40,9 @@ If tasks aren't appearing:
 2. Verify your Firebase connection is working (other data loads)
 3. Check that userId is being passed correctly
 4. Ensure you're logged in if authentication is required
+
+## Recent Fixes Applied
+- ✅ Fixed task filtering in weekly view - tasks now show when "Tasks" or "All Events" is selected
+- ✅ Improved task form styling - now shows as a single cohesive card with proper labels
+- ✅ Tasks now properly sync to calendar events and appear in both weekly and daily views
+- ✅ Task filtering works correctly with calendar navigation
