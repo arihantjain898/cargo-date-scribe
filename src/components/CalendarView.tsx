@@ -398,7 +398,8 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     const dateString = date.toISOString().split('T')[0];
     const events = eventSource === 'export' ? exportEvents : 
                   eventSource === 'import' ? importEvents :
-                  eventSource === 'domestic' ? domesticEvents : allEvents;
+                  eventSource === 'domestic' ? domesticEvents : 
+                  eventSource === 'task' ? allEvents.filter(e => e.source === 'task') : allEvents;
     
     return events.filter(event => event.date === dateString);
   };
@@ -406,23 +407,27 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
 
   const eventDates = useMemo(() => {
-    const dates = new Map<string, { export: number; import: number; domestic: number }>();
+    const dates = new Map<string, { export: number; import: number; domestic: number; task: number }>();
     const eventsToProcess = calendarFilter === 'all' ? allEvents :
                            calendarFilter === 'export' ? exportEvents : 
-                           calendarFilter === 'import' ? importEvents : domesticEvents;
+                           calendarFilter === 'import' ? importEvents : 
+                           calendarFilter === 'domestic' ? domesticEvents :
+                           calendarFilter === 'task' ? allEvents.filter(e => e.source === 'task') : allEvents;
     
     eventsToProcess.forEach(event => {
       const date = event.date;
       if (!dates.has(date)) {
-        dates.set(date, { export: 0, import: 0, domestic: 0 });
+        dates.set(date, { export: 0, import: 0, domestic: 0, task: 0 });
       }
       const counts = dates.get(date)!;
       if (event.source === 'export') {
         counts.export++;
       } else if (event.source === 'import') {
         counts.import++;
-      } else {
+      } else if (event.source === 'domestic') {
         counts.domestic++;
+      } else if (event.source === 'task') {
+        counts.task++;
       }
     });
     return dates;
@@ -542,6 +547,7 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
     const importEvents = events.filter(e => e.source === 'import');
     const exportEvents = events.filter(e => e.source === 'export');
     const domesticEvents = events.filter(e => e.source === 'domestic');
+    const taskEvents = events.filter(e => e.source === 'task');
 
     return (
       <div className="space-y-6">
@@ -638,6 +644,41 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                     <div className="font-semibold text-gray-900 text-sm truncate">{event.customer}</div>
                     <div className="text-xs text-gray-600">
                       <div><span className="font-medium">File:</span> {event.file}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Task Events */}
+        {taskEvents.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-pink-100 text-pink-700 border-pink-300 text-sm font-medium">
+                Task Events ({taskEvents.length})
+              </Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+              {taskEvents.map((event) => (
+                <div 
+                  key={event.uniqueId} 
+                  className="p-4 border border-pink-200 rounded-lg bg-pink-50 hover:bg-pink-100 transition-colors shadow-sm hover:shadow-md"
+                >
+                  <div className="space-y-3">
+                    <Badge 
+                      variant="outline" 
+                      className={`${getEventTypeColor(event.type, event.source)} text-xs font-medium`}
+                    >
+                      {getEventTypeLabel(event.type)}
+                    </Badge>
+                    <div className="font-semibold text-pink-900 text-sm">
+                      {event.description}
+                    </div>
+                    <div className="text-xs text-pink-700">
+                      <div><span className="font-medium">Assigned to:</span> {event.assignedTo}</div>
+                      <div><span className="font-medium">Due:</span> {new Date(event.date + 'T00:00:00').toLocaleDateString()}</div>
                     </div>
                   </div>
                 </div>
@@ -845,12 +886,14 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
             </CardHeader>
             <CardContent className="p-6 pt-0">
               <div className="grid grid-cols-7 gap-4">
-                {getWeekDays().map((dateObj) => {
-                  const date = format(dateObj, 'yyyy-MM-dd');
-                  const events = getEventsForDate(dateObj, calendarFilter);
-                  const dayTasks = getTasksForDate(dateObj);
-                  
-                  return (
+                 {getWeekDays().map((dateObj) => {
+                   const date = format(dateObj, 'yyyy-MM-dd');
+                   const events = getEventsForDate(dateObj, calendarFilter);
+                   const dayTasks = getTasksForDate(dateObj);
+                   
+                   console.log(`Date: ${date}, Events: ${events.length}, Tasks: ${dayTasks.length}, Filter: ${calendarFilter}`);
+                   
+                   return (
                     <div key={date} className="space-y-3 min-h-0">
                       <div className="text-center p-3 bg-gray-50 rounded-lg border">
                         <div className="font-semibold text-gray-900 text-sm">
@@ -866,8 +909,8 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                       
                       <div className="max-h-80 overflow-y-auto">
                         <div className="space-y-2 pr-2">
-                          {/* Regular Events */}
-                          {events.map((event) => (
+                          {/* Regular Events (NOT tasks) */}
+                          {events.filter(event => event.source !== 'task').map((event) => (
                             <div 
                               key={event.uniqueId} 
                               className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all cursor-pointer text-xs"
@@ -884,12 +927,11 @@ const CalendarView = ({ data, importData = [], domesticData = [], onCalendarEven
                                   </Badge>
                                 </div>
                                 <div className="font-semibold text-gray-900 text-xs truncate">
-                                  {event.source === 'task' ? event.assignedTo : event.customer}
+                                  {event.customer}
                                 </div>
                                 <div className="text-gray-600 text-xs">
                                   <div className="truncate">
-                                    {event.source === 'task' ? event.description :
-                                     event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
+                                    {event.source === 'import' && event.booking ? `Booking: ${event.booking}` : 
                                      event.source === 'export' && event.ref ? `Ref: ${event.ref}` : 
                                      `File: ${event.file}`}
                                   </div>
