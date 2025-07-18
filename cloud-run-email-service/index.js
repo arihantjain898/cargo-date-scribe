@@ -27,7 +27,7 @@ oauth2Client.setCredentials({
 const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
 // Event processing logic
-function processEvents(trackingRecords, importRecords, domesticRecords) {
+function processEvents(trackingRecords, importRecords, domesticRecords, taskRecords) {
   const events = [];
   
   // Export events
@@ -124,6 +124,24 @@ function processEvents(trackingRecords, importRecords, domesticRecords) {
       });
     }
   });
+
+  // Task events - only include non-completed tasks
+  taskRecords.forEach(task => {
+    if (task.dueDate && !task.completed) {
+      events.push({
+        date: task.dueDate,
+        type: 'task',
+        customer: task.assignedTo,
+        ref: '',
+        file: task.description,
+        source: 'task',
+        recordId: task.id,
+        description: task.description,
+        assignedTo: task.assignedTo,
+        completed: task.completed
+      });
+    }
+  });
   
   return events;
 }
@@ -147,7 +165,8 @@ function getEventsForDateRange(events, startDate, endDate) {
     
     const isInRange = eventDateStr >= start && eventDateStr <= end;
     if (isInRange) {
-      console.log(`Event included: ${eventDateStr} - ${event.customer} - ${event.type}`);
+      const displayName = event.source === 'task' ? event.assignedTo : event.customer;
+      console.log(`Event included: ${eventDateStr} - ${displayName} - ${event.type} (${event.source})`);
     }
     return isInRange;
   }).sort((a, b) => {
@@ -184,6 +203,9 @@ function getEventDisplay(type, source) {
     domestic: {
       pickup: { label: 'Pickup Date', emoji: '📤', color: '#ef4444' },
       delivered: { label: 'Delivered', emoji: '✅', color: '#22c55e' }
+    },
+    task: {
+      task: { label: 'Task Due', emoji: '📋', color: '#ec4899' }
     }
   };
   
@@ -206,8 +228,12 @@ function createEmailHTML(todayEvents, upcomingEvents) {
         <tr style="border-bottom: 1px solid #f3f4f6;">
           <td style="padding: 12px 8px; font-size: 24px;">${display.emoji}</td>
           <td style="padding: 12px 8px;">
-            <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">${event.customer}</div>
-            <div style="font-size: 14px; color: #6b7280;">${event.file}</div>
+            <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">
+              ${event.source === 'task' ? event.assignedTo : event.customer}
+            </div>
+            <div style="font-size: 14px; color: #6b7280;">
+              ${event.source === 'task' ? `Task: ${event.description}` : `File: ${event.file}`}
+            </div>
             ${event.ref ? `<div style="font-size: 12px; color: #9ca3af;">Ref: ${event.ref}</div>` : ''}
           </td>
           <td style="padding: 12px 8px;">
@@ -343,17 +369,19 @@ functions.http('senddailydigest', async (req, res) => {
     console.log('Fetching data for userId:', userId);
     
     // Fetch data filtered by userId using correct collection names
-    const [trackingSnapshot, importSnapshot, domesticSnapshot] = await Promise.all([
+    const [trackingSnapshot, importSnapshot, domesticSnapshot, taskSnapshot] = await Promise.all([
       db.collection('export_tracking').where('userId', '==', userId).get(),
       db.collection('import_tracking').where('userId', '==', userId).get(),
-      db.collection('domestic_trucking').where('userId', '==', userId).get()
+      db.collection('domestic_trucking').where('userId', '==', userId).get(),
+      db.collection('tasks').where('userId', '==', userId).get()
     ]);
     
     const trackingRecords = trackingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const importRecords = importSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const domesticRecords = domesticSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
-    console.log(`Fetched ${trackingRecords.length} tracking, ${importRecords.length} import, ${domesticRecords.length} domestic records`);
+    const taskRecords = taskSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    console.log(`Fetched ${trackingRecords.length} tracking, ${importRecords.length} import, ${domesticRecords.length} domestic, ${taskRecords.length} task records`);
     
     // Debug: Log sample records to see data structure
     if (trackingRecords.length > 0) {
@@ -365,9 +393,12 @@ functions.http('senddailydigest', async (req, res) => {
     if (domesticRecords.length > 0) {
       console.log('Sample domestic record:', JSON.stringify(domesticRecords[0], null, 2));
     }
+    if (taskRecords.length > 0) {
+      console.log('Sample task record:', JSON.stringify(taskRecords[0], null, 2));
+    }
     
     // Process events
-    const allEvents = processEvents(trackingRecords, importRecords, domesticRecords);
+    const allEvents = processEvents(trackingRecords, importRecords, domesticRecords, taskRecords);
     console.log(`Processed ${allEvents.length} total events`);
     
     // Get today's events
